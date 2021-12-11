@@ -7529,14 +7529,14 @@ require = function () {
                 case 'sub':
                     switch (true) {
                     case (_b = (_a = context.state) === null || _a === void 0 ? void 0 : _a.in) === null || _b === void 0 ? void 0 : _b.supsub:
-                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup>/<sub> HTML tags.`, as, bs, cs);
+                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup> or <sub> HTML tag.`, as, bs, cs);
                     }
                     break;
                 case 'small':
                     switch (true) {
                     case (_d = (_c = context.state) === null || _c === void 0 ? void 0 : _c.in) === null || _d === void 0 ? void 0 : _d.supsub:
                     case (_f = (_e = context.state) === null || _e === void 0 ? void 0 : _e.in) === null || _f === void 0 ? void 0 : _f.small:
-                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
+                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag.`, as, bs, cs);
                     }
                     break;
                 }
@@ -7690,11 +7690,11 @@ require = function () {
                     (0, combinator_1.some)(exports.option)
                 ]), /^[^\S\n]?}/))
             ])))), ([params, content = []], rest, context) => {
-                var _a, _b;
+                var _a, _b, _c, _d, _e;
                 if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
+                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, (_a = context.host) !== null && _a !== void 0 ? _a : global_1.location, (_c = (_b = context.url) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : global_1.location), ((_d = context.host) === null || _d === void 0 ? void 0 : _d.href) || global_1.location.href), ((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) || global_1.location.origin);
                 if (el.classList.contains('invalid'))
                     return [
                         [el],
@@ -7716,40 +7716,41 @@ require = function () {
                 (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\n{}]+/), opt => [` \\${ opt.slice(1) }`])
             ]);
             function resolve(uri, host, source) {
-                var _a;
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
-                    const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-                    return file.includes('.') ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
+                    const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+                    return last.includes('.') && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${ host.pathname.slice(0, -last.length) }${ uri.slice(2) }` : `${ host.pathname.replace(/\/?$/, '/') }${ uri.slice(2) }`;
                 case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
                 default:
                     const target = new url_1.ReadonlyURL(uri, source.href);
-                    return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
+                    return target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
                 }
             }
             exports.resolve = resolve;
-            function fillTrailingSlash(pathname) {
-                return pathname[pathname.length - 1] === '/' ? pathname : pathname + '/';
-            }
-            function create(address, content, uri, origin) {
+            function create(INSECURE_URI, content, uri, origin) {
                 let type;
                 let description;
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
+                    if (INSECURE_URI.slice(0, 2) === '^/' && /(?:\/\.\.?)(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
+                        type = 'argument';
+                        description = 'Subresource paths cannot contain dot-segments.';
+                        break;
+                    }
                     return (0, typed_dom_1.html)('a', {
                         href: uri.source,
                         target: undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
-                    }, content.length === 0 ? decode(address) : content);
+                    }, content.length === 0 ? decode(INSECURE_URI) : content);
                 case 'tel:':
                     if (content.length === 0) {
-                        content = [address];
+                        content = [INSECURE_URI];
                     }
                     const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
                     switch (true) {
-                    case content.length === 1 && typeof content[0] === 'string' && pattern.test(address) && pattern.test(content[0]) && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
+                    case content.length === 1 && typeof content[0] === 'string' && pattern.test(INSECURE_URI) && pattern.test(content[0]) && INSECURE_URI.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
                         return (0, typed_dom_1.html)('a', { href: uri.source }, content);
                     }
                     type = 'content';
@@ -7761,7 +7762,7 @@ require = function () {
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type !== null && type !== void 0 ? type : type = 'argument',
                     'data-invalid-description': description !== null && description !== void 0 ? description : description = 'Invalid protocol.'
-                }, content.length === 0 ? address : content);
+                }, content.length === 0 ? INSECURE_URI : content);
             }
             function decode(uri) {
                 if (uri.indexOf('%') === -1)
@@ -7907,24 +7908,23 @@ require = function () {
                 [''],
                 as
             ]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e, _f, _g, _h;
                 const INSECURE_URI = params.shift();
-                const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
-                const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
-                const cached = cache === null || cache === void 0 ? void 0 : cache.has(url.href);
-                const el = cache && cached ? cache.get(url.href).cloneNode(true) : (0, typed_dom_1.html)('img', {
+                const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, (_a = context.host) !== null && _a !== void 0 ? _a : global_1.location, (_c = (_b = context.url) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : global_1.location), ((_d = context.host) === null || _d === void 0 ? void 0 : _d.href) || global_1.location.href);
+                let cache;
+                const el = global_1.undefined || (cache = (_f = (_e = context.caches) === null || _e === void 0 ? void 0 : _e.media) === null || _f === void 0 ? void 0 : _f.get(url.href).cloneNode(true)) || (0, typed_dom_1.html)('img', {
                     class: 'media',
                     'data-src': url.source,
                     alt: text
                 });
-                if (!cached && !sanitize(url, el))
+                if (!cache && !sanitize(url, el))
                     return [
                         [el],
                         rest
                     ];
-                cached && el.hasAttribute('alt') && el.setAttribute('alt', text);
+                (cache === null || cache === void 0 ? void 0 : cache.hasAttribute('alt')) && (cache === null || cache === void 0 ? void 0 : cache.setAttribute('alt', text));
                 (0, typed_dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
-                if (((_d = (_c = context.syntax) === null || _c === void 0 ? void 0 : _c.inline) === null || _d === void 0 ? void 0 : _d.link) === false || cached && el.tagName !== 'IMG')
+                if (((_h = (_g = context.syntax) === null || _g === void 0 ? void 0 : _g.inline) === null || _h === void 0 ? void 0 : _h.link) === false || cache && cache.tagName !== 'IMG')
                     return [
                         [el],
                         rest
@@ -7970,18 +7970,29 @@ require = function () {
                 link_1.option
             ]);
             function sanitize(uri, target) {
+                if (/^\.\.?\//.test(uri.source)) {
+                    (0, typed_dom_1.define)(target, {
+                        class: void target.classList.add('invalid'),
+                        'data-invalid-syntax': 'media',
+                        'data-invalid-type': 'argument',
+                        'data-invalid-description': 'Relative paths cannot be used with media syntax; Use subresource paths instead.'
+                    });
+                    return false;
+                }
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
-                    return true;
+                    break;
+                default:
+                    (0, typed_dom_1.define)(target, {
+                        class: void target.classList.add('invalid'),
+                        'data-invalid-syntax': 'media',
+                        'data-invalid-type': 'argument',
+                        'data-invalid-description': 'Invalid protocol.'
+                    });
+                    return false;
                 }
-                (0, typed_dom_1.define)(target, {
-                    class: void target.classList.add('invalid'),
-                    'data-invalid-syntax': 'media',
-                    'data-invalid-type': 'argument',
-                    'data-invalid-description': 'Invalid protocol.'
-                });
-                return false;
+                return true;
             }
         },
         {
@@ -9206,8 +9217,6 @@ require = function () {
             }));
             function render(source, opts = {}) {
                 opts = extend(opts);
-                if (source.classList.contains('invalid'))
-                    return;
                 const base = global_1.location.href;
                 if (source.matches(selector))
                     return void render_(base, source, opts);
@@ -9218,6 +9227,8 @@ require = function () {
             exports.render = render;
             function render_(base, source, opts) {
                 var _a, _b, _c;
+                if (source.classList.contains('invalid'))
+                    return;
                 try {
                     switch (true) {
                     case !!opts.code && !source.firstElementChild && source.matches('pre.code'):
