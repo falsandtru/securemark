@@ -13,6 +13,15 @@ describe('Unit: parser/source/unescapable', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz')), [['09', 'あい', 'AZaz'], '']);
+    });
+
+    it('space', () => {
+      assert.deepStrictEqual(inspect(parser(' ')), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser('  ')), [['  '], '']);
+      assert.deepStrictEqual(inspect(parser('   ')), [['   '], '']);
+      assert.deepStrictEqual(inspect(parser(' \n')), [[' ', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser('  \n')), [['  ', '\n'], '']);
     });
 
     it('linebreak', () => {

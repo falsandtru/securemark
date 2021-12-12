@@ -12,9 +12,8 @@ describe('Unit: parser/text/text', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser('az')), [['az'], '']);
-      assert.deepStrictEqual(inspect(parser('09')), [['09'], '']);
-      assert.deepStrictEqual(inspect(parser('azあい09')), [['az', 'あい', '09'], '']);
+      assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz')), [['09', 'あい', 'AZaz'], '']);
       assert.deepStrictEqual(inspect(parser('a\nb')), [['a', '<br>', 'b'], '']);
     });
 
