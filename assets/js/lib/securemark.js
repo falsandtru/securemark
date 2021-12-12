@@ -8051,11 +8051,6 @@ require = function () {
                 const acc = [''];
                 while (source !== '') {
                     switch (source[0]) {
-                    case ' ':
-                    case '\u3000':
-                        acc.push('');
-                        source = source.slice(1);
-                        continue;
                     case '&': {
                             const result = (0, htmlentity_1.htmlentity)(source, context);
                             acc[acc.length - 1] += (0, parser_1.eval)(result, [source[0]])[0];
@@ -8063,6 +8058,11 @@ require = function () {
                             continue;
                         }
                     default: {
+                            if (source[0].trimStart() === '') {
+                                acc.push('');
+                                source = source.slice(1);
+                                continue;
+                            }
                             const result = (0, source_1.text)(source, context);
                             acc[acc.length - 1] += (_a = (0, parser_1.eval)(result)[0]) !== null && _a !== void 0 ? _a : source.slice(0, source.length - (0, parser_1.exec)(result).length);
                             source = (0, parser_1.exec)(result);
@@ -8642,6 +8642,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.escsource = void 0;
             const combinator_1 = _dereq_('../../combinator');
+            const text_1 = _dereq_('./text');
             const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
             exports.escsource = (0, combinator_1.creator)(source => {
                 if (source === '')
@@ -8661,9 +8662,11 @@ require = function () {
                             source.slice(2)
                         ];
                     default:
+                        const b = source[0] !== '\n' && source[0].trimStart() === '';
+                        const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) : 1;
                         return [
-                            [source.slice(0, 1)],
-                            source.slice(1)
+                            [source.slice(0, i)],
+                            source.slice(i)
                         ];
                     }
                 default:
@@ -8674,7 +8677,10 @@ require = function () {
                 }
             });
         },
-        { '../../combinator': 30 }
+        {
+            '../../combinator': 30,
+            './text': 135
+        }
     ],
     133: [
         function (_dereq_, module, exports) {
@@ -9020,16 +9026,20 @@ require = function () {
             function isEndTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
-                return isVisible(nodes[nodes.length - 1], -1);
+                for (let i = nodes.length; i--;) {
+                    if (typeof nodes[i] === 'object' && nodes[i]['className'] === 'comment')
+                        continue;
+                    return isVisible(nodes[i], -1);
+                }
+                return false;
             }
             exports.isEndTightNodes = isEndTightNodes;
-            function isVisible(node, position) {
-                if (!node)
-                    return false;
+            function isVisible(node, strpos) {
                 switch (typeof node) {
                 case 'string':
-                    const char = position === global_1.undefined ? node : node[position >= 0 ? position : node.length + position];
+                    const char = node && strpos !== global_1.undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
                     switch (char) {
+                    case '':
                     case ' ':
                     case '\t':
                     case '\n':

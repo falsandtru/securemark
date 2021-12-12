@@ -324,12 +324,12 @@
   pre.error {
     background-color: #fbfbfb;
     position: relative;
+    overflow: auto;
     border: solid 1px #eee;
     border-radius: 3px;
     padding: 1em;
     margin-top: 0;
     margin-bottom: 1rem;
-    overflow: auto;
   }
   pre[data-path]::before {
     content: attr(data-path);
@@ -355,12 +355,17 @@
   }
   aside.example > pre,
   aside.example > section {
-    margin: 1rem;
-    margin-bottom: 2rem;
+    overflow: auto;
+    padding: 1rem;
     font-size: 90%;
     line-height: 120%;
   }
+  aside.example > pre {
+    margin-bottom: 0;
+    padding-bottom: 2rem;
+  }
   aside.example > hr {
+    margin: 0;
     border-top: dashed 2px #ddd;
   }
   aside.aside {
