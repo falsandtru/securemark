@@ -136,8 +136,9 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
 export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   for (let i = nodes.length; i--;) {
-    if (typeof nodes[i] === 'object' && nodes[i]['className'] === 'comment') continue;
-    return isVisible(nodes[i], -1);
+    const node = nodes[i];
+    if (typeof node === 'object' && node.className === 'comment') continue;
+    return isVisible(node, -1);
   }
   return false;
 }
