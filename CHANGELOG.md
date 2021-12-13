@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.226.0
+
+- Improve math parser.
+
 ## 0.225.2
 
 - Refactoring.
