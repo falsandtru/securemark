@@ -43,7 +43,7 @@ const bracket: MathParser.BracketParser = lazy(() => creator(surround(
   '{',
   some(union([
     bracket,
-    some(escsource, /^[{}]/),
+    some(escsource, /^(?:[{}]|\\?\n)/),
   ])),
   '}',
   true)));
