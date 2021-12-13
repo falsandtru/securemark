@@ -333,13 +333,12 @@
   }
   pre[data-path]::before {
     content: attr(data-path);
-    direction: ltr;
     position: absolute;
     top: 0;
     right: 0;
     border-left: solid 1px #eee;
     border-bottom: solid 1px #eee;
-    border-radius: 2px;
+    border-bottom-left-radius: 3px;
     padding-left: 5px;
     padding-right: 2px;
     line-height: 1.3;
@@ -355,6 +354,7 @@
   }
   aside.example > pre,
   aside.example > section {
+    position: relative;
     overflow: auto;
     padding: 1rem;
     font-size: 90%;
@@ -363,6 +363,27 @@
   aside.example > pre {
     margin-bottom: 0;
     padding-bottom: 2rem;
+  }
+  aside.example > pre::before,
+  aside.example > section::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-left: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
+    border-bottom-left-radius: 3px;
+    padding-left: 6px;
+    padding-right: 5px;
+    font-family: initial;
+    font-size: smaller;
+    font-weight: bold;
+    color: #888;
+  }
+  aside.example > pre::before {
+    content: "Source";
+  }
+  aside.example > section::before {
+    content: "Result";
   }
   aside.example > hr {
     margin: 0;
@@ -664,7 +685,7 @@
     '',
     'Mark++down++~~up~~ +\\',
     '`Syntax highlight` +\\',
-    '${LaTeX}$',
+    '$LaTeX$',
     'and Media content embedding.',
     '',
     '## Heading',
