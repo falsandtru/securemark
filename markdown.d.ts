@@ -988,6 +988,7 @@ export namespace MarkdownParser {
       Inline<'math'>,
       Parser<HTMLElement, Context, [
         SourceParser.StrParser,
+        MathParser.BracketParser,
       ]> {
     }
     export namespace MathParser {

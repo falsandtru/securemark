@@ -8,7 +8,6 @@ const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
 
 export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewrite(
   union([
-    surround('$', bracket, '$'),
     surround(
       '$',
       verify(
@@ -21,6 +20,7 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
         str(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*(?:[\s,.!?()[\]{}]|[^\x00-\x7F])|-[\da-z]|[a-z]+-)(?:\\\$|[\x20-\x23\x25-\x7E])*/i),
         isEndTightNodes),
       /^\$(?![0-9a-z])/i),
+    surround('$', bracket, '$'),
   ]),
   (source, { caches: { math: cache } = {} }) => [[
     cache?.get(source)?.cloneNode(true) ||

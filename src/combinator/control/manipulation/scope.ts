@@ -23,6 +23,7 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
   };
 }
 
+//export function rewrite<T, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<T, C, never>): Parser<T, C, D>;
 export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Context<P>>, parser: P): P;
 export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T> {
   assert(scope);
