@@ -7763,7 +7763,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
             exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', '$', '\n', (0, combinator_1.rewrite)((0, combinator_1.union)([
-                (0, combinator_1.surround)('$', (0, combinator_1.verify)((0, source_1.str)(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*(?:[\s,.!?()[\]{}]|[^\x00-\x7F])|-[\da-z]|[a-z]+-)(?:\\\$|[\x20-\x23\x25-\x7E])*/i), util_1.isEndTightNodes), /^\$(?![0-9a-z])/i),
+                (0, combinator_1.surround)('$', (0, combinator_1.verify)((0, source_1.str)(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*[^-+*/=<>^_~\\$]|-[\da-z]|[a-z]+-)(?:\\\$|[\x20-\x23\x25-\x7E])+/i), util_1.isEndTightNodes), /^\$(?![0-9a-z])/i),
                 (0, combinator_1.surround)('$', bracket, '$')
             ]), (source, {
                 caches: {math: cache} = {}
