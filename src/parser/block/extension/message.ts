@@ -24,8 +24,8 @@ export const message: MessageParser = block(validate('~~~', fmap(
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'message',
-      'data-invalid-type': closer ? 'argument' : 'closer',
-      'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-type': !closer ? 'closer' : 'argument',
+      'data-invalid-description': !closer ? `Missing the closing delimiter ${delim}.` : 'Invalid argument.',
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'note':

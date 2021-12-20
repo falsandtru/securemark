@@ -15,8 +15,8 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'example',
-      'data-invalid-type': closer ? 'argument' : 'closer',
-      'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-type': !closer ? 'closer' : 'argument',
+      'data-invalid-description': !closer ? `Missing the closing delimiter ${delim}.` : 'Invalid argument.',
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {
