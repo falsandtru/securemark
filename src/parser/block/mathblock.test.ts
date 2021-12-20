@@ -17,9 +17,10 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), [['<pre class="invalid" translate="no">$$\na\n$$\nb</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('$$$\n\n\n$$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$ $$\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<pre class="invalid" translate="no">$$latex\n$$</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$$\n$$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$lang\n$$')), [['<pre class="invalid" translate="no">$$lang\n$$</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$ param\n$$')), [['<pre class="invalid" translate="no">$$ param\n$$</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$$\n$$')), [['<pre class="invalid" translate="no">$$$\n$$</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$$\n$$$')), [['<pre class="invalid" translate="no">$$$\n$$$</pre>'], '']);
       assert.deepStrictEqual(inspect(parser(' $$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(`$$\n0${'\n'.repeat(101)}$$`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
