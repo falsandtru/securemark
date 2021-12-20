@@ -40,6 +40,7 @@ function build(
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     const check = footnotes.some(el => target.contains(el));
+    let style: 'count' | 'abbr';
     for (
       let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`),
           i = 0, len = refs.length; i < len; ++i) {
@@ -49,6 +50,15 @@ function build(
       const identifier = identify(ref);
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = contentify(ref);
+      style ??= abbr ? 'abbr' : 'count';
+      if (style === 'count' ? abbr : !abbr) {
+        define(ref, {
+          class: `${ref.className} invalid`,
+          'data-invalid-syntax': syntax,
+          'data-invalid-type': 'style',
+          'data-invalid-description': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent.`,
+        });
+      }
       if (ref.firstElementChild?.getAttribute('hidden') !== '') {
         ref.replaceChildren(html('span', { hidden: '' }, ref.childNodes));
       }
@@ -79,6 +89,7 @@ function build(
         def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
         for (const ref of buffer.take(identifier, Infinity)) {
+          if (ref.getAttribute('data-invalid-type') !== 'content') continue;
           define(ref, {
             title,
             class: void ref.classList.remove('invalid'),
