@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
 import { sequence, validate, verify, focus, creator, surround, lazy, bind } from '../../combinator';
-import { htmlentity } from './htmlentity';
+import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom';
@@ -53,7 +53,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
     switch (source[0]) {
       // @ts-expect-error
       case '&': {
-        const result = htmlentity(source, context);
+        const result = unsafehtmlentity(source, context);
         if (result) {
           acc[acc.length - 1] += eval(result, [source[0]])[0];
           source = exec(result, source.slice(1));

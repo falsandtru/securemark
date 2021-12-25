@@ -3,7 +3,7 @@ import { MarkdownParser } from '../../markdown';
 import { Parser, eval } from '../combinator/data/parser';
 import { union, some, verify, clear, convert, trim } from '../combinator';
 import { comment } from './inline/comment';
-import { htmlentity } from './inline/htmlentity';
+import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource, str } from './source';
 import { push, pop } from 'spica/array';
 
@@ -104,7 +104,7 @@ function isStartTight(source: string, context: MarkdownParser.Context): boolean 
       switch (true) {
         case source.length > 2
           && source[1] !== ' '
-          && eval(htmlentity(source, context))?.[0].trimStart() === '':
+          && eval(unsafehtmlentity(source, context))?.[0].trimStart() === '':
           return false;
       }
       return true;

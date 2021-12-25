@@ -44,6 +44,7 @@ export import CodeParser = InlineParser.CodeParser;
 export import MathParser = InlineParser.MathParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
+export import UnsafeHTMLEntityParser = InlineParser.UnsafeHTMLEntityParser;
 export import ShortmediaParser = InlineParser.ShortmediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;

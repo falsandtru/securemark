@@ -844,7 +844,7 @@ export namespace MarkdownParser {
       export interface TextParser extends
         Inline<'media/text'>,
         Parser<string[], Context, [
-          HTMLEntityParser,
+          UnsafeHTMLEntityParser,
           TextParser.BracketParser,
           SourceParser.TxtParser,
         ]> {
@@ -854,22 +854,22 @@ export namespace MarkdownParser {
           Inline<'media/text/bracket'>,
           Parser<string, Context, [
             Parser<string, Context, [
-              HTMLEntityParser,
+              UnsafeHTMLEntityParser,
               BracketParser,
               SourceParser.TxtParser,
             ]>,
             Parser<string, Context, [
-              HTMLEntityParser,
+              UnsafeHTMLEntityParser,
               BracketParser,
               SourceParser.TxtParser,
             ]>,
             Parser<string, Context, [
-              HTMLEntityParser,
+              UnsafeHTMLEntityParser,
               BracketParser,
               SourceParser.TxtParser,
             ]>,
             Parser<string, Context, [
-              HTMLEntityParser,
+              UnsafeHTMLEntityParser,
               SourceParser.TxtParser,
             ]>,
           ]> {
@@ -1003,6 +1003,14 @@ export namespace MarkdownParser {
     export interface HTMLEntityParser extends
       // &copy;
       Inline<'htmlentity'>,
+      Parser<HTMLSpanElement | string, Context, [
+        UnsafeHTMLEntityParser,
+        Parser<HTMLSpanElement, Context, []>,
+      ]> {
+    }
+    export interface UnsafeHTMLEntityParser extends
+      // &copy;
+      Inline<'unsafehtmlentity'>,
       Parser<string, Context, []> {
     }
     export interface ShortmediaParser extends
