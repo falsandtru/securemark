@@ -51,11 +51,15 @@ const text: RubyParser.TextParser = creator((source, context) => {
   while (source !== '') {
     assert(source[0] !== '\n');
     switch (source[0]) {
+      // @ts-expect-error
       case '&': {
         const result = htmlentity(source, context);
-        acc[acc.length - 1] += eval(result, [source[0]])[0];
-        source = exec(result, source.slice(1));
-        continue;
+        if (result) {
+          acc[acc.length - 1] += eval(result, [source[0]])[0];
+          source = exec(result, source.slice(1));
+          continue;
+        }
+        // fallthrough
       }
       default: {
         if (source[0].trimStart() === '') {

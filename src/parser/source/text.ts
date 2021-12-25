@@ -46,6 +46,7 @@ export const text: TextParser = creator((source, context) => {
         case '？': {
           const i = source.slice(1).search(nonWhitespace) + 1;
           if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
+          // fallthrough
         }
         default:
           assert(source[0] !== '\n');
