@@ -98,7 +98,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{\\ }')), [[`<a href="\\">\\</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{\\b}')), [[`<a href="\\b">\\b</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{?b=c+d&\\#}')), [['<a href="?b=c+d&amp;\\#">?b=c+d&amp;\\#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{?&amp;}')), [['<a href="?&amp;amp;">?&amp;amp;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{?&copy;}')), [['<a href="?&amp;copy;">?&amp;copy;</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#}')), [['<a href="#">#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#b}')), [['<a href="#b">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{./b}')), [['<a href="./b">./b</a>'], '']);
