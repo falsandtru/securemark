@@ -4,12 +4,12 @@ import { html } from 'typed-dom';
 
 const parser = html('textarea');
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', ';', '\n', verify(focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', verify(focus(
   /^&[0-9A-Za-z]+;/,
   entity => [[(parser.innerHTML = entity, parser.value)], '']),
   ([str]) => str[0] !== '&' || str.length < 3)));
 
-export const htmlentity: HTMLEntityParser = creator(validate('&', ';', '\n', focus(
+export const htmlentity: HTMLEntityParser = creator(validate('&', focus(
   /^&[0-9A-Za-z]+;/,
   union([
     unsafehtmlentity,

@@ -6,7 +6,7 @@ import { html } from 'typed-dom';
 
 const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
 
-export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewrite(
+export const math: MathParser = lazy(() => creator(validate('$', rewrite(
   union([
     surround(
       '$',
