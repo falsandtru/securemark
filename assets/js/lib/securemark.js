@@ -4760,7 +4760,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const unreadableEscapableCharacters = unreadableHTMLEntityNames.flatMap(name => (0, parser_1.eval)((0, htmlentity_1.htmlentity)(`&${ name };`, {}), []));
+            const unreadableEscapableCharacters = unreadableHTMLEntityNames.flatMap(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(`&${ name };`, {}), []));
             const unreadableEscapableCharacter = new RegExp(`[${ [...new Set(unreadableEscapableCharacters)].join('') }]`, 'g');
             const unreadableSpecialCharacters = [
                 '\u2006',
@@ -5038,8 +5038,8 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
-                            'data-invalid-type': closer ? 'argument' : 'closer',
-                            'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
                 const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
@@ -5176,8 +5176,8 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
-                            'data-invalid-type': closer ? 'argument' : 'closer',
-                            'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 const annotations = (0, typed_dom_1.html)('ol', { class: 'annotations' });
                 const references = (0, typed_dom_1.html)('ol', { class: 'references' });
@@ -5231,8 +5231,8 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-type': closer ? 'argument' : 'closer',
-                            'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
@@ -5488,8 +5488,8 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
-                            'data-invalid-type': closer ? 'argument' : 'closer',
-                            'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'note':
@@ -5559,8 +5559,8 @@ require = function () {
                     class: 'invalid',
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
-                    'data-invalid-type': closer ? 'syntax' : 'closer',
-                    'data-invalid-description': closer ? 'Invalid syntax.' : `Missing the closing delimiter ${ delim }.`
+                    'data-invalid-type': !closer ? 'closer' : 'syntax',
+                    'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid syntax.'
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
@@ -5593,8 +5593,8 @@ require = function () {
                                 class: 'invalid',
                                 translate: 'no',
                                 'data-invalid-syntax': 'table',
-                                'data-invalid-type': closer ? 'argument' : 'closer',
-                                'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                                'data-invalid-type': !closer ? 'closer' : 'argument',
+                                'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                             }, `${ opener }${ body }${ closer }`)],
                         ''
                     ];
@@ -5957,7 +5957,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
+            const opener = /^(\${2,})(?!\$)([^\n]*)(?:$|\n)/;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 100))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 100, false))), false);
             exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 100), ([body, closer, opener, delim, param], _, {
@@ -5966,15 +5966,15 @@ require = function () {
                 } = {}
             }) => {
                 var _a;
-                return [closer && param.trimStart() === '' ? ((_a = cache === null || cache === void 0 ? void 0 : cache.get(`$$\n${ body }$$`)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || (0, typed_dom_1.html)('div', {
+                return [delim.length === 2 && closer && param.trimStart() === '' ? ((_a = cache === null || cache === void 0 ? void 0 : cache.get(`\n${ body }`)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || (0, typed_dom_1.html)('div', {
                         class: 'math',
                         translate: 'no'
-                    }, `$$\n${ body }$$`) : (0, typed_dom_1.html)('pre', {
+                    }, `${ delim }\n${ body }${ delim }`) : (0, typed_dom_1.html)('pre', {
                         class: 'invalid',
                         translate: 'no',
                         'data-invalid-syntax': 'mathblock',
-                        'data-invalid-type': closer ? 'argument' : 'closer',
-                        'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
+                        'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'closer' : 'argument',
+                        'data-invalid-description': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
                     }, `${ opener }${ body }${ closer }`)];
             })));
         },
@@ -6844,13 +6844,7 @@ require = function () {
                 /[0-9]{1,4}|[A-Za-z]/
             ].map(r => r.source).join('|') })`);
             const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 65248)));
-            exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.validate)([
-                '(',
-                '\uFF08',
-                '[',
-                '{',
-                '"'
-            ], (0, combinator_1.union)([
+            exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')'), false, ([as, bs = [], cs], rest) => [
                     (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)),
                     rest
@@ -6885,7 +6879,7 @@ require = function () {
                     (0, array_1.unshift)(as, bs),
                     rest
                 ])
-            ])));
+            ]));
         },
         {
             '../../combinator': 30,
@@ -6903,7 +6897,7 @@ require = function () {
             exports.code = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.code = (0, combinator_1.creator)((0, combinator_1.validate)('`', '`', '\n', (0, combinator_1.match)(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => rest => [
+            exports.code = (0, combinator_1.creator)((0, combinator_1.validate)('`', (0, combinator_1.match)(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => rest => [
                 [(0, typed_dom_1.html)('code', { 'data-src': whole }, format(body))],
                 rest
             ])));
@@ -7301,14 +7295,14 @@ require = function () {
             exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)([
                 '[$',
                 '$'
-            ], '-', '\n', (0, combinator_1.union)([
+            ], (0, combinator_1.union)([
                 (0, combinator_1.surround)('[', body, ']'),
                 body
             ])));
             exports.label = (0, combinator_1.creator)((0, combinator_1.validate)([
                 '[$',
                 '$'
-            ], '-', '\n', (0, combinator_1.fmap)((0, combinator_1.guard)(context => {
+            ], (0, combinator_1.fmap)((0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.label) !== null && _c !== void 0 ? _c : true;
             }, (0, combinator_1.union)([
@@ -7413,7 +7407,7 @@ require = function () {
             };
             (0, alias_1.ObjectSetPrototypeOf)(attrspec, null);
             (0, alias_1.ObjectValues)(attrspec).forEach(o => (0, alias_1.ObjectSetPrototypeOf)(o, null));
-            exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', '>', '\n', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([
+            exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([
                 (0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, source_1.str)('>'), true, ([, as = []], rest) => [
                     [(0, typed_dom_1.html)(tag, attributes('html', [], attrspec[tag], as))],
                     rest
@@ -7535,14 +7529,26 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.htmlentity = void 0;
+            exports.htmlentity = exports.unsafehtmlentity = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const parser = (0, typed_dom_1.html)('textarea');
-            exports.htmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', ';', '\n', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => [
+            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.verify)((0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => [
                 [(parser.innerHTML = entity, parser.value)],
                 ''
-            ])));
+            ]), ([str]) => str[0] !== '&' || str.length < 3)));
+            exports.htmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, (0, combinator_1.union)([
+                exports.unsafehtmlentity,
+                str => [
+                    [(0, typed_dom_1.html)('span', {
+                            class: 'invalid',
+                            'data-invalid-syntax': 'htmlentity',
+                            'data-invalid-type': 'syntax',
+                            'data-invalid-description': 'Invalid HTML entity.'
+                        }, str)],
+                    ''
+                ]
+            ]))));
         },
         {
             '../../combinator': 30,
@@ -7762,7 +7768,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
-            exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', '$', '\n', (0, combinator_1.rewrite)((0, combinator_1.union)([
+            exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([
                 (0, combinator_1.surround)('$', (0, combinator_1.verify)((0, source_1.str)(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*[^-+*/=<>^_~\\$]|-[\da-z]|[a-z]+-)(?:\\\$|[\x20-\x23\x25-\x7E])+/i), util_1.isEndTightNodes), /^\$(?![0-9a-z])/i),
                 (0, combinator_1.surround)('$', bracket, '$')
             ]), (source, {
@@ -7826,7 +7832,7 @@ require = function () {
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, (0, combinator_1.tails)([
                 (0, combinator_1.dup)((0, combinator_1.surround)(/^\[(?!\s*\\\s)/, (0, combinator_1.some)((0, combinator_1.union)([
-                    htmlentity_1.htmlentity,
+                    htmlentity_1.unsafehtmlentity,
                     bracket,
                     source_1.txt
                 ]), ']', /^\\?\n/), ']', true)),
@@ -7866,7 +7872,7 @@ require = function () {
             })));
             const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([
-                    htmlentity_1.htmlentity,
+                    htmlentity_1.unsafehtmlentity,
                     bracket,
                     source_1.txt
                 ]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [
@@ -7874,7 +7880,7 @@ require = function () {
                     rest
                 ]),
                 (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([
-                    htmlentity_1.htmlentity,
+                    htmlentity_1.unsafehtmlentity,
                     bracket,
                     source_1.txt
                 ]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [
@@ -7882,7 +7888,7 @@ require = function () {
                     rest
                 ]),
                 (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([
-                    htmlentity_1.htmlentity,
+                    htmlentity_1.unsafehtmlentity,
                     bracket,
                     source_1.txt
                 ]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [
@@ -7890,7 +7896,7 @@ require = function () {
                     rest
                 ]),
                 (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.some)((0, combinator_1.union)([
-                    htmlentity_1.htmlentity,
+                    htmlentity_1.unsafehtmlentity,
                     source_1.txt
                 ]), '"'), (0, source_1.str)('"'), true)
             ]));
@@ -8052,10 +8058,12 @@ require = function () {
                 while (source !== '') {
                     switch (source[0]) {
                     case '&': {
-                            const result = (0, htmlentity_1.htmlentity)(source, context);
-                            acc[acc.length - 1] += (0, parser_1.eval)(result, [source[0]])[0];
-                            source = (0, parser_1.exec)(result, source.slice(1));
-                            continue;
+                            const result = (0, htmlentity_1.unsafehtmlentity)(source, context);
+                            if (result) {
+                                acc[acc.length - 1] += (0, parser_1.eval)(result, [source[0]])[0];
+                                source = (0, parser_1.exec)(result, source.slice(1));
+                                continue;
+                            }
                         }
                     default: {
                             if (source[0].trimStart() === '') {
@@ -8417,6 +8425,7 @@ require = function () {
                     const buffer = new multimap_1.MultiMap();
                     const titles = new global_1.Map();
                     const check = footnotes.some(el => target.contains(el));
+                    let style;
                     for (let refs = target.querySelectorAll(`sup.${ syntax }:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
                         yield;
                         const ref = refs[i];
@@ -8425,6 +8434,15 @@ require = function () {
                         const identifier = identify(ref);
                         const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
                         const content = contentify(ref);
+                        style !== null && style !== void 0 ? style : style = abbr ? 'abbr' : 'count';
+                        if (style === 'count' ? abbr : !abbr) {
+                            (0, typed_dom_1.define)(ref, {
+                                class: `${ ref.className } invalid`,
+                                'data-invalid-syntax': syntax,
+                                'data-invalid-type': 'style',
+                                'data-invalid-description': `${ syntax[0].toUpperCase() + syntax.slice(1) } style must be consistent.`
+                            });
+                        }
                         if (((_a = ref.firstElementChild) === null || _a === void 0 ? void 0 : _a.getAttribute('hidden')) !== '') {
                             ref.replaceChildren((0, typed_dom_1.html)('span', { hidden: '' }, ref.childNodes));
                         } else {
@@ -8442,6 +8460,8 @@ require = function () {
                         if (title && !blank && def.childNodes.length === 1) {
                             def.insertBefore(content.cloneNode(true), def.lastChild);
                             for (const ref of buffer.take(identifier, global_1.Infinity)) {
+                                if (ref.getAttribute('data-invalid-type') !== 'content')
+                                    continue;
                                 (0, typed_dom_1.define)(ref, {
                                     title,
                                     class: void ref.classList.remove('invalid'),
@@ -8997,7 +9017,7 @@ require = function () {
                     return ((_a = source[1]) === null || _a === void 0 ? void 0 : _a.trimStart()) !== '';
                 case '&':
                     switch (true) {
-                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.htmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) === '':
+                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) === '':
                         return false;
                     }
                     return true;

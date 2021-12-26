@@ -438,6 +438,9 @@
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
+  img.media[alt=""]::before {
+    content: "Failed to load resource.";
+  }
   .media[data-type="pdf"] {
     word-wrap: break-word;
   }
@@ -529,7 +532,7 @@
     content: attr(data-invalid-description);
     font-style: italic;
     font-weight: bold;
-    color: gray;
+    color: hotpink;
   }
   .invalid[data-invalid-syntax][data-invalid-description]::before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-description);
