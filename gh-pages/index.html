@@ -438,6 +438,9 @@
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
+  img.media[alt=""]::before {
+    content: "Failed to load resource.";
+  }
   .media[data-type="pdf"] {
     word-wrap: break-word;
   }
