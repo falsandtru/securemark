@@ -17,6 +17,23 @@ export const text: TextParser = creator((source, context) => {
       return [[source], ''];
     case 0:
       switch (source[0]) {
+        case '\\':
+          switch (source[1]) {
+            case '、':
+            case '。':
+            case '！':
+            case '？':
+              return text(source.slice(1), context);
+          }
+          break;
+        case '、':
+        case '。':
+        case '！':
+        case '？':
+          const i = source.slice(1).search(nonWhitespace) + 1;
+          if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
+      }
+      switch (source[0]) {
         case '\x7F':
           assert(source[1] === '\\');
           return [[], source.slice(1)];
@@ -39,15 +56,6 @@ export const text: TextParser = creator((source, context) => {
           return source[1] === source[0]
             ? repeat(source, context)
             : [[source[0]], source.slice(1)];
-        case '、':
-        case '。':
-        case '！':
-        // @ts-expect-error
-        case '？': {
-          const i = source.slice(1).search(nonWhitespace) + 1;
-          if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
-          // fallthrough
-        }
         default:
           assert(source[0] !== '\n');
           const b = source[0].trimStart() === '';
