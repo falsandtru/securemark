@@ -1,8 +1,8 @@
 import { MarkdownParser } from '../../markdown';
 import { union, inits, block, validate, focus, rewrite, guard, clear } from '../combinator';
 import { segment } from './segment';
-import { normalize } from './api/normalize';
 import { str } from './source';
+import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = validate(

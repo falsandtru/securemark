@@ -5,7 +5,7 @@ const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 assert(UNICODE_REPLACEMENT_CHARACTER.trim());
 
 export function normalize(source: string): string {
-  return format(sanitize(source));
+  return sanitize(format(source));
 }
 
 function format(source: string): string {
@@ -57,7 +57,7 @@ const unreadableHTMLEntityNames = [
   'it',
   'InvisibleComma',
   'ic',
-];
+] as const;
 const unreadableEscapableCharacters = unreadableHTMLEntityNames
   .flatMap(name => eval(unsafehtmlentity(`&${name};`, {}), []));
 assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
@@ -98,10 +98,10 @@ const unreadableSpecialCharacters = [
   '\u2060',
   // ZERO WIDTH NON-BREAKING SPACE
   '\uFEFF',
-];
+] as const;
 assert(unreadableSpecialCharacters.every(c => sanitize(c) === UNICODE_REPLACEMENT_CHARACTER));
 
-// 特殊不可視文字はエディタおよびソースビューアの等幅および強調表示により可視化する
+// 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
 export function escape(source: string): string {
   return source
     .replace(unreadableEscapableCharacter, char =>
