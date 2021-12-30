@@ -43,6 +43,6 @@ export function* segment(source: string): Generator<string, undefined, undefined
 }
 
 export function validate(source: string, size: number): boolean {
-  return source.length <= size / 2
+  return source.length <= size / 4
       || source.length <= size && new Blob([source]).size <= size;
 }
