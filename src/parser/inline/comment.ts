@@ -6,7 +6,7 @@ import { memoize } from 'spica/memoize';
 const closer = memoize<string, RegExp>(sharps => new RegExp(String.raw`\s${sharps}]`));
 
 export const comment: CommentParser = creator(validate('[#', match(
-  /^\[(#+)\s+(?!\s|\1\])(?:(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))\1\])?/,
+  /^\[(#+)\s+(?!\s|\1\])(?:(\S[^\n]*?(?:\n.*?){0,99}?\s)\1\])?/,
   ([, sharps, title]) => (rest, { resources }) => {
     if (title) return [[html('sup', {
       class: 'comment',
