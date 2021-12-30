@@ -4719,7 +4719,7 @@ require = function () {
             const parser_1 = _dereq_('../../combinator/data/parser');
             const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
-                return format(sanitize(source));
+                return sanitize(format(source));
             }
             exports.normalize = normalize;
             function format(source) {
@@ -6402,8 +6402,8 @@ require = function () {
             exports.header = void 0;
             const combinator_1 = _dereq_('../combinator');
             const segment_1 = _dereq_('./segment');
-            const normalize_1 = _dereq_('./api/normalize');
             const source_1 = _dereq_('./source');
+            const normalize_1 = _dereq_('./api/normalize');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.header = (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([
                 (0, combinator_1.rewrite)((source, context) => {
@@ -8214,11 +8214,9 @@ require = function () {
                     if (ns.length === 0)
                         return ns;
                     const el = ns.length === 1 && typeof ns[0] === 'object' ? ns[0] : (0, typed_dom_1.html)('div', ns);
-                    const es = el.getElementsByClassName('linebreak');
+                    const es = el.querySelectorAll('.linebreak:not(:empty)');
                     for (let i = 0, len = es.length; i < len; ++i) {
                         const sb = es[i];
-                        if (!sb.firstChild)
-                            continue;
                         if (!check(sb))
                             continue;
                         sb.firstChild.remove();
@@ -8234,28 +8232,28 @@ require = function () {
                 return (0, ja_1.japanese)(char);
             }
             function lastChar(node) {
+                var _a, _b;
                 while (node = node === null || node === void 0 ? void 0 : node.previousSibling) {
-                    if ('id' in node && !node.firstChild) {
-                        switch (node.tagName) {
-                        case 'BR':
+                    if (!('id' in node))
+                        return (_a = [...node.data.slice(-2)].pop()) !== null && _a !== void 0 ? _a : '';
+                    if (node.firstChild)
+                        return (_b = [...text(node).slice(-2)].pop()) !== null && _b !== void 0 ? _b : '';
+                    switch (node.tagName) {
+                    case 'BR':
+                        return '';
+                    case 'SPAN':
+                        switch (node.className) {
+                        case 'linebreak':
                             return '';
-                        case 'SPAN':
-                            if (node.className === 'linebreak')
-                                return '';
                         }
-                        continue;
                     }
-                    const str = text(node);
-                    return str && [...str.slice(-2)].pop();
                 }
                 return '';
             }
-            function text(node) {
-                if (!('id' in node))
-                    return node.data;
-                switch (node.tagName) {
+            function text(el) {
+                switch (el.tagName) {
                 case 'RUBY':
-                    for (let ns = node.childNodes, i = ns.length; i--;) {
+                    for (let ns = el.childNodes, i = ns.length; i--;) {
                         const child = ns[i];
                         if ('id' in child)
                             continue;
@@ -8263,7 +8261,7 @@ require = function () {
                     }
                     return '';
                 default:
-                    return node.textContent;
+                    return el.textContent;
                 }
             }
         },
@@ -8568,7 +8566,7 @@ require = function () {
             }
             exports.segment = segment;
             function validate(source, size) {
-                return source.length <= size / 2 || source.length <= size && new global_1.Blob([source]).size <= size;
+                return source.length <= size / 4 || source.length <= size && new global_1.Blob([source]).size <= size;
             }
             exports.validate = validate;
         },
@@ -8785,6 +8783,30 @@ require = function () {
                     ];
                 case 0:
                     switch (source[0]) {
+                    case '\\':
+                        switch (source[1]) {
+                        case '\u3001':
+                        case '\u3002':
+                        case '\uFF01':
+                        case '\uFF1F':
+                            return (0, exports.text)(source.slice(1), context);
+                        }
+                        break;
+                    case '\u3001':
+                    case '\u3002':
+                    case '\uFF01':
+                    case '\uFF1F':
+                        const i = source.slice(1).search(exports.nonWhitespace) + 1;
+                        if (i > 0 && source.slice(i, i + 2) === '\\\n')
+                            return [
+                                [
+                                    source[0],
+                                    (0, typed_dom_1.html)('span', { class: 'linebreak' })
+                                ],
+                                source.slice(i + 2)
+                            ];
+                    }
+                    switch (source[0]) {
                     case '\x7F':
                         return [
                             [],
@@ -8822,20 +8844,6 @@ require = function () {
                             [source[0]],
                             source.slice(1)
                         ];
-                    case '\u3001':
-                    case '\u3002':
-                    case '\uFF01':
-                    case '\uFF1F': {
-                            const i = source.slice(1).search(exports.nonWhitespace) + 1;
-                            if (i > 0 && source.slice(i, i + 2) === '\\\n')
-                                return [
-                                    [
-                                        source[0],
-                                        (0, typed_dom_1.html)('span', { class: 'linebreak' })
-                                    ],
-                                    source.slice(i + 2)
-                                ];
-                        }
                     default:
                         const b = source[0].trimStart() === '';
                         const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) : 1;
