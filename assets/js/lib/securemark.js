@@ -4715,8 +4715,9 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.escape = exports.normalize = void 0;
-            const htmlentity_1 = _dereq_('../inline/htmlentity');
             const parser_1 = _dereq_('../../combinator/data/parser');
+            const htmlentity_1 = _dereq_('../inline/htmlentity');
+            const util_1 = _dereq_('../util');
             const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
                 return sanitize(format(source));
@@ -4760,7 +4761,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const unreadableEscapableCharacters = unreadableHTMLEntityNames.flatMap(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(`&${ name };`, {}), []));
+            const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, util_1.stringify)((0, parser_1.eval)((0, htmlentity_1.htmlentity)(`&${ name };`, {}))));
             const unreadableEscapableCharacter = new RegExp(`[${ [...new Set(unreadableEscapableCharacters)].join('') }]`, 'g');
             const unreadableSpecialCharacters = [
                 '\u2006',
@@ -4785,7 +4786,8 @@ require = function () {
         },
         {
             '../../combinator/data/parser': 50,
-            '../inline/htmlentity': 115
+            '../inline/htmlentity': 115,
+            '../util': 137
         }
     ],
     64: [
@@ -6916,35 +6918,51 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
+            const parser_1 = _dereq_('../../combinator/data/parser');
+            const htmlentity_1 = _dereq_('./htmlentity');
+            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            const memoize_1 = _dereq_('spica/memoize');
-            const closer = (0, memoize_1.memoize)(sharps => new RegExp(String.raw`\s${ sharps }]`));
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\])(?:(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))\1\])?/, ([, sharps, title]) => (rest, {resources}) => {
-                if (title)
-                    return [
-                        [(0, typed_dom_1.html)('sup', {
-                                class: 'comment',
-                                title: title.trimEnd().replace(/\x7F.?/gs, '')
-                            })],
-                        rest
-                    ];
-                const i = rest.search(closer(sharps));
-                if (i !== -1)
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\])((?:\S+\s+)+?)(\1\]|(?=\[\1\s))/, ([whole, , body, closer]) => (rest, context) => {
+                [whole, body] = `${ whole }\0${ body.trimEnd() }`.replace(/\x7F.?/gs, '').split('\0', 2);
+                if (!closer)
                     return [
                         [(0, typed_dom_1.html)('sup', {
                                 class: 'comment invalid',
                                 'data-invalid-syntax': 'comment',
                                 'data-invalid-type': 'content',
-                                'data-invalid-description': 'Too many lines.'
-                            }, rest.slice(0, i).trimEnd().replace(/\x7F.?/gs, ''))],
-                        rest.slice(i + sharps.length + 2)
+                                'data-invalid-description': 'Comment syntax using the same level cannot start in another comment syntax.'
+                            }, whole)],
+                        rest
                     ];
-                resources && (resources.budget -= 10);
+                const title = (0, parser_1.eval)((0, combinator_1.some)(text)(body, context), []).join('').trim();
+                if (title.includes('\0'))
+                    return [
+                        [(0, typed_dom_1.html)('sup', {
+                                class: 'comment invalid',
+                                'data-invalid-syntax': 'comment',
+                                'data-invalid-type': 'content',
+                                'data-invalid-description': `Invalid HTML entitiy "${ title.match(/\0&[0-9A-Za-z]+;/)[0].slice(1) }".`
+                            }, whole)],
+                        rest
+                    ];
+                return [
+                    [(0, typed_dom_1.html)('sup', {
+                            class: 'comment',
+                            title
+                        })],
+                    rest
+                ];
             })));
+            const text = (0, combinator_1.union)([
+                htmlentity_1.unsafehtmlentity,
+                source_1.unescsource
+            ]);
         },
         {
             '../../combinator': 30,
-            'spica/memoize': 20,
+            '../../combinator/data/parser': 50,
+            '../source': 131,
+            './htmlentity': 115,
             'typed-dom': 29
         }
     ],
@@ -7533,22 +7551,16 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const parser = (0, typed_dom_1.html)('textarea');
-            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.verify)((0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => [
+            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => [
                 [(parser.innerHTML = entity, parser.value)],
                 ''
-            ]), ([str]) => str[0] !== '&' || str.length < 3)));
-            exports.htmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, (0, combinator_1.union)([
-                exports.unsafehtmlentity,
-                str => [
-                    [(0, typed_dom_1.html)('span', {
-                            class: 'invalid',
-                            'data-invalid-syntax': 'htmlentity',
-                            'data-invalid-type': 'syntax',
-                            'data-invalid-description': 'Invalid HTML entity.'
-                        }, str)],
-                    ''
-                ]
-            ]))));
+            ]), ([str]) => [str[0] !== '&' || str.length < 3 ? str : `\0${ str }`])));
+            exports.htmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([str]) => [str[0] === '\0' ? (0, typed_dom_1.html)('span', {
+                    class: 'invalid',
+                    'data-invalid-syntax': 'htmlentity',
+                    'data-invalid-type': 'syntax',
+                    'data-invalid-description': 'Invalid HTML entity.'
+                }, str.slice(1)) : str])));
         },
         {
             '../../combinator': 30,
@@ -7629,11 +7641,11 @@ require = function () {
                     (0, combinator_1.some)(exports.option)
                 ]), /^[^\S\n]?}/))
             ])))), ([params, content = []], rest, context) => {
-                var _a, _b, _c, _d, _e;
-                if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
+                var _a, _b, _c, _d, _e, _f;
+                if ((_a = (0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))) === null || _a === void 0 ? void 0 : _a.some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, (_a = context.host) !== null && _a !== void 0 ? _a : global_1.location, (_c = (_b = context.url) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : global_1.location), ((_d = context.host) === null || _d === void 0 ? void 0 : _d.href) || global_1.location.href), ((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) || global_1.location.origin);
+                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, (_b = context.host) !== null && _b !== void 0 ? _b : global_1.location, (_d = (_c = context.url) !== null && _c !== void 0 ? _c : context.host) !== null && _d !== void 0 ? _d : global_1.location), ((_e = context.host) === null || _e === void 0 ? void 0 : _e.href) || global_1.location.href), ((_f = context.host) === null || _f === void 0 ? void 0 : _f.origin) || global_1.location.origin);
                 if (el.classList.contains('invalid'))
                     return [
                         [el],
@@ -7704,7 +7716,7 @@ require = function () {
                 }, content.length === 0 ? INSECURE_URI : content);
             }
             function decode(uri) {
-                if (uri.indexOf('%') === -1)
+                if (!uri.includes('%'))
                     return uri;
                 try {
                     uri = (0, global_1.decodeURI)(uri);
@@ -7856,12 +7868,12 @@ require = function () {
                     'data-src': url.source,
                     alt: text
                 });
-                if (!cache && !sanitize(url, el))
+                (cache === null || cache === void 0 ? void 0 : cache.hasAttribute('alt')) && (cache === null || cache === void 0 ? void 0 : cache.setAttribute('alt', text));
+                if (!sanitize(el, url, text))
                     return [
                         [el],
                         rest
                     ];
-                (cache === null || cache === void 0 ? void 0 : cache.hasAttribute('alt')) && (cache === null || cache === void 0 ? void 0 : cache.setAttribute('alt', text));
                 (0, typed_dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
                 if (((_j = (_h = context.syntax) === null || _h === void 0 ? void 0 : _h.inline) === null || _j === void 0 ? void 0 : _j.link) === false || cache && cache.tagName !== 'IMG')
                     return [
@@ -7908,16 +7920,8 @@ require = function () {
                 (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${ opt.slice(1).split(':').join('/') }"`]),
                 link_1.option
             ]);
-            function sanitize(uri, target) {
-                if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-                    (0, typed_dom_1.define)(target, {
-                        class: void target.classList.add('invalid'),
-                        'data-invalid-syntax': 'media',
-                        'data-invalid-type': 'argument',
-                        'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
-                    });
-                    return false;
-                }
+            function sanitize(target, uri, alt) {
+                var _a;
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
@@ -7928,6 +7932,25 @@ require = function () {
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'argument',
                         'data-invalid-description': 'Invalid protocol.'
+                    });
+                    return false;
+                }
+                if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
+                    (0, typed_dom_1.define)(target, {
+                        class: void target.classList.add('invalid'),
+                        'data-invalid-syntax': 'media',
+                        'data-invalid-type': 'argument',
+                        'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
+                    });
+                    return false;
+                }
+                if (alt.includes('\0')) {
+                    (0, typed_dom_1.define)(target, {
+                        class: void target.classList.add('invalid'),
+                        'data-invalid-syntax': 'media',
+                        'data-invalid-type': 'content',
+                        'data-invalid-description': `Cannot use invalid HTML entitiy "${ alt.match(/&[0-9A-Za-z]+;/)[0] }".`,
+                        alt: (_a = target.getAttribute('alt')) === null || _a === void 0 ? void 0 : _a.replace(/\0/g, '')
                     });
                     return false;
                 }
@@ -8025,7 +8048,7 @@ require = function () {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
-                        [(0, typed_dom_1.html)('ruby', (0, typed_dom_1.defrag)((0, array_1.push)(texts.reduce((acc, _, i) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [
+                        [(0, typed_dom_1.html)('ruby', attributes(texts, rubies), (0, typed_dom_1.defrag)((0, array_1.push)(texts.reduce((acc, _, i) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [
                                 (0, typed_dom_1.html)('rp', '('),
                                 (0, typed_dom_1.html)('rt', rubies[i]),
                                 (0, typed_dom_1.html)('rp', ')')
@@ -8034,7 +8057,7 @@ require = function () {
                     ];
                 case texts.length === 1 && [...texts[0]].length >= rubies.length:
                     return [
-                        [(0, typed_dom_1.html)('ruby', (0, typed_dom_1.defrag)((0, array_1.push)([...texts[0]].reduce((acc, _, i, texts) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [
+                        [(0, typed_dom_1.html)('ruby', attributes(texts, rubies), (0, typed_dom_1.defrag)((0, array_1.push)([...texts[0]].reduce((acc, _, i, texts) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [
                                 (0, typed_dom_1.html)('rp', '('),
                                 (0, typed_dom_1.html)('rt', rubies[i]),
                                 (0, typed_dom_1.html)('rp', ')')
@@ -8043,7 +8066,7 @@ require = function () {
                     ];
                 default:
                     return [
-                        [(0, typed_dom_1.html)('ruby', (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([(0, array_1.join)(texts, ' ')], [
+                        [(0, typed_dom_1.html)('ruby', attributes(texts, rubies), (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([(0, array_1.join)(texts, ' ')], [
                                 (0, typed_dom_1.html)('rp', '('),
                                 (0, typed_dom_1.html)('rt', (0, array_1.join)(rubies, ' ').trim()),
                                 (0, typed_dom_1.html)('rp', ')')
@@ -8060,7 +8083,7 @@ require = function () {
                     case '&': {
                             const result = (0, htmlentity_1.unsafehtmlentity)(source, context);
                             if (result) {
-                                acc[acc.length - 1] += (0, parser_1.eval)(result, [source[0]])[0];
+                                acc[acc.length - 1] += (0, parser_1.eval)(result)[0];
                                 source = (0, parser_1.exec)(result, source.slice(1));
                                 continue;
                             }
@@ -8083,6 +8106,26 @@ require = function () {
                     ''
                 ] : global_1.undefined;
             });
+            function attributes(texts, rubies) {
+                let attrs;
+                for (const ss of [
+                        texts,
+                        rubies
+                    ]) {
+                    for (let i = 0; i < ss.length; ++i) {
+                        if (!ss[i].includes('\0'))
+                            continue;
+                        ss[i] = ss[i].replace(/\0/g, '');
+                        attrs !== null && attrs !== void 0 ? attrs : attrs = {
+                            class: 'invalid',
+                            'data-invalid-syntax': 'ruby',
+                            'data-invalid-type': ss === texts ? 'content' : 'argument',
+                            'data-invalid-description': 'Invalid HTML entity.'
+                        };
+                    }
+                }
+                return attrs !== null && attrs !== void 0 ? attrs : {};
+            }
         },
         {
             '../../combinator': 30,
@@ -8962,7 +9005,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\])\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\])(?:\S+\s+)+?(?:\1\]|(?=\[\1\s)))*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
                 return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), (0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
@@ -9012,7 +9055,7 @@ require = function () {
             }
             exports.startTight = startTight;
             function isStartTight(source, context) {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e;
                 if (source === '')
                     return true;
                 switch (source[0]) {
@@ -9025,7 +9068,7 @@ require = function () {
                     return ((_a = source[1]) === null || _a === void 0 ? void 0 : _a.trimStart()) !== '';
                 case '&':
                     switch (true) {
-                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) === '':
+                    case source.length > 2 && source[1] !== ' ' && ((_c = (_b = (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.trimStart()) === '':
                         return false;
                     }
                     return true;
@@ -9037,7 +9080,7 @@ require = function () {
                     return true;
                 case '[':
                     switch (true) {
-                    case source.length >= 7 && source[1] === '#' && ((_c = (0, parser_1.eval)((0, comment_1.comment)(source, context))) === null || _c === void 0 ? void 0 : _c[0].className) === 'comment':
+                    case source.length >= 7 && source[1] === '#' && ((_d = (0, parser_1.eval)((0, comment_1.comment)(source, context))) === null || _d === void 0 ? void 0 : _d[0].className) === 'comment':
                         return false;
                     }
                     return true;
