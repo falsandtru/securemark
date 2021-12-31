@@ -29,6 +29,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
   ([as, bs]) => bs ? [[join(as).trim() || join(as)], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
+    assert(text === text.trim());
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
@@ -40,9 +41,9 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
       || (cache = context.caches?.media?.get(url.href)?.cloneNode(true))
       || html('img', { class: 'media', 'data-src': url.source, alt: text });
     assert(!el.matches('.invalid'));
-    if (!cache && !sanitize(url, el)) return [[el], rest];
-    assert(!el.matches('.invalid'));
     cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
+    if (!sanitize(el, url, text)) return [[el], rest];
+    assert(!el.matches('.invalid'));
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
     if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
@@ -65,18 +66,9 @@ const option: MediaParser.ParameterParser.OptionParser = union([
   linkoption,
 ]);
 
-function sanitize(uri: ReadonlyURL, target: HTMLElement): boolean {
+function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
   assert(target.tagName === 'IMG');
   assert(!target.matches('.invalid'));
-  if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-    define(target, {
-      class: void target.classList.add('invalid'),
-      'data-invalid-syntax': 'media',
-      'data-invalid-type': 'argument',
-      'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
-    });
-    return false;
-  }
   switch (uri.protocol) {
     case 'http:':
     case 'https:':
@@ -90,6 +82,25 @@ function sanitize(uri: ReadonlyURL, target: HTMLElement): boolean {
         'data-invalid-description': 'Invalid protocol.',
       });
       return false;
+  }
+  if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
+    define(target, {
+      class: void target.classList.add('invalid'),
+      'data-invalid-syntax': 'media',
+      'data-invalid-type': 'argument',
+      'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
+    });
+    return false;
+  }
+  if (alt.includes('\0')) {
+    define(target, {
+      class: void target.classList.add('invalid'),
+      'data-invalid-syntax': 'media',
+      'data-invalid-type': 'content',
+      'data-invalid-description': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}".`,
+      alt: target.getAttribute('alt')?.replace(/\0/g, ''),
+    });
+    return false;
   }
   return true;
 }

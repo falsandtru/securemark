@@ -928,7 +928,18 @@ export namespace MarkdownParser {
     export interface CommentParser extends
       // [# comment #]
       Inline<'comment'>,
-      Parser<HTMLElement, Context, []> {
+      Parser<HTMLElement, Context, [
+        CommentParser.TextParser,
+      ]> {
+    }
+    export namespace CommentParser {
+      export interface TextParser extends
+        Inline<'comment/text'>,
+        Parser<string, Context, [
+          UnsafeHTMLEntityParser,
+          SourceParser.UnescapableSourceParser,
+        ]> {
+      }
     }
     export interface InsertionParser extends
       // ++abc++
@@ -1005,7 +1016,6 @@ export namespace MarkdownParser {
       Inline<'htmlentity'>,
       Parser<HTMLSpanElement | string, Context, [
         UnsafeHTMLEntityParser,
-        Parser<HTMLSpanElement, Context, []>,
       ]> {
     }
     export interface UnsafeHTMLEntityParser extends

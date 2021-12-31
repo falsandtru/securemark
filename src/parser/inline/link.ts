@@ -47,7 +47,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   ])))),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
-    if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
+    if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -158,7 +158,7 @@ function create(
 }
 
 function decode(uri: string): string {
-  if (uri.indexOf('%') === -1) return uri;
+  if (!uri.includes('%')) return uri;
   try {
     uri = decodeURI(uri);
   }

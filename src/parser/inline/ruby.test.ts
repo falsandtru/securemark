@@ -14,6 +14,8 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[ a](b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[&Tab;a](b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[&Tab; a](b)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[&a;](b)')), [['<ruby class="invalid">&amp;a;<rp>(</rp><rt>b</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a](&a;)')), [['<ruby class="invalid">a<rp>(</rp><rt>&amp;a;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]()')), undefined);
       assert.deepStrictEqual(inspect(parser('[a]( )')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\nb](c)')), undefined);
@@ -45,7 +47,8 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[秦　\\　　こころ](はた　の　こころ)')), [['<ruby>秦<rp>(</rp><rt>はた</rt><rp>)</rp>　<rp>(</rp><rt>の</rt><rp>)</rp>こころ<rp>(</rp><rt>こころ</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[秦　&nbsp;　こころ](はた　の　こころ)')), [['<ruby>秦<rp>(</rp><rt>はた</rt><rp>)</rp>&nbsp;<rp>(</rp><rt>の</rt><rp>)</rp>こころ<rp>(</rp><rt>こころ</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[&&](&&)')), [['<ruby>&amp;&amp;<rp>(</rp><rt>&amp;&amp;</rt><rp>)</rp></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('[&amp;](&amp;)')), [['<ruby>&amp;<rp>(</rp><rt>&amp;</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[&copy;](&copy;)')), [['<ruby>©<rp>(</rp><rt>©</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[&amp;copy;](&amp;copy;)')), [['<ruby>&amp;copy;<rp>(</rp><rt>&amp;copy;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[*A*](*a*)')), [['<ruby>*A*<rp>(</rp><rt>*a*</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[<wbr>](<wbr>)')), [['<ruby>&lt;wbr&gt;<rp>(</rp><rt>&lt;wbr&gt;</rt><rp>)</rp></ruby>'], '']);
     });

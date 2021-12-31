@@ -42,7 +42,7 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)\s+(?!\s|\1\])\S[^\n]*?(?:\n.*?){0,99}?\s\1\])*\\?(?:$|\n)`, 'gm');
+const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)\s+(?!\s|\1\])(?:\S+\s+)+?(?:\1\]|(?=\[\1\s)))*\\?(?:$|\n)`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
@@ -104,7 +104,7 @@ function isStartTight(source: string, context: MarkdownParser.Context): boolean 
       switch (true) {
         case source.length > 2
           && source[1] !== ' '
-          && eval(unsafehtmlentity(source, context))?.[0].trimStart() === '':
+          && eval(unsafehtmlentity(source, context))?.[0]?.trimStart() === '':
           return false;
       }
       return true;

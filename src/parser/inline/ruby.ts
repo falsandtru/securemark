@@ -22,7 +22,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
     tail.length === 0 && texts[texts.length - 1] === '' && texts.pop();
     switch (true) {
       case rubies.length <= texts.length:
-        return [[html('ruby', defrag(push(texts
+        return [[html('ruby', attributes(texts, rubies), defrag(push(texts
           .reduce((acc, _, i) =>
             push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i]
@@ -30,7 +30,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
                 : [html('rt')]))
           , []), tail)))], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
-        return [[html('ruby', defrag(push([...texts[0]]
+        return [[html('ruby', attributes(texts, rubies), defrag(push([...texts[0]]
           .reduce((acc, _, i, texts) =>
             push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i]
@@ -39,7 +39,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
           , []), tail)))], rest];
       default:
         assert(rubies.length > 0);
-        return [[html('ruby', defrag(push(unshift(
+        return [[html('ruby', attributes(texts, rubies), defrag(push(unshift(
           [join(texts, ' ')],
           [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')]), tail)))
         ], rest];
@@ -55,7 +55,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
       case '&': {
         const result = unsafehtmlentity(source, context);
         if (result) {
-          acc[acc.length - 1] += eval(result, [source[0]])[0];
+          acc[acc.length - 1] += eval(result)[0];
           source = exec(result, source.slice(1));
           continue;
         }
@@ -79,3 +79,20 @@ const text: RubyParser.TextParser = creator((source, context) => {
     ? [[acc], '']
     : undefined;
 });
+
+function attributes(texts: string[], rubies: string[]): Record<string, string> {
+  let attrs: Record<string, string> | undefined;
+  for (const ss of [texts, rubies]) {
+    for (let i = 0; i < ss.length; ++i) {
+      if (!ss[i].includes('\0')) continue;
+      ss[i] = ss[i].replace(/\0/g, '');
+      attrs ??= {
+        class: 'invalid',
+        'data-invalid-syntax': 'ruby',
+        'data-invalid-type': ss === texts ? 'content' : 'argument',
+        'data-invalid-description': 'Invalid HTML entity.',
+      };
+    }
+  }
+  return attrs ?? {};
+}

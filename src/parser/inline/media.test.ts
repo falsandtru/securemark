@@ -41,6 +41,7 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![\\ ]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![\\\n]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![&Tab;]{b}')), undefined);
+      assert.deepStrictEqual(inspect(parser('![&a;]{b}')), [['<img class="media invalid" data-src="b" alt="&amp;a;">'], '']);
       assert.deepStrictEqual(inspect(parser('![[]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a]{}')), undefined);
@@ -77,6 +78,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a  ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a b]{c}')), [['<a href="c" target="_blank"><img class="media" data-src="c" alt="a b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![&copy;]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="©"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![&amp;copy;]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="&amp;copy;"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('!{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('!{ ][ }')), [['<a href="][" target="_blank"><img class="media" data-src="][" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('!{ }{ }')), [['<a href="}{" target="_blank"><img class="media" data-src="}{" alt=""></a>'], '']);

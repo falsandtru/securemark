@@ -1,24 +1,31 @@
 import { CommentParser } from '../inline';
-import { validate, creator, match } from '../../combinator';
+import { union, some, validate, creator, match } from '../../combinator';
+import { eval } from '../../combinator/data/parser';
+import { unsafehtmlentity } from './htmlentity';
+import { unescsource } from '../source';
 import { html } from 'typed-dom';
-import { memoize } from 'spica/memoize';
-
-const closer = memoize<string, RegExp>(sharps => new RegExp(String.raw`\s${sharps}]`));
 
 export const comment: CommentParser = creator(validate('[#', match(
-  /^\[(#+)\s+(?!\s|\1\])(?:(\S[^\n]*?(?:\n.*?){0,99}?\s)\1\])?/,
-  ([, sharps, title]) => (rest, { resources }) => {
-    if (title) return [[html('sup', {
-      class: 'comment',
-      title: title.trimEnd().replace(/\x7F.?/gs, ''),
-    })], rest];
-    assert(rest.trimStart() === rest);
-    const i = rest.search(closer(sharps));
-    if (i !== -1) return [[html('sup', {
+  /^\[(#+)\s+(?!\s|\1\])((?:\S+\s+)+?)(\1\]|(?=\[\1\s))/,
+  ([whole, , body, closer]) => (rest, context) => {
+    [whole, body] = `${whole}\0${body.trimEnd()}`.replace(/\x7F.?/gs, '').split('\0', 2);
+    if (!closer) return [[html('sup', {
       class: 'comment invalid',
       'data-invalid-syntax': 'comment',
       'data-invalid-type': 'content',
-      'data-invalid-description': 'Too many lines.',
-    }, rest.slice(0, i).trimEnd().replace(/\x7F.?/gs, ''))], rest.slice(i + sharps.length + 2)];
-    resources && (resources.budget -= 10);
+      'data-invalid-description': 'Comment syntax using the same level cannot start in another comment syntax.',
+    }, whole)], rest];
+    const title = eval(some(text)(body, context), []).join('').trim();
+    if (title.includes('\0')) return [[html('sup', {
+      class: 'comment invalid',
+      'data-invalid-syntax': 'comment',
+      'data-invalid-type': 'content',
+      'data-invalid-description': `Invalid HTML entitiy "${title.match(/\0&[0-9A-Za-z]+;/)![0].slice(1)}".`,
+    }, whole)], rest];
+    return [[html('sup', { class: 'comment', title })], rest];
   })));
+
+const text: CommentParser.TextParser = union([
+  unsafehtmlentity,
+  unescsource,
+]);
