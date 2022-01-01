@@ -17,6 +17,7 @@ export const text: TextParser = creator((source, context) => {
       return [[source], ''];
     case 0:
       switch (source[0]) {
+        case '\x1B':
         case '\\':
           switch (source[1]) {
             case '、':
@@ -34,9 +35,7 @@ export const text: TextParser = creator((source, context) => {
           if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
       }
       switch (source[0]) {
-        case '\x7F':
-          assert(source[1] === '\\');
-          return [[], source.slice(1)];
+        case '\x1B':
         case '\\':
           switch (source[1]) {
             case undefined:

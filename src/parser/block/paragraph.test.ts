@@ -63,6 +63,10 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]\na')), [['<p>[#<br>&lt;wbr&gt;<br>#]<br>a</p>'], '']);
     });
 
+    it('template', () => {
+      assert.deepStrictEqual(inspect(parser('{{\n\\\n}}')), [['<p><span class="template">{{\n\\\n}}</span></p>'], '']);
+    });
+
   });
 
 });

@@ -7,7 +7,7 @@ import { unshift } from 'spica/array';
 
 export const template: TemplateParser = lazy(() => creator(rewrite(
   surround('{{', some(union([bracket, escsource]), '}'), '}}', true),
-  source => [[html('span', { class: 'template' }, source)], ''])));
+  source => [[html('span', { class: 'template' }, source.replace(/\x1B/g, ''))], ''])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

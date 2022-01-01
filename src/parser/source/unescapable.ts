@@ -3,7 +3,7 @@ import { creator } from '../../combinator';
 import { separator, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
 
 export const unescsource: UnescapableSourceParser = creator(source => {
-  assert(source[0] !== '\x7F');
+  assert(source[0] !== '\x1B');
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {

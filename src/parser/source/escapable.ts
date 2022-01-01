@@ -5,7 +5,6 @@ import { nonWhitespace } from './text';
 const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
 export const escsource: EscapableSourceParser = creator(source => {
-  assert(source[0] !== '\x7F');
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {
@@ -13,6 +12,8 @@ export const escsource: EscapableSourceParser = creator(source => {
       return [[source], ''];
     case 0:
       switch (source[0]) {
+        case '\x1B':
+          return [[source.slice(1, 2)], source.slice(2)];
         case '\\':
           return [[source.slice(0, 2)], source.slice(2)];
         default:
