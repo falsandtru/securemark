@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { Parser, eval } from '../combinator/data/parser';
-import { union, some, verify, clear, convert, trim } from '../combinator';
+import { union, some, verify, convert } from '../combinator';
 import { comment } from './inline/comment';
 import { unsafehtmlentity } from './inline/htmlentity';
-import { linebreak, unescsource, str } from './source';
+import { linebreak, unescsource } from './source';
 import { push, pop } from 'spica/array';
 
 // https://dev.w3.org/html5/html-author/charref
@@ -46,12 +46,12 @@ const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEnt
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return convert(
-    source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x1B$&')),
-    union([
-      verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-      trim(some(union([clear(str('\x1B\\')), linebreak, unescsource]))),
-    ]));
+  return union([
+    convert(
+      source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x1B$&')),
+      verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
+    some(union([linebreak, unescsource])),
+  ]);
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],

@@ -27,7 +27,7 @@ export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
 
 const term: DListParser.TermParser = creator(line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
-  visualize(trim(some(union([indexer, inline])))),
+  trim(visualize(some(union([indexer, inline])))),
   true),
   ns => [html('dt', defrag(ns))]))));
 
@@ -35,7 +35,7 @@ const desc: DListParser.DescriptionParser = creator(block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    visualize(trim(some(union([inline]))))),
+    trim(visualize(some(union([inline]))))),
   true),
   ns => [html('dd', defrag(ns))]),
   false));

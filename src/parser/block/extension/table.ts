@@ -82,7 +82,7 @@ const head: CellParser.HeadParser = creator(block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    visualize(trim(some(union([inline]))))),
+    trim(visualize(some(union([inline]))))),
   true),
   ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
   false));
@@ -94,7 +94,7 @@ const data: CellParser.DataParser = creator(block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    visualize(trim(some(union([inline]))))),
+    trim(visualize(some(union([inline]))))),
   true),
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
   false));

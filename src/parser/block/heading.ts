@@ -24,13 +24,13 @@ export const heading: HeadingParser = block(rewrite(segment,
   line(indexee(fmap(union([
     open(
       str(/^##+/),
-      visualize(trim(some(union([indexer, inline])))), true),
+      trim(visualize(some(union([indexer, inline])))), true),
     open(
       str('#'),
       context({ syntax: { inline: {
         autolink: false,
       }}},
-      visualize(trim(some(union([indexer, inline]))))), true),
+      trim(visualize(some(union([indexer, inline]))))), true),
   ]),
   (ns: [string, ...(HTMLElement | string)[]]) => [
     html(`h${shift(ns)[0].length}` as 'h1', defrag(ns))
