@@ -6,7 +6,7 @@ import { unescsource } from '../source';
 import { html } from 'typed-dom';
 
 export const comment: CommentParser = creator(validate('[#', match(
-  /^\[(#+)\s+(?!\s|\1\])((?:\S+\s+)+?)(\1\]|(?=\[\1\s))/,
+  /^\[(#+)\s+(?!\s|\1\]|\[\1\s)((?:\S+\s+)+?)(\1\]|(?=\[\1(?:$|\s)))/,
   ([whole, , body, closer]) => (rest, context) => {
     [whole, body] = `${whole}\0${body.trimEnd()}`.replace(/\x7F.?/gs, '').split('\0', 2);
     if (!closer) return [[html('sup', {
