@@ -21,7 +21,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  let context: MarkdownParser.Context = ObjectAssign({}, settings, {
+  let context: MarkdownParser.Context = ObjectAssign({ ...settings }, {
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
     footnotes: undefined,
     chunk: undefined,
@@ -44,7 +44,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = normalize(validate(source, MAX_INPUT_SIZE) ? source : source.slice(0, MAX_INPUT_SIZE + 1));
-    context = ObjectAssign(context, { url: url ? new ReadonlyURL(url) : undefined });
+    context = ObjectAssign({ ...context }, { url: url ? new ReadonlyURL(url) : undefined });
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {
