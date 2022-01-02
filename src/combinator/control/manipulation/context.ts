@@ -25,9 +25,9 @@ export function context<P extends Parser<unknown>>(context: Context<P>, parser: 
 export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
-  const inherit_ = memoize<Ctx, Ctx>(context => inherit(ObjectCreate(context), base), new WeakMap());
+  const override = memoize<Ctx, Ctx>(context => inherit(ObjectCreate(context), base), new WeakMap());
   return (source, context) =>
-    parser(source, inherit_(context));
+    parser(source, override(context));
 }
 
 const inherit = template((prop, target, source) => {
