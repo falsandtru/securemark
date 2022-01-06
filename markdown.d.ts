@@ -58,11 +58,19 @@ export namespace MarkdownParser {
     Markdown<'header'>,
     Parser<HTMLDetailsElement | HTMLPreElement, Context, [
       Parser<HTMLDetailsElement | HTMLPreElement, Context, [
-        Parser<HTMLDetailsElement, Context, []>,
+        Parser<HTMLDetailsElement, Context, [
+          HeaderParser.FieldParser,
+        ]>,
         Parser<HTMLPreElement, Context, []>,
       ]>,
       Parser<never, Context, []>,
     ]> {
+  }
+  export namespace HeaderParser {
+    export interface FieldParser extends
+      Markdown<'header/field'>,
+      Parser<HTMLSpanElement, Context, []> {
+    }
   }
   export interface BlockParser extends
     Markdown<'block'>,

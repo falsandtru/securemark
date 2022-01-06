@@ -1,11 +1,11 @@
 import { MarkdownParser } from '../../markdown';
-import { union, inits, block, validate, focus, rewrite, guard, clear } from '../combinator';
+import { union, inits, some, block, line, validate, focus, rewrite, guard, clear, convert, lazy, fmap } from '../combinator';
 import { segment } from './segment';
 import { str } from './source';
 import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom';
 
-export const header: MarkdownParser.HeaderParser = validate(
+export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
   inits([
     rewrite(
@@ -14,15 +14,17 @@ export const header: MarkdownParser.HeaderParser = validate(
       block(
         union([
           guard(context => context.header ?? true,
-          focus(
-            /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
-            source => [[
-              html('details', { class: 'header', open: '' }, defrag([
-                html('summary', 'Header'),
-                normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
-              ])),
-            // Bug: Unnecessary assertion
-            ], '', {} as MarkdownParser.Context])),
+          focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
+          convert(source =>
+            normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
+            fmap(
+              some(union([field])),
+              es => [
+                html('details', { class: 'header', open: '' }, defrag([
+                  html('summary', 'Header'),
+                  ...es,
+                ])),
+              ])))),
           source => [[
             html('pre', {
               class: 'invalid',
@@ -34,4 +36,17 @@ export const header: MarkdownParser.HeaderParser = validate(
           ], ''],
         ]))),
     clear(str(/^[^\S\v\f\r\n]*\r?\n/)),
-  ]));
+  ])));
+
+const field: MarkdownParser.HeaderParser.FieldParser = line(source => {
+  const name = source.slice(0, source.indexOf(':'));
+  const value = source.slice(name.length + 1).trim();
+  return [[
+    html('span', { class: 'field', 'data-name': name, 'data-value': value }, [
+      html('span', { class: 'field-name' }, name),
+      ': ',
+      html('span', { class: 'field-value' }, value),
+      '\n',
+    ]),
+  ], ''];
+});
