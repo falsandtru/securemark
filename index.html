@@ -100,6 +100,10 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
+  details.header > .field[data-name="url"] {
+    font-weight: bold;
+    color: orange;
+  }
   h1,
   h2,
   h3,
@@ -594,6 +598,9 @@
     content: "References";
   }
   @media print {
+    #viewer > details.header {
+      display: none;
+    }
     #viewer > hr {
       break-after: page;
       display: block;

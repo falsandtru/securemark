@@ -3667,8 +3667,8 @@ require = function () {
             }
             exports.reset = reset;
             function context(base, parser) {
-                const inherit_ = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
-                return (source, context) => parser(source, inherit_(context));
+                const override = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
+                return (source, context) => parser(source, override(context));
             }
             exports.context = context;
             const inherit = (0, assign_1.template)((prop, target, source) => {
@@ -3914,14 +3914,12 @@ require = function () {
                 if (typeof cost === 'function')
                     return creator(1, cost);
                 return (source, context) => {
-                    const result = parser(source, context);
-                    if (!result)
-                        return;
                     const {resources} = context;
-                    if (resources) {
+                    if ((resources === null || resources === void 0 ? void 0 : resources.budget) <= 0)
+                        throw new Error('Too many creations.');
+                    const result = parser(source, context);
+                    if (result && resources) {
                         resources.budget -= cost;
-                        if (resources.budget < 0)
-                            throw new Error('Too many creations.');
                     }
                     return result;
                 };
@@ -4482,7 +4480,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
                 var _a, _b;
-                let context = (0, alias_1.ObjectAssign)({}, settings, {
+                let context = (0, alias_1.ObjectAssign)({ ...settings }, {
                     host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     footnotes: global_1.undefined,
                     chunk: global_1.undefined
@@ -4505,7 +4503,7 @@ require = function () {
                         throw new Error('Chunks cannot be updated.');
                     const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                     source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1));
-                    context = (0, alias_1.ObjectAssign)(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
+                    context = (0, alias_1.ObjectAssign)({ ...context }, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
                     const rev = revision = Symbol();
                     const sourceSegments = [];
                     for (const seg of (0, segment_1.segment)(source)) {
@@ -4693,7 +4691,7 @@ require = function () {
             function headers(source) {
                 var _a;
                 const [el] = parse(source);
-                return (_a = el === null || el === void 0 ? void 0 : el.lastChild.textContent.split(/[^\S\n]*\n/)) !== null && _a !== void 0 ? _a : [];
+                return (_a = el === null || el === void 0 ? void 0 : el.textContent.trimEnd().slice(el.firstChild.textContent.length).split(/[^\S\n]*\n/)) !== null && _a !== void 0 ? _a : [];
             }
             exports.headers = headers;
             function parse(source) {
@@ -4806,17 +4804,17 @@ require = function () {
             const figure_1 = _dereq_('../processor/figure');
             const footnote_1 = _dereq_('../processor/footnote');
             const typed_dom_1 = _dereq_('typed-dom');
-            const memoize_1 = _dereq_('spica/memoize');
             const url_1 = _dereq_('spica/url');
-            const inherit = (0, memoize_1.memoize)(context => (0, alias_1.ObjectCreate)(context), new WeakMap());
-            const inherit2 = (0, memoize_1.memoize)(context => (0, memoize_1.memoize)(_ => (0, alias_1.ObjectCreate)(context)), new WeakMap());
             function parse(source, opts = {}, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE))
                     throw new Error(`Too large input over ${ segment_1.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.`);
                 const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                 source = !context ? (0, normalize_1.normalize)(source) : source;
-                context = context && url === '' && context.id === opts.id ? context : (0, alias_1.ObjectAssign)(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
+                context = context && url === '' && context.id === opts.id ? context : (0, alias_1.ObjectAssign)({
+                    ...context,
+                    ...opts
+                }, {
                     host: (_d = (_c = opts.host) !== null && _c !== void 0 ? _c : context === null || context === void 0 ? void 0 : context.host) !== null && _d !== void 0 ? _d : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
                     id: (_e = opts.id) !== null && _e !== void 0 ? _e : context === null || context === void 0 ? void 0 : context.id,
@@ -4849,7 +4847,6 @@ require = function () {
             './normalize': 63,
             'spica/alias': 5,
             'spica/global': 17,
-            'spica/memoize': 20,
             'spica/url': 27,
             'typed-dom': 29
         }
@@ -5094,11 +5091,11 @@ require = function () {
                 }, (0, combinator_1.some)(term)),
                 (0, combinator_1.some)(desc)
             ]))), es => [(0, typed_dom_1.html)('dl', fillTrailingDescription(es))]))));
-            const term = (0, combinator_1.creator)((0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
+            const term = (0, combinator_1.creator)((0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
                 indexer_1.indexer,
                 inline_1.inline
             ])))), true), ns => [(0, typed_dom_1.html)('dt', (0, typed_dom_1.defrag)(ns))]))));
-            const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('dd', (0, typed_dom_1.defrag)(ns))]), false));
+            const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('dd', (0, typed_dom_1.defrag)(ns))]), false));
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? (0, array_1.push)(es, [(0, typed_dom_1.html)('dd')]) : es;
             }
@@ -5413,7 +5410,7 @@ require = function () {
                         (0, combinator_1.line)(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
-                    (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline))))))
+                    (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline))))))
                 ])
             ])), ([label, param, content, ...caption]) => [(0, typed_dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     (0, typed_dom_1.html)('div', { class: 'figcontent' }, [content]),
@@ -5632,11 +5629,11 @@ require = function () {
             const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
-            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('th', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
+            ]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('th', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
             const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
-            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('td', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
+            ]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('td', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
             const dataline = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([
                 (0, combinator_1.validate)(/^:!*[^\S\n]/, data),
                 (0, combinator_1.validate)(/^!+[^\S\n]/, (0, combinator_1.convert)(source => `:${ source }`, data)),
@@ -5875,11 +5872,11 @@ require = function () {
                     }
                 }
             }, (0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([
-                (0, combinator_1.open)((0, source_1.str)(/^##+/), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
+                (0, combinator_1.open)((0, source_1.str)(/^##+/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
                     indexer_1.indexer,
                     inline_1.inline
                 ])))), true),
-                (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({ syntax: { inline: { autolink: false } } }, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
+                (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({ syntax: { inline: { autolink: false } } }, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
                     indexer_1.indexer,
                     inline_1.inline
                 ]))))), true)
@@ -6131,7 +6128,7 @@ require = function () {
                 (0, combinator_1.some)(mention_1.mention),
                 (0, combinator_1.some)((0, combinator_1.union)([
                     quote_1.quote,
-                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
+                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
                 ]))
             ]), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
         },
@@ -6407,7 +6404,7 @@ require = function () {
             const source_1 = _dereq_('./source');
             const normalize_1 = _dereq_('./api/normalize');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([
+            exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([
                 (0, combinator_1.rewrite)((source, context) => {
                     var _a;
                     return [
@@ -6418,17 +6415,13 @@ require = function () {
                     (0, combinator_1.guard)(context => {
                         var _a;
                         return (_a = context.header) !== null && _a !== void 0 ? _a : true;
-                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
-                        [(0, typed_dom_1.html)('details', {
-                                class: 'header',
-                                open: ''
-                            }, (0, typed_dom_1.defrag)([
-                                (0, typed_dom_1.html)('summary', 'Header'),
-                                (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
-                            ]))],
-                        '',
-                        {}
-                    ])),
+                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, typed_dom_1.html)('details', {
+                            class: 'header',
+                            open: ''
+                        }, (0, typed_dom_1.defrag)([
+                            (0, typed_dom_1.html)('summary', 'Header'),
+                            ...es
+                        ]))])))),
                     source => [
                         [(0, typed_dom_1.html)('pre', {
                                 class: 'invalid',
@@ -6441,7 +6434,24 @@ require = function () {
                     ]
                 ]))),
                 (0, combinator_1.clear)((0, source_1.str)(/^[^\S\v\f\r\n]*\r?\n/))
-            ]));
+            ])));
+            const field = (0, combinator_1.line)(source => {
+                const name = source.slice(0, source.indexOf(':'));
+                const value = source.slice(name.length + 1).trim();
+                return [
+                    [(0, typed_dom_1.html)('span', {
+                            class: 'field',
+                            'data-name': name,
+                            'data-value': value
+                        }, [
+                            (0, typed_dom_1.html)('span', { class: 'field-name' }, name),
+                            ': ',
+                            (0, typed_dom_1.html)('span', { class: 'field-value' }, value),
+                            '\n'
+                        ])],
+                    ''
+                ];
+            });
         },
         {
             '../combinator': 30,
@@ -6922,8 +6932,8 @@ require = function () {
             const htmlentity_1 = _dereq_('./htmlentity');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\])((?:\S+\s+)+?)(\1\]|(?=\[\1\s))/, ([whole, , body, closer]) => (rest, context) => {
-                [whole, body] = `${ whole }\0${ body.trimEnd() }`.replace(/\x7F.?/gs, '').split('\0', 2);
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\]|\[\1\s)((?:\S+\s+)+?)(\1\]|(?=\[\1(?:$|\s)))/, ([whole, , body, closer]) => (rest, context) => {
+                [whole, body] = `${ whole }\0${ body.trimEnd() }`.replace(/\x1B/g, '').split('\0', 2);
                 if (!closer)
                     return [
                         [(0, typed_dom_1.html)('sup', {
@@ -8208,7 +8218,7 @@ require = function () {
                 bracket,
                 source_1.escsource
             ]), '}'), '}}', true), source => [
-                [(0, typed_dom_1.html)('span', { class: 'template' }, source)],
+                [(0, typed_dom_1.html)('span', { class: 'template' }, source.replace(/\x1B/g, ''))],
                 ''
             ])));
             const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
@@ -8717,6 +8727,11 @@ require = function () {
                     ];
                 case 0:
                     switch (source[0]) {
+                    case '\x1B':
+                        return [
+                            [source.slice(1, 2)],
+                            source.slice(2)
+                        ];
                     case '\\':
                         return [
                             [source.slice(0, 2)],
@@ -8826,6 +8841,7 @@ require = function () {
                     ];
                 case 0:
                     switch (source[0]) {
+                    case '\x1B':
                     case '\\':
                         switch (source[1]) {
                         case '\u3001':
@@ -8850,11 +8866,7 @@ require = function () {
                             ];
                     }
                     switch (source[0]) {
-                    case '\x7F':
-                        return [
-                            [],
-                            source.slice(1)
-                        ];
+                    case '\x1B':
                     case '\\':
                         switch (source[1]) {
                         case global_1.undefined:
@@ -9005,16 +9017,15 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\])(?:\S+\s+)+?(?:\1\]|(?=\[\1\s)))*\\?(?:$|\n)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\]|\[\1\s)(?:\S+\s+)+?(?:\1\]|(?=\[\1(?:$|\s))))*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
-                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), (0, combinator_1.union)([
-                    (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-                    (0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
-                        (0, combinator_1.clear)((0, source_1.str)('\x7F\\')),
+                return (0, combinator_1.union)([
+                    (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
+                    (0, combinator_1.some)((0, combinator_1.union)([
                         source_1.linebreak,
                         source_1.unescsource
-                    ])))
-                ]));
+                    ]))
+                ]);
             }
             exports.visualize = visualize;
             function hasVisible(nodes, {
@@ -9064,6 +9075,7 @@ require = function () {
                 case '\t':
                 case '\n':
                     return false;
+                case '\x1B':
                 case '\\':
                     return ((_a = source[1]) === null || _a === void 0 ? void 0 : _a.trimStart()) !== '';
                 case '&':
