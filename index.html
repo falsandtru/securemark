@@ -326,7 +326,7 @@
   pre.code,
   pre.invalid,
   pre.error {
-    background-color: #fbfbfb;
+    background-color: #fcfcfc;
     position: relative;
     overflow: auto;
     border: solid 1px #eee;
@@ -365,6 +365,7 @@
     line-height: 120%;
   }
   aside.example > pre {
+    background-color: #fafafa;
     margin-bottom: 0;
     padding-bottom: 2rem;
   }
@@ -391,7 +392,8 @@
   }
   aside.example > hr {
     margin: 0;
-    border-top: dashed 2px #ddd;
+    border-top: solid 1px #ddd;
+    opacity: 1;
   }
   aside.aside {
     padding: 1rem;
@@ -476,13 +478,13 @@
     text-decoration: inherit;
   }
   ins {
-    background: linear-gradient(transparent 70%, #acf2bd 0%);
+    background-image: linear-gradient(transparent 70%, #acf2bd 0%);
   }
   del {
-    background: linear-gradient(transparent 70%, #b8e4fd 0%);
+    background-image: linear-gradient(transparent 70%, #b8e4fd 0%);
   }
   mark {
-    background: linear-gradient(transparent 60%, yellow 0%);
+    background-image: linear-gradient(transparent 60%, yellow 0%);
     padding: 0 0.2em;
   }
   ins::before {
@@ -502,7 +504,7 @@
     font-size: 75%;
   }
   code {
-    background: #f4f4f4;
+    background-color: #f0f0f0;
     border-radius: 3px;
     margin: 0;
     padding: .15em .3em;
@@ -513,7 +515,7 @@
   }
   ins code,
   del code {
-    background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
+    background-image: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
   .comment::before {
     content: "†";
