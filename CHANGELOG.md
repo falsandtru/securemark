@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.227.0
+
+- Change a syntax name from hashref to hashnum.
+
 ## 0.226.5
 
 - Refactoring.

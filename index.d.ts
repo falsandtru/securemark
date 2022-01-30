@@ -75,7 +75,7 @@ export interface Info {
   readonly account: HTMLAnchorElement[];
   readonly channel: HTMLAnchorElement[];
   readonly hashtag: HTMLAnchorElement[];
-  readonly hashref: HTMLAnchorElement[];
+  readonly hashnum: HTMLAnchorElement[];
   readonly mention: HTMLAnchorElement[];
   readonly anchor: HTMLAnchorElement[];
   readonly media: HTMLElement[];

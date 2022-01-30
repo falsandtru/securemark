@@ -4,15 +4,15 @@ import { scope } from './scope';
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = scope(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
   return {
-    url: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+    url: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashnum):not(.anchor)')
       .filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+    tel: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashnum):not(.anchor)')
       .filter(el => ['tel:'].includes(el.protocol)),
     email: find('a.email'),
     account: find('a.account'),
     channel: find('a.channel'),
     hashtag: find('a.hashtag'),
-    hashref: find('a.hashref'),
+    hashnum: find('a.hashnum'),
     mention: find('.cite > a.anchor'),
     anchor: find(':not(.cite) > a.anchor'),
     media: find('.media[data-src]'),

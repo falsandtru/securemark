@@ -5,7 +5,7 @@ import { email } from './autolink/email';
 import { channel } from './autolink/channel';
 import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
-import { hashref } from './autolink/hashref';
+import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
 import { stringify } from '../util';
@@ -28,7 +28,7 @@ export const autolink: AutolinkParser = fmap(
     // Escape invalid leading characters.
     str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s]+(?=#)/),
     hashtag,
-    hashref,
+    hashnum,
     // Escape unmatched hashtag-like strings.
     str(/^#(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])+/),
     anchor,

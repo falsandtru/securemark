@@ -183,8 +183,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser(' #a')), [[' ', '<a href="/hashtags/a" class="hashtag">#a</a>'], '']);
     });
 
-    it('hashref', () => {
-      assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashref">#1</a>'], '']);
+    it('hashnum', () => {
+      assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashnum">#1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#12345678901234567@a')), [['#12345678901234567@a'], '']);
     });
 

@@ -13,7 +13,7 @@ describe('Unit: util/info', () => {
           account: [],
           channel: [],
           hashtag: [],
-          hashref: [],
+          hashnum: [],
           mention: [],
           anchor: [],
           media: [],

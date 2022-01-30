@@ -1051,7 +1051,7 @@ export namespace MarkdownParser {
         SourceParser.StrParser,
         SourceParser.StrParser,
         AutolinkParser.HashtagParser,
-        AutolinkParser.HashrefParser,
+        AutolinkParser.HashnumParser,
         SourceParser.StrParser,
         AutolinkParser.AnchorParser,
       ]> {
@@ -1113,9 +1113,9 @@ export namespace MarkdownParser {
           LinkParser,
         ]> {
       }
-      export interface HashrefParser extends
+      export interface HashnumParser extends
         // #1
-        Inline<'hashref'>,
+        Inline<'hashnum'>,
         Parser<HTMLAnchorElement, Context, [
           LinkParser,
         ]> {
