@@ -402,7 +402,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.Cache = void 0;
             const global_1 = _dereq_('./global');
-            const alias_1 = _dereq_('./alias');
             const clock_1 = _dereq_('./clock');
             const invlist_1 = _dereq_('./invlist');
             const assign_1 = _dereq_('./assign');
@@ -455,7 +454,6 @@ require = function () {
                     this.capacity = settings.capacity;
                     if (this.capacity >= 1 === false)
                         throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-                    this.frequency = (0, alias_1.max)(this.capacity / 100 | 0, 1);
                     this.space = settings.space;
                     this.life = this.capacity * settings.life;
                     this.limit = settings.limit;
@@ -466,7 +464,7 @@ require = function () {
                 get size() {
                     return this.SIZE;
                 }
-                dispose(node, record, callback) {
+                evict(node, record, callback) {
                     var _a, _b, _c;
                     const index = node.value;
                     callback && (callback = !!this.settings.disposer);
@@ -492,24 +490,22 @@ require = function () {
                         const lastIndex = lastNode === null || lastNode === void 0 ? void 0 : lastNode.value;
                         let target;
                         switch (true) {
-                        case LRU.length === 0:
-                            target = LFU.last;
-                            target = target !== skip ? target : target.prev;
-                            break;
                         case lastIndex && lastIndex.clock < this.clock - this.life:
                         case lastIndex && lastIndex.expiry !== global_1.Infinity && lastIndex.expiry < (0, clock_1.now)():
-                            target = lastNode;
+                            target = lastNode.list === OVF ? lastNode.value.parent : lastNode;
+                            break;
+                        case LRU.length === 0:
+                            target = LFU.last !== skip ? LFU.last : LFU.last.prev;
                             break;
                         case LFU.length > this.capacity * this.ratio / 100:
-                            target = LFU.last;
-                            LRU.unshiftNode(target);
-                            target.value.overflow = OVF.unshift(target.value);
+                            LRU.unshiftNode(LFU.last);
+                            LRU.head.value.parent = LRU.head;
+                            LRU.head.value.overflow = OVF.unshift(LRU.head.value);
                         default:
-                            target = LRU.last;
-                            target = target !== skip ? target : target.prev !== skip ? target.prev : LFU.last;
+                            target = LRU.last !== skip ? LRU.last : LRU.last.prev !== skip ? LRU.last.prev : LFU.last;
                         }
-                        this.dispose(target, void 0, true);
-                        skip = (skip === null || skip === void 0 ? void 0 : skip.list) ? skip : void 0;
+                        this.evict(target, void 0, true);
+                        skip = (skip === null || skip === void 0 ? void 0 : skip.list) && skip;
                         size = (_c = skip === null || skip === void 0 ? void 0 : skip.value.size) !== null && _c !== void 0 ? _c : 0;
                     }
                 }
@@ -530,7 +526,7 @@ require = function () {
                         const val = record.value;
                         const index = node.value;
                         this.ensure(size, node);
-                        index.clock = ++this.clockR;
+                        index.clock = index.region === 'LRU' ? ++this.clockR : ++this.clock;
                         index.expiry = expiry;
                         this.SIZE += size - index.size;
                         index.size = size;
@@ -547,7 +543,7 @@ require = function () {
                             size,
                             clock: ++this.clockR,
                             expiry,
-                            stat: this.stats.LRU
+                            region: 'LRU'
                         }),
                         value
                     });
@@ -564,7 +560,7 @@ require = function () {
                     const node = record.index;
                     const expiry = node.value.expiry;
                     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
-                        this.dispose(node, record, true);
+                        this.evict(node, record, true);
                         return;
                     }
                     if (this.capacity >= 10 && node === node.list.head)
@@ -579,7 +575,7 @@ require = function () {
                         return false;
                     const expiry = record.index.value.expiry;
                     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
-                        this.dispose(record.index, record, true);
+                        this.evict(record.index, record, true);
                         return false;
                     }
                     return true;
@@ -588,7 +584,7 @@ require = function () {
                     const record = this.memory.get(key);
                     if (!record)
                         return false;
-                    this.dispose(record.index, record, this.settings.capture.delete === true);
+                    this.evict(record.index, record, this.settings.capture.delete === true);
                     return true;
                 }
                 clear() {
@@ -617,22 +613,23 @@ require = function () {
                 }
                 slide() {
                     const {LRU, LFU} = this.stats;
-                    const {capacity, frequency, ratio, limit, indexes} = this;
+                    const {capacity, ratio, limit, indexes} = this;
                     const window = capacity;
                     LRU[0] + LFU[0] === window && this.stats.slide();
-                    if ((LRU[0] + LFU[0]) % frequency || LRU[1] + LFU[1] === 0)
+                    if ((LRU[0] + LFU[0]) * 100 % capacity || LRU[1] + LFU[1] === 0)
                         return;
                     const lenR = indexes.LRU.length;
                     const lenF = indexes.LFU.length;
                     const lenV = indexes.OVF.length;
                     const r = (lenF + lenV) * 1000 / (lenR + lenF) | 0;
-                    const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]) * (1 + r);
-                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) * (1001 - r);
-                    if (ratio > 0 && rateR > rateF || ratio > 0 && rateF < rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0]) * (1001 - r) * 0.95) {
+                    const rateR0 = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1], 0) * (1 + r);
+                    const rateF0 = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1], 0) * (1001 - r);
+                    const rateF1 = rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0], 5) * (1001 - r);
+                    if (ratio > 0 && (rateR0 > rateF0 || rateF0 < rateF1 * 0.95)) {
                         if (lenR >= capacity * (100 - ratio) / 100) {
                             --this.ratio;
                         }
-                    } else if (ratio < limit && rateF > rateR) {
+                    } else if (ratio < limit && rateF0 > rateR0) {
                         if (lenF >= capacity * ratio / 100) {
                             ++this.ratio;
                         }
@@ -645,14 +642,14 @@ require = function () {
                     var _a;
                     const index = node.value;
                     const {LRU, LFU} = this.indexes;
-                    ++index.stat[0];
+                    ++this.stats[index.region][0];
                     if (!index.overflow && index.clock >= this.clockR - LRU.length / 3 && this.capacity > 3) {
                         index.clock = ++this.clockR;
                         node.moveToHead();
                         return true;
                     }
                     index.clock = ++this.clock;
-                    index.stat = this.stats.LFU;
+                    index.region = 'LFU';
                     (_a = index.overflow) === null || _a === void 0 ? void 0 : _a.delete();
                     LFU.unshiftNode(node);
                     return true;
@@ -662,24 +659,24 @@ require = function () {
                     const {LFU} = this.indexes;
                     if (node.list !== LFU)
                         return false;
-                    ++index.stat[0];
+                    ++this.stats[index.region][0];
                     index.clock = ++this.clock;
                     node.moveToHead();
                     return true;
                 }
             }
             exports.Cache = Cache;
-            function rate(window, currHits, currTotal, prevHits, prevTotal) {
-                window = (0, alias_1.min)(currTotal + prevTotal, window);
-                const currRate = currHits * 100 / currTotal | 0;
-                const currRatio = (0, alias_1.min)(currTotal * 100 / window | 0, 100);
+            function rate(window, currHits, currTotal, prevHits, prevTotal, offset) {
                 const prevRate = prevHits * 100 / prevTotal | 0;
+                const currRatio = currTotal * 100 / window - offset | 0;
+                if (currRatio <= 0)
+                    return prevRate * 100;
+                const currRate = currHits * 100 / currTotal | 0;
                 const prevRatio = 100 - currRatio;
                 return currRate * currRatio + prevRate * prevRatio;
             }
         },
         {
-            './alias': 5,
             './assign': 8,
             './clock': 10,
             './global': 15,
@@ -1435,7 +1432,7 @@ require = function () {
             const cache_1 = _dereq_('../cache');
             function standardize(url, base) {
                 const u = new ReadonlyURL(url, base);
-                url = u.origin !== 'null' ? u.origin.toLowerCase() + u.href.slice(u.origin.length) : u.protocol.toLowerCase() + u.href.slice(u.protocol.length);
+                url = u.origin === 'null' ? u.protocol.toLowerCase() + u.href.slice(u.protocol.length) : u.origin.toLowerCase() + u.href.slice(u.origin.length);
                 return encode(url);
             }
             exports.standardize = standardize;
@@ -1446,16 +1443,26 @@ require = function () {
             const internal = Symbol.for('spica/url::internal');
             class ReadonlyURL {
                 constructor(source, base) {
-                    var _a, _b;
                     this.source = source;
                     this.base = base;
-                    const i = (_a = base === null || base === void 0 ? void 0 : base.indexOf('#')) !== null && _a !== void 0 ? _a : -1;
-                    if (i > -1) {
-                        base = base === null || base === void 0 ? void 0 : base.slice(0, i);
-                    }
-                    const j = (_b = base === null || base === void 0 ? void 0 : base.indexOf('?')) !== null && _b !== void 0 ? _b : -1;
-                    if (i > -1 && source.indexOf('#') === -1) {
-                        base = base === null || base === void 0 ? void 0 : base.slice(0, j);
+                    switch (source.slice(0, source.lastIndexOf('://', 9) + 1).toLowerCase()) {
+                    case 'http:':
+                    case 'https:':
+                        base = void 0;
+                        break;
+                    default:
+                        switch (base === null || base === void 0 ? void 0 : base.slice(0, base.lastIndexOf('://', 9) + 1).toLowerCase()) {
+                        case 'http:':
+                        case 'https:':
+                            const i = base.indexOf('#');
+                            if (i > -1) {
+                                base = base.slice(0, i);
+                            }
+                            const j = base.indexOf('?');
+                            if (i > -1 && source.indexOf('#') === -1) {
+                                base = base.slice(0, j);
+                            }
+                        }
                     }
                     this[internal] = {
                         share: ReadonlyURL.get(source, base),
@@ -6046,7 +6053,7 @@ require = function () {
                     (0, combinator_1.guard)(context => {
                         var _a;
                         return (_a = context.header) !== null && _a !== void 0 ? _a : true;
-                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, typed_dom_1.html)('details', {
+                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, typed_dom_1.html)('details', {
                             class: 'header',
                             open: ''
                         }, (0, typed_dom_1.defrag)([
