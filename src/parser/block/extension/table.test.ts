@@ -140,7 +140,7 @@ describe('Unit: parser/block/extension/table', () => {
         inspect(parser('~~~table\n-=<>/-=^v\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n/-=^v\n~~~')),
+        inspect(parser('~~~table\n-/-=^v\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser('~~~table\n-=^v\n~~~')),
@@ -206,7 +206,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n/=-^v\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~')),
+        inspect(parser('~~~table\n-/=-^v\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -222,7 +222,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n/=^\n/-\n2.1\n2.2\n2.3\n~~~')),
+        inspect(parser('~~~table\n-/=^\n-/-\n2.1\n2.2\n2.3\n~~~')),
         [[html('table', [
           html('thead', [html('tr')]),
           html('tbody', [
@@ -246,7 +246,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody'),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#/-\n1.1\n~~~')),
+        inspect(parser('~~~table\n#-/-\n1.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('td', '1.1')]),

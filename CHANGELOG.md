@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.228.0
+
+- Change table syntax to require horizontal alignment in alignment syntax.
+
 ## 0.227.1
 
 - Update dependencies.

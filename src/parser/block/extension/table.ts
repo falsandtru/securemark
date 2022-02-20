@@ -67,13 +67,13 @@ const row: RowParser = lazy(() => dup(fmap(
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
 
-const alignment = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
+const alignment = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
+const delimiter = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
 
 const head: CellParser.HeadParser = creator(block(fmap(open(
   str(/^#(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/),
