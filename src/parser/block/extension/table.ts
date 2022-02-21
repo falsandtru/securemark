@@ -103,7 +103,6 @@ const dataline: CellParser.DatalineParser = creator(line(
   rewrite(
     contentline,
     union([
-      validate(/^:!*[^\S\n]/, data),
       validate(/^!+[^\S\n]/, convert(source => `:${source}`, data)),
       convert(source => `: ${source}`, data),
     ]))));

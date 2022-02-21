@@ -484,7 +484,6 @@ export namespace MarkdownParser {
             Parser<HTMLTableCellElement, Context, [
               DataParser,
               DataParser,
-              DataParser,
             ]> {
           }
         }

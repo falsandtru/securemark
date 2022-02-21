@@ -3,6 +3,7 @@
 ## 0.229.0
 
 - Change table syntax's alignment syntax to remove cell type declaration.
+- Change table syntax's dataline syntax.
 
 ## 0.228.0
 

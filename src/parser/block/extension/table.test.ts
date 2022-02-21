@@ -108,7 +108,7 @@ describe('Unit: parser/block/extension/table', () => {
         [[html('table', [
           html('thead'),
           html('tbody', [
-            html('tr', [html('td', '1.1'), html('td', '1.2'), html('td', ':1:1 1.3'), html('td', '1.4')]),
+            html('tr', [html('td', '1.1'), html('td', ': 1.2'), html('td', ':1:1 1.3'), html('td', '1.4')]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
