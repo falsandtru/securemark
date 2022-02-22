@@ -16,8 +16,8 @@ const openers = {
 
 export const olist: OListParser = lazy(() => block(validate(
   [
-    /^(?=([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S))/,
-    /^(?=\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S))/,
+    /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/,
+    /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/,
   ],
   context({ syntax: { inline: { media: false } } },
   olist_))));
