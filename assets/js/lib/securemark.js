@@ -5257,23 +5257,22 @@ require = function () {
                 (0, combinator_1.some)((0, combinator_1.union)([
                     head,
                     data,
-                    source_1.emptyline,
-                    (0, combinator_1.some)(dataline, alignment)
+                    (0, combinator_1.some)(dataline, alignment),
+                    source_1.emptyline
                 ]))
             ]), ns => !(0, alias_1.isArray)(ns[0]) ? (0, array_1.unshift)([[[]]], ns) : ns)));
-            const alignment = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
+            const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
             const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
-            const delimiter = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
-            const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
+            const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
+            const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
             ]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('th', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
-            const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
+            const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
             ]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('td', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
             const dataline = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([
-                (0, combinator_1.validate)(/^:!*[^\S\n]/, data),
                 (0, combinator_1.validate)(/^!+[^\S\n]/, (0, combinator_1.convert)(source => `:${ source }`, data)),
                 (0, combinator_1.convert)(source => `: ${ source }`, data)
             ]))));
@@ -5310,10 +5309,7 @@ require = function () {
                 ROW:
                     for (let i = 0; i < rows.length; ++i) {
                         const [[[...as], [...vs] = []], ...cells] = rows[i];
-                        let isBody = target === tfoot ? false : [
-                            as[0] === '#' ? !as.shift() : global_1.undefined,
-                            as[0] === ':' ? !!as.shift() : global_1.undefined
-                        ].reduce((a, b) => a !== null && a !== void 0 ? a : b);
+                        let isBody = target === tfoot ? false : global_1.undefined;
                         as.length === 0 && as.push('-');
                         ALIGN_H:
                             for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {

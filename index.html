@@ -254,14 +254,11 @@
     border: 1px solid #bbb;
     padding: .2em .4em;
   }
-  th {
+  th,
+  thead > tr > td,
+  tfoot > tr > td {
     background-color: #f6f6f6;
-  }
-  thead > th,
-  thead > td,
-  tfoot > th,
-  tfoot > td {
-    text-align: center;
+    font-weight: bold;
   }
   th[align="start"],
   td[align="start"] {
@@ -292,18 +289,23 @@
   td.highlight[data-highlight-level="1"] {
     background-color: yellow;
   }
+  tbody > tr >
   td.highlight[data-highlight-level="2"] {
     background-color: gold;
   }
+  tbody > tr >
   td.highlight[data-highlight-level="3"] {
     background-color: orange;
   }
+  tbody > tr >
   td.highlight[data-highlight-level="4"] {
     background-color: #f60;
   }
+  tbody > tr >
   td.highlight[data-highlight-level="5"] {
     background-color: #f33;
   }
+  tbody > tr >
   td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
