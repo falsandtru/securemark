@@ -455,8 +455,8 @@ export namespace MarkdownParser {
             Parser<HTMLTableCellElement, Context, [
               CellParser.HeadParser,
               CellParser.DataParser,
-              SourceParser.EmptyLineParser,
               CellParser.DatalineParser,
+              SourceParser.EmptyLineParser,
             ]>,
           ]> {
         }

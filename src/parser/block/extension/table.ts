@@ -61,8 +61,8 @@ const row: RowParser = lazy(() => dup(fmap(
     some(union([
       head,
       data,
-      emptyline,
       some(dataline, alignment),
+      emptyline,
     ])),
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
