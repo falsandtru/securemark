@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.229.0
+
+- Change table syntax's alignment syntax to remove cell type declaration.
+
 ## 0.228.0
 
 - Change table syntax to require horizontal alignment in alignment syntax.

@@ -67,13 +67,13 @@ const row: RowParser = lazy(() => dup(fmap(
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
 
-const alignment = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
+const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^[#:]?[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
+const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
 
 const head: CellParser.HeadParser = creator(block(fmap(open(
   str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/),
@@ -152,10 +152,7 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     assert(cells !== rows[i]);
     let isBody = target === tfoot
       ? false
-      : [
-          as[0] === '#' ? !as.shift() : undefined,
-          as[0] === ':' ? !!as.shift() : undefined,
-        ].reduce((a, b) => a ?? b);
+      : undefined;
     as.length === 0 && as.push('-');
     ALIGN_H:
     for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
