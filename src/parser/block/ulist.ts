@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, convert, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -7,9 +7,13 @@ import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 import { contentline } from '../source';
 
-export const ulist: UListParser = lazy(() => block(fmap(validate(
+export const ulist: UListParser = lazy(() => block(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,
   context({ syntax: { inline: { media: false } } },
+  ulist_))));
+
+export const ulist_: UListParser = lazy(() => block(fmap(validate(
+  /^-(?=$|\s)/,
   some(creator(union([
     fmap(fallback(
       inits([
@@ -18,7 +22,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
       ]),
       iitem),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
-  ]))))),
+  ])))),
   es => [format(html('ul', es))])));
 
 export const checkbox = focus(
@@ -26,10 +30,6 @@ export const checkbox = focus(
   source => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ], '']);
-
-export const ulist_: UListParser = convert(
-  source => source.replace(/^-(?=$|\n)/, `$& `),
-  ulist);
 
 const iitem = rewrite(contentline, source => [[
   html('span', {

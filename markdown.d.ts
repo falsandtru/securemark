@@ -148,10 +148,17 @@ export namespace MarkdownParser {
       // (a)-1 item
       Block<'olist'>,
       Parser<HTMLOListElement, Context, [
-        OListParser.ListItemParser,
+        OListParser.ListParser,
+        OListParser.ListParser,
       ]> {
     }
     export namespace OListParser {
+      export interface ListParser extends
+        Block<'olist/list'>,
+        Parser<HTMLOListElement, Context, [
+          OListParser.ListItemParser,
+        ]> {
+      }
       export interface ListItemParser extends
         Block<'olist/listitem'>,
         Parser<HTMLLIElement, Context, [

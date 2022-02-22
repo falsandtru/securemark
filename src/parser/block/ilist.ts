@@ -1,14 +1,18 @@
 import { IListParser } from '../block';
-import { union, inits, some, block, line, validate, indent, rewrite, context, creator, open, convert, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, indent, rewrite, context, creator, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
 import { contentline } from '../source';
 import { html, defrag } from 'typed-dom';
 
-export const ilist: IListParser = lazy(() => block(fmap(validate(
+export const ilist: IListParser = lazy(() => block(validate(
   /^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/,
   context({ syntax: { inline: { media: false } } },
+  ilist_))));
+
+export const ilist_: IListParser = lazy(() => block(fmap(validate(
+  /^[-+*](?:$|\s)/,
   some(creator(union([
     fmap(fallback(
       inits([
@@ -17,7 +21,7 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
       ]),
       rewrite(contentline, source => [[html('span', source.replace('\n', ''))], ''])),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
-  ]))))),
+  ])))),
   es => [
     html('ul', {
       class: 'invalid',
@@ -26,7 +30,3 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
       'data-invalid-description': 'Use "-" instead of "+" or "*".',
     }, es),
   ])));
-
-export const ilist_: IListParser = convert(
-  source => source.replace(/^[-+*](?=$|\n)/, `$& `),
-  ilist);

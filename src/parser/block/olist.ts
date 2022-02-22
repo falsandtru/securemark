@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, block, line, indent, focus, rewrite, context, creator, open, match, convert, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, match, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -9,14 +9,29 @@ import { html, define, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 
-export const olist: OListParser = lazy(() => block(match(
-  /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)*)(?=[^\S\n]|\n[^\S\n]*\S))/,
-  memoize(
-  ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]),
-  ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
+const openers = {
+  '.': /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
+  '(': /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
+} as const;
 
-const list = (type: string, delim: string): OListParser => fmap(
+export const olist: OListParser = lazy(() => block(validate(
+  [
+    /^(?=([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S))/,
+    /^(?=\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S))/,
+  ],
   context({ syntax: { inline: { media: false } } },
+  olist_))));
+
+export const olist_: OListParser = lazy(() => block(union([
+  match(
+    new RegExp(`^(?=${openers['.'].source.replace('?:', '')})`),
+    memoize(ms => list(type(ms[1]), '.'), ms => type(ms[1]))),
+  match(
+    new RegExp(`^(?=${openers['('].source.replace('?:', '')})`),
+    memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]))),
+])));
+
+const list = (type: string, delim: string): OListParser.ListParser => fmap(
   some(creator(union([
     fmap(fallback(
       inits([
@@ -25,27 +40,17 @@ const list = (type: string, delim: string): OListParser => fmap(
       ]),
       iitem),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
-  ])))),
+  ]))),
   es => [format(html('ol', es), type, delim)]);
 
 const items = {
   '.': focus(
-    /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
+    openers['.'],
     (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
-  ')': focus(
-    /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
+  '(': focus(
+    openers['('],
     (source: string) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)\)?$/, '($1)')], '']),
 } as const;
-
-export const olist_: OListParser = convert(
-  source =>
-    source[0] !== '('
-      ? source
-          .replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*)\.?(?=$|\n)/, `$1. `)
-      : source
-          .replace(/^\((?=$|\n)/, `(1) `)
-          .replace(/^\(((?:[0-9]+|[a-z]+))\)?((?:-(?!-)[0-9]*)*(?=$|\n))/, `($1)$2 `),
-  olist);
 
 const iitem = rewrite(contentline, source => [[
   '',
