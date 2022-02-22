@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.230.0
+
+- Change table syntax's cell syntax not to depend on trailing whitespace.
+
 ## 0.229.0
 
 - Change table syntax's alignment syntax to remove cell type declaration.
