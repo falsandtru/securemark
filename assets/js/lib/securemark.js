@@ -5636,8 +5636,8 @@ require = function () {
                 '(': /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/
             };
             exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)([
-                /^(?=([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S))/,
-                /^(?=\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S))/
+                /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/,
+                /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/
             ], (0, combinator_1.context)({ syntax: { inline: { media: false } } }, exports.olist_))));
             exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([
                 (0, combinator_1.match)(new RegExp(`^(?=${ openers['.'].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]))),
