@@ -49,7 +49,7 @@ const items = {
     (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
   '(': focus(
     openers['('],
-    (source: string) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)\)?$/, '($1)')], '']),
+    (source: string) => [[source.replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
 
 const iitem = rewrite(contentline, source => [[
