@@ -35,7 +35,7 @@ const list = (type: string, delim: string): OListParser.ListParser => fmap(
   some(creator(union([
     fmap(fallback(
       inits([
-        line(open(items[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
+        line(open(heads[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       iitem),
@@ -43,7 +43,7 @@ const list = (type: string, delim: string): OListParser.ListParser => fmap(
   ]))),
   es => [format(html('ol', es), type, delim)]);
 
-const items = {
+const heads = {
   '.': focus(
     openers['.'],
     (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
