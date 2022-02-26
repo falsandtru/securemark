@@ -5644,7 +5644,7 @@ require = function () {
                 (0, combinator_1.match)(new RegExp(`^(?=${ openers['('].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1])))
             ])));
             const list = (type, delim) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
-                    (0, combinator_1.line)((0, combinator_1.open)(items[delim], (0, combinator_1.trim)((0, combinator_1.subsequence)([
+                    (0, combinator_1.line)((0, combinator_1.open)(heads[delim], (0, combinator_1.trim)((0, combinator_1.subsequence)([
                         ulist_1.checkbox,
                         (0, combinator_1.trimStart)((0, combinator_1.some)(inline_1.inline))
                     ])), true)),
@@ -5654,13 +5654,13 @@ require = function () {
                         ilist_1.ilist_
                     ]))
                 ]), iitem), ns => [(0, typed_dom_1.html)('li', { 'data-marker': ns[0] }, (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))])]))), es => [format((0, typed_dom_1.html)('ol', es), type, delim)]);
-            const items = {
+            const heads = {
                 '.': (0, combinator_1.focus)(openers['.'], source => [
                     [`${ source.split('.', 1)[0] }.`],
                     ''
                 ]),
                 '(': (0, combinator_1.focus)(openers['('], source => [
-                    [source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)\)?$/, '($1)')],
+                    [source.replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')],
                     ''
                 ])
             };
@@ -5671,7 +5671,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'listitem',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Fix the indent or the head of list items.'
+                        'data-invalid-description': 'Fix the indent or the head of the list item.'
                     }, source.replace('\n', ''))
                 ],
                 ''
@@ -6009,7 +6009,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'listitem',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Fix the indent or the head of list items.'
+                        'data-invalid-description': 'Fix the indent or the head of the list item.'
                     }, source.replace('\n', ''))],
                 ''
             ]);
