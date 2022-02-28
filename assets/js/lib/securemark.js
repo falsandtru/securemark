@@ -4676,7 +4676,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
                 const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
@@ -4814,7 +4814,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 const annotations = (0, typed_dom_1.html)('ol', { class: 'annotations' });
                 const references = (0, typed_dom_1.html)('ol', { class: 'references' });
@@ -4869,7 +4869,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'example',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
@@ -5126,7 +5126,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'message',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'note':
@@ -5197,7 +5197,7 @@ require = function () {
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': !closer ? 'closer' : 'syntax',
-                    'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid syntax.'
+                    'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid syntax.'
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
@@ -5231,7 +5231,7 @@ require = function () {
                                 translate: 'no',
                                 'data-invalid-syntax': 'table',
                                 'data-invalid-type': !closer ? 'closer' : 'argument',
-                                'data-invalid-description': !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                                'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                             }, `${ opener }${ body }${ closer }`)],
                         ''
                     ];
@@ -5607,7 +5607,7 @@ require = function () {
                         translate: 'no',
                         'data-invalid-syntax': 'mathblock',
                         'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'closer' : 'argument',
-                        'data-invalid-description': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter ${ delim }.` : 'Invalid argument.'
+                        'data-invalid-description': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
                     }, `${ opener }${ body }${ closer }`)];
             })));
         },
@@ -5854,7 +5854,7 @@ require = function () {
                     class: 'quote invalid',
                     'data-invalid-syntax': 'quote',
                     'data-invalid-type': 'syntax',
-                    'data-invalid-description': `Missing the whitespace after ${ ns[0].split(/[^>]/, 1)[0] }.`
+                    'data-invalid-description': `Missing the whitespace after "${ ns[0].split(/[^>]/, 1)[0] }".`
                 }, ns),
                 (0, typed_dom_1.html)('br')
             ]), false)));
@@ -6247,22 +6247,20 @@ require = function () {
             const anchor_1 = _dereq_('./autolink/anchor');
             const source_1 = _dereq_('../source');
             const util_1 = _dereq_('../util');
-            exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s])/, (0, combinator_1.guard)(context => {
+            exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S#)/, (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.autolink) !== null && _c !== void 0 ? _c : true;
             }, (0, combinator_1.some)((0, combinator_1.union)([
                 url_1.url,
                 email_1.email,
                 (0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
-                (0, source_1.str)(/^@+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
-                (0, source_1.str)(/^#+(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/),
                 channel_1.channel,
                 account_1.account,
-                (0, source_1.str)(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
-                (0, source_1.str)(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s]+(?=#)/),
+                (0, source_1.str)(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
+                (0, source_1.str)(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s])(?=#)/u),
                 hashtag_1.hashtag,
                 hashnum_1.hashnum,
-                (0, source_1.str)(/^#(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])+/),
+                (0, source_1.str)(/^#+(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])*/),
                 anchor_1.anchor
             ])))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
         },
@@ -8469,9 +8467,9 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /[\s\x00-\x7F]|[、。！？][^\S\n]*(?=\\\n)/;
+            exports.separator = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
             exports.nonWhitespace = /[\S\n]|$/;
-            exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
+            exports.nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
             const repeat = (0, str_1.str)(/^(.)\1*/);
             exports.text = (0, combinator_1.creator)((source, context) => {
                 if (source === '')
@@ -8545,7 +8543,7 @@ require = function () {
                         ];
                     default:
                         const b = source[0].trimStart() === '';
-                        const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) : 1;
+                        const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) || 1 : 1;
                         return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [
                             [],
                             source.slice(i)
@@ -8596,7 +8594,7 @@ require = function () {
                     ];
                 case 0: {
                         const b = source[0] !== '\n' && source[0].trimStart() === '';
-                        const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) : 1;
+                        const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) || 1 : 1;
                         return [
                             [source.slice(0, i)],
                             source.slice(i)
