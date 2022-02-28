@@ -18,19 +18,16 @@ export const autolink: AutolinkParser = fmap(
     email,
     // Escape unmatched email-like strings.
     str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
-    // Escape repeated symbols.
-    str(/^@+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
-    str(/^#+(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/),
     channel,
     account,
     // Escape unmatched account-like strings.
-    str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
+    str(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
     // Escape invalid leading characters.
     str(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s])(?=#)/u),
     hashtag,
     hashnum,
     // Escape unmatched hashtag-like strings.
-    str(/^#(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])+/),
+    str(/^#+(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])*/),
     anchor,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);
