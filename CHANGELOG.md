@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.230.1
+
+- Refactoring.
+
 ## 0.230.0
 
 - Change table syntax's cell syntax not to depend on trailing whitespace.
