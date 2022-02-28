@@ -11,7 +11,7 @@ import { str } from '../source';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s])/,
+  validate(/^(?:[@#>0-9A-Za-z]|\S#)/,
   guard(context => context.syntax?.inline?.autolink ?? true,
   some(union([
     url,
@@ -26,7 +26,7 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched account-like strings.
     str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
     // Escape invalid leading characters.
-    str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s]+(?=#)/),
+    str(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s])(?=#)/u),
     hashtag,
     hashnum,
     // Escape unmatched hashtag-like strings.

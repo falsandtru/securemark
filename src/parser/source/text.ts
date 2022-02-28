@@ -4,9 +4,9 @@ import { union, focus, creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 
-export const separator = /[\s\x00-\x7F]|[、。！？][^\S\n]*(?=\\\n)/;
+export const separator = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
 export const nonWhitespace = /[\S\n]|$/;
-export const nonAlphanumeric = /[^0-9A-Za-z]|$/;
+export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creator((source, context) => {
@@ -59,7 +59,7 @@ export const text: TextParser = creator((source, context) => {
           assert(source[0] !== '\n');
           const b = source[0].trimStart() === '';
           const i = b || isAlphanumeric(source[0])
-            ? source.search(b ? nonWhitespace : nonAlphanumeric)
+            ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
             : 1;
           assert(i > 0);
           assert(!['\\', '\n'].includes(source[0]));
