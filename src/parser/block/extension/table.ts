@@ -32,7 +32,7 @@ export const table: TableParser = block(validate('~~~', recover(bind(
       translate: 'no',
       'data-invalid-syntax': 'table',
       'data-invalid-type': !closer ? 'closer' : 'argument',
-      'data-invalid-description': !closer ? `Missing the closing delimiter ${delim}.` : 'Invalid argument.',
+      'data-invalid-description': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
     }, `${opener}${body}${closer}`)], ''];
     return parser(body, context) ?? [[html('table')], ''];
   }),

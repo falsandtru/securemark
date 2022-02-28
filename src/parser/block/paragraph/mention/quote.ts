@@ -26,7 +26,7 @@ export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creat
             class: 'quote invalid',
             'data-invalid-syntax': 'quote',
             'data-invalid-type': 'syntax',
-            'data-invalid-description': `Missing the whitespace after ${ns[0].split(/[^>]/, 1)[0]}.`,
+            'data-invalid-description': `Missing the whitespace after "${ns[0].split(/[^>]/, 1)[0]}".`,
           },
       ns),
     html('br'),
