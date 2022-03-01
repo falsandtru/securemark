@@ -6,6 +6,9 @@ import { define } from 'typed-dom';
 
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 
+// https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
+export const emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
+
 export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
   open(
     '#',
@@ -14,7 +17,11 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         str(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//),
         ([source]) => source.length <= 253 + 1),
       verify(
-        str(/^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]))(?:[^\p{C}\p{S}\p{P}\s]|_(?=[^\p{C}\p{S}\p{P}\s])){1,128}(?!_?[^\p{C}\p{S}\p{P}\s]|')/u),
+        str(new RegExp(['^',
+          String.raw`(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|${emoji}))`,
+          String.raw`(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|_(?=[^\p{C}\p{S}\p{P}\s]|${emoji})){1,128}`,
+          String.raw`(?!_?(?:[^\p{C}\p{S}\p{P}\s]|${emoji})|')`,
+        ].join(''), 'u')),
         ([source]) => source.length <= 128),
     ])),
   context({ syntax: { inline: {

@@ -4,7 +4,7 @@ import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
 import { account } from './autolink/account';
-import { hashtag } from './autolink/hashtag';
+import { hashtag, emoji } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
@@ -23,11 +23,11 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched account-like strings.
     str(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
     // Escape invalid leading characters.
-    str(/^(?:[^\p{C}\p{S}\p{P}\s]|['_])(?=#)/u),
+    str(new RegExp(String.raw`^(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|['_])(?=#)`, 'u')),
     hashtag,
     hashnum,
     // Escape unmatched hashtag-like strings.
-    str(/^#+(?:[^\p{C}\p{S}\p{P}\s]|['_])*/u),
+    str(new RegExp(String.raw`^#+(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|['_])*`, 'u')),
     anchor,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);
