@@ -173,6 +173,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('あい#b')), [['あ', 'い#b'], '']);
       assert.deepStrictEqual(inspect(parser('0aあ#b')), [['0a', 'あ#b'], '']);
       assert.deepStrictEqual(inspect(parser('0aあい#b')), [['0a', 'あ', 'い#b'], '']);
+      assert.deepStrictEqual(inspect(parser('「#あ」')), [['「', '<a href="/hashtags/あ" class="hashtag">#あ</a>', '」'], '']);
       assert.deepStrictEqual(inspect(parser('a\n#b')), [['a', '<br>', '<a href="/hashtags/b" class="hashtag">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n#b')), [['a', '<span class="linebreak"> </span>', '<a href="/hashtags/b" class="hashtag">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('*a*#b')), [['<em>a</em>', '<a href="/hashtags/b" class="hashtag">#b</a>'], '']);
@@ -186,6 +187,7 @@ describe('Unit: parser/inline', () => {
     it('hashnum', () => {
       assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashnum">#1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#12345678901234567@a')), [['#12345678901234567@a'], '']);
+      assert.deepStrictEqual(inspect(parser('「#1」')), [['「', '<a class="hashnum">#1</a>', '」'], '']);
     });
 
   });

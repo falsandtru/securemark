@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.231.0
+
+- Refine hashtag syntax.
+
 ## 0.230.1
 
 - Refactoring.

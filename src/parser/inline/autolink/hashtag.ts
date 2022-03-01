@@ -14,7 +14,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         str(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//),
         ([source]) => source.length <= 253 + 1),
       verify(
-        str(/^(?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,128}(?:_?\((?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,125}\))?(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/),
+        str(/^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]))(?:[^\p{C}\p{S}\p{P}\s]|_(?=[^\p{C}\p{S}\p{P}\s])){1,128}(?!_?[^\p{C}\p{S}\p{P}\s]|')/u),
         ([source]) => source.length <= 128),
     ])),
   context({ syntax: { inline: {
