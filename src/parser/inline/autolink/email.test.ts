@@ -36,7 +36,7 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser('a@b_c')), [['<a class="email" href="mailto:a@b">a@b</a>'], '_c']);
       assert.deepStrictEqual(inspect(parser('a@b-')), [['<a class="email" href="mailto:a@b">a@b</a>'], '-']);
       assert.deepStrictEqual(inspect(parser('a@b-c')), [['<a class="email" href="mailto:a@b-c">a@b-c</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('a@b--c')), [['<a class="email" href="mailto:a@b--c">a@b--c</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('a@b--c')), [['<a class="email" href="mailto:a@b">a@b</a>'], '--c']);
       assert.deepStrictEqual(inspect(parser('a@b.')), [['<a class="email" href="mailto:a@b">a@b</a>'], '.']);
       assert.deepStrictEqual(inspect(parser('a@b.c')), [['<a class="email" href="mailto:a@b.c">a@b.c</a>'], '']);
       assert.deepStrictEqual(inspect(parser('a@b..c')), [['<a class="email" href="mailto:a@b">a@b</a>'], '..c']);
