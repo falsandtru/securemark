@@ -6257,10 +6257,10 @@ require = function () {
                 channel_1.channel,
                 account_1.account,
                 (0, source_1.str)(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
-                (0, source_1.str)(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s])(?=#)/u),
+                (0, source_1.str)(new RegExp(String.raw`^(?:[^\p{C}\p{S}\p{P}\s]|${ hashtag_1.emoji }|['_])(?=#)`, 'u')),
                 hashtag_1.hashtag,
                 hashnum_1.hashnum,
-                (0, source_1.str)(/^#+(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])*/),
+                (0, source_1.str)(new RegExp(String.raw`^#+(?:[^\p{C}\p{S}\p{P}\s]|${ hashtag_1.emoji }|['_])*`, 'u')),
                 anchor_1.anchor
             ])))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
         },
@@ -6287,7 +6287,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([
-                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
+                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
                 (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)
             ])), (0, combinator_1.context)({
                 syntax: {
@@ -6374,7 +6374,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.email = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*/), ([source]) => source.indexOf('@') <= 64 && source.length <= 255), source => [
+            exports.email = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*(?![0-9A-Za-z])/), ([source]) => source.indexOf('@') <= 64 && source.length <= 255), source => [
                 [(0, typed_dom_1.html)('a', {
                         class: 'email',
                         href: `mailto:${ source }`
@@ -6395,9 +6395,10 @@ require = function () {
             exports.hashnum = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
+            const hashtag_1 = _dereq_('./hashtag');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(/^[0-9]{1,16}(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/)), (0, combinator_1.context)({
+            exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(new RegExp(String.raw`^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|${ hashtag_1.emoji }|['_])`, 'u'))), (0, combinator_1.context)({
                 syntax: {
                     inline: {
                         link: true,
@@ -6413,6 +6414,7 @@ require = function () {
             '../../../combinator': 27,
             '../../source': 128,
             '../link': 114,
+            './hashtag': 96,
             'typed-dom': 26
         }
     ],
@@ -6420,14 +6422,20 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.hashtag = void 0;
+            exports.hashtag = exports.emoji = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
+            exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
             exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, combinator_1.tails)([
-                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
-                (0, combinator_1.verify)((0, source_1.str)(/^(?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,128}(?:_?\((?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,125}\))?(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/), ([source]) => source.length <= 128)
+                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
+                (0, combinator_1.verify)((0, source_1.str)(new RegExp([
+                    '^',
+                    String.raw`(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|${ exports.emoji }))`,
+                    String.raw`(?:[^\p{C}\p{S}\p{P}\s]|${ exports.emoji }|_(?=[^\p{C}\p{S}\p{P}\s]|${ exports.emoji })){1,128}`,
+                    String.raw`(?!_?(?:[^\p{C}\p{S}\p{P}\s]|${ exports.emoji })|')`
+                ].join(''), 'u')), ([source]) => source.length <= 128)
             ])), (0, combinator_1.context)({
                 syntax: {
                     inline: {
@@ -7322,7 +7330,7 @@ require = function () {
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
                     const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-                    return last.includes('.') && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${ host.pathname.slice(0, -last.length) }${ uri.slice(2) }` : `${ host.pathname.replace(/\/?$/, '/') }${ uri.slice(2) }`;
+                    return last.includes('.') && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1)) ? `${ host.pathname.slice(0, -last.length) }${ uri.slice(2) }` : `${ host.pathname.replace(/\/?$/, '/') }${ uri.slice(2) }`;
                 case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
