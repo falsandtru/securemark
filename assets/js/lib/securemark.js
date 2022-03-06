@@ -1,4 +1,4 @@
-/*! securemark v0.231.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED */
+/*! securemark v0.231.1 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED */
 require = function () {
     function r(e, n, t) {
         function o(i, f) {
