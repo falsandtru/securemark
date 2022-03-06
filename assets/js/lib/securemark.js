@@ -896,12 +896,16 @@ require = function () {
             var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
-                Object.defineProperty(o, k2, {
-                    enumerable: true,
-                    get: function () {
-                        return m[k];
-                    }
-                });
+                var desc = Object.getOwnPropertyDescriptor(m, k);
+                if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                    desc = {
+                        enumerable: true,
+                        get: function () {
+                            return m[k];
+                        }
+                    };
+                }
+                Object.defineProperty(o, k2, desc);
             } : function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
@@ -1147,12 +1151,16 @@ require = function () {
             var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
-                Object.defineProperty(o, k2, {
-                    enumerable: true,
-                    get: function () {
-                        return m[k];
-                    }
-                });
+                var desc = Object.getOwnPropertyDescriptor(m, k);
+                if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                    desc = {
+                        enumerable: true,
+                        get: function () {
+                            return m[k];
+                        }
+                    };
+                }
+                Object.defineProperty(o, k2, desc);
             } : function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
@@ -2502,7 +2510,7 @@ require = function () {
                             [privates.scope](child) {
                                 if (child.element.tagName !== 'STYLE')
                                     return;
-                                const target = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
+                                const target = /(^|[,}]|\*\/)(\s*)\$scope(?=[\s~+[{:>,])/g;
                                 const style = child.element.innerHTML;
                                 if (!target.test(style))
                                     return;
@@ -3081,12 +3089,16 @@ require = function () {
             var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
-                Object.defineProperty(o, k2, {
-                    enumerable: true,
-                    get: function () {
-                        return m[k];
-                    }
-                });
+                var desc = Object.getOwnPropertyDescriptor(m, k);
+                if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                    desc = {
+                        enumerable: true,
+                        get: function () {
+                            return m[k];
+                        }
+                    };
+                }
+                Object.defineProperty(o, k2, desc);
             } : function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
@@ -4015,12 +4027,16 @@ require = function () {
             var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
-                Object.defineProperty(o, k2, {
-                    enumerable: true,
-                    get: function () {
-                        return m[k];
-                    }
-                });
+                var desc = Object.getOwnPropertyDescriptor(m, k);
+                if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                    desc = {
+                        enumerable: true,
+                        get: function () {
+                            return m[k];
+                        }
+                    };
+                }
+                Object.defineProperty(o, k2, desc);
             } : function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
@@ -4329,7 +4345,7 @@ require = function () {
             function headers(source) {
                 var _a;
                 const [el] = parse(source);
-                return (_a = el === null || el === void 0 ? void 0 : el.textContent.trimEnd().slice(el.firstChild.textContent.length).split(/[^\S\n]*\n/)) !== null && _a !== void 0 ? _a : [];
+                return (_a = el === null || el === void 0 ? void 0 : el.textContent.trimEnd().slice(el.firstChild.textContent.length).split('\n')) !== null && _a !== void 0 ? _a : [];
             }
             exports.headers = headers;
             function parse(source) {
@@ -6501,10 +6517,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const index = new RegExp(`^(?:${ [
-                /(?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*))+/,
-                /[0-9]{1,4}|[A-Za-z]/
-            ].map(r => r.source).join('|') })`);
+            const index = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Za-z])/;
             const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 65248)));
             exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')'), false, ([as, bs = [], cs], rest) => [
@@ -6582,8 +6595,8 @@ require = function () {
             const htmlentity_1 = _dereq_('./htmlentity');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\]|\[\1\s)((?:\S+\s+)+?)(\1\]|(?=\[\1(?:$|\s)))/, ([whole, , body, closer]) => (rest, context) => {
-                [whole, body] = `${ whole }\0${ body.trimEnd() }`.replace(/\x1B/g, '').split('\0', 2);
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s)))/, ([whole, , body, closer]) => (rest, context) => {
+                [whole, body] = `${ whole }\0${ body.trimStart() }`.replace(/\x1B/g, '').split('\0', 2);
                 if (!closer)
                     return [
                         [(0, typed_dom_1.html)('sup', {
@@ -7124,7 +7137,7 @@ require = function () {
                     rest
                 ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(1000)))
             ])))));
-            exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[^\S\n]|>)/)]);
+            exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
             function elem(tag, as, bs, cs, context) {
                 var _a, _b, _c, _d, _e, _f;
                 if (!tags.includes(tag))
@@ -7322,7 +7335,7 @@ require = function () {
             ]);
             exports.option = (0, combinator_1.union)([
                 (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]),
-                (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[^\S\n]|})/),
+                (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/),
                 (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+(?=})/), () => []),
                 (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\n{}]+/), opt => [` \\${ opt.slice(1) }`])
             ]);
@@ -7700,8 +7713,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.validate)('[', ')', '\n', (0, combinator_1.sequence)([
-                (0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\[\]\n])+(?=]\()/, text), ']'),
-                (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\(\)\n])+(?=\))/, text), ')')
+                (0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\\[\]\n])+(?=]\()/, text), ']'),
+                (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\\(\)\n])+(?=\))/, text), ')')
             ])), ([texts]) => (0, util_1.isStartTightNodes)(texts)), ([texts, rubies], rest) => {
                 const tail = typeof texts[texts.length - 1] === 'object' ? [texts.pop()] : [];
                 tail.length === 0 && texts[texts.length - 1] === '' && texts.pop();
@@ -8667,10 +8680,10 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\]|\[\1\s)(?:\S+\s+)+?(?:\1\]|(?=\[\1(?:$|\s))))*\\?(?:$|\n)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))*(?:\\?(?:$|\n)|(\S))`, 'gm');
             function visualize(parser) {
                 return (0, combinator_1.union)([
-                    (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
+                    (0, combinator_1.convert)(source => source.replace(blankline, (line, ...$) => !$[3] ? line.replace(/[\\&<\[]/g, '\x1B$&') : line), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
                     (0, combinator_1.some)((0, combinator_1.union)([
                         source_1.linebreak,
                         source_1.unescsource
@@ -8950,12 +8963,16 @@ require = function () {
                     var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                         if (k2 === undefined)
                             k2 = k;
-                        Object.defineProperty(o, k2, {
-                            enumerable: true,
-                            get: function () {
-                                return m[k];
-                            }
-                        });
+                        var desc = Object.getOwnPropertyDescriptor(m, k);
+                        if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                            desc = {
+                                enumerable: true,
+                                get: function () {
+                                    return m[k];
+                                }
+                            };
+                        }
+                        Object.defineProperty(o, k2, desc);
                     } : function (o, m, k, k2) {
                         if (k2 === undefined)
                             k2 = k;
@@ -9266,9 +9283,9 @@ require = function () {
             function resolve(url) {
                 switch (url.origin) {
                 case 'https://www.youtube.com':
-                    return url.pathname === '/watch/' ? url.href.replace(/.+?=/, '').replace('&', '?') : undefined;
+                    return url.pathname === '/watch/' ? url.href.slice(url.href.indexOf('?') + 1).replace('&', '?') : undefined;
                 case 'https://youtu.be':
-                    return url.pathname.match(/^\/[\w-]+$/) ? url.href.slice(url.href.indexOf('/', 9) + 1) : undefined;
+                    return url.pathname.match(/^\/[\w-]+$/) ? url.href.slice(url.href.indexOf('/', url.href.indexOf('.')) + 1) : undefined;
                 default:
                     return;
                 }
@@ -9607,12 +9624,16 @@ require = function () {
             var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
-                Object.defineProperty(o, k2, {
-                    enumerable: true,
-                    get: function () {
-                        return m[k];
-                    }
-                });
+                var desc = Object.getOwnPropertyDescriptor(m, k);
+                if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+                    desc = {
+                        enumerable: true,
+                        get: function () {
+                            return m[k];
+                        }
+                    };
+                }
+                Object.defineProperty(o, k2, desc);
             } : function (o, m, k, k2) {
                 if (k2 === undefined)
                     k2 = k;
