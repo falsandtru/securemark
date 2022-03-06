@@ -9281,11 +9281,12 @@ require = function () {
             }
             exports.youtube = youtube;
             function resolve(url) {
+                var _a;
                 switch (url.origin) {
                 case 'https://www.youtube.com':
-                    return url.pathname === '/watch/' ? url.href.slice(url.href.indexOf('?') + 1).replace('&', '?') : undefined;
+                    return url.pathname.match(/^\/watch\/?$/) ? (_a = url.searchParams.get('v')) === null || _a === void 0 ? void 0 : _a.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : undefined;
                 case 'https://youtu.be':
-                    return url.pathname.match(/^\/[\w-]+$/) ? url.href.slice(url.href.indexOf('/', url.href.indexOf('.')) + 1) : undefined;
+                    return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : undefined;
                 default:
                     return;
                 }
