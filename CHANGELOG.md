@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.231.1
+
+- Fix comment syntax.
+
 ## 0.231.0
 
 - Refine hashtag syntax.

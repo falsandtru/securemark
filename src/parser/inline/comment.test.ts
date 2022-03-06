@@ -17,8 +17,10 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[# #] #]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#  #]  #]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# [#')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#[#')), undefined);
       assert.deepStrictEqual(inspect(parser('[# [# ')), undefined);
       assert.deepStrictEqual(inspect(parser('[# [# a')), undefined);
+      assert.deepStrictEqual(inspect(parser('[# a[#')), [['<sup class="comment invalid">[# a</sup>'], '[#']);
       assert.deepStrictEqual(inspect(parser('[# a [#')), [['<sup class="comment invalid">[# a </sup>'], '[#']);
       assert.deepStrictEqual(inspect(parser('[# a [# ')), [['<sup class="comment invalid">[# a </sup>'], '[# ']);
       assert.deepStrictEqual(inspect(parser('[# a [#\n')), [['<sup class="comment invalid">[# a </sup>'], '[#\n']);
