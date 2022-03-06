@@ -11,8 +11,8 @@ import { unshift, push, join } from 'spica/array';
 export const ruby: RubyParser = lazy(() => creator(bind(verify(
   validate('[', ')', '\n',
   sequence([
-    surround('[', focus(/^(?:\\[^\n]|[^\[\]\n])+(?=]\()/, text), ']'),
-    surround('(', focus(/^(?:\\[^\n]|[^\(\)\n])+(?=\))/, text), ')'),
+    surround('[', focus(/^(?:\\[^\n]|[^\\\[\]\n])+(?=]\()/, text), ']'),
+    surround('(', focus(/^(?:\\[^\n]|[^\\\(\)\n])+(?=\))/, text), ')'),
   ])),
   ([texts]) => isStartTightNodes(texts)),
   ([texts, rubies], rest) => {

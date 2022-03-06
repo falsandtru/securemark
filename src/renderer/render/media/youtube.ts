@@ -16,11 +16,11 @@ function resolve(url: URL): string | undefined {
   switch (url.origin) {
     case 'https://www.youtube.com':
       return url.pathname === '/watch/'
-        ? url.href.replace(/.+?=/, '').replace('&', '?')
+        ? url.href.slice(url.href.indexOf('?') + 1).replace('&', '?')
         : undefined;
     case 'https://youtu.be':
       return url.pathname.match(/^\/[\w-]+$/)
-        ? url.href.slice(url.href.indexOf('/', 9) + 1)
+        ? url.href.slice(url.href.indexOf('/', url.href.indexOf('.')) + 1)
         : undefined;
     default:
       return;

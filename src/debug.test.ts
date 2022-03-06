@@ -21,6 +21,7 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       el.innerHTML = node.outerHTML.slice(0, until);
       if (node.outerHTML.length <= until) {
         assert(node.outerHTML === el.innerHTML);
+        // eslint-disable-next-line redos/no-vulnerable
         assert(node.childNodes.length === el.firstChild?.childNodes.length || />[^<]{65537}/.test(node.outerHTML));
       }
       else {

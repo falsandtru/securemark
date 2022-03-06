@@ -3,6 +3,7 @@
 ## 0.231.1
 
 - Fix comment syntax.
+- Fix ReDoS.
 
 ## 0.231.0
 

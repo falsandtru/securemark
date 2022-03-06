@@ -98,7 +98,27 @@ gulp.task('ts:dev', () =>
 gulp.task('ts:test', () =>
   compile(config.ts.test.src)
     .pipe($.rename({ extname: '.test.js' }))
-    .pipe(gulp.dest(config.ts.test.dest)));
+    .pipe(gulp.dest(config.ts.test.dest))
+    .pipe($.eslint({
+      'parserOptions': {
+        'ecmaVersion': 2020,
+      },
+      'env': {
+        'es2020': true,
+      },
+      'plugins': ['redos'],
+      'rules': {
+        'redos/no-vulnerable': [
+          'error',
+          {
+            ignoreErrors: false,
+            timeout: 30000,
+          },
+        ],
+      },
+    }))
+    .pipe($.eslint.format())
+    .pipe($.eslint.failAfterError()));
 
 gulp.task('ts:dist', () =>
   compile(config.ts.dist.src)

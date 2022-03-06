@@ -88,7 +88,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
 ])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
-  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[^\S\n]|>)/),
+  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),
 ]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {

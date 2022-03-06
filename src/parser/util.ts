@@ -42,13 +42,13 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1\s)(?:\s+\S+)+?(?:\s+\1\]|\s*(?=\[\1(?:$|\s))))*\\?(?:$|\n)`, 'gm');
+const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))*(?:\\?(?:$|\n)|(\S))`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return union([
     convert(
-      source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x1B$&')),
+      source => source.replace(blankline, (line, ...$) => !$[3] ? line.replace(/[\\&<\[]/g, '\x1B$&') : line),
       verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
     some(union([linebreak, unescsource])),
   ]);
