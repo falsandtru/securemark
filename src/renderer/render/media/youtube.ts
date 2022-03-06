@@ -15,12 +15,12 @@ export function youtube(source: HTMLImageElement, url: URL): HTMLElement | undef
 function resolve(url: URL): string | undefined {
   switch (url.origin) {
     case 'https://www.youtube.com':
-      return url.pathname === '/watch/'
-        ? url.href.slice(url.href.indexOf('?') + 1).replace('&', '?')
+      return url.pathname.match(/^\/watch\/?$/)
+        ? url.searchParams.get('v')?.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash)
         : undefined;
     case 'https://youtu.be':
-      return url.pathname.match(/^\/[\w-]+$/)
-        ? url.href.slice(url.href.indexOf('/', url.href.indexOf('.')) + 1)
+      return url.pathname.match(/^\/[\w-]+\/?$/)
+        ? url.href.slice(url.origin.length)
         : undefined;
     default:
       return;
