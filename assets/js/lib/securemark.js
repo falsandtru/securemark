@@ -7318,7 +7318,7 @@ require = function () {
                 if ((_a = (0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))) === null || _a === void 0 ? void 0 : _a.some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, (_b = context.host) !== null && _b !== void 0 ? _b : global_1.location, (_d = (_c = context.url) !== null && _c !== void 0 ? _c : context.host) !== null && _d !== void 0 ? _d : global_1.location), ((_e = context.host) === null || _e === void 0 ? void 0 : _e.href) || global_1.location.href), ((_f = context.host) === null || _f === void 0 ? void 0 : _f.origin) || global_1.location.origin);
+                const el = elem(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, (_b = context.host) !== null && _b !== void 0 ? _b : global_1.location, (_d = (_c = context.url) !== null && _c !== void 0 ? _c : context.host) !== null && _d !== void 0 ? _d : global_1.location), ((_e = context.host) === null || _e === void 0 ? void 0 : _e.href) || global_1.location.href), ((_f = context.host) === null || _f === void 0 ? void 0 : _f.origin) || global_1.location.origin);
                 if (el.classList.contains('invalid'))
                     return [
                         [el],
@@ -7353,7 +7353,7 @@ require = function () {
                 }
             }
             exports.resolve = resolve;
-            function create(INSECURE_URI, content, uri, origin) {
+            function elem(INSECURE_URI, content, uri, origin) {
                 let type;
                 let description;
                 switch (uri.protocol) {
@@ -8680,7 +8680,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))*(?:\\?(?:$|\n)|(\S))`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))+(?=$|(\S))`, 'gm');
             function visualize(parser) {
                 return (0, combinator_1.union)([
                     (0, combinator_1.convert)(source => source.replace(blankline, (line, ...$) => !$[3] ? line.replace(/[\\&<\[]/g, '\x1B$&') : line), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
