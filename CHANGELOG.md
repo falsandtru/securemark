@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.231.2
+
+- Refactoring.
+
 ## 0.231.1
 
 - Fix comment syntax.
