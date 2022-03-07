@@ -42,7 +42,7 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))*(?:\\?(?:$|\n)|(\S))`, 'gm');
+const blankline = new RegExp(String.raw`^(?!$)(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))*(?:\\?$|(?=(\S)))`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
