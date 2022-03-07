@@ -7,7 +7,7 @@ import { html, defrag } from 'typed-dom';
 import { unshift, push } from 'spica/array';
 
 const index = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Za-z])/;
-const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 0xfee0)));
+const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0)));
 
 export const bracket: BracketParser = lazy(() => union([
   surround(str('('), str(index), str(')'), false,
