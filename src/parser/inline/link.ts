@@ -52,7 +52,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const el = create(
+    const el = elem(
       INSECURE_URI,
       trimNode(defrag(content)),
       new ReadonlyURL(
@@ -98,7 +98,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
   }
 }
 
-function create(
+function elem(
   INSECURE_URI: string,
   content: readonly (string | HTMLElement)[],
   uri: ReadonlyURL,
