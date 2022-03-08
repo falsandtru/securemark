@@ -14,7 +14,7 @@ describe('Unit: util/info', () => {
           channel: [],
           hashtag: [],
           hashnum: [],
-          mention: [],
+          reply: [],
           anchor: [],
           media: [],
         });

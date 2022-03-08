@@ -3,6 +3,7 @@
 ## 0.232.0
 
 - Refine paragraph syntax to separate mention syntax.
+- Rename mention syntax to reply syntax.
 
 ## 0.231.2
 

@@ -87,7 +87,7 @@ export namespace MarkdownParser {
       BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
       BlockParser.BlockquoteParser,
-      BlockParser.MentionParser,
+      BlockParser.ReplyParser,
       BlockParser.ParagraphParser,
     ]> {
   }
@@ -551,32 +551,32 @@ export namespace MarkdownParser {
         }
       }
     }
-    export interface MentionParser extends
+    export interface ReplyParser extends
       // >>1
       // > text
       // abc
-      Block<'mention'>,
+      Block<'reply'>,
       Parser<HTMLParagraphElement, Context, [
         Parser<string | HTMLElement, Context, [
-          MentionParser.CiteParser,
-          MentionParser.QuoteParser,
+          ReplyParser.CiteParser,
+          ReplyParser.QuoteParser,
         ]>,
         Parser<string | HTMLElement, Context, [
-          MentionParser.QuoteParser,
+          ReplyParser.QuoteParser,
           InlineParser,
         ]>,
       ]> {
     }
-    export namespace MentionParser {
+    export namespace ReplyParser {
       export interface CiteParser extends
-        Block<'mention/cite'>,
+        Block<'reply/cite'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
           SourceParser.StrParser,
           InlineParser.AutolinkParser.AnchorParser,
         ]> {
       }
       export interface QuoteParser extends
-        Block<'mention/quote'>,
+        Block<'reply/quote'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
           QuoteParser.BlockParser,
           QuoteParser.PlaceholderParser,
@@ -584,20 +584,20 @@ export namespace MarkdownParser {
       }
       export namespace QuoteParser {
         export interface BlockParser extends
-          Block<'mention/quote/block'>,
+          Block<'reply/quote/block'>,
           Parser<string | HTMLElement, Context, [
             TextParser,
           ]> {
         }
         export interface TextParser extends
-          Block<'mention/quote/text'>,
+          Block<'reply/quote/text'>,
           Parser<string | HTMLElement, Context, [
             InlineParser.MathParser,
             AutolinkParser,
           ]> {
         }
         export interface PlaceholderParser extends
-          Block<'mention/quote/placeholder'>,
+          Block<'reply/quote/placeholder'>,
           Parser<string | HTMLElement, Context, [
             SourceParser.StrParser,
           ]> {

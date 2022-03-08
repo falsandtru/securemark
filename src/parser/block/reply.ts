@@ -1,7 +1,7 @@
-import { MentionParser } from '../block';
+import { ReplyParser } from '../block';
 import { inits, subsequence, some, block, validate, rewrite, trim, fmap } from '../../combinator';
-import { cite } from './mention/cite';
-import { quote, syntax as delimiter } from './mention/quote';
+import { cite } from './reply/cite';
+import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
@@ -9,7 +9,7 @@ import { visualize } from '../util';
 import { html, defrag } from 'typed-dom';
 import { push, pop } from 'spica/array';
 
-export const mention: MentionParser = block(validate('>', localize(fmap(
+export const reply: ReplyParser = block(validate('>', localize(fmap(
   some(inits([
     some(inits([
       cite,

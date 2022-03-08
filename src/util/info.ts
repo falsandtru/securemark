@@ -13,7 +13,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
     channel: find('a.channel'),
     hashtag: find('a.hashtag'),
     hashnum: find('a.hashnum'),
-    mention: find('.cite > a.anchor'),
+    reply: find('.cite > a.anchor'),
     anchor: find(':not(.cite) > a.anchor'),
     media: find('.media[data-src]'),
   };

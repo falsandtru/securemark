@@ -13,7 +13,7 @@ import { blockquote } from './block/blockquote';
 import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
-import { mention } from './block/mention';
+import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
 import { html } from 'typed-dom';
 import { rnd0Z } from 'spica/random';
@@ -30,7 +30,7 @@ export import CodeBlockParser = BlockParser.CodeBlockParser;
 export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
-export import MentionParser = BlockParser.MentionParser;
+export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creator(error(
@@ -48,7 +48,7 @@ export const block: BlockParser = creator(error(
     mathblock,
     extension,
     blockquote,
-    mention,
+    reply,
     paragraph
   ]))));
 

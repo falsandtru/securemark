@@ -1,10 +1,10 @@
-import { MentionParser } from '../../block';
+import { ReplyParser } from '../../block';
 import { tails, line, validate, creator, reverse, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom';
 
-export const cite: MentionParser.CiteParser = creator(line(fmap(validate(
+export const cite: ReplyParser.CiteParser = creator(line(fmap(validate(
   '>>',
   reverse(tails([
     str(/^>*(?=>>)/),

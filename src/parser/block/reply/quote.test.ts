@@ -2,7 +2,7 @@ import { quote } from './quote';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/block/mention/quote', () => {
+describe('Unit: parser/block/reply/quote', () => {
   describe('quote', () => {
     const parser = (source: string) => some(quote)(source, {});
 
