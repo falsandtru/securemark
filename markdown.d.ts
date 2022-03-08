@@ -554,7 +554,13 @@ export namespace MarkdownParser {
       // abc
       Block<'paragraph'>,
       Parser<HTMLParagraphElement, Context, [
-        ParagraphParser.MentionParser,
+        Parser<string | HTMLElement, Context, [
+          ParagraphParser.MentionParser,
+          Parser<string | HTMLElement, Context, [
+            ParagraphParser.MentionParser.QuoteParser,
+            InlineParser,
+          ]>,
+        ]>,
         Parser<string | HTMLElement, Context, [
           ParagraphParser.MentionParser.QuoteParser,
           InlineParser,

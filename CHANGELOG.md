@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.231.3
+
+- Fix paragraph parser to disallow orphan quotes.
+
 ## 0.231.2
 
 - Refactoring.
