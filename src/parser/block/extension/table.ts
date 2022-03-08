@@ -127,7 +127,7 @@ function attributes(source: string) {
       ? { 'data-highlight-level': +highlight! > 1 ? highlight : undefined }
       : {
           'data-invalid-syntax': 'table',
-          'data-invalid-type': 'highlight',
+          'data-invalid-type': 'syntax',
           'data-invalid-description': 'Too much highlight level.',
         },
   };
