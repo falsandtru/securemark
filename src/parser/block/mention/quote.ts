@@ -1,14 +1,14 @@
-import { ParagraphParser } from '../../../block';
-import { eval } from '../../../../combinator/data/parser';
-import { union, some, block, line, validate, rewrite, creator, lazy, fmap } from '../../../../combinator';
-import { math } from '../../../inline/math';
-import { str, anyline } from '../../../source';
-import { autolink } from '../../../autolink';
+import { MentionParser } from '../../block';
+import { eval } from '../../../combinator/data/parser';
+import { union, some, block, line, validate, rewrite, creator, lazy, fmap } from '../../../combinator';
+import { math } from '../../inline/math';
+import { str, anyline } from '../../source';
+import { autolink } from '../../autolink';
 import { html, defrag } from 'typed-dom';
 
 export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 
-export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
+export const quote: MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
   union([
     rewrite(
@@ -33,7 +33,7 @@ export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creat
   ]),
   false)));
 
-const qblock: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, context) => {
+const qblock: MentionParser.QuoteParser.BlockParser = (source, context) => {
   source = source.replace(/\n$/, '');
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
@@ -69,7 +69,7 @@ const qblock: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, c
   return [defrag(nodes), ''];
 };
 
-const text: ParagraphParser.MentionParser.QuoteParser.TextParser = union([
+const text: MentionParser.QuoteParser.TextParser = union([
   math,
   autolink,
 ]);

@@ -87,6 +87,7 @@ export namespace MarkdownParser {
       BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
       BlockParser.BlockquoteParser,
+      BlockParser.MentionParser,
       BlockParser.ParagraphParser,
     ]> {
   }
@@ -550,70 +551,65 @@ export namespace MarkdownParser {
         }
       }
     }
-    export interface ParagraphParser extends
+    export interface MentionParser extends
+      // >>1
+      // > text
       // abc
-      Block<'paragraph'>,
+      Block<'mention'>,
       Parser<HTMLParagraphElement, Context, [
         Parser<string | HTMLElement, Context, [
-          ParagraphParser.MentionParser,
-          Parser<string | HTMLElement, Context, [
-            ParagraphParser.MentionParser.QuoteParser,
-            InlineParser,
-          ]>,
+          MentionParser.CiteParser,
+          MentionParser.QuoteParser,
         ]>,
         Parser<string | HTMLElement, Context, [
-          ParagraphParser.MentionParser.QuoteParser,
+          MentionParser.QuoteParser,
           InlineParser,
         ]>,
       ]> {
     }
-    export namespace ParagraphParser {
-      export interface MentionParser extends
-        // >>1
-        // > text
-        Block<'paragraph/mention'>,
+    export namespace MentionParser {
+      export interface CiteParser extends
+        Block<'mention/cite'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
-          ParagraphParser.MentionParser.CiteParser,
-          ParagraphParser.MentionParser.QuoteParser,
+          SourceParser.StrParser,
+          InlineParser.AutolinkParser.AnchorParser,
         ]> {
       }
-      export namespace MentionParser {
-        export interface CiteParser extends
-          Block<'paragraph/mention/cite'>,
-          Parser<HTMLSpanElement | HTMLBRElement, Context, [
+      export interface QuoteParser extends
+        Block<'mention/quote'>,
+        Parser<HTMLSpanElement | HTMLBRElement, Context, [
+          QuoteParser.BlockParser,
+          QuoteParser.PlaceholderParser,
+        ]> {
+      }
+      export namespace QuoteParser {
+        export interface BlockParser extends
+          Block<'mention/quote/block'>,
+          Parser<string | HTMLElement, Context, [
+            TextParser,
+          ]> {
+        }
+        export interface TextParser extends
+          Block<'mention/quote/text'>,
+          Parser<string | HTMLElement, Context, [
+            InlineParser.MathParser,
+            AutolinkParser,
+          ]> {
+        }
+        export interface PlaceholderParser extends
+          Block<'mention/quote/placeholder'>,
+          Parser<string | HTMLElement, Context, [
             SourceParser.StrParser,
-            InlineParser.AutolinkParser.AnchorParser,
           ]> {
-        }
-        export interface QuoteParser extends
-          Block<'paragraph/mention/quote'>,
-          Parser<HTMLSpanElement | HTMLBRElement, Context, [
-            QuoteParser.BlockParser,
-            QuoteParser.PlaceholderParser,
-          ]> {
-        }
-        export namespace QuoteParser {
-          export interface BlockParser extends
-            Block<'paragraph/mention/quote/block'>,
-            Parser<string | HTMLElement, Context, [
-              TextParser,
-            ]> {
-          }
-          export interface TextParser extends
-            Block<'paragraph/mention/quote/text'>,
-            Parser<string | HTMLElement, Context, [
-              InlineParser.MathParser,
-              AutolinkParser,
-            ]> {
-          }
-          export interface PlaceholderParser extends
-            Block<'paragraph/mention/quote/placeholder'>,
-            Parser<string | HTMLElement, Context, [
-              SourceParser.StrParser,
-            ]> {
-          }
         }
       }
+    }
+    export interface ParagraphParser extends
+      // abc
+      Block<'paragraph'>,
+      Parser<HTMLParagraphElement, Context, [
+        InlineParser,
+      ]> {
     }
   }
   export interface InlineParser extends

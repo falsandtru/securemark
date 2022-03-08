@@ -1,5 +1,5 @@
 import { exec } from '../combinator/data/parser';
-import { cite } from '../parser/block/paragraph/mention/cite';
+import { cite } from '../parser/block/mention/cite';
 import { define } from 'typed-dom';
 
 export function quote(anchor: string, range: Range): string {

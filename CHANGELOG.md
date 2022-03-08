@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.231.3
+## 0.232.0
 
-- Fix paragraph parser to disallow orphan quotes.
+- Refine paragraph syntax to separate mention syntax.
 
 ## 0.231.2
 

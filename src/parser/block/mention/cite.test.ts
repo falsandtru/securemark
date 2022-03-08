@@ -1,8 +1,8 @@
 import { cite } from './cite';
-import { some } from '../../../../combinator';
-import { inspect } from '../../../../debug.test';
+import { some } from '../../../combinator';
+import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/block/paragraph/mention/cite', () => {
+describe('Unit: parser/block/mention/cite', () => {
   describe('cite', () => {
     const parser = (source: string) => some(cite)(source, {});
 
