@@ -20,7 +20,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => creator(block(fmap(vali
   ])),
   (ns: [string, ...(string | HTMLElement)[]]) => [
     html('span',
-      ns.length > 1 || /^>+(?=[^\S\n])/.test(ns[0])
+      ns.length > 1
         ? { class: 'quote' }
         : {
             class: 'quote invalid',
@@ -28,7 +28,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => creator(block(fmap(vali
             'data-invalid-type': 'syntax',
             'data-invalid-description': `Missing the whitespace after "${ns[0].split(/[^>]/, 1)[0]}".`,
           },
-      ns),
+      defrag(ns)),
     html('br'),
   ]),
   false)));
@@ -64,9 +64,11 @@ const qblock: ReplyParser.QuoteParser.BlockParser = (source, context) => {
       continue;
     }
   }
+  nodes.unshift('');
+  assert(nodes.length > 1);
   assert(nodes.every(n => typeof n === 'string' || n instanceof HTMLElement));
   assert(quotes.length === 0);
-  return [defrag(nodes), ''];
+  return [nodes, ''];
 };
 
 const text: ReplyParser.QuoteParser.TextParser = union([
