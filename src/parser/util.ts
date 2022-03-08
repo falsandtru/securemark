@@ -229,7 +229,7 @@ export function stringify(nodes: readonly (HTMLElement | string)[]): string {
     }
     else {
       assert(!node.matches('br') && !node.querySelector('br'));
-      // Note: Doesn't reflect line breaks.
+      // NOTE: Doesn't reflect line breaks.
       acc += node.innerText;
     }
   }
