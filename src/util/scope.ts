@@ -2,8 +2,10 @@ import { undefined, WeakMap } from 'spica/global';
 
 export function scope(
   base: DocumentFragment | HTMLElement | ShadowRoot,
-  bound: string = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote`,
+  filter: string = '',
+  bound: string = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote, pre, .quote, .math, .media`,
 ): (el: Element) => boolean {
+  bound += filter && `, ${filter}`;
   const memory = new WeakMap<Node, boolean>();
   const context = 'id' in base && base.closest(bound) || null;
   return el => {

@@ -22,7 +22,7 @@ export function normalize(source: string): string;
 export function quote(anchor: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
-export function scope(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
+export function scope(base: DocumentFragment | HTMLElement | ShadowRoot, filter?: string, bound?: string): (el: Element) => boolean;
 export function sync(editor: HTMLElement, viewer: HTMLElement, bottom?: Element | null): () => void;
 
 export type ParserOptions = Omit<Partial<ParserSettings>, 'chunk'>;
