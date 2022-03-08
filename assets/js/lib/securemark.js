@@ -4544,6 +4544,7 @@ require = function () {
             const codeblock_1 = _dereq_('./block/codeblock');
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
+            const reply_1 = _dereq_('./block/reply');
             const paragraph_1 = _dereq_('./block/paragraph');
             const typed_dom_1 = _dereq_('typed-dom');
             const random_1 = _dereq_('spica/random');
@@ -4560,6 +4561,7 @@ require = function () {
                 mathblock_1.mathblock,
                 extension_1.extension,
                 blockquote_1.blockquote,
+                reply_1.reply,
                 paragraph_1.paragraph
             ]))));
             function error(parser) {
@@ -4593,6 +4595,7 @@ require = function () {
             './block/mathblock': 79,
             './block/olist': 80,
             './block/paragraph': 81,
+            './block/reply': 82,
             './block/table': 85,
             './block/ulist': 86,
             './source': 128,
@@ -5307,7 +5310,7 @@ require = function () {
                     colspan,
                     ...valid ? { 'data-highlight-level': +highlight > 1 ? highlight : global_1.undefined } : {
                         'data-invalid-syntax': 'table',
-                        'data-invalid-type': 'highlight',
+                        'data-invalid-type': 'syntax',
                         'data-invalid-description': 'Too much highlight level.'
                     }
                 };
@@ -5776,31 +5779,17 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.paragraph = void 0;
             const combinator_1 = _dereq_('../../combinator');
-            const mention_1 = _dereq_('./paragraph/mention');
-            const quote_1 = _dereq_('./paragraph/mention/quote');
             const inline_1 = _dereq_('../inline');
-            const source_1 = _dereq_('../source');
             const locale_1 = _dereq_('../locale');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            const array_1 = _dereq_('spica/array');
-            exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.subsequence)([
-                (0, combinator_1.some)(mention_1.mention),
-                (0, combinator_1.some)((0, combinator_1.union)([
-                    quote_1.quote,
-                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
-                ]))
-            ]), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
+            exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)(ns))])));
         },
         {
             '../../combinator': 27,
             '../inline': 88,
             '../locale': 123,
-            '../source': 128,
             '../util': 134,
-            './paragraph/mention': 82,
-            './paragraph/mention/quote': 84,
-            'spica/array': 6,
             'typed-dom': 26
         }
     ],
@@ -5808,19 +5797,37 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.mention = void 0;
-            const combinator_1 = _dereq_('../../../combinator');
-            const cite_1 = _dereq_('./mention/cite');
-            const quote_1 = _dereq_('./mention/quote');
-            exports.mention = (0, combinator_1.validate)('>', (0, combinator_1.inits)([
-                (0, combinator_1.some)(cite_1.cite),
-                quote_1.quote
-            ]));
+            exports.reply = void 0;
+            const combinator_1 = _dereq_('../../combinator');
+            const cite_1 = _dereq_('./reply/cite');
+            const quote_1 = _dereq_('./reply/quote');
+            const inline_1 = _dereq_('../inline');
+            const source_1 = _dereq_('../source');
+            const locale_1 = _dereq_('../locale');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
+            const array_1 = _dereq_('spica/array');
+            exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.inits)([
+                (0, combinator_1.some)((0, combinator_1.inits)([
+                    cite_1.cite,
+                    quote_1.quote
+                ])),
+                (0, combinator_1.subsequence)([
+                    (0, combinator_1.some)(quote_1.quote),
+                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
+                ])
+            ])), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
         },
         {
-            '../../../combinator': 27,
-            './mention/cite': 83,
-            './mention/quote': 84
+            '../../combinator': 27,
+            '../inline': 88,
+            '../locale': 123,
+            '../source': 128,
+            '../util': 134,
+            './reply/cite': 83,
+            './reply/quote': 84,
+            'spica/array': 6,
+            'typed-dom': 26
         }
     ],
     83: [
@@ -5828,9 +5835,9 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.cite = void 0;
-            const combinator_1 = _dereq_('../../../../combinator');
-            const anchor_1 = _dereq_('../../../inline/autolink/anchor');
-            const source_1 = _dereq_('../../../source');
+            const combinator_1 = _dereq_('../../../combinator');
+            const anchor_1 = _dereq_('../../inline/autolink/anchor');
+            const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([
                 (0, source_1.str)(/^>*(?=>>)/),
@@ -5844,9 +5851,9 @@ require = function () {
             ])));
         },
         {
-            '../../../../combinator': 27,
-            '../../../inline/autolink/anchor': 92,
-            '../../../source': 128,
+            '../../../combinator': 27,
+            '../../inline/autolink/anchor': 92,
+            '../../source': 128,
             'typed-dom': 26
         }
     ],
@@ -5855,11 +5862,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.quote = exports.syntax = void 0;
-            const parser_1 = _dereq_('../../../../combinator/data/parser');
-            const combinator_1 = _dereq_('../../../../combinator');
-            const math_1 = _dereq_('../../../inline/math');
-            const source_1 = _dereq_('../../../source');
-            const autolink_1 = _dereq_('../../../autolink');
+            const parser_1 = _dereq_('../../../combinator/data/parser');
+            const combinator_1 = _dereq_('../../../combinator');
+            const math_1 = _dereq_('../../inline/math');
+            const source_1 = _dereq_('../../source');
+            const autolink_1 = _dereq_('../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
             exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([
@@ -5912,11 +5919,11 @@ require = function () {
             ]);
         },
         {
-            '../../../../combinator': 27,
-            '../../../../combinator/data/parser': 47,
-            '../../../autolink': 62,
-            '../../../inline/math': 116,
-            '../../../source': 128,
+            '../../../combinator': 27,
+            '../../../combinator/data/parser': 47,
+            '../../autolink': 62,
+            '../../inline/math': 116,
+            '../../source': 128,
             'typed-dom': 26
         }
     ],
@@ -9350,7 +9357,7 @@ require = function () {
             exports.info = void 0;
             const scope_1 = _dereq_('./scope');
             function info(source) {
-                const match = (0, scope_1.scope)(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
+                const match = (0, scope_1.scope)(source, '.invalid');
                 return {
                     url: find('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashnum):not(.anchor)').filter(el => [
                         'http:',
@@ -9362,7 +9369,7 @@ require = function () {
                     channel: find('a.channel'),
                     hashtag: find('a.hashtag'),
                     hashnum: find('a.hashnum'),
-                    mention: find('.cite > a.anchor'),
+                    reply: find('.cite > a.anchor'),
                     anchor: find(':not(.cite) > a.anchor'),
                     media: find('.media[data-src]')
                 };
@@ -9387,7 +9394,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.quote = void 0;
             const parser_1 = _dereq_('../combinator/data/parser');
-            const cite_1 = _dereq_('../parser/block/paragraph/mention/cite');
+            const cite_1 = _dereq_('../parser/block/reply/cite');
             const typed_dom_1 = _dereq_('typed-dom');
             function quote(anchor, range) {
                 var _a, _b;
@@ -9466,7 +9473,7 @@ require = function () {
         },
         {
             '../combinator/data/parser': 47,
-            '../parser/block/paragraph/mention/cite': 83,
+            '../parser/block/reply/cite': 83,
             'typed-dom': 26
         }
     ],
@@ -9476,7 +9483,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.scope = void 0;
             const global_1 = _dereq_('spica/global');
-            function scope(base, bound = `${ 'id' in base && base.id ? `#${ base.id }, ` : '' }section, article, aside, blockquote`) {
+            function scope(base, filter = '', bound = `${ 'id' in base && base.id ? `#${ base.id }, ` : '' }section, article, aside, blockquote, pre, .quote, .math, .media`) {
+                bound += filter && `, ${ filter }`;
                 const memory = new global_1.WeakMap();
                 const context = 'id' in base && base.closest(bound) || null;
                 return el => {
