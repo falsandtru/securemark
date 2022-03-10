@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.232.1
+
+- Refactoring.
+
 ## 0.232.0
 
 - Refine paragraph syntax to separate mention syntax.
