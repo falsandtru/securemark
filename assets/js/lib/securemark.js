@@ -5807,16 +5807,16 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.inits)([
+            exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([
                 (0, combinator_1.some)((0, combinator_1.inits)([
                     cite_1.cite,
                     quote_1.quote
                 ])),
-                (0, combinator_1.subsequence)([
+                (0, combinator_1.some)((0, combinator_1.subsequence)([
                     (0, combinator_1.some)(quote_1.quote),
                     (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
-                ])
-            ])), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
+                ]))
+            ]), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
         },
         {
             '../../combinator': 27,
@@ -5841,7 +5841,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([
                 (0, source_1.str)(/^>*(?=>>)/),
-                anchor_1.anchor
+                (0, combinator_1.validate)(new RegExp(`${ anchor_1.syntax.source }[^\S\n]*(?:$|\n)`), anchor_1.anchor)
             ]))), ([el, quotes = '']) => [
                 (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
                     quotes + '>',
@@ -5873,12 +5873,12 @@ require = function () {
                 (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|')[0]), source_1.anyline)), qblock),
                 (0, combinator_1.rewrite)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|').slice(1).join('|')), source_1.anyline), (0, combinator_1.line)((0, combinator_1.union)([(0, source_1.str)(/^.+/)])))
             ])), ns => [
-                (0, typed_dom_1.html)('span', ns.length > 1 || /^>+(?=[^\S\n])/.test(ns[0]) ? { class: 'quote' } : {
+                (0, typed_dom_1.html)('span', ns.length > 1 ? { class: 'quote' } : {
                     class: 'quote invalid',
                     'data-invalid-syntax': 'quote',
                     'data-invalid-type': 'syntax',
                     'data-invalid-description': `Missing the whitespace after "${ ns[0].split(/[^>]/, 1)[0] }".`
-                }, ns),
+                }, (0, typed_dom_1.defrag)(ns)),
                 (0, typed_dom_1.html)('br')
             ]), false)));
             const qblock = (source, context) => {
@@ -5908,8 +5908,9 @@ require = function () {
                         continue;
                     }
                 }
+                nodes.unshift('');
                 return [
-                    (0, typed_dom_1.defrag)(nodes),
+                    nodes,
                     ''
                 ];
             };
@@ -6332,12 +6333,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.anchor = void 0;
+            exports.anchor = exports.syntax = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, source_1.str)(/^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/), (0, combinator_1.context)({
+            exports.syntax = /^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/;
+            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, source_1.str)(exports.syntax), (0, combinator_1.context)({
                 syntax: {
                     inline: {
                         link: true,
