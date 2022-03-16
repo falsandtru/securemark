@@ -86,7 +86,7 @@ export function* figure(
       : `${capitalize(group)}${group === 'fig' ? '.' : ''} ${number}`;
     define(
       def.querySelector(':scope > .figindex')!,
-      group === '$' ? figindex : `${figindex}: `);
+      group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield define(ref,
