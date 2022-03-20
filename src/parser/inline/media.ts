@@ -73,6 +73,15 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
     case 'http:':
     case 'https:':
       assert(uri.host);
+      if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
+        define(target, {
+          class: void target.classList.add('invalid'),
+          'data-invalid-syntax': 'media',
+          'data-invalid-type': 'argument',
+          'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
+        });
+        return false;
+      }
       break;
     default:
       define(target, {
@@ -82,15 +91,6 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
         'data-invalid-description': 'Invalid protocol.',
       });
       return false;
-  }
-  if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-    define(target, {
-      class: void target.classList.add('invalid'),
-      'data-invalid-syntax': 'media',
-      'data-invalid-type': 'argument',
-      'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
-    });
-    return false;
   }
   if (alt.includes('\0')) {
     define(target, {
