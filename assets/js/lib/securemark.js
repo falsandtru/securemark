@@ -427,7 +427,7 @@ require = function () {
                     this.indexes = {
                         LRU: new invlist_1.List(),
                         LFU: new invlist_1.List(),
-                        OVF: new invlist_1.List()
+                        OVL: new invlist_1.List()
                     };
                     this.stats = {
                         LRU: (0, tuple_1.tuple)(0, 0),
@@ -470,7 +470,7 @@ require = function () {
                     callback && (callback = !!this.settings.disposer);
                     record = callback ? record !== null && record !== void 0 ? record : this.memory.get(index.key) : record;
                     node.delete();
-                    (_a = node.value.overflow) === null || _a === void 0 ? void 0 : _a.delete();
+                    (_a = node.value.overlap) === null || _a === void 0 ? void 0 : _a.delete();
                     this.memory.delete(index.key);
                     this.SIZE -= index.size;
                     callback && ((_c = (_b = this.settings).disposer) === null || _c === void 0 ? void 0 : _c.call(_b, record.value, index.key));
@@ -484,25 +484,30 @@ require = function () {
                     let size = (_a = skip === null || skip === void 0 ? void 0 : skip.value.size) !== null && _a !== void 0 ? _a : 0;
                     if (margin - size <= 0)
                         return;
-                    const {LRU, LFU, OVF} = this.indexes;
+                    const {LRU, LFU, OVL} = this.indexes;
                     while (this.length === this.capacity || this.size + margin - size > this.space) {
-                        const lastNode = (_b = OVF.last) !== null && _b !== void 0 ? _b : LFU.last;
+                        const lastNode = (_b = OVL.last) !== null && _b !== void 0 ? _b : LFU.last;
                         const lastIndex = lastNode === null || lastNode === void 0 ? void 0 : lastNode.value;
                         let target;
                         switch (true) {
                         case lastIndex && lastIndex.clock < this.clock - this.life:
                         case lastIndex && lastIndex.expiry !== global_1.Infinity && lastIndex.expiry < (0, clock_1.now)():
-                            target = lastNode.list === OVF ? lastNode.value.parent : lastNode;
+                            target = lastNode.list === OVL ? lastNode.value.node : lastNode;
                             break;
                         case LRU.length === 0:
                             target = LFU.last !== skip ? LFU.last : LFU.last.prev;
                             break;
                         case LFU.length > this.capacity * this.ratio / 100:
-                            LRU.unshiftNode(LFU.last);
-                            LRU.head.value.parent = LRU.head;
-                            LRU.head.value.overflow = OVF.unshift(LRU.head.value);
+                            target = LFU.last !== skip ? LFU.last : LFU.length >= 2 ? LFU.last.prev : skip;
+                            if (target !== skip) {
+                                if (this.ratio > 50)
+                                    break;
+                                LRU.unshiftNode(target);
+                                LRU.head.value.node = LRU.head;
+                                LRU.head.value.overlap = OVL.unshift(LRU.head.value);
+                            }
                         default:
-                            target = LRU.last !== skip ? LRU.last : LRU.last.prev !== skip ? LRU.last.prev : LFU.last;
+                            target = LRU.last !== skip ? LRU.last : LRU.length >= 2 ? LRU.last.prev : LFU.last;
                         }
                         this.evict(target, void 0, true);
                         skip = (skip === null || skip === void 0 ? void 0 : skip.list) && skip;
@@ -593,7 +598,7 @@ require = function () {
                     this.stats.clear();
                     this.indexes.LRU.clear();
                     this.indexes.LFU.clear();
-                    this.indexes.OVF.clear();
+                    this.indexes.OVL.clear();
                     if (!this.settings.disposer || !this.settings.capture.clear)
                         return void this.memory.clear();
                     const memory = this.memory;
@@ -620,7 +625,7 @@ require = function () {
                         return;
                     const lenR = indexes.LRU.length;
                     const lenF = indexes.LFU.length;
-                    const lenV = indexes.OVF.length;
+                    const lenV = indexes.OVL.length;
                     const r = (lenF + lenV) * 1000 / (lenR + lenF) | 0;
                     const rateR0 = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1], 0) * (1 + r);
                     const rateF0 = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1], 0) * (1001 - r);
@@ -643,14 +648,14 @@ require = function () {
                     const index = node.value;
                     const {LRU, LFU} = this.indexes;
                     ++this.stats[index.region][0];
-                    if (!index.overflow && index.clock >= this.clockR - LRU.length / 3 && this.capacity > 3) {
+                    if (!index.overlap && index.clock >= this.clockR - LRU.length / 3 && this.capacity > 3) {
                         index.clock = ++this.clockR;
                         node.moveToHead();
                         return true;
                     }
                     index.clock = ++this.clock;
                     index.region = 'LFU';
-                    (_a = index.overflow) === null || _a === void 0 ? void 0 : _a.delete();
+                    (_a = index.overlap) === null || _a === void 0 ? void 0 : _a.delete();
                     LFU.unshiftNode(node);
                     return true;
                 }
@@ -3651,6 +3656,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../../data/parser');
             const fmap_1 = _dereq_('../monad/fmap');
+            const resource_1 = _dereq_('./resource');
             const array_1 = _dereq_('spica/array');
             function surround(opener, parser, closer, optional = false, f, g) {
                 switch (typeof opener) {
@@ -3698,18 +3704,18 @@ require = function () {
             function match(pattern) {
                 switch (typeof pattern) {
                 case 'string':
-                    return source => source.slice(0, pattern.length) === pattern ? [
+                    return (0, resource_1.creator)(source => source.slice(0, pattern.length) === pattern ? [
                         [],
                         source.slice(pattern.length)
-                    ] : global_1.undefined;
+                    ] : global_1.undefined);
                 case 'object':
-                    return source => {
+                    return (0, resource_1.creator)(source => {
                         const m = source.match(pattern);
                         return m ? [
                             [],
                             source.slice(m[0].length)
                         ] : global_1.undefined;
-                    };
+                    });
                 }
             }
             function open(opener, parser, optional = false) {
@@ -3728,6 +3734,7 @@ require = function () {
         {
             '../../data/parser': 47,
             '../monad/fmap': 46,
+            './resource': 40,
             'spica/array': 6,
             'spica/global': 15
         }
@@ -7607,6 +7614,15 @@ require = function () {
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
+                    if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
+                        (0, typed_dom_1.define)(target, {
+                            class: void target.classList.add('invalid'),
+                            'data-invalid-syntax': 'media',
+                            'data-invalid-type': 'argument',
+                            'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
+                        });
+                        return false;
+                    }
                     break;
                 default:
                     (0, typed_dom_1.define)(target, {
@@ -7614,15 +7630,6 @@ require = function () {
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'argument',
                         'data-invalid-description': 'Invalid protocol.'
-                    });
-                    return false;
-                }
-                if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-                    (0, typed_dom_1.define)(target, {
-                        class: void target.classList.add('invalid'),
-                        'data-invalid-syntax': 'media',
-                        'data-invalid-type': 'argument',
-                        'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
                     });
                     return false;
                 }
@@ -8075,7 +8082,7 @@ require = function () {
                     !(0, label_1.isFixed)(label) && numbers.set(group, number);
                     opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
-                    (0, typed_dom_1.define)(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }: `);
+                    (0, typed_dom_1.define)(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.innerText === figindex)
                             continue;
