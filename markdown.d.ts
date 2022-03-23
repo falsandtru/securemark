@@ -557,11 +557,11 @@ export namespace MarkdownParser {
       // abc
       Block<'reply'>,
       Parser<HTMLParagraphElement, Context, [
-        Parser<string | HTMLElement, Context, [
+        Parser<HTMLElement, Context, [
           ReplyParser.CiteParser,
           ReplyParser.QuoteParser,
         ]>,
-        Parser<string | HTMLElement, Context, [
+        Parser<HTMLElement | string, Context, [
           ReplyParser.QuoteParser,
           InlineParser,
         ]>,
@@ -1030,7 +1030,7 @@ export namespace MarkdownParser {
     export interface HTMLEntityParser extends
       // &copy;
       Inline<'htmlentity'>,
-      Parser<HTMLSpanElement | string, Context, [
+      Parser<string | HTMLSpanElement, Context, [
         UnsafeHTMLEntityParser,
       ]> {
     }
@@ -1153,7 +1153,7 @@ export namespace MarkdownParser {
   }
   export interface AutolinkParser extends
     Markdown<'autolink'>,
-    Parser<HTMLElement | string, Context, [
+    Parser<string | HTMLElement, Context, [
       InlineParser.AutolinkParser,
       SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
@@ -1164,7 +1164,7 @@ export namespace MarkdownParser {
     export interface TextParser extends
       // abc
       Source<'text'>,
-      Parser<HTMLBRElement | HTMLSpanElement | string, Context, []> {
+      Parser<string | HTMLBRElement | HTMLSpanElement, Context, []> {
     }
     export interface TxtParser extends
       // abc
