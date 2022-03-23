@@ -47,12 +47,13 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('[# a #]')), [['<p>[# a #]</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[# a #]\nb')), [['<p>[# a #]<br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]')), [['<p>[#<br>&lt;wbr&gt;<br>#]</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]a')), [['<p><sup class="comment" title="<wbr>"></sup>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]\na')), [['<p>[#<br>&lt;wbr&gt;<br>#]<br>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]')), [['<p><span class="comment">[# a #]</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<p><span class="comment">[# a #]</span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]\nb')), [['<p><span class="comment">[# a #]</span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[## a ##]')), [['<p><span class="comment">[## a ##]</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]a')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]\na')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span><br>a</p>'], '']);
     });
 
     it('template', () => {

@@ -23,7 +23,6 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[<wbr>a]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[[# a #]b]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a]b]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[*a\nb*]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\]]')), undefined);
@@ -39,7 +38,6 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[a  ]]')), [['<sup class="reference">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a &nbsp;]]')), [['<sup class="reference">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a <wbr>]]')), [['<sup class="reference">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[a [# b #]]]')), [['<sup class="reference">a <sup class="comment" title="b"></sup></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[ab]]')), [['<sup class="reference">ab</sup>'], '']);
     });
 

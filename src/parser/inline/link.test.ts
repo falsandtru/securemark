@@ -72,7 +72,6 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[a\nb]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\\\nb]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[<wbr>]{b}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[# a #]]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[*a\nb*]{/}')), undefined);
       assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ttp://host}')), [['<a class="invalid">ttp://host</a>'], '']);

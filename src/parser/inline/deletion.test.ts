@@ -26,7 +26,6 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~~\na~~')), [['<del><br>a</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\\\na~~')), [['<del><span class="linebreak"> </span>a</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~<wbr>a~~')), [['<del><wbr>a</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~[# a #]b~~')), [['<del><sup class="comment" title="a"></sup>b</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~a\n~~')), [['<del>a</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~a\nb~~')), [['<del>a<br>b</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~a\\\nb~~')), [['<del>a<span class="linebreak"> </span>b</del>'], '']);

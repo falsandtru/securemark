@@ -619,12 +619,12 @@ export namespace MarkdownParser {
       InlineParser.AnnotationParser,
       InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
+      InlineParser.CommentParser,
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
       InlineParser.LinkParser,
       InlineParser.MediaParser,
       InlineParser.HTMLParser,
-      InlineParser.CommentParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
       InlineParser.MarkParser,
@@ -708,6 +708,13 @@ export namespace MarkdownParser {
           SourceParser.EscapableSourceParser,
         ]> {
       }
+    }
+    export interface CommentParser extends
+      // [# comment #]
+      Inline<'comment'>,
+      Parser<HTMLElement | string, Context, [
+        InlineParser,
+      ]> {
     }
     export interface ExtensionParser extends
       // [#abc]
@@ -939,22 +946,6 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
           ]> {
         }
-      }
-    }
-    export interface CommentParser extends
-      // [# comment #]
-      Inline<'comment'>,
-      Parser<HTMLElement, Context, [
-        CommentParser.TextParser,
-      ]> {
-    }
-    export namespace CommentParser {
-      export interface TextParser extends
-        Inline<'comment/text'>,
-        Parser<string, Context, [
-          UnsafeHTMLEntityParser,
-          SourceParser.UnescapableSourceParser,
-        ]> {
       }
     }
     export interface InsertionParser extends

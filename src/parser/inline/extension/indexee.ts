@@ -22,19 +22,28 @@ export function text(source: HTMLElement | DocumentFragment): string {
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true) as typeof source;
   for (
-    let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp, .reference'),
+    let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'),
         i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
+      case 'CODE':
+        define(el, el.getAttribute('data-src')!);
+        continue;
       case 'RT':
       case 'RP':
         el.remove();
         continue;
-      case 'SUP':
-        el.firstChild!.remove();
-        continue;
-      default:
+    }
+    switch (el.className) {
+      case 'math':
         define(el, el.getAttribute('data-src')!);
+        continue;
+      case 'comment':
+        el.remove();
+        continue;
+      case 'reference':
+        assert(el.firstElementChild?.hasAttribute('hidden'));
+        el.firstChild!.remove();
         continue;
     }
   }
@@ -46,9 +55,7 @@ export function text(source: HTMLElement | DocumentFragment): string {
 export function identify(index: string): string {
   assert(!index.includes('\n'));
   assert(index === index.trim());
-  return index
-    ? `index:${index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`
-    : '';
+  return `index:${index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
 }
 assert(identify('0'.repeat(100)).slice(6) === '0'.repeat(100));
 assert(identify('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');

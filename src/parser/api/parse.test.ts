@@ -53,10 +53,10 @@ describe('Unit: parser/api/parse', () => {
         ['<p>&lt;wbr&gt;<br>a</p>']);
       assert.deepStrictEqual(
         [...parse('[#\n<wbr>\n#]').children].map(el => el.outerHTML),
-        ['<p>[#<br>&lt;wbr&gt;<br>#]</p>']);
+        ['<p><span class="comment">[# &lt;wbr&gt; #]</span></p>']);
       assert.deepStrictEqual(
         [...parse('[#\n<wbr>\n#]\na').children].map(el => el.outerHTML),
-        ['<p>[#<br>&lt;wbr&gt;<br>#]<br>a</p>']);
+        ['<p><span class="comment">[# &lt;wbr&gt; #]</span><br>a</p>']);
     });
 
     it('linebreak', () => {
@@ -199,17 +199,17 @@ describe('Unit: parser/api/parse', () => {
     it('footnote', () => {
       const footnotes = { annotations: html('ol'), references: html('ol') };
       assert.deepStrictEqual(
-        [...parse('$-a\n$$\n$$\n\n(($-a[[b]][[c]]))', { footnotes }).children].map(el => el.outerHTML),
+        [...parse('$-a\n$$\n$$\n\n(($-a[[b]][[c*d*]]))', { footnotes }).children].map(el => el.outerHTML),
         [
           '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math" translate="no">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
-          '<p><sup class="annotation" id="annotation:ref:1" title="(1)[1][2]"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="c"><span hidden="">c</span><a href="#reference:def:2">[2]</a></sup></span><a href="#annotation:def:1">*1</a></sup></p>',
+          '<p><sup class="annotation" id="annotation:ref:1" title="(1)[1][2]"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="cd"><span hidden="">c<em>d</em></span><a href="#reference:def:2">[2]</a></sup></span><a href="#annotation:def:1">*1</a></sup></p>',
         ]);
       assert.deepStrictEqual(
         footnotes.annotations.outerHTML,
-        '<ol><li id="annotation:def:1"><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="c"><span hidden="">c</span><a href="#reference:def:2">[2]</a></sup><sup><a href="#annotation:ref:1">^1</a></sup></li></ol>');
+        '<ol><li id="annotation:def:1"><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="cd"><span hidden="">c<em>d</em></span><a href="#reference:def:2">[2]</a></sup><sup><a href="#annotation:ref:1">^1</a></sup></li></ol>');
       assert.deepStrictEqual(
         footnotes.references.outerHTML,
-        '<ol><li id="reference:def:1">b<sup><a href="#reference:ref:1">^1</a></sup></li><li id="reference:def:2">c<sup><a href="#reference:ref:2">^2</a></sup></li></ol>');
+        '<ol><li id="reference:def:1">b<sup><a href="#reference:ref:1">^1</a></sup></li><li id="reference:def:2">c<em>d</em><sup><a href="#reference:ref:2">^2</a></sup></li></ol>');
     });
 
     it('normalize', () => {

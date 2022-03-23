@@ -16,14 +16,12 @@ describe('Unit: parser/inline/mark', () => {
       assert.deepStrictEqual(inspect(parser('==a\n==')), [['==', 'a', '<br>'], '==']);
       assert.deepStrictEqual(inspect(parser('==a\\ ==')), [['==', 'a', ' '], '==']);
       assert.deepStrictEqual(inspect(parser('==a\\\n==')), [['==', 'a', '<span class="linebreak"> </span>'], '==']);
-      assert.deepStrictEqual(inspect(parser('==a [# b #]==')), [['==', 'a', ' ', '<sup class="comment" title="b"></sup>'], '==']);
       assert.deepStrictEqual(inspect(parser('== ==')), undefined);
       assert.deepStrictEqual(inspect(parser('== a==')), undefined);
       assert.deepStrictEqual(inspect(parser('== a ==')), undefined);
       assert.deepStrictEqual(inspect(parser('==\na==')), undefined);
       assert.deepStrictEqual(inspect(parser('==\\\na==')), undefined);
       assert.deepStrictEqual(inspect(parser('==<wbr>a==')), undefined);
-      assert.deepStrictEqual(inspect(parser('==[# a #]b==')), undefined);
       assert.deepStrictEqual(inspect(parser(' ==a==')), undefined);
     });
 
@@ -37,7 +35,6 @@ describe('Unit: parser/inline/mark', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('==a[# b #]==')), [['<mark>a<sup class="comment" title="b"></sup></mark>'], '']);
       assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark><em><mark>a</mark></em></mark>'], '']);
     });
 

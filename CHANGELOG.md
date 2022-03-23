@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.233.0
+
+- Refine comment parser.
+
 ## 0.232.2
 
 - Refactoring.
