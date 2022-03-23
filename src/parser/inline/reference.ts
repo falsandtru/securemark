@@ -43,7 +43,7 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
       }
     : ns[0] === ''
       ? {
-          class: 'reference invalid',
+          class: 'invalid',
           'data-invalid-syntax': 'reference',
           'data-invalid-type': 'syntax',
           'data-invalid-description': 'Invalid abbr.',
