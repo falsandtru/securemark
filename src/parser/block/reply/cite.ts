@@ -12,7 +12,7 @@ export const cite: ReplyParser.CiteParser = creator(line(fmap(validate(
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
     html('span', { class: 'cite' }, defrag([
-      quotes + '>',
+      `${quotes}>`,
       define(el, { 'data-depth': `${quotes.length + 1}` }, el.innerText.slice(1)),
     ])),
     html('br'),
