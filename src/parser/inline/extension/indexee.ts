@@ -11,7 +11,8 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Pa
 
 export function identity(index: string): string {
   assert(!index.includes('\n'));
-  return `index:${index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
+  index &&= index.trim();
+  return index && `index:${index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
 }
 assert(identity('0'.repeat(100)).slice(6) === '0'.repeat(100));
 assert(identity('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
