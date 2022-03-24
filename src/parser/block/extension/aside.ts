@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { block, validate, fence, creator, fmap } from '../../../combinator';
-import { identity } from '../../inline/extension/indexee';
+import { identity, text } from '../../inline/extension/indexee';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom';
 
@@ -35,9 +35,9 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       'data-invalid-type': 'content',
       'data-invalid-description': 'Missing the title at the first line.',
     }, `${opener}${body}${closer}`)];
-    assert(identity(heading));
+    assert(identity(text(heading)));
     return [
-      html('aside', { id: identity(heading), class: 'aside' }, [
+      html('aside', { id: identity(text(heading)), class: 'aside' }, [
         document,
         annotations,
         references,

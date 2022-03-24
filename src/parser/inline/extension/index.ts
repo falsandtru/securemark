@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
 import { union, some, validate, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
-import { indexee, identify } from './indexee';
+import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
 import { startTight, trimNodeEnd } from '../../util';
 import { html, define, defrag } from 'typed-dom';
@@ -44,7 +44,7 @@ const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   '|#',
   startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
   ns => [
-    html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
+    html('span', { class: 'indexer', 'data-index': identity(join(ns)).slice(6) }),
   ])));
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creator(union([
