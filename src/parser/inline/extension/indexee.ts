@@ -9,10 +9,10 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Pa
   return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(text(el)) || undefined })]);
 }
 
-export function identity(index: string): string {
-  assert(!index.includes('\n'));
-  index &&= index.trim();
-  return index && `index:${index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
+export function identity(text: string): string {
+  assert(!text.includes('\n'));
+  text &&= text.trim();
+  return text && `index:${text.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
 }
 assert(identity('0'.repeat(100)).slice(6) === '0'.repeat(100));
 assert(identity('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
