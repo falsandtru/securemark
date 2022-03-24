@@ -4861,7 +4861,7 @@ require = function () {
                             'data-invalid-description': 'Missing the title at the first line.'
                         }, `${ opener }${ body }${ closer }`)];
                 return [(0, typed_dom_1.html)('aside', {
-                        id: (0, indexee_1.identity)(heading),
+                        id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
                         class: 'aside'
                     }, [
                         document,
@@ -5307,9 +5307,9 @@ require = function () {
                 let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/)) !== null && _a !== void 0 ? _a : [];
                 rowspan === '1' ? rowspan = global_1.undefined : global_1.undefined;
                 colspan === '1' ? colspan = global_1.undefined : global_1.undefined;
-                rowspan && (rowspan = (0, alias_1.max)(0, (0, alias_1.min)(+rowspan, 65534)) + '');
-                colspan && (colspan = (0, alias_1.max)(0, (0, alias_1.min)(+colspan, 1000)) + '');
-                highlight && (highlight = highlight.length > 0 ? highlight.length + '' : global_1.undefined);
+                rowspan && (rowspan = `${ (0, alias_1.max)(0, (0, alias_1.min)(+rowspan, 65534)) }`);
+                colspan && (colspan = `${ (0, alias_1.max)(0, (0, alias_1.min)(+colspan, 1000)) }`);
+                highlight && (highlight = highlight.length > 0 ? `${ highlight.length }` : global_1.undefined);
                 const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 6;
                 return {
                     class: valid ? highlight && 'highlight' : 'invalid',
@@ -5851,7 +5851,7 @@ require = function () {
                 (0, combinator_1.validate)(new RegExp(`${ anchor_1.syntax.source }[^\S\n]*(?:$|\n)`), anchor_1.anchor)
             ]))), ([el, quotes = '']) => [
                 (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
-                    quotes + '>',
+                    `${ quotes }>`,
                     (0, typed_dom_1.define)(el, { 'data-depth': `${ quotes.length + 1 }` }, el.innerText.slice(1))
                 ])),
                 (0, typed_dom_1.html)('br')
@@ -6146,11 +6146,11 @@ require = function () {
             const annotation_1 = _dereq_('./inline/annotation');
             const reference_1 = _dereq_('./inline/reference');
             const template_1 = _dereq_('./inline/template');
+            const comment_1 = _dereq_('./inline/comment');
             const extension_1 = _dereq_('./inline/extension');
             const ruby_1 = _dereq_('./inline/ruby');
             const link_1 = _dereq_('./inline/link');
             const html_1 = _dereq_('./inline/html');
-            const comment_1 = _dereq_('./inline/comment');
             const insertion_1 = _dereq_('./inline/insertion');
             const deletion_1 = _dereq_('./inline/deletion');
             const mark_1 = _dereq_('./inline/mark');
@@ -6170,12 +6170,12 @@ require = function () {
                 annotation_1.annotation,
                 reference_1.reference,
                 template_1.template,
+                comment_1.comment,
                 extension_1.extension,
                 ruby_1.ruby,
                 link_1.link,
                 media_1.media,
                 html_1.html,
-                comment_1.comment,
                 insertion_1.insertion,
                 deletion_1.deletion,
                 mark_1.mark,
@@ -6606,52 +6606,28 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.comment = void 0;
-            const combinator_1 = _dereq_('../../combinator');
             const parser_1 = _dereq_('../../combinator/data/parser');
-            const htmlentity_1 = _dereq_('./htmlentity');
+            const combinator_1 = _dereq_('../../combinator');
+            const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s)))/, ([whole, , body, closer]) => (rest, context) => {
-                [whole, body] = `${ whole }\0${ body.trimStart() }`.replace(/\x1B/g, '').split('\0', 2);
-                if (!closer)
-                    return [
-                        [(0, typed_dom_1.html)('sup', {
-                                class: 'comment invalid',
-                                'data-invalid-syntax': 'comment',
-                                'data-invalid-type': 'content',
-                                'data-invalid-description': 'Comment syntax using the same level cannot start in another comment syntax.'
-                            }, whole)],
-                        rest
-                    ];
-                const title = (0, parser_1.eval)((0, combinator_1.some)(text)(body, context), []).join('').trim();
-                if (title.includes('\0'))
-                    return [
-                        [(0, typed_dom_1.html)('sup', {
-                                class: 'comment invalid',
-                                'data-invalid-syntax': 'comment',
-                                'data-invalid-type': 'content',
-                                'data-invalid-description': `Invalid HTML entitiy "${ title.match(/\0&[0-9A-Za-z]+;/)[0].slice(1) }".`
-                            }, whole)],
-                        rest
-                    ];
-                return [
-                    [(0, typed_dom_1.html)('sup', {
-                            class: 'comment',
-                            title
-                        })],
-                    rest
-                ];
-            })));
-            const text = (0, combinator_1.union)([
-                htmlentity_1.unsafehtmlentity,
-                source_1.unescsource
-            ]);
+            const memoize_1 = _dereq_('spica/memoize');
+            const array_1 = _dereq_('spica/array');
+            exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^\s+${ fence }\]`)) => (0, combinator_1.surround)((0, source_1.str)(/^\[(\S+)\s+(?!\1\])/), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, closer)]), (0, source_1.str)(closer), true, ([, bs = []], rest) => [
+                [(0, typed_dom_1.html)('span', { class: 'comment' }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([`[${ fence } `], bs), [` ${ fence }]`])))],
+                rest
+            ], ([as, bs = []], rest, context) => [
+                (0, array_1.unshift)((0, array_1.pop)((0, parser_1.eval)((0, combinator_1.some)(source_1.text)(`${ as[0] }!`, context)))[0], bs),
+                rest
+            ]), ([, fence]) => fence)))));
         },
         {
             '../../combinator': 27,
             '../../combinator/data/parser': 47,
+            '../inline': 88,
             '../source': 128,
-            './htmlentity': 112,
+            'spica/array': 6,
+            'spica/memoize': 18,
             'typed-dom': 26
         }
     ],
@@ -6890,7 +6866,7 @@ require = function () {
                 source_1.txt
             ]), ']', /^\\?\n/))), ns => [(0, typed_dom_1.html)('span', {
                     class: 'indexer',
-                    'data-index': (0, indexee_1.identify)((0, array_1.join)(ns).trim()).slice(6)
+                    'data-index': (0, indexee_1.identity)((0, array_1.join)(ns)).slice(6)
                 })])));
             const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([
@@ -6923,45 +6899,50 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.identify = exports.text = exports.identity = exports.indexee = void 0;
+            exports.text = exports.identity = exports.indexee = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             function indexee(parser) {
-                return (0, combinator_1.fmap)(parser, ([el], _, {id}) => [(0, typed_dom_1.define)(el, { id: id !== '' && identity(el) || global_1.undefined })]);
+                return (0, combinator_1.fmap)(parser, ([el], _, {id}) => [(0, typed_dom_1.define)(el, { id: id !== '' && identity(text(el)) || global_1.undefined })]);
             }
             exports.indexee = indexee;
-            function identity(source) {
-                return identify(text(source).trim());
+            function identity(index) {
+                return `index:${ index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }`;
             }
             exports.identity = identity;
             function text(source) {
+                var _a;
                 const indexer = source.querySelector('.indexer');
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
-                for (let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp, .reference'), i = 0, len = es.length; i < len; ++i) {
+                for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (el.tagName) {
+                    case 'CODE':
+                        (0, typed_dom_1.define)(el, el.getAttribute('data-src'));
+                        continue;
                     case 'RT':
                     case 'RP':
                         el.remove();
                         continue;
-                    case 'SUP':
-                        el.firstChild.remove();
-                        continue;
-                    default:
+                    }
+                    switch (el.className) {
+                    case 'math':
                         (0, typed_dom_1.define)(el, el.getAttribute('data-src'));
+                        continue;
+                    case 'comment':
+                        el.remove();
+                        continue;
+                    case 'reference':
+                        el.firstChild.remove();
                         continue;
                     }
                 }
                 return target.textContent;
             }
             exports.text = text;
-            function identify(index) {
-                return index ? `index:${ index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }` : '';
-            }
-            exports.identify = identify;
         },
         {
             '../../../combinator': 27,
@@ -7699,7 +7680,7 @@ require = function () {
                     class: 'reference',
                     'data-abbr': (0, util_1.stringify)([ns.shift()]).trimEnd()
                 } : ns[0] === '' ? {
-                    class: 'reference invalid',
+                    class: 'invalid',
                     'data-invalid-syntax': 'reference',
                     'data-invalid-type': 'syntax',
                     'data-invalid-description': 'Invalid abbr.'
@@ -8658,7 +8639,6 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
-            const comment_1 = _dereq_('./inline/comment');
             const htmlentity_1 = _dereq_('./inline/htmlentity');
             const source_1 = _dereq_('./source');
             const array_1 = _dereq_('spica/array');
@@ -8696,10 +8676,10 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)(?!\S|\s+\1\]|\s*\[\1(?:$|\s))((?:\s+\S+)+?)(?:\s+(\1\])|\s*(?=\[\1(?:$|\s))))+(?=$|(\S))`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)+$`, 'gm');
             function visualize(parser) {
                 return (0, combinator_1.union)([
-                    (0, combinator_1.convert)(source => source.replace(blankline, (line, ...$) => !$[3] ? line.replace(/[\\&<\[]/g, '\x1B$&') : line), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
+                    (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
                     (0, combinator_1.some)((0, combinator_1.union)([
                         source_1.linebreak,
                         source_1.unescsource
@@ -8745,7 +8725,7 @@ require = function () {
             }
             exports.startTight = startTight;
             function isStartTight(source, context) {
-                var _a, _b, _c, _d, _e;
+                var _a, _b, _c;
                 if (source === '')
                     return true;
                 switch (source[0]) {
@@ -8769,12 +8749,6 @@ require = function () {
                         return false;
                     }
                     return true;
-                case '[':
-                    switch (true) {
-                    case source.length >= 7 && source[1] === '#' && ((_d = (0, parser_1.eval)((0, comment_1.comment)(source, context))) === null || _d === void 0 ? void 0 : _d[0].className) === 'comment':
-                        return false;
-                    }
-                    return true;
                 default:
                     return source[0].trimStart() !== '';
                 }
@@ -8790,8 +8764,6 @@ require = function () {
                     return true;
                 for (let i = nodes.length; i--;) {
                     const node = nodes[i];
-                    if (typeof node === 'object' && node.className === 'comment')
-                        continue;
                     return isVisible(node, -1);
                 }
                 return false;
@@ -8817,8 +8789,6 @@ require = function () {
                         return false;
                     case 'SPAN':
                         return node.className !== 'linebreak';
-                    case 'SUP':
-                        return node.className !== 'comment';
                     default:
                         return true;
                     }
@@ -8831,8 +8801,6 @@ require = function () {
             function trimNodeStart(nodes) {
                 for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
                     if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer')
-                        break;
-                    if (typeof node === 'object' && node.className === 'comment')
                         break;
                     if (typeof node === 'string') {
                         const pos = node.length - node.trimStart().length;
@@ -8848,8 +8816,6 @@ require = function () {
             function trimNodeEnd(nodes) {
                 const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
                 for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
-                    if (typeof node === 'object' && node.className === 'comment')
-                        break;
                     if (typeof node === 'string') {
                         const pos = node.trimEnd().length;
                         if (pos > 0) {
@@ -8886,7 +8852,6 @@ require = function () {
         {
             '../combinator': 27,
             '../combinator/data/parser': 47,
-            './inline/comment': 100,
             './inline/htmlentity': 112,
             './source': 128,
             'spica/array': 6,
