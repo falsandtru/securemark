@@ -11,8 +11,8 @@ describe('Unit: parser/inline/template', () => {
       assert.deepStrictEqual(inspect(parser('{')), undefined);
       assert.deepStrictEqual(inspect(parser('{}')), undefined);
       assert.deepStrictEqual(inspect(parser('{{')), undefined);
-      assert.deepStrictEqual(inspect(parser('{{a}b}}')), undefined);
       assert.deepStrictEqual(inspect(parser('{{\\}}')), undefined);
+      assert.deepStrictEqual(inspect(parser('{{a}b}')), undefined);
       assert.deepStrictEqual(inspect(parser('{{{a}}')), undefined);
       assert.deepStrictEqual(inspect(parser(' {{}}')), undefined);
     });

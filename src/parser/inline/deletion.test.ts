@@ -17,7 +17,7 @@ describe('Unit: parser/inline/deletion', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('~~a~~')), [['<del>a</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~ab~~')), [['<del>ab</del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~a~b~~')), [['<del>a~b</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~a ~~')), [['<del>a </del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ ~~')), [['<del> </del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ a~~')), [['<del> a</del>'], '']);
