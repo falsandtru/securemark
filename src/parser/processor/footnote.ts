@@ -69,6 +69,7 @@ function build(
         || titles.get(identifier)
         || +identifier[0] && ref.title
         || text(content).trim()
+        || content.textContent!.trim()
         || undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
