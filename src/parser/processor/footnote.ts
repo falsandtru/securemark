@@ -22,8 +22,8 @@ function build(
   marker: (index: number, abbr: string | undefined) => string,
 ) {
   assert(syntax.match(/^[a-z]+$/));
-  // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みである必要があるため
-  // 事後の補正処理が必要となり各1回の処理では不可能
+  // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
+  // 構文ごとに各1回の処理では不可能
   const identify = memoize<HTMLElement, string>(
     ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.innerHTML}`,
     new WeakMap());
