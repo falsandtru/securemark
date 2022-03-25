@@ -16,7 +16,7 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
     delim.length === 2 && closer && param.trimStart() === ''
-      ? cache?.get(`\n${body}`)?.cloneNode(true) as HTMLDivElement ||
+      ? cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
         html('div', { class: 'math', translate: 'no' }, `${delim}\n${body}${delim}`)
       : html('pre', {
           class: 'invalid',
