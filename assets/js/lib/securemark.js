@@ -6907,8 +6907,9 @@ require = function () {
                 return (0, combinator_1.fmap)(parser, ([el], _, {id}) => [(0, typed_dom_1.define)(el, { id: id !== '' && identity(text(el)) || global_1.undefined })]);
             }
             exports.indexee = indexee;
-            function identity(index) {
-                return `index:${ index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }`;
+            function identity(text) {
+                text && (text = text.trim());
+                return text && `index:${ text.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }`;
             }
             exports.identity = identity;
             function text(source) {
@@ -8159,7 +8160,7 @@ require = function () {
                         } else {
                             (_b = ref.lastChild) === null || _b === void 0 ? void 0 : _b.remove();
                         }
-                        const title = global_1.undefined || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || global_1.undefined;
+                        const title = global_1.undefined || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || global_1.undefined;
                         title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
                         const blank = !!abbr && !content.firstChild;
                         const refIndex = i + 1;
