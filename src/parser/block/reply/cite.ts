@@ -8,7 +8,7 @@ export const cite: ReplyParser.CiteParser = creator(line(fmap(validate(
   '>>',
   reverse(tails([
     str(/^>*(?=>>)/),
-    validate(new RegExp(`${syntax.source}[^\S\n]*(?:$|\n)`), anchor),
+    validate(new RegExp(String.raw`${syntax.source}[^\S\n]*(?:$|\n)`), anchor),
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
     html('span', { class: 'cite' }, defrag([
