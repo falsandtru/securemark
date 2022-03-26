@@ -16,10 +16,10 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, bind(reverse(
+export const link: LinkParser = lazy(() => creator(10, bind(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.link ?? true,
-  tails([
+  reverse(tails([
     context({ syntax: { inline: {
       link: false,
     }}},
