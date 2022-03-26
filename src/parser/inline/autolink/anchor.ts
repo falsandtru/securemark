@@ -13,6 +13,6 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fma
     autolink: false,
   }}},
   convert(
-    source => `[${source}]{ ?comment=${source.slice(2)} }`,
+    source => `[${source}]{ ?at=${source.slice(2)} }`,
     union([link])))),
   ([el]) => [define(el, { class: 'anchor' })])));
