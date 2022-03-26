@@ -1,13 +1,12 @@
 import { AutolinkParser } from '../../inline';
-import { union, validate, rewrite, context, convert, fmap, lazy } from '../../../combinator';
+import { union, validate, focus, context, convert, fmap, lazy } from '../../../combinator';
 import { link } from '../link';
-import { str } from '../../source';
 import { define } from 'typed-dom';
 
 export const syntax = /^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/;
 
-export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fmap(rewrite(
-  str(syntax),
+export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fmap(focus(
+  syntax,
   context({ syntax: { inline: {
     link: true,
     autolink: false,
