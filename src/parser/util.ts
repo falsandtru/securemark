@@ -126,11 +126,7 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
 }
 export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  for (let i = nodes.length; i--;) {
-    const node = nodes[i];
-    return isVisible(node, -1);
-  }
-  return false;
+  return isVisible(nodes[nodes.length - 1], -1);
 }
 function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   switch (typeof node) {
