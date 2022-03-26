@@ -1,14 +1,14 @@
 import { ReplyParser } from '../../block';
 import { tails, line, validate, creator, reverse, fmap } from '../../../combinator';
-import { anchor, syntax } from '../../inline/autolink/anchor';
+import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom';
 
 export const cite: ReplyParser.CiteParser = creator(line(fmap(validate(
   '>>',
   reverse(tails([
-    str(/^>*(?=>>)/),
-    validate(new RegExp(String.raw`${syntax.source}[^\S\n]*(?:$|\n)`), anchor),
+    str(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),
+    anchor,
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
     html('span', { class: 'cite' }, defrag([
