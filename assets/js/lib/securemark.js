@@ -5844,8 +5844,8 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([
-                (0, source_1.str)(/^>*(?=>>)/),
-                (0, combinator_1.validate)(new RegExp(`${ anchor_1.syntax.source }[^\S\n]*(?:$|\n)`), anchor_1.anchor)
+                (0, source_1.str)(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),
+                anchor_1.anchor
             ]))), ([el, quotes = '']) => [
                 (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
                     `${ quotes }>`,
@@ -6337,24 +6337,21 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.anchor = exports.syntax = void 0;
+            exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
-            const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/;
-            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, source_1.str)(exports.syntax), (0, combinator_1.context)({
+            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.context)({
                 syntax: {
                     inline: {
                         link: true,
                         autolink: false
                     }
                 }
-            }, (0, combinator_1.convert)(source => `[${ source }]{ ?comment=${ source.slice(2) } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
+            }, (0, combinator_1.convert)(source => `[${ source }]{ ?at=${ source.slice(2) } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
         },
         {
             '../../../combinator': 27,
-            '../../source': 128,
             '../link': 114,
             'typed-dom': 26
         }
@@ -7281,13 +7278,13 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const optspec = { rel: ['nofollow'] };
             (0, alias_1.ObjectSetPrototypeOf)(optspec, null);
-            exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.validate)([
+            exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.bind)((0, combinator_1.validate)([
                 '[',
                 '{'
             ], '}', '\n', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
-            }, (0, combinator_1.tails)([
+            }, (0, combinator_1.reverse)((0, combinator_1.tails)([
                 (0, combinator_1.context)({ syntax: { inline: { link: false } } }, (0, combinator_1.dup)((0, combinator_1.union)([
                     (0, combinator_1.surround)('[', inline_1.media, ']'),
                     (0, combinator_1.surround)('[', inline_1.shortmedia, ']'),
@@ -8760,11 +8757,7 @@ require = function () {
             function isEndTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
-                for (let i = nodes.length; i--;) {
-                    const node = nodes[i];
-                    return isVisible(node, -1);
-                }
-                return false;
+                return isVisible(nodes[nodes.length - 1], -1);
             }
             exports.isEndTightNodes = isEndTightNodes;
             function isVisible(node, strpos) {
