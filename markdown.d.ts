@@ -1057,7 +1057,7 @@ export namespace MarkdownParser {
       export interface UrlParser extends
         // https://host
         Inline<'url'>,
-        Parser<HTMLElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           LinkParser,
         ]> {
       }
