@@ -47,13 +47,13 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('[# a #]')), [['<p><span class="comment">[# a #]</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<p><span class="comment">[# a #]</span>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[# a #]\nb')), [['<p><span class="comment">[# a #]</span><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[## a ##]')), [['<p><span class="comment">[## a ##]</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]a')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]\na')), [['<p><span class="comment">[# &lt;wbr&gt; #]</span><br>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]')), [['<p><span class="comment"><input type="checkbox"><span>[# a #]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<p><span class="comment"><input type="checkbox"><span>[# a #]</span></span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[# a #]\nb')), [['<p><span class="comment"><input type="checkbox"><span>[# a #]</span></span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[## a ##]')), [['<p><span class="comment"><input type="checkbox"><span>[## a ##]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]')), [['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]a')), [['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\n<wbr>\n#]\na')), [['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span><br>a</p>'], '']);
     });
 
     it('template', () => {

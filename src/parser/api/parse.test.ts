@@ -53,10 +53,10 @@ describe('Unit: parser/api/parse', () => {
         ['<p>&lt;wbr&gt;<br>a</p>']);
       assert.deepStrictEqual(
         [...parse('[#\n<wbr>\n#]').children].map(el => el.outerHTML),
-        ['<p><span class="comment">[# &lt;wbr&gt; #]</span></p>']);
+        ['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span></p>']);
       assert.deepStrictEqual(
         [...parse('[#\n<wbr>\n#]\na').children].map(el => el.outerHTML),
-        ['<p><span class="comment">[# &lt;wbr&gt; #]</span><br>a</p>']);
+        ['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span><br>a</p>']);
     });
 
     it('linebreak', () => {

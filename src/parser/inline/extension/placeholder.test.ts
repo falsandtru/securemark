@@ -45,13 +45,13 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[^a\\ \\ ]')), [['<span class="invalid">a  </span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a<wbr>]')), [['<span class="invalid">a<wbr></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a<wbr><wbr>]')), [['<span class="invalid">a<wbr><wbr></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[^a[# b #]]')), [['<span class="invalid">a<span class="comment">[# b #]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[^a[# b #][# c #]]')), [['<span class="invalid">a<span class="comment">[# b #]</span><span class="comment">[# c #]</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a[# b #]]')), [['<span class="invalid">a<span class="comment"><input type="checkbox"><span>[# b #]</span></span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a[# b #][# c #]]')), [['<span class="invalid">a<span class="comment"><input type="checkbox"><span>[# b #]</span></span><span class="comment"><input type="checkbox"><span>[# c #]</span></span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^\\]]')), [['<span class="invalid">]</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^(])]')), [['<span class="invalid"><span class="paren">(])</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^!http://host]')), [['<span class="invalid"><a href="http://host" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[^[# a #]]')), [['<span class="invalid"><span class="comment">[# a #]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[^[# a #]b]')), [['<span class="invalid"><span class="comment">[# a #]</span>b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^[# a #]]')), [['<span class="invalid"><span class="comment"><input type="checkbox"><span>[# a #]</span></span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^[# a #]b]')), [['<span class="invalid"><span class="comment"><input type="checkbox"><span>[# a #]</span></span>b</span>'], '']);
     });
 
   });

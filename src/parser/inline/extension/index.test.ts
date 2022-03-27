@@ -38,7 +38,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a  b]')), [['<a class="index" href="#index:a_b">a  b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a &nbsp;]')), [['<a class="index" href="#index:a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a <wbr>]')), [['<a class="index" href="#index:a">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#a [# b #]]')), [['<a class="index" href="#index:a">a <span class="comment">[# b #]</span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a [# b #]]')), [['<a class="index" href="#index:a">a <span class="comment"><input type="checkbox"><span>[# b #]</span></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a\\ ]')), [['<a class="index" href="#index:a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a\\ b]')), [['<a class="index" href="#index:a_b">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#[]]')), [['<a class="index" href="#index:[]">[]</a>'], '']);
@@ -54,8 +54,8 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#@a]')), [['<a class="index" href="#index:@a">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#http://host]')), [['<a class="index" href="#index:http://host">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#!http://host]')), [['<a class="index" href="#index:!http://host">!http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#[#  #]]')), [['<a class="index"><span class="comment">[#  #]</span></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#[# a #]]')), [['<a class="index"><span class="comment">[# a #]</span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#[#  #]]')), [['<a class="index"><span class="comment"><input type="checkbox"><span>[#  #]</span></span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#[# a #]]')), [['<a class="index"><span class="comment"><input type="checkbox"><span>[# a #]</span></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a((b))]')), [['<a class="index" href="#index:a((b))">a<span class="paren">((b))</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a[[b]]]')), [['<a class="index" href="#index:a[[b]]">a[[b]]</a>'], '']);
     });
@@ -83,7 +83,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a  |#b]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a &nbsp;|#b]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a <wbr>|#b]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#a [# b #]|#b]')), [['<a class="index" href="#index:b">a <span class="comment">[# b #]</span><span class="indexer" data-index="b"></span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a [# b #]|#b]')), [['<a class="index" href="#index:b">a <span class="comment"><input type="checkbox"><span>[# b #]</span></span><span class="indexer" data-index="b"></span></a>'], '']);
     });
 
   });

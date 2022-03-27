@@ -531,6 +531,20 @@
   .comment {
     color: gray;
   }
+  .comment > input {
+    display: inline;
+    appearance: none;
+  }
+  .comment > input::before {
+    position: relative;
+    content: "†";
+    top: -0.3em;
+    font-weight: 900;
+    color: red;
+  }
+  .comment > input:checked + span {
+    display: none;
+  }
   .code  .comment::before,
   .media .comment::before {
     all: unset;
@@ -987,9 +1001,17 @@
     '$-name',
     '$fig-name',
     '',
-    '## Annotation and Reference',
+    '## Annotation',
     '',
-    'Annotation and Reference syntax generate footnotes((*without manual numbering*.))((Another annotation.))[[^abbr]][[^abbr| A reference.]].',
+    'Annotation syntax generates footnotes((*without manual numbering*.))((Another annotation.))',
+    '',
+    '## Reference',
+    '',
+    'Reference syntax also generates footnotes[[^abbr]][[^abbr| A reference.]]',
+    '',
+    '## Comment',
+    '',
+    'Comment syntax is provided for communication among authors and **editors**[# Comments can collapse by clicking the red dagger mark. #].',
     '',
     '## Link',
     '',

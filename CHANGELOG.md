@@ -3,6 +3,7 @@
 ## 0.234.0
 
 - Extend anchor syntax.
+- Refine comment parser.
 
 ## 0.233.3
 
