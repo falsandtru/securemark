@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.234.0
+
+- Extend anchor syntax.
+
 ## 0.233.3
 
 - Refactoring.

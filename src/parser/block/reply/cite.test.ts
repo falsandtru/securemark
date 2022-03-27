@@ -13,9 +13,7 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>\n')), undefined);
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
       assert.deepStrictEqual(inspect(parser('>> ')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>0A')), undefined);
       assert.deepStrictEqual(inspect(parser('>>0 a')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>A')), undefined);
       assert.deepStrictEqual(inspect(parser('>>/')), undefined);
       assert.deepStrictEqual(inspect(parser('>>\\')), undefined);
       assert.deepStrictEqual(inspect(parser('>>01#')), undefined);
