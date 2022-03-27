@@ -572,7 +572,10 @@ export namespace MarkdownParser {
         Block<'reply/cite'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
           SourceParser.StrParser,
-          InlineParser.AutolinkParser.AnchorParser,
+          Parser<HTMLAnchorElement, Context, [
+            InlineParser.AutolinkParser.AnchorParser,
+            Parser<HTMLAnchorElement, Context, []>,
+          ]>,
         ]> {
       }
       export interface QuoteParser extends
