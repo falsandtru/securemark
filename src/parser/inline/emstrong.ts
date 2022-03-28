@@ -27,16 +27,11 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
   ]))),
   str(/^\*{1,3}/), false,
   ([as, bs, cs], rest, context): Result<HTMLElement | string, MarkdownParser.Context> => {
+    assert(cs.length === 1);
     if (!isEndTightNodes(bs)) return [unshift(as, bs), cs[0] + rest];
     switch (cs[0]) {
-      case '*':
-        return bind<StrongParser>(
-          substrong,
-          (ds, rest) =>
-            rest.slice(0, 2) === '**' && isEndTightNodes(ds)
-              ? [[html('strong', unshift([html('em', defrag(bs))], defrag(ds)))], rest.slice(2)]
-              : [unshift(['**', html('em', defrag(bs))], ds), rest])
-          (rest, context) ?? [['**', html('em', defrag(bs))], rest];
+      case '***':
+        return [[html('em', [html('strong', defrag(bs))])], rest];
       case '**':
         return bind<EmphasisParser>(
           subemphasis,
@@ -45,8 +40,14 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
               ? [[html('em', unshift([html('strong', defrag(bs))], defrag(ds)))], rest.slice(1)]
               : [unshift(['*', html('strong', defrag(bs))], ds), rest])
           (rest, context) ?? [['*', html('strong', defrag(bs))], rest];
-      case '***':
-        return [[html('em', [html('strong', defrag(bs))])], rest];
+      case '*':
+        return bind<StrongParser>(
+          substrong,
+          (ds, rest) =>
+            rest.slice(0, 2) === '**' && isEndTightNodes(ds)
+              ? [[html('strong', unshift([html('em', defrag(bs))], defrag(ds)))], rest.slice(2)]
+              : [unshift(['**', html('em', defrag(bs))], ds), rest])
+          (rest, context) ?? [['**', html('em', defrag(bs))], rest];
     }
     assert(false);
   },
