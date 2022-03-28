@@ -1,5 +1,5 @@
 import { EmphasisParser } from '../inline';
-import { union, sequence, some, creator, surround, close, lazy } from '../../combinator';
+import { union, some, creator, surround, open, close, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
@@ -12,7 +12,7 @@ export const emphasis: EmphasisParser = lazy(() => creator(surround(close(
   startTight(some(union([
     strong,
     some(inline, delimiter(String.raw`\*`)),
-    sequence([some(inline, '*'), inline]),
+    open(some(inline, '*'), inline),
   ]))),
   str('*'), false,
   ([as, bs, cs], rest) =>

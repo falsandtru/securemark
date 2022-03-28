@@ -1,5 +1,5 @@
 import { StrongParser } from '../inline';
-import { union, sequence, some, creator, surround, close, lazy } from '../../combinator';
+import { union, some, creator, surround, open, close, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTightNodes, delimiter } from '../util';
@@ -10,7 +10,7 @@ export const strong: StrongParser = lazy(() => creator(surround(close(
   str('**'), /^(?!\*)/),
   startTight(some(union([
     some(inline, delimiter(String.raw`\*\*`)),
-    sequence([some(inline, '*'), inline]),
+    open(some(inline, '*'), inline),
   ]))),
   str('**'), false,
   ([as, bs, cs], rest) =>

@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../../markdown';
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, sequence, some, creator, surround, lazy, bind } from '../../combinator';
+import { union, some, creator, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
@@ -11,19 +11,19 @@ import { unshift } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
   some(inline, delimiter(String.raw`\*\*`)),
-  sequence([some(inline, '*'), inline]),
+  open(some(inline, '*'), inline),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
   some(inline, delimiter(String.raw`\*`)),
-  sequence([some(inline, '*'), inline]),
+  open(some(inline, '*'), inline),
 ])));
 
 export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),
   startTight(some(union([
     some(inline, delimiter(String.raw`\*`)),
-    sequence([some(inline, '*'), inline]),
+    open(some(inline, '*'), inline),
   ]))),
   str(/^\*{1,3}/), false,
   ([as, bs, cs], rest, context): Result<HTMLElement | string, MarkdownParser.Context> => {
