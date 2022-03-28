@@ -2,14 +2,14 @@ import { MarkParser } from '../inline';
 import { union, sequence, some, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTightNodes } from '../util';
+import { startTight, isEndTightNodes, delimiter } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
 export const mark: MarkParser = lazy(() => creator(surround(
   str('=='),
   startTight(some(union([
-    some(inline, /^\s*==/),
+    some(inline, delimiter('==')),
     sequence([some(inline, '='), inline]),
   ]))),
   str('=='), false,

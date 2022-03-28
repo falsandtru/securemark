@@ -5,24 +5,24 @@ import { union, sequence, some, creator, surround, lazy, bind } from '../../comb
 import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
-import { startTight, isEndTightNodes } from '../util';
+import { startTight, isEndTightNodes, delimiter } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
-  some(inline, /^\s*\*\*/),
+  some(inline, delimiter(String.raw`\*\*`)),
   sequence([some(inline, '*'), inline]),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
-  some(inline, /^\s*\*/),
+  some(inline, delimiter(String.raw`\*`)),
   sequence([some(inline, '*'), inline]),
 ])));
 
 export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),
   startTight(some(union([
-    some(inline, /^\s*\*/),
+    some(inline, delimiter(String.raw`\*`)),
     sequence([some(inline, '*'), inline]),
   ]))),
   str(/^\*{1,3}/), false,
