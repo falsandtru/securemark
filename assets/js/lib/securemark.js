@@ -5845,7 +5845,13 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([
                 (0, source_1.str)(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),
-                anchor_1.anchor
+                (0, combinator_1.union)([
+                    anchor_1.anchor,
+                    (0, combinator_1.focus)(/^>>\.[^\S\n]*(?:$|\n)/, () => [
+                        [(0, typed_dom_1.html)('a', { class: 'anchor' }, '>>.')],
+                        ''
+                    ])
+                ])
             ]))), ([el, quotes = '']) => [
                 (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
                     `${ quotes }>`,
@@ -6341,14 +6347,14 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.context)({
+            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*\/)?[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.context)({
                 syntax: {
                     inline: {
                         link: true,
                         autolink: false
                     }
                 }
-            }, (0, combinator_1.convert)(source => `[${ source }]{ ?at=${ source.slice(2) } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
+            }, (0, combinator_1.convert)(source => `[${ source }]{ ${ source.includes('/') ? `/@${ source.slice(2).replace('/', '/timeline/') }` : `?at=${ source.slice(2) }` } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
         },
         {
             '../../../combinator': 27,
@@ -6600,24 +6606,25 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.comment = void 0;
-            const parser_1 = _dereq_('../../combinator/data/parser');
             const combinator_1 = _dereq_('../../combinator');
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
-            exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^\s+${ fence }\]`)) => (0, combinator_1.surround)((0, source_1.str)(/^\[(\S+)\s+(?!\1\])/), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, closer)]), (0, source_1.str)(closer), true, ([, bs = []], rest) => [
-                [(0, typed_dom_1.html)('span', { class: 'comment' }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([`[${ fence } `], bs), [` ${ fence }]`])))],
+            exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${ fence }`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${ fence }\]|^\S`)), true), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, new RegExp(String.raw`^\s+${ fence }\]`))]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${ fence }]`)), true, ([as, bs = [], cs], rest) => [
+                [(0, typed_dom_1.html)('span', { class: 'comment' }, [
+                        (0, typed_dom_1.html)('input', { type: 'checkbox' }),
+                        (0, typed_dom_1.html)('span', (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))
+                    ])],
                 rest
-            ], ([as, bs = []], rest, context) => [
-                (0, array_1.unshift)((0, array_1.pop)((0, parser_1.eval)((0, combinator_1.some)(source_1.text)(`${ as[0] }!`, context)))[0], bs),
+            ], ([as, bs = []], rest) => [
+                (0, array_1.unshift)(as, bs),
                 rest
             ]), ([, fence]) => fence)))));
         },
         {
             '../../combinator': 27,
-            '../../combinator/data/parser': 47,
             '../inline': 88,
             '../source': 128,
             'spica/array': 6,
