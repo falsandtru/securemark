@@ -97,7 +97,6 @@ function isStartTight(source: string, context: MarkdownParser.Context): boolean 
     case '\t':
     case '\n':
       return false;
-    case '\x1B':
     case '\\':
       return source[1]?.trimStart() !== '';
     case '&':
