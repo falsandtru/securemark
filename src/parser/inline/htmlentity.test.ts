@@ -14,6 +14,7 @@ describe('Unit: parser/inline/htmlentity', () => {
       assert.deepStrictEqual(inspect(parser('& ;')), undefined);
       assert.deepStrictEqual(inspect(parser('&\n;')), undefined);
       assert.deepStrictEqual(inspect(parser('&a;')), [['<span class="invalid">&amp;a;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('&NewLine;')), undefined);
       assert.deepStrictEqual(inspect(parser('&#;')), undefined);
       assert.deepStrictEqual(inspect(parser('&#g;')), undefined);
       assert.deepStrictEqual(inspect(parser('&#x;')), undefined);

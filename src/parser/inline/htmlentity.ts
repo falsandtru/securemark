@@ -5,7 +5,7 @@ import { html } from 'typed-dom';
 const parser = html('textarea');
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', fmap(focus(
-  /^&[0-9A-Za-z]+;/,
+  /^&(?!NewLine;)[0-9A-Za-z]+;/,
   entity => [[(parser.innerHTML = entity, parser.value)], '']),
   ([str]) => [
     str[0] !== '&' || str.length < 3

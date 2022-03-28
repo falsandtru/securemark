@@ -9,7 +9,7 @@ import { push, pop } from 'spica/array';
 // https://dev.w3.org/html5/html-author/charref
 const invisibleHTMLEntityNames = [
   'Tab',
-  'NewLine',
+  //'NewLine',
   'NonBreakingSpace',
   'nbsp',
   'shy',
@@ -40,7 +40,7 @@ const invisibleHTMLEntityNames = [
   'it',
   'InvisibleComma',
   'ic',
-];
+] as const;
 const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
