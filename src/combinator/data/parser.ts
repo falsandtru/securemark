@@ -8,7 +8,8 @@ export interface Ctx {
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (source: string, context: C) => Result<T, C, D>;
 export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
-  = readonly [T[], string, C?, D?]
+  = readonly [T[], string, C, D]
+  | readonly [T[], string]
   | undefined;
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, any, infer D> ? D : never;

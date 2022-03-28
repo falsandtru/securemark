@@ -1,5 +1,5 @@
 import { EmphasisParser } from '../inline';
-import { union, some, creator, surround, close, lazy } from '../../combinator';
+import { union, sequence, some, creator, surround, close, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
@@ -9,7 +9,11 @@ import { unshift } from 'spica/array';
 
 export const emphasis: EmphasisParser = lazy(() => creator(surround(close(
   str('*'), /^(?!\*)/),
-  startTight(some(union([strong, some(inline, '*')]))),
+  startTight(some(union([
+    strong,
+    some(inline, /^\s*\*/),
+    sequence([some(inline, '*'), inline]),
+  ]))),
   str('*'), false,
   ([as, bs, cs], rest) =>
     isEndTightNodes(bs)

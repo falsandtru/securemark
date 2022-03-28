@@ -1,5 +1,5 @@
 import { MarkParser } from '../inline';
-import { union, some, creator, surround, lazy } from '../../combinator';
+import { union, sequence, some, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTightNodes } from '../util';
@@ -8,7 +8,10 @@ import { unshift } from 'spica/array';
 
 export const mark: MarkParser = lazy(() => creator(surround(
   str('=='),
-  startTight(union([some(inline, '==')])),
+  startTight(some(union([
+    some(inline, /^\s*==/),
+    sequence([some(inline, '='), inline]),
+  ]))),
   str('=='), false,
   ([as, bs, cs], rest) =>
     isEndTightNodes(bs)

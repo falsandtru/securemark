@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.234.1
+
+- Fix emstrong parser, emphasis parser, strong parser, and mark parser.
+
 ## 0.234.0
 
 - Extend anchor syntax.
