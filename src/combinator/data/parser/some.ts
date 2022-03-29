@@ -5,8 +5,8 @@ import { push } from 'spica/array';
 export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp | number, deep?: string | RegExp, limit?: number): P;
 export function some<T>(parser: Parser<T>, until?: string | RegExp | number, deep?: string | RegExp, limit = -1): Parser<T> {
   assert(parser);
-  assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
-  assert(deep instanceof RegExp ? !deep.global && deep.source.startsWith('^') : true);
+  assert(until instanceof RegExp ? !until.flags.match(/[gmy]/) && until.source.startsWith('^') : true);
+  assert(deep instanceof RegExp ? !deep.flags.match(/[gmy]/) && deep.source.startsWith('^') : true);
   if (typeof until === 'number') return some(parser, undefined, deep, until);
   const match: (source: string) => boolean = typeof until === 'string'
     ? source => source.slice(0, until.length) === until

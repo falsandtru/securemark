@@ -15,7 +15,7 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   if (typeof end === 'function') return validate(patterns, has, '', end);
   if (!isArray(patterns)) return validate([patterns], has, end!, parser!);
   assert(patterns.length > 0);
-  assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
+  assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^') : true));
   assert(parser);
   const match: (source: string) => boolean = Function([
     '"use strict";',
