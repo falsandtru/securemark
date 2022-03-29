@@ -16,8 +16,7 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, bind(
-  validate(['[', '{'], '}', '\n',
+export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}', '\n', bind(
   guard(context => context.syntax?.inline?.link ?? true,
   reverse(tails([
     context({ syntax: { inline: {
@@ -44,7 +43,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(
         true),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
-  ])))),
+  ]))),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
     if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;
@@ -62,7 +61,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(
     if (el.classList.contains('invalid')) return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  })));
+  }))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]/, str(/^\S+/)),

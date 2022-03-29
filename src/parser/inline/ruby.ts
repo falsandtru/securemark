@@ -8,12 +8,11 @@ import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => creator(bind(verify(
-  validate('[', ')', '\n',
+export const ruby: RubyParser = lazy(() => creator(validate('[', ')', '\n', bind(verify(
   sequence([
     surround('[', focus(/^(?:\\[^\n]|[^\\\[\]\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\\\(\)\n])+(?=\))/, text), ')'),
-  ])),
+  ]),
   ([texts]) => isStartTightNodes(texts)),
   ([texts, rubies], rest) => {
     const tail = typeof texts[texts.length - 1] === 'object'
@@ -44,7 +43,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
           [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')]), tail)))
         ], rest];
     }
-  })));
+  }))));
 
 const text: RubyParser.TextParser = creator((source, context) => {
   const acc = [''];

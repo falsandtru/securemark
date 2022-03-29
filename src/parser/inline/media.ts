@@ -18,14 +18,13 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
+export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], '}', '\n', bind(verify(fmap(open(
   '!',
-  validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
     dup(surround(/^\[(?!\s*\\\s)/, some(union([unsafehtmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
-  ])))),
+  ]))),
   ([as, bs]) => bs ? [[join(as).trim() || join(as)], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
@@ -51,7 +50,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
       link as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URI}${join(params)} }${rest}`, context);
-  })));
+  }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
