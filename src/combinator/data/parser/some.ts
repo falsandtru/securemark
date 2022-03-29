@@ -7,12 +7,12 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
   if (typeof until === 'number') return some(parser, undefined, deep, until);
-  const match: (source: string) => boolean = typeof until === 'string' && until !== undefined
+  const match: (source: string) => boolean = typeof until === 'string'
     ? source => source.slice(0, until.length) === until
-    : source => !!until && until.test(source);
-  const delim: (source: string) => boolean = typeof deep === 'string' && deep !== undefined
+    : source => until?.test(source) ?? false;
+  const delim: (source: string) => boolean = typeof deep === 'string'
     ? source => source.slice(0, deep.length) === deep
-    : source => !!deep && deep.test(source);
+    : source => deep?.test(source) ?? false;
   let memory = '';
   return (source, context) => {
     if (source === memory) return;
