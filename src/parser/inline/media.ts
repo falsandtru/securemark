@@ -22,7 +22,11 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
   '!',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\s*\\\s)/, some(union([unsafehtmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
+    dup(surround(
+      /^\[(?!\s*\\\s)/,
+      some(union([unsafehtmlentity, bracket, txt]), ']', /^\\?\n/),
+      ']',
+      true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
   ]))),
   ([as, bs]) => bs ? [[join(as).trim() || join(as)], bs] : [[''], as]),
