@@ -6,6 +6,7 @@ export function some<P extends Parser<unknown>>(parser: P, until?: string | RegE
 export function some<T>(parser: Parser<T>, until?: string | RegExp | number, deep?: string | RegExp, limit = -1): Parser<T> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
+  assert(deep instanceof RegExp ? !deep.global && deep.source.startsWith('^') : true);
   if (typeof until === 'number') return some(parser, undefined, deep, until);
   const match: (source: string) => boolean = typeof until === 'string'
     ? source => source.slice(0, until.length) === until
@@ -13,20 +14,30 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
   const delim: (source: string) => boolean = typeof deep === 'string'
     ? source => source.slice(0, deep.length) === deep
     : source => deep?.test(source) ?? false;
+  const signature = typeof deep === 'string'
+    ? `s:${deep}`
+    : `r:${deep?.source ?? ''}`;
   return (source, context) => {
     if (source === '') return;
     let rest = source;
     let nodes: T[] | undefined;
     if (context && deep) {
+      // bracket>annotation>bracket>reference>bracket>link>media|bracket
+      // bracket>annotation>bracket>reference>bracket>index>bracket
       context.delimiters
-        ? context.delimiters.push(delim)
-        : context.delimiters = [delim];
-      assert(context.delimiters.length <= 3);
+        ? context.delimiters.push({ signature, match: delim })
+        : context.delimiters = [{ signature, match: delim }];
     }
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context?.delimiters?.some(delim => delim(rest))) break;
+      if (context?.delimiters?.some(({ signature: sig, match }, i, delims) => {
+        if (sig[0] === 'r') for (let j = 1; j <= 2 && i - j >= 0; ++j) {
+          if (delims[i - j].signature === sig) return false;
+        }
+        return match(rest);
+      })) break;
+      assert(!context?.delimiters?.some(delim => delim.match(rest)));
       const result = parser(rest, context);
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;

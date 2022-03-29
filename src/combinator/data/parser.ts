@@ -2,7 +2,10 @@ export interface Ctx {
   readonly resources?: {
     budget: number;
   };
-  delimiters?: ((source: string) => boolean)[];
+  delimiters?: {
+    readonly signature: string;
+    readonly match: (source: string) => boolean;
+  }[];
 }
 
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
