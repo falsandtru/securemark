@@ -9,7 +9,7 @@ import { push, pop } from 'spica/array';
 // https://dev.w3.org/html5/html-author/charref
 const invisibleHTMLEntityNames = [
   'Tab',
-  //'NewLine',
+  'NewLine',
   'NonBreakingSpace',
   'nbsp',
   'shy',
