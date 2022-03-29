@@ -26,11 +26,9 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     memoize(
     ([, tag]) =>
       surround(
-        str(`<${tag}`), some(union([attribute])), str('>'), true,
-        ([, as = []], rest) => [
-          [h(tag as 'span', attributes('html', [], attrspec[tag], as))],
-          rest
-        ]),
+        `<${tag}`, some(union([attribute])), '>', true,
+        ([, bs = []], rest) =>
+          [[h(tag as 'span', attributes('html', [], attrspec[tag], bs))], rest]),
     ([, tag]) => tag)),
   match(
     /^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/,
@@ -80,9 +78,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ([as, bs, cs], rest) =>
           [[elem(tag, as, trimNodeEndBR(defrag(bs)), cs, {})], rest],
         ([as, bs], rest) =>
-          as.length === 1
-            ? [unshift(as, bs), rest]
-            : undefined)),
+          as.length === 1 ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tag,
     new Cache(1000))),
 ])))));
