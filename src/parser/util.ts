@@ -83,18 +83,18 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
 export function isStartLoose(source: string, context: MarkdownParser.Context, except?: string): boolean {
   source &&= source.replace(/^[^\S\n]+/, '');
   if (source === '') return true;
-  return source.slice(0, except?.length ?? 0) !== except
-      && isStartTight(source, context);
+  return isStartTight(source, context, except);
 }
-export function startTight<P extends Parser<unknown>>(parser: P): P;
-export function startTight<T>(parser: Parser<T>): Parser<T> {
+export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
+export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
   return (source, context) =>
-    isStartTight(source, context)
+    isStartTight(source, context, except)
       ? parser(source, context)
       : undefined;
 }
-function isStartTight(source: string, context: MarkdownParser.Context): boolean {
+function isStartTight(source: string, context: MarkdownParser.Context, except?: string): boolean {
   if (source === '') return true;
+  if (except && source.slice(0, except.length) === except) return false;
   switch (source[0]) {
     case ' ':
     case '　':
