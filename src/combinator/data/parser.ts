@@ -3,9 +3,9 @@ export interface Ctx {
     budget: number;
   };
   delimiters?: {
-    readonly signature: string;
-    readonly match: (source: string) => boolean;
-  }[];
+    readonly stack: string[];
+    readonly matchers: Record<string, (source: string) => boolean>;
+  };
 }
 
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>

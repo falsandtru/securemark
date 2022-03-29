@@ -14,7 +14,7 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D
       const result = parsers[i](rest, context);
       assert(check(rest, result));
       if (!result) return;
-      assert(!context?.delimiters?.some(delim => delim.match(rest)));
+      assert(!context?.delimiters?.stack.some(sig => context.delimiters!.matchers[sig](rest)));
       nodes = nodes
         ? push(nodes, eval(result))
         : eval(result);

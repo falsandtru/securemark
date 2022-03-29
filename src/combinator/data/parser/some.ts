@@ -1,5 +1,6 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../parser';
+import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
 export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp | number, deep?: string | RegExp, limit?: number): P;
@@ -13,7 +14,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     : source => until?.test(source) ?? false;
   const delim: (source: string) => boolean = typeof deep === 'string'
     ? source => source.slice(0, deep.length) === deep
-    : source => deep?.test(source) ?? false;
+    : reduce(source => deep?.test(source) ?? false);
   const signature = typeof deep === 'string'
     ? `s:${deep}`
     : `r:${deep?.source ?? ''}`;
@@ -24,20 +25,14 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     if (context && deep) {
       // bracket>annotation>bracket>reference>bracket>link>media|bracket
       // bracket>annotation>bracket>reference>bracket>index>bracket
-      context.delimiters
-        ? context.delimiters.push({ signature, match: delim })
-        : context.delimiters = [{ signature, match: delim }];
+      context.delimiters ??= { stack: [], matchers: {} };
+      context.delimiters.stack.push(signature);
+      context.delimiters.matchers[signature] ??= delim;
     }
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context?.delimiters?.some(({ signature: sig, match }, i, delims) => {
-        if (sig[0] === 'r') for (let j = 1; j <= 2 && i - j >= 0; ++j) {
-          if (delims[i - j].signature === sig) return false;
-        }
-        return match(rest);
-      })) break;
-      assert(!context?.delimiters?.some(delim => delim.match(rest)));
+      if (context?.delimiters?.stack.some(sig => context.delimiters!.matchers[sig](rest))) break;
       const result = parser(rest, context);
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;
@@ -48,9 +43,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
       if (limit >= 0 && source.length - rest.length > limit) break;
     }
     if (context && deep) {
-      context.delimiters?.length! > 1
-        ? context.delimiters?.pop()
-        : context.delimiters = undefined;
+      context.delimiters?.stack.pop();
     }
     assert(rest.length <= source.length);
     return nodes && rest.length < source.length

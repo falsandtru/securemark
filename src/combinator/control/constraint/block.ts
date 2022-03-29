@@ -6,10 +6,8 @@ export function block<P extends Parser<unknown>>(parser: P, separation?: boolean
 export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
   assert(parser);
   return (source, context) => {
-    assert(!context?.delimiters);
     if (source === '') return;
     const result = parser(source, context);
-    assert(!context?.delimiters);
     if (!result) return;
     const rest = exec(result);
     if (separation && !isEmpty(firstline(rest))) return;
