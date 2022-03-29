@@ -4373,10 +4373,9 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.escape = exports.normalize = void 0;
+            exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
             const parser_1 = _dereq_('../../combinator/data/parser');
             const htmlentity_1 = _dereq_('../inline/htmlentity');
-            const util_1 = _dereq_('../util');
             const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
                 return sanitize(format(source));
@@ -4388,7 +4387,9 @@ require = function () {
             function sanitize(source) {
                 return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${ UNICODE_REPLACEMENT_CHARACTER }`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
             }
-            const unreadableHTMLEntityNames = [
+            exports.invisibleHTMLEntityNames = [
+                'Tab',
+                'NewLine',
                 'NonBreakingSpace',
                 'nbsp',
                 'shy',
@@ -4420,7 +4421,8 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, util_1.stringify)((0, parser_1.eval)((0, htmlentity_1.htmlentity)(`&${ name };`, {}))));
+            const unreadableHTMLEntityNames = exports.invisibleHTMLEntityNames.slice(2);
+            const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(`&${ name };`, {}))[0]);
             const unreadableEscapableCharacter = new RegExp(`[${ [...new Set(unreadableEscapableCharacters)].join('') }]`, 'g');
             const unreadableSpecialCharacters = [
                 '\u2006',
@@ -4445,8 +4447,7 @@ require = function () {
         },
         {
             '../../combinator/data/parser': 47,
-            '../inline/htmlentity': 112,
-            '../util': 134
+            '../inline/htmlentity': 112
         }
     ],
     61: [
@@ -6672,11 +6673,11 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('*'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*`)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
-            ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
+            ])), '*'), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))],
                 rest
             ] : [
@@ -7113,8 +7114,8 @@ require = function () {
             (0, alias_1.ObjectSetPrototypeOf)(attrspec, null);
             (0, alias_1.ObjectValues)(attrspec).forEach(o => (0, alias_1.ObjectSetPrototypeOf)(o, null));
             exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([
-                (0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, source_1.str)('>'), true, ([, as = []], rest) => [
-                    [(0, typed_dom_1.html)(tag, attributes('html', [], attrspec[tag], as))],
+                (0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${ tag }`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), '>', true, ([, bs = []], rest) => [
+                    [(0, typed_dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))],
                     rest
                 ]), ([, tag]) => tag)),
                 (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, combinator_1.context)((() => {
@@ -7237,17 +7238,16 @@ require = function () {
             exports.htmlentity = exports.unsafehtmlentity = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            const parser = (0, typed_dom_1.html)('textarea');
-            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.focus)(/^&(?!NewLine;)[0-9A-Za-z]+;/, entity => [
-                [(parser.innerHTML = entity, parser.value)],
+            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&(?!NewLine;)[0-9A-Za-z]+;/, (parser => entity => (parser.innerHTML = entity, entity = parser.textContent, [
+                [`${ entity[0] !== '&' || entity.length === 1 ? '' : '\0' }${ entity }`],
                 ''
-            ]), ([str]) => [str[0] !== '&' || str.length < 3 ? str : `\0${ str }`])));
-            exports.htmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([str]) => [str[0] === '\0' ? (0, typed_dom_1.html)('span', {
+            ]))((0, typed_dom_1.html)('b')))));
+            exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([str]) => [str[0] === '\0' ? (0, typed_dom_1.html)('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'htmlentity',
                     'data-invalid-type': 'syntax',
                     'data-invalid-description': 'Invalid HTML entity.'
-                }, str.slice(1)) : str])));
+                }, str.slice(1)) : str]);
         },
         {
             '../../combinator': 27,
@@ -7856,10 +7856,10 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('**'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*\*`)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
-            ]))), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
+            ])), '*'), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))],
                 rest
             ] : [
@@ -8656,47 +8656,14 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const htmlentity_1 = _dereq_('./inline/htmlentity');
             const source_1 = _dereq_('./source');
+            const normalize_1 = _dereq_('./api/normalize');
             const array_1 = _dereq_('spica/array');
-            const invisibleHTMLEntityNames = [
-                'Tab',
-                'NewLine',
-                'NonBreakingSpace',
-                'nbsp',
-                'shy',
-                'ensp',
-                'emsp',
-                'emsp13',
-                'emsp14',
-                'numsp',
-                'puncsp',
-                'ThinSpace',
-                'thinsp',
-                'VeryThinSpace',
-                'hairsp',
-                'ZeroWidthSpace',
-                'NegativeVeryThinSpace',
-                'NegativeThinSpace',
-                'NegativeMediumSpace',
-                'NegativeThickSpace',
-                'zwj',
-                'zwnj',
-                'lrm',
-                'rlm',
-                'MediumSpace',
-                'NoBreak',
-                'ApplyFunction',
-                'af',
-                'InvisibleTimes',
-                'it',
-                'InvisibleComma',
-                'ic'
-            ];
-            const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)+$`, 'gm');
             function delimiter(opener) {
-                return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)?${ opener }`);
+                return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${ normalize_1.invisibleHTMLEntityNames.join('|') });|<wbr>)?${ opener }`);
             }
             exports.delimiter = delimiter;
             function visualize(parser) {
+                const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${ normalize_1.invisibleHTMLEntityNames.join('|') });|<wbr>)+$`, 'gm');
                 return (0, combinator_1.union)([
                     (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
                     (0, combinator_1.some)((0, combinator_1.union)([
@@ -8732,21 +8699,22 @@ require = function () {
             }
             exports.startLoose = startLoose;
             function isStartLoose(source, context, except) {
-                var _a;
                 source && (source = source.replace(/^[^\S\n]+/, ''));
                 if (source === '')
                     return true;
-                return source.slice(0, (_a = except === null || except === void 0 ? void 0 : except.length) !== null && _a !== void 0 ? _a : 0) !== except && isStartTight(source, context);
+                return isStartTight(source, context, except);
             }
             exports.isStartLoose = isStartLoose;
-            function startTight(parser) {
-                return (source, context) => isStartTight(source, context) ? parser(source, context) : global_1.undefined;
+            function startTight(parser, except) {
+                return (source, context) => isStartTight(source, context, except) ? parser(source, context) : global_1.undefined;
             }
             exports.startTight = startTight;
-            function isStartTight(source, context) {
+            function isStartTight(source, context, except) {
                 var _a, _b, _c;
                 if (source === '')
                     return true;
+                if (except && source.slice(0, except.length) === except)
+                    return false;
                 switch (source[0]) {
                 case ' ':
                 case '\u3000':
@@ -8866,6 +8834,7 @@ require = function () {
         {
             '../combinator': 27,
             '../combinator/data/parser': 47,
+            './api/normalize': 60,
             './inline/htmlentity': 112,
             './source': 128,
             'spica/array': 6,
