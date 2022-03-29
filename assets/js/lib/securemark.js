@@ -6674,11 +6674,8 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('*'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
-                (0, combinator_1.some)(inline_1.inline, /^\s*\*/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '*'),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*`)),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))],
                 rest
@@ -6713,26 +6710,17 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, /^\s*\*\*/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '*'),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*\*`)),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])));
             const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
-                (0, combinator_1.some)(inline_1.inline, /^\s*\*/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '*'),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*`)),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])));
             exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, /^\s*\*/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '*'),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*`)),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ]))), (0, source_1.str)(/^\*{1,3}/), false, ([as, bs, cs], rest, context) => {
                 var _a, _b;
                 if (!(0, util_1.isEndTightNodes)(bs))
@@ -6741,25 +6729,13 @@ require = function () {
                         cs[0] + rest
                     ];
                 switch (cs[0]) {
-                case '*':
-                    return (_a = (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.isEndTightNodes)(ds) ? [
-                        [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
-                        rest.slice(2)
-                    ] : [
-                        (0, array_1.unshift)([
-                            '**',
-                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
-                        ], ds),
-                        rest
-                    ])(rest, context)) !== null && _a !== void 0 ? _a : [
-                        [
-                            '**',
-                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
-                        ],
+                case '***':
+                    return [
+                        [(0, typed_dom_1.html)('em', [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))])],
                         rest
                     ];
                 case '**':
-                    return (_b = (0, combinator_1.bind)(subemphasis, (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.isEndTightNodes)(ds) ? [
+                    return (_a = (0, combinator_1.bind)(subemphasis, (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.isEndTightNodes)(ds) ? [
                         [(0, typed_dom_1.html)('em', (0, array_1.unshift)([(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
                         rest.slice(1)
                     ] : [
@@ -6768,16 +6744,28 @@ require = function () {
                             (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))
                         ], ds),
                         rest
-                    ])(rest, context)) !== null && _b !== void 0 ? _b : [
+                    ])(rest, context)) !== null && _a !== void 0 ? _a : [
                         [
                             '*',
                             (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))
                         ],
                         rest
                     ];
-                case '***':
-                    return [
-                        [(0, typed_dom_1.html)('em', [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))])],
+                case '*':
+                    return (_b = (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.isEndTightNodes)(ds) ? [
+                        [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
+                        rest.slice(2)
+                    ] : [
+                        (0, array_1.unshift)([
+                            '**',
+                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
+                        ], ds),
+                        rest
+                    ])(rest, context)) !== null && _b !== void 0 ? _b : [
+                        [
+                            '**',
+                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
+                        ],
                         rest
                     ];
                 }
@@ -7250,7 +7238,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const parser = (0, typed_dom_1.html)('textarea');
-            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => [
+            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.fmap)((0, combinator_1.focus)(/^&(?!NewLine;)[0-9A-Za-z]+;/, entity => [
                 [(parser.innerHTML = entity, parser.value)],
                 ''
             ]), ([str]) => [str[0] !== '&' || str.length < 3 ? str : `\0${ str }`])));
@@ -7450,11 +7438,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, /^\s*==/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '='),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)('==')),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), inline_1.inline)
             ]))), (0, source_1.str)('=='), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)(bs))],
                 rest
@@ -7872,11 +7857,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('**'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, /^\s*\*\*/),
-                (0, combinator_1.sequence)([
-                    (0, combinator_1.some)(inline_1.inline, '*'),
-                    inline_1.inline
-                ])
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(String.raw`\*\*`)),
+                (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ]))), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))],
                 rest
@@ -8668,7 +8650,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimNodeEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = void 0;
+            exports.stringify = exports.trimNodeEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = exports.delimiter = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -8709,7 +8691,11 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)+$`, 'gm');
+            const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)+$`, 'gm');
+            function delimiter(opener) {
+                return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)?${ opener }`);
+            }
+            exports.delimiter = delimiter;
             function visualize(parser) {
                 return (0, combinator_1.union)([
                     (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
