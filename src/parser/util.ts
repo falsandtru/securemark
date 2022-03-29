@@ -7,8 +7,8 @@ import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
 import { push, pop } from 'spica/array';
 
-export function delimiter(opener: string): RegExp {
-  return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${opener}`);
+export function delimiter(opener: RegExp): RegExp {
+  return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${opener.source}`);
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;

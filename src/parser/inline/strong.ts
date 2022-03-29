@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 export const strong: StrongParser = lazy(() => creator(surround(
   str('**'),
   startTight(some(union([
-    some(inline, delimiter(String.raw`\*\*`)),
+    some(inline, delimiter(/\*\*/)),
     open(some(inline, '*'), inline),
   ])), '*'),
   str('**'), false,
