@@ -13,9 +13,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
   const delim: (source: string) => boolean = typeof deep === 'string'
     ? source => source.slice(0, deep.length) === deep
     : source => deep?.test(source) ?? false;
-  let memory = '';
   return (source, context) => {
-    if (source === memory) return;
     let rest = source;
     let nodes: T[] | undefined;
     if (context && deep) {
@@ -42,7 +40,6 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
         ? context.delimiters?.pop()
         : context.delimiters = undefined;
     }
-    memory = limit < 0 && rest || memory;
     assert(rest.length <= source.length);
     return nodes && rest.length < source.length
       ? [nodes, rest]
