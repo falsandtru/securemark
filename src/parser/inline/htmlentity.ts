@@ -2,18 +2,15 @@ import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { union, validate, focus, creator, fmap } from '../../combinator';
 import { html } from 'typed-dom';
 
-const parser = html('textarea');
-
-export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', fmap(focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', focus(
   /^&(?!NewLine;)[0-9A-Za-z]+;/,
-  entity => [[(parser.innerHTML = entity, parser.value)], '']),
-  ([str]) => [
-    str[0] !== '&' || str.length < 3
-      ? str
-      : `\0${str}`,
-  ])));
+  (parser => entity => (
+    parser.innerHTML = entity,
+    entity = parser.textContent!,
+    [[`${entity[0] !== '&' || entity.length === 1 ? '' : '\0'}${entity}`], '']
+  ))(html('b')))));
 
-export const htmlentity: HTMLEntityParser = creator(validate('&', fmap(
+export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([str]) => [
     str[0] === '\0'
@@ -24,4 +21,4 @@ export const htmlentity: HTMLEntityParser = creator(validate('&', fmap(
           'data-invalid-description': 'Invalid HTML entity.',
         }, str.slice(1))
       : str,
-  ])));
+  ]);
