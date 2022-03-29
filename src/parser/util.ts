@@ -4,44 +4,8 @@ import { Parser, eval } from '../combinator/data/parser';
 import { union, some, verify, convert } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
+import { invisibleHTMLEntityNames } from './api/normalize';
 import { push, pop } from 'spica/array';
-
-// https://dev.w3.org/html5/html-author/charref
-const invisibleHTMLEntityNames = [
-  'Tab',
-  'NewLine',
-  'NonBreakingSpace',
-  'nbsp',
-  'shy',
-  'ensp',
-  'emsp',
-  'emsp13',
-  'emsp14',
-  'numsp',
-  'puncsp',
-  'ThinSpace',
-  'thinsp',
-  'VeryThinSpace',
-  'hairsp',
-  'ZeroWidthSpace',
-  'NegativeVeryThinSpace',
-  'NegativeThinSpace',
-  'NegativeMediumSpace',
-  'NegativeThickSpace',
-  'zwj',
-  'zwnj',
-  'lrm',
-  'rlm',
-  'MediumSpace',
-  'NoBreak',
-  'ApplyFunction',
-  'af',
-  'InvisibleTimes',
-  'it',
-  'InvisibleComma',
-  'ic',
-] as const;
-const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
 
 export function delimiter(opener: string): RegExp {
   return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${opener}`);
@@ -49,6 +13,7 @@ export function delimiter(opener: string): RegExp {
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
   return union([
     convert(
       source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')),

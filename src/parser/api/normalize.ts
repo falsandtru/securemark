@@ -1,6 +1,5 @@
 import { eval } from '../../combinator/data/parser';
-import { htmlentity } from '../inline/htmlentity';
-import { stringify } from '../util';
+import { unsafehtmlentity } from '../inline/htmlentity';
 
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 assert(UNICODE_REPLACEMENT_CHARACTER.trim());
@@ -25,9 +24,9 @@ function sanitize(source: string): string {
 
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
-const unreadableHTMLEntityNames = [
-  //'Tab',
-  //'NewLine',
+export const invisibleHTMLEntityNames = [
+  'Tab',
+  'NewLine',
   'NonBreakingSpace',
   'nbsp',
   'shy',
@@ -59,8 +58,10 @@ const unreadableHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ] as const;
+const unreadableHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames.slice(2);
 const unreadableEscapableCharacters = unreadableHTMLEntityNames
-  .map(name => stringify(eval(htmlentity(`&${name};`, {}))!));
+  .map(name => eval(unsafehtmlentity(`&${name};`, {}))![0]);
+assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
 assert(unreadableEscapableCharacters.every(c => c.length === 1));
 const unreadableEscapableCharacter = new RegExp(`[${
   [...new Set<string>(unreadableEscapableCharacters)].join('')
