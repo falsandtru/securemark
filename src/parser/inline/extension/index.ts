@@ -23,11 +23,10 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
-  open(str(/^\|?/, false),
   some(union([
     signature,
     inline,
-  ]), ']', /^\\?\n/), true)))),
+  ]), ']', /^\\?\n/)))),
   ']'),
   ns => [html('a', trimNodeEnd(defrag(ns)))])),
   ([el]: [HTMLAnchorElement]) => [
@@ -41,8 +40,8 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
   ]))));
 
 const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
-  '|#',
-  startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
+  /^\s+\|#/,
+  startTight(some(union([bracket, txt]), ']'))),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity(join(ns)).slice(6) }),
   ])));

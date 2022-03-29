@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.235.0
+
+- Change signature syntax to require leading whitespace.
+
 ## 0.234.3
 
 - Refactoring.
