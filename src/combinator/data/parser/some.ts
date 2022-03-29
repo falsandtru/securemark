@@ -14,6 +14,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     ? source => source.slice(0, deep.length) === deep
     : source => deep?.test(source) ?? false;
   return (source, context) => {
+    if (source === '') return;
     let rest = source;
     let nodes: T[] | undefined;
     if (context && deep) {
