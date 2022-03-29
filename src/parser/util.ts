@@ -41,10 +41,10 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ] as const;
-const blankline = new RegExp(String.raw`^(?!$)(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
+const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
 
 export function delimiter(opener: string): RegExp {
-  return new RegExp(String.raw`^(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*${opener}`);
+  return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${opener}`);
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
