@@ -27,7 +27,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context?.delimiters?.some(match => match(rest))) break;
+      if (context?.delimiters?.some(delim => delim(rest))) break;
       const result = parser(rest, context);
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;
