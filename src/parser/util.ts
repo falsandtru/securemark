@@ -92,10 +92,10 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
 }
-export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
-  if (nodes.length === 0) return true;
-  return isVisible(nodes[nodes.length - 1], -1);
-}
+//export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+//  if (nodes.length === 0) return true;
+//  return isVisible(nodes[nodes.length - 1], -1);
+//}
 function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   switch (typeof node) {
     case 'string':
