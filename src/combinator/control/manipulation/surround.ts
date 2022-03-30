@@ -1,7 +1,6 @@
 import { undefined } from 'spica/global';
 import { Parser, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
-import { creator } from './resource';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
@@ -69,14 +68,14 @@ export function surround<T>(
 function match(pattern: string | RegExp): (source: string, context: Ctx) => [never[], string] | undefined {
   switch (typeof pattern) {
     case 'string':
-      return creator(source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined);
+      return source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
     case 'object':
-      return creator(source => {
+      return source => {
         const m = source.match(pattern);
         return m
           ? [[], source.slice(m[0].length)]
           : undefined;
-      });
+      };
   }
 }
 

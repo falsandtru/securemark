@@ -34,7 +34,7 @@ export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creator(error(
-  reset({ resources: { budget: 100 * 1000 } },
+  reset({ resources: { budget: 100 * 1000, recursion: 200 } },
   union([
     emptyline,
     horizontalrule,
@@ -61,7 +61,6 @@ function error(parser: BlockParser): BlockParser {
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
           class: 'error',
-          translate: 'no',
         },
         reason instanceof Error
           ? `${reason.name}: ${reason.message}`

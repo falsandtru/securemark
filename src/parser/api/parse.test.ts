@@ -218,10 +218,17 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
-    it('reset', () => {
+    it('recursion', () => {
       assert.deepStrictEqual(
-        [...parse(`"${'('.repeat(10000)}\n\n"`).children].slice(2).map(el => el.outerHTML),
-        ['<p>"</p>']);
+        [...parse('('.repeat(199)).children].map(el => el.outerHTML),
+        [`<p>${'('.repeat(199)}</p>`]);
+      assert.deepStrictEqual(
+        [...parse('('.repeat(200) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [
+          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
+          `<pre class="error" translate="no">${'('.repeat(200)}\n</pre>`,
+          '<p>a</p>',
+        ]);
     });
 
   });
