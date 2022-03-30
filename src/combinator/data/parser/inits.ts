@@ -14,7 +14,7 @@ export function inits<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D> {
       const result = parsers[i](rest, context);
       assert(check(rest, result));
       if (!result) break;
-      assert(!context?.delimiters?.stack.some(sig => context.delimiters!.matchers[sig](rest)));
+      assert(!context?.delimiters?.match(rest));
       nodes = nodes
         ? push(nodes, eval(result))
         : eval(result);
