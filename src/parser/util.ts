@@ -46,9 +46,7 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
       : undefined;
 }
 export function isStartLoose(source: string, context: MarkdownParser.Context, except?: string): boolean {
-  source &&= source.replace(/^[^\S\n]+/, '');
-  if (source === '') return true;
-  return isStartTight(source, context, except);
+  return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
 }
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
