@@ -5,15 +5,22 @@ import { union, some, verify, convert } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
-import { push, pop } from 'spica/array';
+import { push } from 'spica/array';
 
-export function delimiter(opener: RegExp): RegExp {
-  return new RegExp(String.raw`^(?:\s+|\\\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${opener.source}`);
+export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
+  return new RegExp(String.raw
+    `^${
+      prefix && prefix.source
+    }(?:\\\s|[^\S\n]+|\n|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${
+      typeof suffix === 'string' ? suffix : suffix.source
+    }`);
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
+  const blankline = new RegExp(String.raw
+    `^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`,
+    'gm');
   return union([
     convert(
       source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')),
@@ -156,14 +163,6 @@ export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | str
     nodes.pop();
   }
   return push(nodes, skip);
-}
-export function trimNodeEndBR<T extends HTMLElement | string>(nodes: T[]): T[];
-export function trimNodeEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  if (nodes.length === 0) return nodes;
-  const node = nodes[nodes.length - 1];
-  return typeof node === 'object' && node.tagName === 'BR'
-    ? pop(nodes)[0]
-    : nodes;
 }
 
 export function stringify(nodes: readonly (HTMLElement | string)[]): string {

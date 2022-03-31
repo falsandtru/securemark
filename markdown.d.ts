@@ -941,6 +941,7 @@ export namespace MarkdownParser {
         Inline<'html/tag'>,
         Parser<HTMLElement | string, Context, [
           InlineParser,
+          InlineParser,
         ]> {
       }
       export namespace TagParser {
@@ -957,12 +958,14 @@ export namespace MarkdownParser {
       Inline<'insertion'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
+        InlineParser,
       ]> {
     }
     export interface DeletionParser extends
       // ~~abc~~
       Inline<'deletion'>,
       Parser<HTMLElement | string, Context, [
+        InlineParser,
         InlineParser,
       ]> {
     }
