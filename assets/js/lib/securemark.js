@@ -3578,11 +3578,20 @@ require = function () {
                 if (typeof cost === 'function')
                     return creator(1, cost);
                 return (source, context) => {
-                    const {resources} = context;
-                    if ((resources === null || resources === void 0 ? void 0 : resources.budget) <= 0)
+                    const {
+                        resources = {
+                            budget: 1,
+                            recursion: 1
+                        }
+                    } = context;
+                    if (resources.budget <= 0)
                         throw new Error('Too many creations.');
+                    if (resources.recursion <= 0)
+                        throw new Error('Too much recursion.');
+                    --resources.recursion;
                     const result = parser(source, context);
-                    if (result && resources) {
+                    ++resources.recursion;
+                    if (result) {
                         resources.budget -= cost;
                     }
                     return result;
@@ -3665,7 +3674,6 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../../data/parser');
             const fmap_1 = _dereq_('../monad/fmap');
-            const resource_1 = _dereq_('./resource');
             const array_1 = _dereq_('spica/array');
             function surround(opener, parser, closer, optional = false, f, g) {
                 switch (typeof opener) {
@@ -3713,18 +3721,18 @@ require = function () {
             function match(pattern) {
                 switch (typeof pattern) {
                 case 'string':
-                    return (0, resource_1.creator)(source => source.slice(0, pattern.length) === pattern ? [
+                    return source => source.slice(0, pattern.length) === pattern ? [
                         [],
                         source.slice(pattern.length)
-                    ] : global_1.undefined);
+                    ] : global_1.undefined;
                 case 'object':
-                    return (0, resource_1.creator)(source => {
+                    return source => {
                         const m = source.match(pattern);
                         return m ? [
                             [],
                             source.slice(m[0].length)
                         ] : global_1.undefined;
-                    });
+                    };
                 }
             }
             function open(opener, parser, optional = false) {
@@ -3743,7 +3751,6 @@ require = function () {
         {
             '../../data/parser': 47,
             '../monad/fmap': 46,
-            './resource': 40,
             'spica/array': 6,
             'spica/global': 15
         }
@@ -3816,7 +3823,37 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.check = exports.exec = exports.eval = void 0;
+            exports.check = exports.exec = exports.eval = exports.Delimiters = void 0;
+            class Delimiters {
+                constructor() {
+                    this.stack = [];
+                    this.matchers = {};
+                }
+                push(delimiter) {
+                    var _a;
+                    var _b;
+                    const {signature, matcher} = delimiter;
+                    this.stack.push(signature);
+                    (_a = (_b = this.matchers)[signature]) !== null && _a !== void 0 ? _a : _b[signature] = matcher;
+                }
+                pop() {
+                    this.stack.pop();
+                }
+                match(source) {
+                    const {stack, matchers} = this;
+                    const log = {};
+                    for (let i = 0; i < stack.length; ++i) {
+                        const sig = stack[i];
+                        if (sig in log)
+                            continue;
+                        if (matchers[sig](source))
+                            return true;
+                        log[sig] = false;
+                    }
+                    return false;
+                }
+            }
+            exports.Delimiters = Delimiters;
             function eval_(result, default_) {
                 return result ? result[0] : default_;
             }
@@ -3927,7 +3964,7 @@ require = function () {
                     return `r/${ pattern.source }/${ pattern.flags }`;
                 }
             };
-            const [matcher, delimiter] = [...Array(2)].map(() => (0, memoize_1.memoize)(pattern => {
+            const matcher = (0, memoize_1.memoize)(pattern => {
                 switch (typeof pattern) {
                 case 'undefined':
                     return () => false;
@@ -3936,35 +3973,31 @@ require = function () {
                 case 'object':
                     return (0, memoize_1.reduce)(source => pattern.test(source));
                 }
-            }, signature));
+            }, signature);
             function some(parser, until, deep, limit = -1) {
                 if (typeof until === 'number')
                     return some(parser, global_1.undefined, deep, until);
                 const match = matcher(until);
-                const delim = delimiter(deep);
-                const sig = signature(deep);
+                const delimiter = {
+                    signature: signature(deep),
+                    matcher: matcher(deep)
+                };
                 return (source, context) => {
-                    var _a, _b, _c;
-                    var _d;
+                    var _a, _b;
                     if (source === '')
                         return;
                     let rest = source;
                     let nodes;
-                    if (context && deep) {
-                        (_a = context.delimiters) !== null && _a !== void 0 ? _a : context.delimiters = {
-                            stack: [],
-                            matchers: {}
-                        };
-                        context.delimiters.stack.push(sig);
-                        (_b = (_d = context.delimiters.matchers)[sig]) !== null && _b !== void 0 ? _b : _d[sig] = delim;
+                    if (deep && context) {
+                        (_a = context.delimiters) !== null && _a !== void 0 ? _a : context.delimiters = new parser_1.Delimiters();
+                        context.delimiters.push(delimiter);
                     }
-                    const {stack, matchers} = (_c = context.delimiters) !== null && _c !== void 0 ? _c : {};
                     while (true) {
                         if (rest === '')
                             break;
                         if (match(rest))
                             break;
-                        if (stack === null || stack === void 0 ? void 0 : stack.some(sig => matchers[sig](rest)))
+                        if ((_b = context.delimiters) === null || _b === void 0 ? void 0 : _b.match(rest))
                             break;
                         const result = parser(rest, context);
                         if (!result)
@@ -3974,8 +4007,8 @@ require = function () {
                         if (limit >= 0 && source.length - rest.length > limit)
                             break;
                     }
-                    if (context && deep) {
-                        stack === null || stack === void 0 ? void 0 : stack.pop();
+                    if (deep && context.delimiters) {
+                        context.delimiters.pop();
                     }
                     return nodes && rest.length < source.length ? [
                         nodes,
@@ -4590,7 +4623,12 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const typed_dom_1 = _dereq_('typed-dom');
             const random_1 = _dereq_('spica/random');
-            exports.block = (0, combinator_1.creator)(error((0, combinator_1.reset)({ resources: { budget: 100 * 1000 } }, (0, combinator_1.union)([
+            exports.block = (0, combinator_1.creator)(error((0, combinator_1.reset)({
+                resources: {
+                    budget: 100 * 1000,
+                    recursion: 200
+                }
+            }, (0, combinator_1.union)([
                 source_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -4613,8 +4651,7 @@ require = function () {
                     [
                         (0, typed_dom_1.html)('h1', {
                             id: id !== '' ? `error:${ (0, random_1.rnd0Z)(8) }` : global_1.undefined,
-                            class: 'error',
-                            translate: 'no'
+                            class: 'error'
                         }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `UnknownError: ${ reason }`),
                         (0, typed_dom_1.html)('pre', {
                             class: 'error',
@@ -5073,6 +5110,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
+            const array_1 = _dereq_('spica/array');
             exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
                 (0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^.*\n/)),
                 (0, combinator_1.inits)([
@@ -5113,8 +5151,7 @@ require = function () {
                 ])
             ])), ([label, param, content, ...caption]) => [(0, typed_dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     (0, typed_dom_1.html)('div', { class: 'figcontent' }, [content]),
-                    (0, typed_dom_1.html)('span', { class: 'figindex' }),
-                    (0, typed_dom_1.html)('figcaption', (0, typed_dom_1.defrag)(caption))
+                    (0, typed_dom_1.html)('figcaption', (0, array_1.unshift)([(0, typed_dom_1.html)('span', { class: 'figindex' })], (0, typed_dom_1.defrag)(caption)))
                 ])])));
             function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
@@ -5156,6 +5193,7 @@ require = function () {
             './example': 69,
             './placeholder': 74,
             './table': 75,
+            'spica/array': 6,
             'spica/global': 15,
             'spica/memoize': 18,
             'typed-dom': 26
@@ -5273,6 +5311,7 @@ require = function () {
             exports.table = exports.segment_ = exports.segment = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
+            const parser_1 = _dereq_('../../../combinator/data/parser');
             const combinator_1 = _dereq_('../../../combinator');
             const inline_1 = _dereq_('../../inline');
             const source_1 = _dereq_('../../source');
@@ -5283,23 +5322,17 @@ require = function () {
             const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
-            exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.recover)((0, combinator_1.bind)((0, combinator_1.fence)(opener, 10000), ([body, closer, opener, delim, param], _, context) => {
+            exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.recover)((0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart())
-                    return [
-                        [(0, typed_dom_1.html)('pre', {
-                                class: 'invalid',
-                                translate: 'no',
-                                'data-invalid-syntax': 'table',
-                                'data-invalid-type': !closer ? 'closer' : 'argument',
-                                'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
-                            }, `${ opener }${ body }${ closer }`)],
-                        ''
-                    ];
-                return (_a = parser(body, context)) !== null && _a !== void 0 ? _a : [
-                    [(0, typed_dom_1.html)('table')],
-                    ''
-                ];
+                    return [(0, typed_dom_1.html)('pre', {
+                            class: 'invalid',
+                            translate: 'no',
+                            'data-invalid-syntax': 'table',
+                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                        }, `${ opener }${ body }${ closer }`)];
+                return (_a = (0, parser_1.eval)(parser(body, context))) !== null && _a !== void 0 ? _a : [(0, typed_dom_1.html)('table')];
             }), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less.' ? [
                 [(0, typed_dom_1.html)('pre', {
                         class: 'invalid',
@@ -5528,6 +5561,7 @@ require = function () {
         },
         {
             '../../../combinator': 27,
+            '../../../combinator/data/parser': 47,
             '../../inline': 88,
             '../../locale': 123,
             '../../source': 128,
@@ -6573,7 +6607,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const index = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Za-z])/;
             const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 65248)));
-            exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
+            exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')'), false, ([as, bs = [], cs], rest) => [
                     (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)),
                     rest
@@ -6608,7 +6642,7 @@ require = function () {
                     (0, array_1.unshift)(as, bs),
                     rest
                 ])
-            ]));
+            ])));
         },
         {
             '../../combinator': 27,
@@ -6714,12 +6748,9 @@ require = function () {
                 strong_1.strong,
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(/\*/)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
-            ])), '*'), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
+            ])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))],
                 rest
-            ] : [
-                (0, array_1.unshift)(as, bs),
-                cs[0] + rest
             ], ([as, bs], rest) => [
                 (0, array_1.unshift)(as, bs),
                 rest
@@ -6759,13 +6790,8 @@ require = function () {
             exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(/\*/)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
-            ]))), (0, source_1.str)(/^\*{1,3}/), false, ([as, bs, cs], rest, context) => {
+            ]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
                 var _a, _b;
-                if (!(0, util_1.isEndTightNodes)(bs))
-                    return [
-                        (0, array_1.unshift)(as, bs),
-                        cs[0] + rest
-                    ];
                 switch (cs[0]) {
                 case '***':
                     return [
@@ -6773,7 +6799,7 @@ require = function () {
                         rest
                     ];
                 case '**':
-                    return (_a = (0, combinator_1.bind)(subemphasis, (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.isEndTightNodes)(ds) ? [
+                    return (_a = (0, combinator_1.bind)(subemphasis, (ds, rest) => rest.slice(0, 1) === '*' ? [
                         [(0, typed_dom_1.html)('em', (0, array_1.unshift)([(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
                         rest.slice(1)
                     ] : [
@@ -6790,7 +6816,7 @@ require = function () {
                         rest
                     ];
                 case '*':
-                    return (_b = (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.isEndTightNodes)(ds) ? [
+                    return (_b = (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' ? [
                         [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
                         rest.slice(2)
                     ] : [
@@ -7214,8 +7240,6 @@ require = function () {
                 switch (true) {
                 case as[as.length - 1] !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1))):
                     return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
-                case cs.length === 0:
-                    return invalid('closer', `Missing the closing HTML tag <${ tag }>.`, as, bs, cs);
                 default:
                     return (0, typed_dom_1.html)(tag, attrs, bs);
                 }
@@ -7477,12 +7501,9 @@ require = function () {
             exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(/==/)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), inline_1.inline)
-            ]))), (0, source_1.str)('=='), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
+            ]))), (0, source_1.str)('=='), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)(bs))],
                 rest
-            ] : [
-                (0, array_1.unshift)(as, bs),
-                cs[0] + rest
             ], ([as, bs], rest) => [
                 (0, array_1.unshift)(as, bs),
                 rest
@@ -7896,12 +7917,9 @@ require = function () {
             exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 (0, combinator_1.some)(inline_1.inline, (0, util_1.delimiter)(/\*\*/)),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
-            ])), '*'), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
+            ])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))],
                 rest
-            ] : [
-                (0, array_1.unshift)(as, bs),
-                cs[0] + rest
             ], ([as, bs], rest) => [
                 (0, array_1.unshift)(as, bs),
                 rest
@@ -8115,7 +8133,7 @@ require = function () {
                     !(0, label_1.isFixed)(label) && numbers.set(group, number);
                     opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
-                    (0, typed_dom_1.define)(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
+                    (0, typed_dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.innerText === figindex)
                             continue;
@@ -8687,7 +8705,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimNodeEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = exports.delimiter = void 0;
+            exports.stringify = exports.trimNodeEndBR = exports.trimNodeEnd = exports.trimNode = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = exports.delimiter = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -8736,10 +8754,7 @@ require = function () {
             }
             exports.startLoose = startLoose;
             function isStartLoose(source, context, except) {
-                source && (source = source.replace(/^[^\S\n]+/, ''));
-                if (source === '')
-                    return true;
-                return isStartTight(source, context, except);
+                return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
             }
             exports.isStartLoose = isStartLoose;
             function startTight(parser, except) {
@@ -8782,12 +8797,6 @@ require = function () {
                 return isVisible(nodes[0], 0);
             }
             exports.isStartTightNodes = isStartTightNodes;
-            function isEndTightNodes(nodes) {
-                if (nodes.length === 0)
-                    return true;
-                return isVisible(nodes[nodes.length - 1], -1);
-            }
-            exports.isEndTightNodes = isEndTightNodes;
             function isVisible(node, strpos) {
                 switch (typeof node) {
                 case 'string':
