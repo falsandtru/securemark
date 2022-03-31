@@ -129,23 +129,23 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
-export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  return trimNodeStart(trimNodeEnd(nodes));
-}
-function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
-    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
-    if (typeof node === 'string') {
-      const pos = node.length - node.trimStart().length;
-      if (pos > 0) {
-        nodes[0] = node.slice(pos);
-        break;
-      }
-    }
-    nodes.shift();
-  }
-  return nodes;
-}
+//export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+//  return trimNodeStart(trimNodeEnd(nodes));
+//}
+//function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+//  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
+//    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
+//    if (typeof node === 'string') {
+//      const pos = node.length - node.trimStart().length;
+//      if (pos > 0) {
+//        nodes[0] = node.slice(pos);
+//        break;
+//      }
+//    }
+//    nodes.shift();
+//  }
+//  return nodes;
+//}
 export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&

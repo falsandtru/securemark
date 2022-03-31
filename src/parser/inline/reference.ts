@@ -1,9 +1,9 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
+import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, open, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, isStartLoose, trimNode, stringify } from '../util';
+import { startLoose, isStartLoose, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
@@ -22,16 +22,16 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   }}, state: undefined },
   subsequence([
     abbr,
-    focus('^', c => [['', c], '']),
-    some(inline, ']', /^\\?\n/),
-  ])), ']]')),
+    focus(/^\^[^\S\n]*/, source => [['', source], '']),
+    open(/^[^\S\n]*/, some(inline, ']', /^\\?\n/)),
+  ])))),
   ']]'),
-  ns => [html('sup', attributes(ns), trimNode(defrag(ns)))]))));
+  ns => [html('sup', attributes(ns), trimNodeEnd(defrag(ns)))]))));
 
 const abbr: ReferenceParser.AbbrParser = creator(fmap(verify(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
-  /^\|?(?=]])|^\|[^\S\n]/),
+  /^\|?(?=]])|^\|[^\S\n]+/),
   (_, rest, context) => isStartLoose(rest, context)),
   ([source]) => [html('abbr', source)]));
 
