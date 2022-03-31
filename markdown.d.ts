@@ -927,6 +927,7 @@ export namespace MarkdownParser {
         HTMLParser.OpenTagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
+        HTMLParser.TagParser,
       ]> {
     }
     export namespace HTMLParser {
