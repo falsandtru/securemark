@@ -121,49 +121,30 @@
   h6:not(:first-child) {
     margin-top: 1.5rem;
   }
+  figcaption {
+    font-size: .9em;
+  }
   .figindex {
     white-space: pre;
-    font-size: .9em;
-  }
-  figcaption {
-    display: inline;
-    font-size: .9em;
+    font-weight: 500;
   }
   figure[data-group="$"] {
-    display: grid;
-    grid-template-rows: 2fr;
-    grid-template-columns: 1fr min-content;
+    display: flex;
+    flex-wrap: nowrap;
     align-items: baseline;
   }
   figure[data-group="$"] > .figcontent {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  figure[data-group="$"] > .figindex {
-    grid-row: 1;
-    grid-column: 2;
-    font-size: 1.2em;
+    flex-grow: 1;
   }
   figure[data-group="$"] > figcaption {
-    grid-row: 2;
-    grid-column: 1 / -1;
+    font-size: 1.2em;
+  }
+  figure[data-group="$"] > figcaption > .figindex {
+    font-weight: unset;
   }
   figure[data-group="table"] {
-    display: grid;
-    grid-template-rows: 2fr;
-    grid-template-columns: min-content auto;
-  }
-  figure[data-group="table"] > .figindex {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  figure[data-group="table"] > figcaption {
-    grid-row: 1;
-    grid-column: 2;
-  }
-  figure[data-group="table"] > .figcontent {
-    grid-row: 2;
-    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column-reverse;
   }
   ul {
     margin-inline-start: 1.7em;
