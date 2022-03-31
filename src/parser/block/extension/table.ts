@@ -1,8 +1,8 @@
 import { undefined, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { Tree } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap, bind } from '../../../combinator';
+import { Tree, eval } from '../../../combinator/data/parser';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
@@ -23,18 +23,18 @@ export const segment: TableParser.SegmentParser = block(validate('~~~',
 export const segment_: TableParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 10000, false))), false);
 
-export const table: TableParser = block(validate('~~~', recover(bind(
+export const table: TableParser = block(validate('~~~', recover(fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
-    if (!closer || param.trimStart()) return [[html('pre', {
+    if (!closer || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'table',
       'data-invalid-type': !closer ? 'closer' : 'argument',
       'data-invalid-description': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
-    }, `${opener}${body}${closer}`)], ''];
-    return parser(body, context) ?? [[html('table')], ''];
+    }, `${opener}${body}${closer}`)];
+    return eval(parser(body, context)) ?? [html('table')];
   }),
   (source, _, reason) =>
     reason instanceof Error && reason.message === 'Number of columns must be 32 or less.'

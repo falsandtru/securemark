@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.235.1
+
+- Fix table parser.
+
 ## 0.235.0
 
 - Change signature syntax to require leading whitespace.
