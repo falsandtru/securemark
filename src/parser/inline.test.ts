@@ -117,9 +117,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[#a]]')), [['<sup class="reference"><a href="/hashtags/a" class="hashtag">#a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[$-1]]')), [['<sup class="reference"><a class="label" data-label="$-1">$-1</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[#-1]]{b}')), [['<sup class="reference">#-1</sup>', '<a href="b">b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[#-1]](b)')), [['<sup class="reference">#-1</sup>', '(b)'], '']);
+      assert.deepStrictEqual(inspect(parser('[[#-1]](b)')), [['<sup class="reference">#-1</sup>', '(', 'b', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[[#-1]a]{b}')), [['<a href="b">[#-1]a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[#-1]a](b)')), [['[', '<a class="index" href="#index:-1">-1</a>', 'a', ']', '(b)'], '']);
+      assert.deepStrictEqual(inspect(parser('[[#-1]a](b)')), [['[', '<a class="index" href="#index:-1">-1</a>', 'a', ']', '(', 'b', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[#a]{b}')), [['<a class="index" href="#index:a">a</a>', '<a href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['[', '<a href="/@a" class="account">@a</a>', ']', '<a href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[http://host]{http://evil}')), [['[', '<a href="http://host" target="_blank">http://host</a>', ']', '<a href="http://evil" target="_blank">http://evil</a>'], '']);
