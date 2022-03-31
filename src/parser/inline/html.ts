@@ -87,8 +87,10 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),
 ]);
 
-function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
+function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[], context: MarkdownParser.Context): HTMLElement {
+  assert(as.length > 0);
   assert(bs.length === defrag(bs).length);
+  assert(cs.length === 1);
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
   switch (tag) {
     case 'sup':
@@ -111,8 +113,6 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
     case as[as.length - 1] !== '>'
       || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
-    case cs.length === 0:
-      return invalid('closer', `Missing the closing HTML tag <${tag}>.`, as, bs, cs);
     default:
       assert(attrs);
       return h(tag as 'span', attrs, bs);
