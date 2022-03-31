@@ -72,7 +72,7 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
     html('figure',
       attributes(label.getAttribute('data-label')!, param, content, caption),
       [
-        html('div', { class: 'figcontent' }, [content]),
+        html('div', [content]),
         html('figcaption', unshift(
           [html('span', { class: 'figindex' })],
           defrag(caption))),
