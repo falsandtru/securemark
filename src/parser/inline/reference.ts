@@ -1,9 +1,9 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, open, lazy, fmap } from '../../combinator';
+import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, isStartLoose, trimNodeEnd, stringify } from '../util';
+import { startLoose, isStartLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
@@ -23,7 +23,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   subsequence([
     abbr,
     focus(/^\^[^\S\n]*/, source => [['', source], '']),
-    open(/^[^\S\n]*/, some(inline, ']', /^\\?\n/)),
+    trimSpaceStart(some(inline, ']', /^\\?\n/)),
   ])))),
   ']]'),
   ns => [html('sup', attributes(ns), trimNodeEnd(defrag(ns)))]))));

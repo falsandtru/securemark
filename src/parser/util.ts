@@ -5,6 +5,7 @@ import { union, some, verify, convert } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
+import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
 export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
@@ -129,6 +130,12 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
+export function trimSpaceStart<P extends Parser<unknown>>(parser: P): P;
+export function trimSpaceStart<T>(parser: Parser<T>): Parser<T> {
+  return convert(
+    reduce(source => source.replace(/^[^\S\n]+/, '')),
+    parser);
+}
 //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
 //  return trimNodeStart(trimNodeEnd(nodes));
 //}

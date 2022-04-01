@@ -7,7 +7,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startLoose, trimNodeEnd, stringify } from '../util';
+import { startLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -38,7 +38,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
           media: false,
           autolink: false,
         }}},
-        open(/^[^\S\n]*/, some(inline, ']', /^\\?\n/)))),
+        trimSpaceStart(some(inline, ']', /^\\?\n/)))),
         ']',
         true),
     ]))),

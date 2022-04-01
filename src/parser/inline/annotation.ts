@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
-import { union, some, validate, guard, context, creator, surround, open, lazy, fmap } from '../../combinator';
+import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { startLoose, trimNodeEnd } from '../util';
+import { startLoose, trimSpaceStart, trimNodeEnd } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', fmap(surround(
@@ -20,6 +20,6 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  open(/^[^\S\n]*/, union([some(inline, ')', /^\\?\n/)]))))),
+  trimSpaceStart(union([some(inline, ')', /^\\?\n/)]))))),
   '))'),
   ns => [html('sup', { class: 'annotation' }, trimNodeEnd(defrag(ns)))]))));
