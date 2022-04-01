@@ -2344,6 +2344,7 @@ require = function () {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
                         exports.SVG = exports.HTML = exports.Shadow = exports.API = void 0;
+                        const global_1 = _dereq_('spica/global');
                         const alias_1 = _dereq_('spica/alias');
                         const proxy_1 = _dereq_('./proxy');
                         const dom_1 = _dereq_('./util/dom');
@@ -2363,22 +2364,24 @@ require = function () {
                             };
                             function builder(tag, baseFactory) {
                                 return function build(attrs, children, factory) {
-                                    if (typeof attrs === 'function')
-                                        return build(void 0, void 0, attrs);
                                     if (typeof children === 'function')
                                         return build(attrs, void 0, children);
-                                    if (attrs !== void 0 && isElChildren(attrs))
+                                    if (typeof attrs === 'function')
+                                        return build(void 0, void 0, attrs);
+                                    if (isElChildren(attrs))
                                         return build(void 0, attrs, factory);
                                     const node = formatter(elem(factory, attrs, children));
                                     return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                                 };
-                                function isElChildren(children) {
-                                    if (typeof children !== 'object')
+                                function isElChildren(param) {
+                                    if (param === void 0)
+                                        return false;
+                                    if (param[global_1.Symbol.iterator])
                                         return true;
-                                    for (const i in children) {
-                                        if (!(0, alias_1.hasOwnProperty)(children, i))
+                                    for (const i in param) {
+                                        if (!(0, alias_1.hasOwnProperty)(param, i))
                                             continue;
-                                        return typeof children[i] === 'object';
+                                        return typeof param[i] === 'object' && !!param[i];
                                     }
                                     return true;
                                 }
@@ -2394,7 +2397,8 @@ require = function () {
                     {
                         './proxy': 14,
                         './util/dom': 15,
-                        'spica/alias': 4
+                        'spica/alias': 4,
+                        'spica/global': 8
                     }
                 ],
                 14: [
@@ -2808,8 +2812,8 @@ require = function () {
                             node.replaceChildren(...typeof children === 'string' ? [children] : children);
                             return node;
                         }
-                        function isChildren(o) {
-                            return !!(o === null || o === void 0 ? void 0 : o[global_1.Symbol.iterator]);
+                        function isChildren(param) {
+                            return !!(param === null || param === void 0 ? void 0 : param[global_1.Symbol.iterator]);
                         }
                         exports.isChildren = isChildren;
                         function defrag(nodes) {
@@ -6709,7 +6713,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, /~~/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, '~~')),
                 (0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, '~'), true)
             ])), (0, source_1.str)('~~'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('del', (0, typed_dom_1.defrag)(bs))],
@@ -6742,7 +6746,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /\*/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))],
@@ -6775,16 +6779,16 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /\*\*/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '**')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])));
             const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /\*/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])));
             exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /\*/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
                 var _a, _b;
@@ -7309,21 +7313,35 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.htmlentity = exports.unsafehtmlentity = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&(?!NewLine;)[0-9A-Za-z]+;/, (parser => entity => (parser.innerHTML = entity, entity = parser.textContent, [
-                [`${ entity[0] !== '&' || entity.length === 1 ? '' : '\0' }${ entity }`],
-                ''
-            ]))((0, typed_dom_1.html)('b')))));
-            exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([str]) => [str[0] === '\0' ? (0, typed_dom_1.html)('span', {
+            const memoize_1 = _dereq_('spica/memoize');
+            exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => {
+                var _a;
+                return [
+                    [(_a = parse(entity)) !== null && _a !== void 0 ? _a : `\0${ entity }`],
+                    ''
+                ];
+            })));
+            exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([test]) => [test[0] === '\0' ? (0, typed_dom_1.html)('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'htmlentity',
                     'data-invalid-type': 'syntax',
                     'data-invalid-description': 'Invalid HTML entity.'
-                }, str.slice(1)) : str]);
+                }, test.slice(1)) : test]);
+            const parse = (0, memoize_1.reduce)((el => entity => {
+                if (entity === '&NewLine;')
+                    return ' ';
+                el.innerHTML = entity;
+                const text = el.textContent;
+                return entity === text ? global_1.undefined : text;
+            })((0, typed_dom_1.html)('b')));
         },
         {
             '../../combinator': 27,
+            'spica/global': 15,
+            'spica/memoize': 18,
             'typed-dom': 26
         }
     ],
@@ -7339,7 +7357,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, /\+\+/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, '++')),
                 (0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, '+'), true)
             ])), (0, source_1.str)('++'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('ins', (0, typed_dom_1.defrag)(bs))],
@@ -7513,7 +7531,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /==/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '==')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), inline_1.inline)
             ]))), (0, source_1.str)('=='), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)(bs))],
@@ -7873,7 +7891,7 @@ require = function () {
                         rubies
                     ]) {
                     for (let i = 0; i < ss.length; ++i) {
-                        if (!ss[i].includes('\0'))
+                        if (ss[i].indexOf('\0') === -1)
                             continue;
                         ss[i] = ss[i].replace(/\0/g, '');
                         attrs !== null && attrs !== void 0 ? attrs : attrs = {
@@ -7929,7 +7947,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
-                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', /\*\*/)),
+                (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '**')),
                 (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)
             ])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [
                 [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))],
@@ -8729,7 +8747,7 @@ require = function () {
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
             function blank(prefix, suffix) {
-                return new RegExp(String.raw`^${ prefix && prefix.source }(?:\\\s|[^\S\n]+|\n|&(?:${ normalize_1.invisibleHTMLEntityNames.join('|') });|<wbr>)?${ typeof suffix === 'string' ? suffix : suffix.source }`);
+                return new RegExp(String.raw`^${ prefix && prefix.source }(?:\\\s|[^\S\n]+|\n|&(?:${ normalize_1.invisibleHTMLEntityNames.join('|') });|<wbr>)?${ typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source }`);
             }
             exports.blank = blank;
             function visualize(parser) {
