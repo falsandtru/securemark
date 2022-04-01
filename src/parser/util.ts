@@ -13,7 +13,7 @@ export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
     `^${
       prefix && prefix.source
     }(?:\\\s|[^\S\n]+|\n|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${
-      typeof suffix === 'string' ? suffix : suffix.source
+      typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source
     }`);
 }
 
