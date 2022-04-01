@@ -67,6 +67,9 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]{b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{ b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{ b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b   }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{\\ }')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{\\b}')), [['<a href="\\b" target="_blank"><img class="media" data-src="\\b" alt=""></a>'], '']);

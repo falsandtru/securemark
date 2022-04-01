@@ -42,7 +42,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
         ']',
         true),
     ]))),
-    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ]))),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
@@ -64,15 +64,14 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
   }))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
-  open(/^[^\S\n]/, str(/^\S+/)),
+  open(/^[^\S\n]+/, str(/^\S+/)),
   str(/^[^\s{}]+/),
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]),
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/),
-  fmap(str(/^[^\S\n]+(?=})/), () => []),
-  fmap(str(/^[^\S\n]+[^\n{}]+/), opt => [` \\${opt.slice(1)}`]),
+  fmap(str(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
 
 export function resolve(uri: string, host: URL | Location, source: URL | Location): string {

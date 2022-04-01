@@ -26,7 +26,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     memoize(
     ([, tag]) =>
       surround(
-        `<${tag}`, some(union([attribute])), '>', true,
+        `<${tag}`, some(union([attribute])), /^\s*>/, true,
         ([, bs = []], rest) =>
           [[h(tag as 'span', attributes('html', [], attrspec[tag], bs))], rest]),
     ([, tag]) => tag)),
@@ -36,7 +36,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     ([, tag]) =>
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str('>'), true),
+        str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(
         context((() => {
           switch (tag) {
@@ -76,7 +76,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     ([, tag]) =>
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str('>'), true),
+        str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
           some(inline, blank(/\n?/, `</${tag}>`)),
           open(/^\n?/, some(inline, '</'), true),
@@ -93,7 +93,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     ([, tag]) =>
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str('>'), true),
+        str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
           some(inline, blank(/\n?/, `</${tag}>`)),
           open(/^\n?/, some(inline, '</'), true),
@@ -113,6 +113,7 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 
 function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[], context: MarkdownParser.Context): HTMLElement {
   assert(as.length > 0);
+  assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
   assert(bs.length === defrag(bs).length);
   assert(cs.length === 1);
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
@@ -134,8 +135,7 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   }
   let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
-    case as[as.length - 1] !== '>'
-      || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
+    case 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     default:
       assert(attrs);
