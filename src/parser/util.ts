@@ -53,9 +53,9 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
       ? parser(source, context)
       : undefined;
 }
-export function isStartLoose(source: string, context: MarkdownParser.Context, except?: string): boolean {
+export const isStartLoose = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
   return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
-}
+}, (source, _, except = '') => `${source}\0${except}`);
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
   return (source, context) =>
@@ -63,7 +63,7 @@ export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
       ? parser(source, context)
       : undefined;
 }
-function isStartTight(source: string, context: MarkdownParser.Context, except?: string): boolean {
+const isStartTight = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
   switch (source[0]) {
@@ -93,7 +93,7 @@ function isStartTight(source: string, context: MarkdownParser.Context, except?: 
     default:
       return source[0].trimStart() !== '';
   }
-}
+}, (source, _, except = '') => `${source}\0${except}`);
 export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
