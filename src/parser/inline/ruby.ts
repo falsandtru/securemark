@@ -83,7 +83,7 @@ function attributes(texts: string[], rubies: string[]): Record<string, string> {
   let attrs: Record<string, string> | undefined;
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
-      if (!ss[i].includes('\0')) continue;
+      if (ss[i].indexOf('\0') === -1) continue;
       ss[i] = ss[i].replace(/\0/g, '');
       attrs ??= {
         class: 'invalid',
