@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.235.2
+
+- Refactoring.
+
 ## 0.235.1
 
 - Fix table parser.
