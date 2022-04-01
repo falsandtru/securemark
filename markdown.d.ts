@@ -361,6 +361,8 @@ export namespace MarkdownParser {
           ]>,
           Parser<HTMLElement | string, Context, [
             Parser<HTMLElement | string, Context, [
+              UListParser,
+              OListParser,
               BlockParser.TableParser,
               CodeBlockParser,
               MathBlockParser,

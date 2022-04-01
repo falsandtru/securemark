@@ -3,6 +3,8 @@ import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
+import { ulist } from '../ulist';
+import { olist } from '../olist';
 import { table as styled_table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
@@ -52,6 +54,8 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
     line(sequence([label, str(/^.*\n/)])),
     inits([
       block(union([
+        ulist,
+        olist,
         styled_table,
         codeblock,
         mathblock,

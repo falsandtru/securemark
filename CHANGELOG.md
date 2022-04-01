@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.236.0
+
+- Extend figure syntax to allow ulist syntax and olist syntax.
+
 ## 0.235.3
 
 - Refactoring.
