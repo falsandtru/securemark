@@ -133,7 +133,10 @@ export namespace MarkdownParser {
         Parser<HTMLLIElement, Context, [
           Parser<HTMLElement | string, Context, [
             InlineParser,
-            InlineParser,
+            Parser<HTMLElement | string, Context, [
+              InlineParser.ExtensionParser.IndexerParser,
+              InlineParser,
+            ]>,
           ]>,
           Parser<HTMLUListElement | HTMLOListElement, Context, [
             UListParser,
@@ -165,7 +168,10 @@ export namespace MarkdownParser {
         Parser<HTMLLIElement, Context, [
           Parser<HTMLElement | string, Context, [
             InlineParser,
-            InlineParser,
+            Parser<HTMLElement | string, Context, [
+              InlineParser.ExtensionParser.IndexerParser,
+              InlineParser,
+            ]>,
           ]>,
           Parser<HTMLUListElement | HTMLOListElement, Context, [
             UListParser,

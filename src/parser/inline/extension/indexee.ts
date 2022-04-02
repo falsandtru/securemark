@@ -4,9 +4,9 @@ import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom';
 
-export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
-export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(text(el)) || undefined })]);
+export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
+export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(text(el, optional)) || undefined })]);
 }
 
 export function identity(text: string): string {
@@ -18,13 +18,13 @@ assert(identity('0'.repeat(100)).slice(6) === '0'.repeat(100));
 assert(identity('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
 assert(identity('0'.repeat(200)).slice(6) === '0'.repeat(97) + '...');
 
-export function text(source: HTMLElement | DocumentFragment): string {
+export function text(source: HTMLElement | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
-  assert(source.querySelectorAll('.indexer').length <= 1);
-  assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  assert(!source.querySelector('.annotation, br'));
-  const indexer = source.querySelector('.indexer');
+  assert(source.querySelectorAll(':scope > .indexer').length <= 1);
+  const indexer = source.querySelector(':scope > .indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
+  if (optional) return '';
+  assert(!source.querySelector('.annotation, br'));
   const target = source.cloneNode(true) as typeof source;
   for (
     let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'),

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.237.0
+
+- Extend ulist syntax and olist syntax to make their items indexable.
+
 ## 0.236.0
 
 - Extend figure syntax to allow ulist syntax and olist syntax.

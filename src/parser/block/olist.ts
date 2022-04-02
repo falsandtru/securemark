@@ -3,7 +3,7 @@ import { OListParser } from '../block';
 import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, match, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
-import { inline } from '../inline';
+import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
 import { html, define, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
@@ -33,13 +33,13 @@ export const olist_: OListParser = lazy(() => block(union([
 
 const list = (type: string, delim: string): OListParser.ListParser => fmap(
   some(creator(union([
-    fmap(fallback(
+    indexee(fmap(fallback(
       inits([
-        line(open(heads[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
+        line(open(heads[delim], trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       iitem),
-      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
+      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]), true),
   ]))),
   es => [format(html('ol', es), type, delim)]);
 

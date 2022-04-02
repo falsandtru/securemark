@@ -2,7 +2,7 @@ import { UListParser } from '../block';
 import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
-import { inline } from '../inline';
+import { inline, indexer, indexee } from '../inline';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 import { contentline } from '../source';
@@ -15,13 +15,13 @@ export const ulist: UListParser = lazy(() => block(validate(
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /^-(?=$|\s)/,
   some(creator(union([
-    fmap(fallback(
+    indexee(fmap(fallback(
       inits([
-        line(open(/^-(?:$|\s)/, trim(subsequence([checkbox, trimStart(some(inline))])), true)),
+        line(open(/^-(?:$|\s)/, trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       iitem),
-      ns => [html('li', defrag(fillFirstLine(ns)))]),
+      ns => [html('li', defrag(fillFirstLine(ns)))]), true),
   ])))),
   es => [format(html('ul', es))])));
 
