@@ -190,7 +190,7 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           `<details class="header" open=""><summary>Header</summary><span class="field" data-name="URL" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span>\n</span></details>`,
-          '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-message="Invalid syntax.">---\nURL: https://example/y\n---\n</pre>',
+          '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-message="Invalid syntax">---\nURL: https://example/y\n---\n</pre>',
           '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><details class="header" open=""><summary>Header</summary><span class="field" data-name="URL" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details><p><a href="https://example/y#" target="_blank">#</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
           '<p><a href="https://example/x#" target="_blank">#</a></p>',
         ]);

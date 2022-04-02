@@ -30,7 +30,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       translate: 'no',
       'data-invalid-syntax': 'codeblock',
       'data-invalid-type': !closer ? 'closer' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
+      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() ?? '';
     const ext = file && file.includes('.', 1)

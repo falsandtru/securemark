@@ -58,7 +58,7 @@ const iitem = rewrite(contentline, source => [[
     class: 'invalid',
     'data-invalid-syntax': 'listitem',
     'data-invalid-type': 'syntax',
-    'data-invalid-message': 'Fix the indent or the head of the list item.',
+    'data-invalid-message': 'Fix the indent or the head of the list item',
   }, source.replace('\n', ''))
 ], '']);
 

@@ -116,27 +116,27 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
   assert(bs.length === defrag(bs).length);
   assert(cs.length === 1);
-  if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
+  if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>`, as, bs, cs);
   switch (tag) {
     case 'sup':
     case 'sub':
       switch (true) {
         case context.state?.in?.supsub:
-          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup> or <sub> HTML tag.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup> or <sub> HTML tag`, as, bs, cs);
       }
       break;
     case 'small':
       switch (true) {
         case context.state?.in?.supsub:
         case context.state?.in?.small:
-          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag`, as, bs, cs);
       }
       break;
   }
   let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
     case 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
-      return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
+      return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
     default:
       assert(attrs);
       return h(tag as 'span', attrs, bs);
@@ -187,7 +187,7 @@ export function attributes(
     attrs['class'] = join(classes, ' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
-    attrs['data-invalid-message'] = 'Invalid argument.';
+    attrs['data-invalid-message'] = 'Invalid argument';
   }
   return attrs;
 }

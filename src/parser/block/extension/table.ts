@@ -32,12 +32,12 @@ export const table: TableParser = block(validate('~~~', recover(fmap(
       translate: 'no',
       'data-invalid-syntax': 'table',
       'data-invalid-type': !closer ? 'closer' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
+      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
     }, `${opener}${body}${closer}`)];
     return eval(parser(body, context)) ?? [html('table')];
   }),
   (source, _, reason) =>
-    reason instanceof Error && reason.message === 'Number of columns must be 32 or less.'
+    reason instanceof Error && reason.message === 'Number of columns must be 32 or less'
       ? [[
           html('pre', {
             class: 'invalid',
@@ -128,7 +128,7 @@ function attributes(source: string) {
       : {
           'data-invalid-syntax': 'table',
           'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Too much highlight level.',
+          'data-invalid-message': 'Too much highlight level',
         },
   };
 }
@@ -279,7 +279,7 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       aligns[j] && cell.setAttribute('align', aligns[j]);
       valigns[j] && cell.setAttribute('valign', valigns[j]);
     }
-    if (cells.length > 32) throw new Error('Number of columns must be 32 or less.');
+    if (cells.length > 32) throw new Error('Number of columns must be 32 or less');
     target.appendChild(row);
     switch (target) {
       case thead:

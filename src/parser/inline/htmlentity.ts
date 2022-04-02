@@ -16,7 +16,7 @@ export const htmlentity: HTMLEntityParser = fmap(
           class: 'invalid',
           'data-invalid-syntax': 'htmlentity',
           'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Invalid HTML entity.',
+          'data-invalid-message': 'Invalid HTML entity',
         }, test.slice(1))
       : test,
   ]);

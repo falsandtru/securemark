@@ -7,6 +7,8 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       assert(node);
       if (typeof node === 'string') return node;
       node = node.cloneNode(true);
+      assert(!node.matches('.invalid[data-invalid-message$="."]'));
+      assert(!node.querySelector('.invalid[data-invalid-message$="."]'));
       [node, ...node.querySelectorAll('.invalid')].forEach(el =>
         define(el, {
           'data-invalid-syntax': null,

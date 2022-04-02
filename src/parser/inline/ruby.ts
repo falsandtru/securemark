@@ -89,7 +89,7 @@ function attributes(texts: string[], rubies: string[]): Record<string, string> {
         class: 'invalid',
         'data-invalid-syntax': 'ruby',
         'data-invalid-type': ss === texts ? 'content' : 'argument',
-        'data-invalid-message': 'Invalid HTML entity.',
+        'data-invalid-message': 'Invalid HTML entity',
       };
     }
   }

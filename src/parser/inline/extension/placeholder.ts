@@ -19,7 +19,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
       class: 'invalid',
       'data-invalid-syntax': 'extension',
       'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Invalid symbol.',
+      'data-invalid-message': 'Invalid symbol',
     }, defrag(bs)),
   ], rest],
   ([as, bs], rest) => [unshift(as, bs), rest]))));

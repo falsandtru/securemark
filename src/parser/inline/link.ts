@@ -111,7 +111,7 @@ function elem(
       if (INSECURE_URI.slice(0, 2) === '^/' &&
           /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
         type = 'argument';
-        message = 'Dot-segments cannot be used in subresource paths.';
+        message = 'Dot-segments cannot be used in subresource paths';
         break;
       }
       return html('a',
@@ -140,7 +140,7 @@ function elem(
           return html('a', { href: uri.source }, content);
       }
       type = 'content';
-      message = 'Invalid phone number.';
+      message = 'Invalid phone number';
       break;
   }
   return html('a',
@@ -148,7 +148,7 @@ function elem(
       class: 'invalid',
       'data-invalid-syntax': 'link',
       'data-invalid-type': type ??= 'argument',
-      'data-invalid-message': message ??= 'Invalid protocol.',
+      'data-invalid-message': message ??= 'Invalid protocol',
     },
     content.length === 0
       ? INSECURE_URI

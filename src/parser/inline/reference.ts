@@ -46,7 +46,7 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
           class: 'invalid',
           'data-invalid-syntax': 'reference',
           'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Invalid abbr.',
+          'data-invalid-message': 'Invalid abbr',
         }
       : { class: 'reference' };
 }

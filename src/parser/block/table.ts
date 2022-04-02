@@ -31,7 +31,7 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
       class: 'invalid',
       'data-invalid-syntax': 'tablerow',
       'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Invalid table row.',
+      'data-invalid-message': 'Invalid table row',
     }, [html('td', source.replace('\n', ''))])
   ], ''])));
 
