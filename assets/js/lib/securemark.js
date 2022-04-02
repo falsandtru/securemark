@@ -4778,7 +4778,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
                 const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
@@ -4916,7 +4916,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 const annotations = (0, typed_dom_1.html)('ol', { class: 'annotations' });
                 const references = (0, typed_dom_1.html)('ol', { class: 'references' });
@@ -4934,7 +4934,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
                             'data-invalid-type': 'content',
-                            'data-invalid-description': 'Missing the title at the first line.'
+                            'data-invalid-message': 'Missing the title at the first line'
                         }, `${ opener }${ body }${ closer }`)];
                 return [(0, typed_dom_1.html)('aside', {
                         id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
@@ -4971,7 +4971,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'example',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
@@ -5011,7 +5011,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-description': 'Invalid example type.'
+                            'data-invalid-message': 'Invalid example type'
                         }, `${ opener }${ body }${ closer }`)];
                 }
             }))));
@@ -5102,6 +5102,8 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const label_1 = _dereq_('../../inline/extension/label');
+            const ulist_1 = _dereq_('../ulist');
+            const olist_1 = _dereq_('../olist');
             const table_1 = _dereq_('../table');
             const codeblock_1 = _dereq_('../codeblock');
             const mathblock_1 = _dereq_('../mathblock');
@@ -5140,6 +5142,8 @@ require = function () {
                 ])),
                 (0, combinator_1.inits)([
                     (0, combinator_1.block)((0, combinator_1.union)([
+                        ulist_1.ulist,
+                        olist_1.olist,
                         table_1.table,
                         codeblock_1.codeblock,
                         mathblock_1.mathblock,
@@ -5170,15 +5174,15 @@ require = function () {
                     ...invalidLabel && {
                         'data-invalid-syntax': 'figure',
                         'data-invalid-type': 'label',
-                        'data-invalid-description': 'The last part of the fixed label numbers must not be 0.'
+                        'data-invalid-message': 'The last part of the fixed label numbers must not be 0'
                     } || invalidParam && {
                         'data-invalid-syntax': 'figure',
                         'data-invalid-type': 'argument',
-                        'data-invalid-description': 'Invalid argument.'
+                        'data-invalid-message': 'Invalid argument'
                     } || invalidContent && {
                         'data-invalid-syntax': 'figure',
                         'data-invalid-type': 'content',
-                        'data-invalid-description': 'A figure labeled to define a formula number can contain only a math formula and no caption.'
+                        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption'
                     } || global_1.undefined
                 };
             }
@@ -5193,7 +5197,9 @@ require = function () {
             '../blockquote': 64,
             '../codeblock': 65,
             '../mathblock': 79,
+            '../olist': 80,
             '../table': 85,
+            '../ulist': 86,
             './example': 69,
             './placeholder': 74,
             './table': 75,
@@ -5229,7 +5235,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'message',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'note':
@@ -5241,7 +5247,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
-                            'data-invalid-description': 'Invalid message type.'
+                            'data-invalid-message': 'Invalid message type'
                         }, `${ opener }${ body }${ closer }`)];
                 }
                 return [(0, typed_dom_1.html)('div', { class: `message type-${ type }` }, (0, array_1.unshift)([(0, typed_dom_1.html)('h6', title(type))], [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, parser_1.eval)(content(seg, context), [])), [])))];
@@ -5300,7 +5306,7 @@ require = function () {
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': !closer ? 'closer' : 'syntax',
-                    'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid syntax.'
+                    'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid syntax'
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
@@ -5334,16 +5340,16 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'table',
                             'data-invalid-type': !closer ? 'closer' : 'argument',
-                            'data-invalid-description': !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 return (_a = (0, parser_1.eval)(parser(body, context))) !== null && _a !== void 0 ? _a : [(0, typed_dom_1.html)('table')];
-            }), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less.' ? [
+            }), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less' ? [
                 [(0, typed_dom_1.html)('pre', {
                         class: 'invalid',
                         translate: 'no',
                         'data-invalid-syntax': 'table',
                         'data-invalid-type': 'content',
-                        'data-invalid-description': reason.message
+                        'data-invalid-message': reason.message
                     }, source)],
                 ''
             ] : (() => {
@@ -5390,7 +5396,7 @@ require = function () {
                     ...valid ? { 'data-highlight-level': +highlight > 1 ? highlight : global_1.undefined } : {
                         'data-invalid-syntax': 'table',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Too much highlight level.'
+                        'data-invalid-message': 'Too much highlight level'
                     }
                 };
             }
@@ -5528,7 +5534,7 @@ require = function () {
                             valigns[j] && cell.setAttribute('valign', valigns[j]);
                         }
                         if (cells.length > 32)
-                            throw new Error('Number of columns must be 32 or less.');
+                            throw new Error('Number of columns must be 32 or less');
                         target.appendChild(row);
                         switch (target) {
                         case thead:
@@ -5669,7 +5675,7 @@ require = function () {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax',
-                    'data-invalid-description': 'Use "-" instead of "+" or "*".'
+                    'data-invalid-message': 'Use "-" instead of "+" or "*"'
                 }, es)])));
         },
         {
@@ -5706,7 +5712,7 @@ require = function () {
                         translate: 'no',
                         'data-invalid-syntax': 'mathblock',
                         'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'closer' : 'argument',
-                        'data-invalid-description': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }".` : 'Invalid argument.'
+                        'data-invalid-message': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                     }, `${ opener }${ body }${ closer }`)];
             })));
         },
@@ -5770,7 +5776,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'listitem',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Fix the indent or the head of the list item.'
+                        'data-invalid-message': 'Fix the indent or the head of the list item'
                     }, source.replace('\n', ''))
                 ],
                 ''
@@ -5963,7 +5969,7 @@ require = function () {
                     class: 'quote invalid',
                     'data-invalid-syntax': 'quote',
                     'data-invalid-type': 'syntax',
-                    'data-invalid-description': `Missing the whitespace after "${ ns[0].split(/[^>]/, 1)[0] }".`
+                    'data-invalid-message': `Missing the whitespace after "${ ns[0].split(/[^>]/, 1)[0] }"`
                 }, (0, typed_dom_1.defrag)(ns)),
                 (0, typed_dom_1.html)('br')
             ]), false)));
@@ -6037,7 +6043,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'tablerow',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Invalid table row.'
+                        'data-invalid-message': 'Invalid table row'
                     }, [(0, typed_dom_1.html)('td', source.replace('\n', ''))])],
                 ''
             ])));
@@ -6119,7 +6125,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'listitem',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Fix the indent or the head of the list item.'
+                        'data-invalid-message': 'Fix the indent or the head of the list item'
                     }, source.replace('\n', ''))],
                 ''
             ]);
@@ -6182,7 +6188,7 @@ require = function () {
                                 translate: 'no',
                                 'data-invalid-syntax': 'header',
                                 'data-invalid-type': 'syntax',
-                                'data-invalid-description': 'Invalid syntax.'
+                                'data-invalid-message': 'Invalid syntax'
                             }, (0, normalize_1.normalize)(source))],
                         ''
                     ]
@@ -7127,7 +7133,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-description': 'Invalid symbol.'
+                        'data-invalid-message': 'Invalid symbol'
                     }, (0, typed_dom_1.defrag)(bs))],
                 rest
             ], ([as, bs], rest) => [
@@ -7235,37 +7241,37 @@ require = function () {
             function elem(tag, as, bs, cs, context) {
                 var _a, _b, _c, _d, _e, _f;
                 if (!tags.includes(tag))
-                    return invalid('tag', `Invalid HTML tag <${ tag }>.`, as, bs, cs);
+                    return invalid('tag', `Invalid HTML tag <${ tag }>`, as, bs, cs);
                 switch (tag) {
                 case 'sup':
                 case 'sub':
                     switch (true) {
                     case (_b = (_a = context.state) === null || _a === void 0 ? void 0 : _a.in) === null || _b === void 0 ? void 0 : _b.supsub:
-                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup> or <sub> HTML tag.`, as, bs, cs);
+                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup> or <sub> HTML tag`, as, bs, cs);
                     }
                     break;
                 case 'small':
                     switch (true) {
                     case (_d = (_c = context.state) === null || _c === void 0 ? void 0 : _c.in) === null || _d === void 0 ? void 0 : _d.supsub:
                     case (_f = (_e = context.state) === null || _e === void 0 ? void 0 : _e.in) === null || _f === void 0 ? void 0 : _f.small:
-                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag.`, as, bs, cs);
+                        return invalid('nest', `<${ tag }> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag`, as, bs, cs);
                     }
                     break;
                 }
                 let attrs;
                 switch (true) {
                 case 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1))):
-                    return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
+                    return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
                 default:
                     return (0, typed_dom_1.html)(tag, attrs, bs);
                 }
             }
-            function invalid(type, description, as, bs, cs) {
+            function invalid(type, message, as, bs, cs) {
                 return (0, typed_dom_1.html)('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'html',
                     'data-invalid-type': type,
-                    'data-invalid-description': description
+                    'data-invalid-message': message
                 }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)));
             }
             const requiredAttributes = (0, memoize_1.memoize)(spec => (0, alias_1.ObjectEntries)(spec).flatMap(([k, v]) => v && (0, alias_1.isFrozen)(v) ? [k] : []), new WeakMap());
@@ -7289,7 +7295,7 @@ require = function () {
                     attrs['class'] = (0, array_1.join)(classes, ' ');
                     attrs['data-invalid-syntax'] = syntax;
                     attrs['data-invalid-type'] = 'argument';
-                    attrs['data-invalid-description'] = 'Invalid argument.';
+                    attrs['data-invalid-message'] = 'Invalid argument';
                 }
                 return attrs;
             }
@@ -7328,7 +7334,7 @@ require = function () {
                     class: 'invalid',
                     'data-invalid-syntax': 'htmlentity',
                     'data-invalid-type': 'syntax',
-                    'data-invalid-description': 'Invalid HTML entity.'
+                    'data-invalid-message': 'Invalid HTML entity'
                 }, test.slice(1)) : test]);
             const parse = (0, memoize_1.reduce)((el => entity => {
                 if (entity === '&NewLine;')
@@ -7462,13 +7468,13 @@ require = function () {
             exports.resolve = resolve;
             function elem(INSECURE_URI, content, uri, origin) {
                 let type;
-                let description;
+                let message;
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
                     if (INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
                         type = 'argument';
-                        description = 'Dot-segments cannot be used in subresource paths.';
+                        message = 'Dot-segments cannot be used in subresource paths';
                         break;
                     }
                     return (0, typed_dom_1.html)('a', {
@@ -7485,14 +7491,14 @@ require = function () {
                         return (0, typed_dom_1.html)('a', { href: uri.source }, content);
                     }
                     type = 'content';
-                    description = 'Invalid phone number.';
+                    message = 'Invalid phone number';
                     break;
                 }
                 return (0, typed_dom_1.html)('a', {
                     class: 'invalid',
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type !== null && type !== void 0 ? type : type = 'argument',
-                    'data-invalid-description': description !== null && description !== void 0 ? description : description = 'Invalid protocol.'
+                    'data-invalid-message': message !== null && message !== void 0 ? message : message = 'Invalid protocol'
                 }, content.length === 0 ? INSECURE_URI : content);
             }
             function decode(uri) {
@@ -7576,7 +7582,7 @@ require = function () {
                             translate: 'no',
                             'data-invalid-syntax': 'math',
                             'data-invalid-type': 'content',
-                            'data-invalid-description': `"${ source.match(disallowedCommand)[0] }" command is disallowed.`
+                            'data-invalid-message': `"${ source.match(disallowedCommand)[0] }" command is disallowed`
                         }, source)],
                     ''
                 ];
@@ -7708,7 +7714,7 @@ require = function () {
                             class: void target.classList.add('invalid'),
                             'data-invalid-syntax': 'media',
                             'data-invalid-type': 'argument',
-                            'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
+                            'data-invalid-message': 'Dot-segments cannot be used in media paths; use subresource paths instead'
                         });
                         return false;
                     }
@@ -7718,7 +7724,7 @@ require = function () {
                         class: void target.classList.add('invalid'),
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'argument',
-                        'data-invalid-description': 'Invalid protocol.'
+                        'data-invalid-message': 'Invalid protocol'
                     });
                     return false;
                 }
@@ -7727,7 +7733,7 @@ require = function () {
                         class: void target.classList.add('invalid'),
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'content',
-                        'data-invalid-description': `Cannot use invalid HTML entitiy "${ alt.match(/&[0-9A-Za-z]+;/)[0] }".`,
+                        'data-invalid-message': `Cannot use invalid HTML entitiy "${ alt.match(/&[0-9A-Za-z]+;/)[0] }"`,
                         alt: (_a = target.getAttribute('alt')) === null || _a === void 0 ? void 0 : _a.replace(/\0/g, '')
                     });
                     return false;
@@ -7791,7 +7797,7 @@ require = function () {
                     class: 'invalid',
                     'data-invalid-syntax': 'reference',
                     'data-invalid-type': 'syntax',
-                    'data-invalid-description': 'Invalid abbr.'
+                    'data-invalid-message': 'Invalid abbr'
                 } : { class: 'reference' };
             }
         },
@@ -7898,7 +7904,7 @@ require = function () {
                             class: 'invalid',
                             'data-invalid-syntax': 'ruby',
                             'data-invalid-type': ss === texts ? 'content' : 'argument',
-                            'data-invalid-description': 'Invalid HTML entity.'
+                            'data-invalid-message': 'Invalid HTML entity'
                         };
                     }
                 }
@@ -8122,6 +8128,7 @@ require = function () {
                     el.getAttribute('data-label'),
                     el
                 ]));
+                const labels = new global_1.Set();
                 const numbers = new global_1.Map();
                 let base = '0';
                 let bases = base.split('.');
@@ -8166,6 +8173,26 @@ require = function () {
                     opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
                     (0, typed_dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${ figindex }. `);
+                    if (labels.has(label)) {
+                        if (def.classList.contains('invalid') && def.getAttribute('data-invalid-message') !== 'Duplicate label')
+                            continue;
+                        (0, typed_dom_1.define)(def, {
+                            id: null,
+                            class: void def.classList.add('invalid'),
+                            'data-invalid-syntax': 'figure',
+                            'data-invalid-type': 'argument',
+                            'data-invalid-message': 'Duplicate label'
+                        });
+                        continue;
+                    } else {
+                        labels.add(label);
+                        (0, typed_dom_1.define)(def, {
+                            class: void def.classList.remove('invalid'),
+                            'data-invalid-syntax': null,
+                            'data-invalid-type': null,
+                            'data-invalid-message': null
+                        });
+                    }
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.innerText === figindex)
                             continue;
@@ -8178,7 +8205,7 @@ require = function () {
                             class: `${ ref.className } disabled invalid`,
                             'data-invalid-syntax': 'label',
                             'data-invalid-type': 'reference',
-                            'data-invalid-description': 'Missing the reference.'
+                            'data-invalid-message': 'Missing the reference'
                         });
                     }
                     yield ref;
@@ -8253,7 +8280,7 @@ require = function () {
                                 class: `${ ref.className } invalid`,
                                 'data-invalid-syntax': syntax,
                                 'data-invalid-type': 'style',
-                                'data-invalid-description': `${ syntax[0].toUpperCase() + syntax.slice(1) } style must be consistent.`
+                                'data-invalid-message': `${ syntax[0].toUpperCase() + syntax.slice(1) } style must be consistent`
                             });
                         }
                         if (((_a = ref.firstElementChild) === null || _a === void 0 ? void 0 : _a.getAttribute('hidden')) !== '') {
@@ -8280,7 +8307,7 @@ require = function () {
                                     class: void ref.classList.remove('invalid'),
                                     'data-invalid-syntax': null,
                                     'data-invalid-type': null,
-                                    'data-invalid-description': null
+                                    'data-invalid-message': null
                                 });
                             }
                         }
@@ -8293,7 +8320,7 @@ require = function () {
                                 class: void ref.classList.add('invalid'),
                                 'data-invalid-syntax': syntax,
                                 'data-invalid-type': 'content',
-                                'data-invalid-description': 'Missing the content.'
+                                'data-invalid-message': 'Missing the content'
                             }
                         });
                         yield ref.appendChild((0, typed_dom_1.html)('a', { href: refId && defId && `#${ defId }` }, marker(defIndex, abbr)));
