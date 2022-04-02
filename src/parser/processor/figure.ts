@@ -122,7 +122,7 @@ export function* figure(
         class: `${ref.className} disabled invalid`,
         'data-invalid-syntax': 'label',
         'data-invalid-type': 'reference',
-        'data-invalid-message': 'Missing the reference',
+        'data-invalid-message': 'Missing the target figure',
       });
     }
     yield ref;
