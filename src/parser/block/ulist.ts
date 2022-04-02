@@ -20,7 +20,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
         line(open(/^-(?:$|\s)/, trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
-      iitem),
+      invalid),
       ns => [html('li', defrag(fillFirstLine(ns)))]), true),
   ])))),
   es => [format(html('ul', es))])));
@@ -31,7 +31,7 @@ export const checkbox = focus(
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ], '']);
 
-const iitem = rewrite(contentline, source => [[
+const invalid = rewrite(contentline, source => [[
   html('span', {
     class: 'invalid',
     'data-invalid-syntax': 'listitem',

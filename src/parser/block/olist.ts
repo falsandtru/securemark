@@ -38,7 +38,7 @@ const list = (type: string, delim: string): OListParser.ListParser => fmap(
         line(open(heads[delim], trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
-      iitem),
+      invalid),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]), true),
   ]))),
   es => [format(html('ol', es), type, delim)]);
@@ -52,7 +52,7 @@ const heads = {
     (source: string) => [[source.replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
 
-const iitem = rewrite(contentline, source => [[
+const invalid = rewrite(contentline, source => [[
   '',
   html('span', {
     class: 'invalid',
