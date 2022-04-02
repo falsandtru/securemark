@@ -13,7 +13,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       translate: 'no',
       'data-invalid-syntax': 'aside',
       'data-invalid-type': !closer ? 'closer' : 'argument',
-      'data-invalid-description': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
+      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
     }, `${opener}${body}${closer}`)];
     const annotations = html('ol', { class: 'annotations' });
     const references = html('ol', { class: 'references' });
@@ -33,7 +33,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       translate: 'no',
       'data-invalid-syntax': 'aside',
       'data-invalid-type': 'content',
-      'data-invalid-description': 'Missing the title at the first line.',
+      'data-invalid-message': 'Missing the title at the first line.',
     }, `${opener}${body}${closer}`)];
     assert(identity(text(heading)));
     return [

@@ -56,7 +56,7 @@ function build(
           class: `${ref.className} invalid`,
           'data-invalid-syntax': syntax,
           'data-invalid-type': 'style',
-          'data-invalid-description': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent.`,
+          'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent.`,
         });
       }
       if (ref.firstElementChild?.getAttribute('hidden') !== '') {
@@ -96,7 +96,7 @@ function build(
             class: void ref.classList.remove('invalid'),
             'data-invalid-syntax': null,
             'data-invalid-type': null,
-            'data-invalid-description': null,
+            'data-invalid-message': null,
           });
         }
       }
@@ -110,7 +110,7 @@ function build(
           : { class: void ref.classList.add('invalid'),
               'data-invalid-syntax': syntax,
               'data-invalid-type': 'content',
-              'data-invalid-description': 'Missing the content.',
+              'data-invalid-message': 'Missing the content.',
             },
       });
       yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));

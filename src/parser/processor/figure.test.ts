@@ -53,7 +53,7 @@ describe('Unit: parser/processor/figure', () => {
             '<h2 id="index:0">0</h2>',
             '<figure data-label="fig-b" data-group="fig" data-number="2" id="label:fig-b"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 2. </span></figcaption></figure>',
             '<figure data-label="table-a" data-group="table" data-number="1" id="label:table-a"><div><blockquote></blockquote></div><figcaption><span class="figindex">Table 1. </span></figcaption></figure>',
-            '<figure data-label="fig-b" data-group="fig" data-number="3" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-description="Duplicate label."><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 3. </span></figcaption></figure>',
+            '<figure data-label="fig-b" data-group="fig" data-number="3" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Duplicate label."><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 3. </span></figcaption></figure>',
             '<figure data-label="fig-c" data-group="fig" data-number="4" id="label:fig-c"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 4. </span></figcaption></figure>',
           ]);
       }
@@ -98,7 +98,7 @@ describe('Unit: parser/processor/figure', () => {
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 1. </span></figcaption></figure>',
             '<p><a class="label" data-label="fig-2" href="#label:fig-2">Fig. 2</a></p>',
             '<p><a class="label" data-label="$-4.1.1" href="#label:$-4.1.1">(4.1.1)</a></p>',
-            '<p><a class="label disabled invalid" data-label="fig-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-description="Missing the reference.">$fig-1</a></p>',
+            '<p><a class="label disabled invalid" data-label="fig-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the reference.">$fig-1</a></p>',
           ]);
       }
     });

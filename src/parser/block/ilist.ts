@@ -27,6 +27,6 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
       class: 'invalid',
       'data-invalid-syntax': 'list',
       'data-invalid-type': 'syntax',
-      'data-invalid-description': 'Use "-" instead of "+" or "*".',
+      'data-invalid-message': 'Use "-" instead of "+" or "*".',
     }, es),
   ])));

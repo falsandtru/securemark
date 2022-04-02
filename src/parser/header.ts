@@ -31,7 +31,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
               translate: 'no',
               'data-invalid-syntax': 'header',
               'data-invalid-type': 'syntax',
-              'data-invalid-description': 'Invalid syntax.',
+              'data-invalid-message': 'Invalid syntax.',
             }, normalize(source)),
           ], ''],
         ]))),

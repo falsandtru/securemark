@@ -97,17 +97,17 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
       invalidLabel && {
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'label',
-        'data-invalid-description': 'The last part of the fixed label numbers must not be 0.',
+        'data-invalid-message': 'The last part of the fixed label numbers must not be 0.',
       } ||
       invalidParam && {
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
-        'data-invalid-description': 'Invalid argument.',
+        'data-invalid-message': 'Invalid argument.',
       } ||
       invalidContent && {
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'content',
-        'data-invalid-description': 'A figure labeled to define a formula number can contain only a math formula and no caption.',
+        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption.',
       } ||
       undefined,
   };

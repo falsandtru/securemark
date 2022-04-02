@@ -29,7 +29,7 @@ export const math: MathParser = lazy(() => creator(validate('$', rewrite(
             translate: 'no',
             'data-invalid-syntax': 'math',
             'data-invalid-type': 'content',
-            'data-invalid-description': `"${source.match(disallowedCommand)![0]}" command is disallowed.`,
+            'data-invalid-message': `"${source.match(disallowedCommand)![0]}" command is disallowed.`,
           },
       source)
   ], '']))));

@@ -26,7 +26,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => creator(block(fmap(vali
             class: 'quote invalid',
             'data-invalid-syntax': 'quote',
             'data-invalid-type': 'syntax',
-            'data-invalid-description': `Missing the whitespace after "${ns[0].split(/[^>]/, 1)[0]}".`,
+            'data-invalid-message': `Missing the whitespace after "${ns[0].split(/[^>]/, 1)[0]}".`,
           },
       defrag(ns)),
     html('br'),

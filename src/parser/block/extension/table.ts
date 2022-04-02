@@ -32,7 +32,7 @@ export const table: TableParser = block(validate('~~~', recover(fmap(
       translate: 'no',
       'data-invalid-syntax': 'table',
       'data-invalid-type': !closer ? 'closer' : 'argument',
-      'data-invalid-description': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
+      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}".` : 'Invalid argument.',
     }, `${opener}${body}${closer}`)];
     return eval(parser(body, context)) ?? [html('table')];
   }),
@@ -44,7 +44,7 @@ export const table: TableParser = block(validate('~~~', recover(fmap(
             translate: 'no',
             'data-invalid-syntax': 'table',
             'data-invalid-type': 'content',
-            'data-invalid-description': reason.message,
+            'data-invalid-message': reason.message,
           }, source),
         ], '']
       : (() => { throw reason; })())));
@@ -128,7 +128,7 @@ function attributes(source: string) {
       : {
           'data-invalid-syntax': 'table',
           'data-invalid-type': 'syntax',
-          'data-invalid-description': 'Too much highlight level.',
+          'data-invalid-message': 'Too much highlight level.',
         },
   };
 }

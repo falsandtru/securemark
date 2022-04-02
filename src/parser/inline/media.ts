@@ -81,7 +81,7 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
           class: void target.classList.add('invalid'),
           'data-invalid-syntax': 'media',
           'data-invalid-type': 'argument',
-          'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
+          'data-invalid-message': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
         });
         return false;
       }
@@ -91,7 +91,7 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
         class: void target.classList.add('invalid'),
         'data-invalid-syntax': 'media',
         'data-invalid-type': 'argument',
-        'data-invalid-description': 'Invalid protocol.',
+        'data-invalid-message': 'Invalid protocol.',
       });
       return false;
   }
@@ -100,7 +100,7 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
       class: void target.classList.add('invalid'),
       'data-invalid-syntax': 'media',
       'data-invalid-type': 'content',
-      'data-invalid-description': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}".`,
+      'data-invalid-message': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}".`,
       alt: target.getAttribute('alt')?.replace(/\0/g, ''),
     });
     return false;

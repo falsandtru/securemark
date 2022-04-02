@@ -142,12 +142,12 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
       return h(tag as 'span', attrs, bs);
   }
 }
-function invalid(type: string, description: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
+function invalid(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
   return h('span', {
     class: 'invalid',
     'data-invalid-syntax': 'html',
     'data-invalid-type': type,
-    'data-invalid-description': description,
+    'data-invalid-message': message,
   }, defrag(push(unshift(as, bs), cs)));
 }
 
@@ -187,7 +187,7 @@ export function attributes(
     attrs['class'] = join(classes, ' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
-    attrs['data-invalid-description'] = 'Invalid argument.';
+    attrs['data-invalid-message'] = 'Invalid argument.';
   }
   return attrs;
 }

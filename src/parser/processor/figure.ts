@@ -90,13 +90,13 @@ export function* figure(
       group === '$' ? figindex : `${figindex}. `);
     if (labels.has(label)) {
       if (def.classList.contains('invalid') &&
-          def.getAttribute('data-invalid-description') !== 'Duplicate label.') continue;
+          def.getAttribute('data-invalid-message') !== 'Duplicate label.') continue;
       define(def, {
         id: null,
         class: void def.classList.add('invalid'),
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
-        'data-invalid-description': 'Duplicate label.',
+        'data-invalid-message': 'Duplicate label.',
       });
       continue;
     }
@@ -106,7 +106,7 @@ export function* figure(
         class: void def.classList.remove('invalid'),
         'data-invalid-syntax': null,
         'data-invalid-type': null,
-        'data-invalid-description': null,
+        'data-invalid-message': null,
       });
     }
     for (const ref of refs.take(label, Infinity)) {
@@ -122,7 +122,7 @@ export function* figure(
         class: `${ref.className} disabled invalid`,
         'data-invalid-syntax': 'label',
         'data-invalid-type': 'reference',
-        'data-invalid-description': 'Missing the reference.',
+        'data-invalid-message': 'Missing the reference.',
       });
     }
     yield ref;
