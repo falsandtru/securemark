@@ -438,14 +438,6 @@ export namespace MarkdownParser {
           InlineParser.ExtensionParser.LabelParser,
         ]> {
       }
-      export namespace FigbaseParser {
-        export interface SegmentParser extends
-          Block<'extension/figbase/segment'>,
-          Parser<never, Context, [
-            InlineParser.ExtensionParser.LabelParser.SegmentParser,
-          ]> {
-        }
-      }
       export interface TableParser extends
         // ~~~table
         // -/-
