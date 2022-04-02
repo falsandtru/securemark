@@ -89,7 +89,32 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
   const invalidParam = param.trimStart() !== '';
   const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
   const invalid = invalidLabel || invalidParam || invalidContent || undefined;
+  let type: string = content.className.split(/\s/)[0];
+  switch (type || content.tagName) {
+    case 'UL':
+    case 'OL':
+      type = 'list';
+      break;
+    case 'TABLE':
+      type = 'table';
+      break;
+    case 'BLOCKQUOTE':
+      type = 'quote';
+      break;
+    case 'A':
+      type = 'media';
+      break;
+    case 'text':
+    case 'code':
+    case 'math':
+    case 'example':
+    case 'invalid':
+      break;
+    default:
+      assert(false);
+  }
   return {
+    'data-type': type,
     'data-label': label,
     'data-group': group,
     class: invalid && 'invalid',
