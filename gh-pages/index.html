@@ -128,6 +128,9 @@
     white-space: pre;
     font-weight: 600;
   }
+  figure > div > pre[class] {
+    margin: 0;
+  }
   figure[data-group="$"] {
     display: flex;
     flex-wrap: nowrap;
@@ -142,9 +145,13 @@
   figure[data-group="$"] > figcaption > .figindex {
     font-weight: unset;
   }
-  figure[data-group="table"] {
+  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]) {
     display: flex;
     flex-direction: column-reverse;
+  }
+  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]):not([data-group="code"]):not([data-group="table"]):not([data-group="example"]) > div {
+    border-inline-start: solid 1px lightgray;
+    padding: .5em;
   }
   ul {
     margin-inline-start: 1.7em;
