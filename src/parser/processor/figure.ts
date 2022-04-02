@@ -1,4 +1,4 @@
-import { Infinity, Map } from 'spica/global';
+import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
 import { define } from 'typed-dom';
 import { MultiMap } from 'spica/multimap';
@@ -16,6 +16,7 @@ export function* figure(
     footnotes?.annotations.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? []),
     footnotes?.references.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [])
     .map(el => [el.getAttribute('data-label')!, el]));
+  const labels = new Set<string>();
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
@@ -76,7 +77,7 @@ export function* figure(
       assert(def.tagName !== 'FIGURE' || !+def.setAttribute('data-number', number));
       continue;
     }
-    assert(def.matches('figure:not([style])'));
+    assert(def.matches('figure:not([hidden])'));
     assert(number.split('.').pop() !== '0');
     !isFixed(label) && numbers.set(group, number);
     assert(!+def.setAttribute('data-number', number));
@@ -87,6 +88,27 @@ export function* figure(
     define(
       def.querySelector(':scope > figcaption > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);
+    if (labels.has(label)) {
+      if (def.classList.contains('invalid') &&
+          def.getAttribute('data-invalid-description') !== 'Duplicate label.') continue;
+      define(def, {
+        id: null,
+        class: void def.classList.add('invalid'),
+        'data-invalid-syntax': 'figure',
+        'data-invalid-type': 'argument',
+        'data-invalid-description': 'Duplicate label.',
+      });
+      continue;
+    }
+    else {
+      labels.add(label);
+      define(def, {
+        class: void def.classList.remove('invalid'),
+        'data-invalid-syntax': null,
+        'data-invalid-type': null,
+        'data-invalid-description': null,
+      });
+    }
     for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield define(ref,
