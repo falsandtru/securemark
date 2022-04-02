@@ -575,6 +575,7 @@ export namespace MarkdownParser {
           Parser<HTMLAnchorElement, Context, [
             InlineParser.AutolinkParser.AnchorParser,
             Parser<HTMLAnchorElement, Context, []>,
+            Parser<HTMLAnchorElement, Context, []>,
           ]>,
         ]> {
       }
