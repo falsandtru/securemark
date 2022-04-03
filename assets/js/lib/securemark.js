@@ -4809,8 +4809,6 @@ require = function () {
             exports.dlist = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const inline_1 = _dereq_('../inline');
-            const indexer_1 = _dereq_('../inline/extension/indexer');
-            const indexee_1 = _dereq_('../inline/extension/indexee');
             const source_1 = _dereq_('../source');
             const locale_1 = _dereq_('../locale');
             const util_1 = _dereq_('../util');
@@ -4831,8 +4829,8 @@ require = function () {
                 }, (0, combinator_1.some)(term)),
                 (0, combinator_1.some)(desc)
             ]))), es => [(0, typed_dom_1.html)('dl', fillTrailingDescription(es))]))));
-            const term = (0, combinator_1.creator)((0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
-                indexer_1.indexer,
+            const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
+                inline_1.indexer,
                 inline_1.inline
             ])))), true), ns => [(0, typed_dom_1.html)('dt', (0, typed_dom_1.defrag)(ns))]))));
             const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('dd', (0, typed_dom_1.defrag)(ns))]), false));
@@ -4843,8 +4841,6 @@ require = function () {
         {
             '../../combinator': 27,
             '../inline': 88,
-            '../inline/extension/indexee': 107,
-            '../inline/extension/indexer': 108,
             '../locale': 123,
             '../source': 128,
             '../util': 134,
@@ -4870,7 +4866,7 @@ require = function () {
                 '~~~',
                 '[$',
                 '$'
-            ], (0, combinator_1.validate)(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*(?:$|\n)/, (0, combinator_1.union)([
+            ], (0, combinator_1.validate)(/^~{3,}|^\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/, (0, combinator_1.union)([
                 fig_1.segment,
                 figure_1.segment,
                 table_1.segment,
@@ -5167,7 +5163,31 @@ require = function () {
                 const invalidParam = param.trimStart() !== '';
                 const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
                 const invalid = invalidLabel || invalidParam || invalidContent || global_1.undefined;
+                let type = content.className.split(/\s/)[0];
+                switch (type || content.tagName) {
+                case 'UL':
+                case 'OL':
+                    type = 'list';
+                    break;
+                case 'TABLE':
+                    type = 'table';
+                    break;
+                case 'BLOCKQUOTE':
+                    type = 'quote';
+                    break;
+                case 'A':
+                    type = 'media';
+                    break;
+                case 'text':
+                case 'code':
+                case 'math':
+                case 'example':
+                case 'invalid':
+                    break;
+                default:
+                }
                 return {
+                    'data-type': type,
                     'data-label': label,
                     'data-group': group,
                     class: invalid && 'invalid',
@@ -5589,8 +5609,6 @@ require = function () {
             exports.heading = exports.segment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const inline_1 = _dereq_('../inline');
-            const indexer_1 = _dereq_('../inline/extension/indexer');
-            const indexee_1 = _dereq_('../inline/extension/indexee');
             const source_1 = _dereq_('../source');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
@@ -5610,13 +5628,13 @@ require = function () {
                         media: false
                     }
                 }
-            }, (0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([
+            }, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([
                 (0, combinator_1.open)((0, source_1.str)(/^##+/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
-                    indexer_1.indexer,
+                    inline_1.indexer,
                     inline_1.inline
                 ])))), true),
                 (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({ syntax: { inline: { autolink: false } } }, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([
-                    indexer_1.indexer,
+                    inline_1.indexer,
                     inline_1.inline
                 ]))))), true)
             ]), ns => [(0, typed_dom_1.html)(`h${ (0, array_1.shift)(ns)[0].length }`, (0, typed_dom_1.defrag)(ns))]))))));
@@ -5624,8 +5642,6 @@ require = function () {
         {
             '../../combinator': 27,
             '../inline': 88,
-            '../inline/extension/indexee': 107,
-            '../inline/extension/indexer': 108,
             '../source': 128,
             '../util': 134,
             'spica/array': 6,
@@ -5748,17 +5764,20 @@ require = function () {
                 (0, combinator_1.match)(new RegExp(`^(?=${ openers['.'].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]))),
                 (0, combinator_1.match)(new RegExp(`^(?=${ openers['('].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1])))
             ])));
-            const list = (type, delim) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
+            const list = (type, delim) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
                     (0, combinator_1.line)((0, combinator_1.open)(heads[delim], (0, combinator_1.trim)((0, combinator_1.subsequence)([
                         ulist_1.checkbox,
-                        (0, combinator_1.trimStart)((0, combinator_1.some)(inline_1.inline))
+                        (0, combinator_1.trimStart)((0, combinator_1.some)((0, combinator_1.union)([
+                            inline_1.indexer,
+                            inline_1.inline
+                        ])))
                     ])), true)),
                     (0, combinator_1.indent)((0, combinator_1.union)([
                         ulist_1.ulist_,
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), iitem), ns => [(0, typed_dom_1.html)('li', { 'data-marker': ns[0] }, (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))])]))), es => [format((0, typed_dom_1.html)('ol', es), type, delim)]);
+                ]), invalid), ns => [(0, typed_dom_1.html)('li', { 'data-marker': ns[0] }, (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, typed_dom_1.html)('ol', es), type, delim)]);
             const heads = {
                 '.': (0, combinator_1.focus)(openers['.'], source => [
                     [`${ source.split('.', 1)[0] }.`],
@@ -5769,7 +5788,7 @@ require = function () {
                     ''
                 ])
             };
-            const iitem = (0, combinator_1.rewrite)(source_1.contentline, source => [
+            const invalid = (0, combinator_1.rewrite)(source_1.contentline, source => [
                 [
                     '',
                     (0, typed_dom_1.html)('span', {
@@ -5931,6 +5950,10 @@ require = function () {
                     anchor_1.anchor,
                     (0, combinator_1.focus)(/^>>\.[^\S\n]*(?:$|\n)/, () => [
                         [(0, typed_dom_1.html)('a', { class: 'anchor' }, '>>.')],
+                        ''
+                    ]),
+                    (0, combinator_1.focus)(/^>>#\S*[^\S\n]*(?:$|\n)/, source => [
+                        [(0, typed_dom_1.html)('a', { class: 'anchor' }, source)],
                         ''
                     ])
                 ])
@@ -6105,22 +6128,25 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const source_1 = _dereq_('../source');
             exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({ syntax: { inline: { media: false } } }, exports.ulist_))));
-            exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
+            exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
                     (0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.subsequence)([
                         exports.checkbox,
-                        (0, combinator_1.trimStart)((0, combinator_1.some)(inline_1.inline))
+                        (0, combinator_1.trimStart)((0, combinator_1.some)((0, combinator_1.union)([
+                            inline_1.indexer,
+                            inline_1.inline
+                        ])))
                     ])), true)),
                     (0, combinator_1.indent)((0, combinator_1.union)([
                         exports.ulist_,
                         olist_1.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), iitem), ns => [(0, typed_dom_1.html)('li', (0, typed_dom_1.defrag)(fillFirstLine(ns)))])])))), es => [format((0, typed_dom_1.html)('ul', es))])));
+                ]), invalid), ns => [(0, typed_dom_1.html)('li', (0, typed_dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, typed_dom_1.html)('ul', es))])));
             exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [
                 [(0, typed_dom_1.html)('span', { class: 'checkbox' }, source[1].trimStart() ? '\u2611' : '\u2610')],
                 ''
             ]);
-            const iitem = (0, combinator_1.rewrite)(source_1.contentline, source => [
+            const invalid = (0, combinator_1.rewrite)(source_1.contentline, source => [
                 [(0, typed_dom_1.html)('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'listitem',
@@ -6225,7 +6251,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.shortmedia = exports.media = exports.inline = void 0;
+            exports.shortmedia = exports.media = exports.indexer = exports.indexee = exports.inline = void 0;
             const combinator_1 = _dereq_('../combinator');
             const escape_1 = _dereq_('./inline/escape');
             const annotation_1 = _dereq_('./inline/annotation');
@@ -6275,6 +6301,20 @@ require = function () {
                 bracket_1.bracket,
                 source_1.text
             ]);
+            var indexee_1 = _dereq_('./inline/extension/indexee');
+            Object.defineProperty(exports, 'indexee', {
+                enumerable: true,
+                get: function () {
+                    return indexee_1.indexee;
+                }
+            });
+            var indexer_1 = _dereq_('./inline/extension/indexer');
+            Object.defineProperty(exports, 'indexer', {
+                enumerable: true,
+                get: function () {
+                    return indexer_1.indexer;
+                }
+            });
             var media_2 = _dereq_('./inline/media');
             Object.defineProperty(exports, 'media', {
                 enumerable: true,
@@ -6302,6 +6342,8 @@ require = function () {
             './inline/emstrong': 103,
             './inline/escape': 104,
             './inline/extension': 105,
+            './inline/extension/indexee': 107,
+            './inline/extension/indexer': 108,
             './inline/html': 111,
             './inline/htmlentity': 112,
             './inline/insertion': 113,
@@ -6989,8 +7031,8 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            function indexee(parser) {
-                return (0, combinator_1.fmap)(parser, ([el], _, {id}) => [(0, typed_dom_1.define)(el, { id: id !== '' && identity(text(el)) || global_1.undefined })]);
+            function indexee(parser, optional) {
+                return (0, combinator_1.fmap)(parser, ([el], _, {id}) => [(0, typed_dom_1.define)(el, { id: id !== '' && identity(text(el, optional)) || global_1.undefined })]);
             }
             exports.indexee = indexee;
             function identity(text) {
@@ -6998,11 +7040,13 @@ require = function () {
                 return text && `index:${ text.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }`;
             }
             exports.identity = identity;
-            function text(source) {
+            function text(source, optional = false) {
                 var _a;
-                const indexer = source.querySelector('.indexer');
+                const indexer = source.querySelector(':scope > .indexer');
                 if (indexer)
                     return indexer.getAttribute('data-index');
+                if (optional)
+                    return '';
                 const target = source.cloneNode(true);
                 for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
@@ -8205,7 +8249,7 @@ require = function () {
                             class: `${ ref.className } disabled invalid`,
                             'data-invalid-syntax': 'label',
                             'data-invalid-type': 'reference',
-                            'data-invalid-message': 'Missing the reference'
+                            'data-invalid-message': 'Missing the target figure'
                         });
                     }
                     yield ref;
