@@ -4217,6 +4217,7 @@ require = function () {
                 var _a, _b;
                 const context = (0, alias_1.ObjectAssign)((0, alias_1.ObjectCreate)(settings), {
                     host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+                    footnotes: global_1.undefined,
                     chunk: global_1.undefined
                 });
                 if (((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
@@ -4549,6 +4550,7 @@ require = function () {
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
                     host: (_d = (_c = opts.host) !== null && _c !== void 0 ? _c : context === null || context === void 0 ? void 0 : context.host) !== null && _d !== void 0 ? _d : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     caches: context === null || context === void 0 ? void 0 : context.caches,
+                    footnotes: global_1.undefined,
                     test: global_1.undefined,
                     ...opts
                 };
