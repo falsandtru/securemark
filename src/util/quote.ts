@@ -1,3 +1,4 @@
+import { Element } from 'spica/global';
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
 import { define } from 'typed-dom';
