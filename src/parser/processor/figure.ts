@@ -89,20 +89,20 @@ export function* figure(
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
       assert(isFixed(label));
-      if (number.split('.').length > 2) continue;
+      assert(number.split('.').length <= 2);
       if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));
         number = join(
           index.slice(0)
-            .reduce((ns, _, i, bs) => {
+            .reduce((ns, _, i, xs) => {
               i === ns.length
-                ? bs.length = i
-                : ns[i] = +ns[i] > +bs[i]
+                ? xs.length = i
+                : ns[i] = +ns[i] > +xs[i]
                   ? ns[i]
                   : +ns[i] === 0
-                    ? bs[i]
-                    : `${+bs[i] + 1}`;
+                    ? xs[i]
+                    : `${+xs[i] + 1}`;
               return ns;
             }, number.split('.')),
           '.');
