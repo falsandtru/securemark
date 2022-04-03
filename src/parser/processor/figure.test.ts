@@ -182,9 +182,9 @@ describe('Unit: parser/processor/figure', () => {
             '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
             '<figure data-type="quote" data-label="fig-d" data-group="fig" data-number="4.1" id="label:fig-d"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 4.1. </span></figcaption></figure>',
             '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
-            '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
-            '<figure data-label="$-0.4.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
-            '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
+            '<figure data-label="$-0.4.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="6.0"></figure>',
@@ -195,7 +195,7 @@ describe('Unit: parser/processor/figure', () => {
             '<figure data-label="$-0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Invalid base index"></figure>',
             '<figure data-type="quote" data-label="fig-g" data-group="fig" data-number="5.2" id="label:fig-g"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 5.2. </span></figcaption></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-label="$-0.0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
+            '<figure data-label="$-0.0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
             '<figure data-type="quote" data-label="fig-h" data-group="fig" data-number="5.3" id="label:fig-h"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 5.3. </span></figcaption></figure>',
             '<h3 id="index:0">0</h3>',
             '<figure data-type="quote" data-label="fig-i" data-group="fig" data-number="5.4" id="label:fig-i"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 5.4. </span></figcaption></figure>',
@@ -205,32 +205,52 @@ describe('Unit: parser/processor/figure', () => {
       }
     });
 
-    it('concatenation', () => {
+    it('concat', () => {
       const target = parse([
-        '# 0',
         '$-0.0',
         '## 0',
-        '## 0',
-        '$-1.0',
+        '$-0.0',
         '$fig-a\n> ',
+        '$-0.0',
+        '## 0',
+        '$fig-b\n> ',
+        '$-0.0',
+        '### 0',
+        '$fig-c\n> ',
+        '$-1.0',
         '## 0',
         '$-0.0',
-        '$fig-b\n> ',
+        '$fig-d\n> ',
+        '### 0',
+        '$-0.0',
+        '## 0',
+        '$-9.0',
+        '$fig-e\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
-            '<h1 id="index:0">0</h1>',
+            '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
+            '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure>',
+            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="0.1" id="label:fig-a"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 0.1. </span></figcaption></figure>',
+            '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
             '<h2 id="index:0">0</h2>',
-            '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-1.0" data-group="$" hidden="" data-number="1.0"></figure>',
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1.1" id="label:fig-a"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 1.1. </span></figcaption></figure>',
+            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="1.1" id="label:fig-b"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 1.1. </span></figcaption></figure>',
+            '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
+            '<h3 id="index:0">0</h3>',
+            '<figure data-type="quote" data-label="fig-c" data-group="fig" data-number="1.2" id="label:fig-c"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 1.2. </span></figcaption></figure>',
+            '<figure data-label="$-1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="2.0"></figure>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 2.1. </span></figcaption></figure>',
+            '<figure data-type="quote" data-label="fig-d" data-group="fig" data-number="2.1" id="label:fig-d"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 2.1. </span></figcaption></figure>',
+            '<h3 id="index:0">0</h3>',
+            '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base indexes must be after level 1(#) or 2(##) headings"></figure>',
+            '<h2 id="index:0">0</h2>',
+            '<figure data-label="$-9.0" data-group="$" hidden="" data-number="9.0"></figure>',
+            '<figure data-type="quote" data-label="fig-e" data-group="fig" data-number="9.1" id="label:fig-e"><div><blockquote></blockquote></div><figcaption><span class="figindex">Fig. 9.1. </span></figcaption></figure>',
           ]);
       }
     });

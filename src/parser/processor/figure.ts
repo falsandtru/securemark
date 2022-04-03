@@ -47,26 +47,6 @@ export function* figure(
       continue;
     }
     if (tagName === 'FIGURE' && label.endsWith('.0')) {
-      // $-x.0 after h1 or h2.
-      if (!['H1', 'H2'].includes(def.previousElementSibling?.tagName!)) {
-        define(def, {
-          class: void classList.add('invalid'),
-          'data-invalid-syntax': 'figure',
-          'data-invalid-type': 'position',
-          'data-invalid-message': 'Base indexes must be after level 1(#) or 2(##) headings',
-          hidden: null,
-        });
-        continue;
-      }
-      else if (classList.contains('invalid')) {
-        define(def, {
-          class: void classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null,
-          hidden: '',
-        });
-      }
       // $-x.x.0 is disabled.
       if (label.lastIndexOf('.', label.length - 3) !== -1) {
         define(def, {
@@ -77,6 +57,26 @@ export function* figure(
           hidden: null,
         });
         continue;
+      }
+      // $-x.0 after h1 or h2.
+      if (!def.previousElementSibling?.tagName.match(`H[1-${label.split('.', 9).length}]`)) {
+        define(def, {
+          class: void classList.add('invalid'),
+          'data-invalid-syntax': 'figure',
+          'data-invalid-type': 'position',
+          'data-invalid-message': 'Base indexes must be after level 1(#) or 2(##) headings',
+          hidden: null,
+        });
+        continue;
+      }
+      else {
+        classList.contains('invalid') && define(def, {
+          class: void classList.remove('invalid'),
+          'data-invalid-syntax': null,
+          'data-invalid-type': null,
+          'data-invalid-message': null,
+          hidden: '',
+        });
       }
     }
     const group = label.split('-', 1)[0];
@@ -110,7 +110,7 @@ export function* figure(
       }
       base = number;
       bases = index = base.split('.');
-      numbers.clear();
+      tagName !== 'FIGURE' && numbers.clear();
       assert(def.tagName !== 'FIGURE' || !+def.setAttribute('data-number', number));
       continue;
     }
