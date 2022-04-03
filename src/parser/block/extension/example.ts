@@ -15,7 +15,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'example',
-      'data-invalid-type': !closer ? 'closer' : 'argument',
+      'data-invalid-type': !closer ? 'fence' : 'argument',
       'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
     }, `${opener}${body}${closer}`)];
     switch (type) {

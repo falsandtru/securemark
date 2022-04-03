@@ -31,7 +31,7 @@ export const table: TableParser = block(validate('~~~', recover(fmap(
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'table',
-      'data-invalid-type': !closer ? 'closer' : 'argument',
+      'data-invalid-type': !closer ? 'fence' : 'argument',
       'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
     }, `${opener}${body}${closer}`)];
     return eval(parser(body, context)) ?? [html('table')];

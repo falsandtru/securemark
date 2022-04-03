@@ -12,7 +12,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'aside',
-      'data-invalid-type': !closer ? 'closer' : 'argument',
+      'data-invalid-type': !closer ? 'fence' : 'argument',
       'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
     }, `${opener}${body}${closer}`)];
     const annotations = html('ol', { class: 'annotations' });

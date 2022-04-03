@@ -17,7 +17,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'extension',
-      'data-invalid-type': !closer ? 'closer' : 'syntax',
+      'data-invalid-type': !closer ? 'fence' : 'syntax',
       'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid syntax',
     }, `${opener}${body}${closer}`)
   ])));
