@@ -22,9 +22,9 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   // Bug: Firefox
-  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2, :scope > h3'), i = 0, len = defs.length; i < len; ++i) {
+  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), i = 0, len = defs.length; i < len; ++i) {
   for (
-    let defs = target.querySelectorAll('figure[data-label], h1, h2, h3'),
+    let defs = target.querySelectorAll('figure[data-label], h1, h2'),
         i = 0, len = defs.length; i < len; ++i) {
     yield;
     const def = defs[i];
@@ -35,12 +35,48 @@ export function* figure(
       ? def.getAttribute('data-label')!
       : `$-${increment(index, def as HTMLHeadingElement)}`;
     if (label.endsWith('-')) continue;
-    if (label.endsWith('-0')) continue;
+    if (label.endsWith('-0')) {
+      define(def, {
+        class: void def.classList.add('invalid'),
+        'data-invalid-syntax': 'figure',
+        'data-invalid-type': 'argument',
+        'data-invalid-message': 'Index 0 is not allowed',
+        hidden: null,
+      });
+      continue;
+    }
     if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.0 after h1 or h2.
-      if (label.lastIndexOf('.', label.length - 3) < 0 && !(+def.previousElementSibling?.tagName[1]! <= 2)) continue;
+      if (!['H1', 'H2'].includes(def.previousElementSibling?.tagName!)) {
+        define(def, {
+          class: void def.classList.add('invalid'),
+          'data-invalid-syntax': 'figure',
+          'data-invalid-type': 'position',
+          'data-invalid-message': 'Base indexes must be after level 1(#) or 2(##) headings',
+          hidden: null,
+        });
+        continue;
+      }
+      else if (def.classList.contains('invalid')) {
+        define(def, {
+          class: void def.classList.remove('invalid'),
+          'data-invalid-syntax': null,
+          'data-invalid-type': null,
+          'data-invalid-message': null,
+          hidden: '',
+        });
+      }
       // $-x.x.0 is disabled.
-      if (label.lastIndexOf('.', label.length - 3) > 0) continue;
+      if (label.lastIndexOf('.', label.length - 3) !== -1) {
+        define(def, {
+          class: void def.classList.add('invalid'),
+          'data-invalid-syntax': 'figure',
+          'data-invalid-type': 'argument',
+          'data-invalid-message': `Base index's format must be $-x.0`,
+          hidden: null,
+        });
+        continue;
+      }
     }
     const group = label.split('-', 1)[0];
     assert(label && group);
