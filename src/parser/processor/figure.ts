@@ -41,7 +41,7 @@ export function* figure(
         class: void classList.add('invalid'),
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
-        'data-invalid-message': 'Index 0 is not allowed',
+        'data-invalid-message': 'Invalid base index',
         hidden: null,
       });
       continue;
@@ -73,7 +73,7 @@ export function* figure(
           class: void classList.add('invalid'),
           'data-invalid-syntax': 'figure',
           'data-invalid-type': 'argument',
-          'data-invalid-message': `Base index's format must be $-x.0`,
+          'data-invalid-message': 'Base index must be $-x.0 format',
           hidden: null,
         });
         continue;
