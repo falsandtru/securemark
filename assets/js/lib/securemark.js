@@ -4776,7 +4776,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
-                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-type': !closer ? 'fence' : 'argument',
                             'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
@@ -4910,7 +4910,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
-                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-type': !closer ? 'fence' : 'argument',
                             'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 const annotations = (0, typed_dom_1.html)('ol', { class: 'annotations' });
@@ -4965,7 +4965,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-type': !closer ? 'fence' : 'argument',
                             'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
@@ -5253,7 +5253,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
-                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-type': !closer ? 'fence' : 'argument',
                             'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
@@ -5324,7 +5324,7 @@ require = function () {
                     class: 'invalid',
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
-                    'data-invalid-type': !closer ? 'closer' : 'syntax',
+                    'data-invalid-type': !closer ? 'fence' : 'syntax',
                     'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid syntax'
                 }, `${ opener }${ body }${ closer }`)])));
         },
@@ -5358,7 +5358,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'table',
-                            'data-invalid-type': !closer ? 'closer' : 'argument',
+                            'data-invalid-type': !closer ? 'fence' : 'argument',
                             'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                         }, `${ opener }${ body }${ closer }`)];
                 return (_a = (0, parser_1.eval)(parser(body, context))) !== null && _a !== void 0 ? _a : [(0, typed_dom_1.html)('table')];
@@ -5611,8 +5611,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            const array_1 = _dereq_('spica/array');
-            exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('#', (0, combinator_1.focus)(/^#{1,6}[^\S\n]+\S[^\n]*(?:\n#{1,6}(?!\S)[^\n]*)*(?:$|\n)/, (0, combinator_1.some)((0, combinator_1.line)(source => [
+            exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('#', (0, combinator_1.focus)(/^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/, (0, combinator_1.some)((0, combinator_1.line)(source => [
                 [source],
                 ''
             ])))));
@@ -5636,14 +5635,18 @@ require = function () {
                     inline_1.indexer,
                     inline_1.inline
                 ]))))), true)
-            ]), ns => [(0, typed_dom_1.html)(`h${ (0, array_1.shift)(ns)[0].length }`, (0, typed_dom_1.defrag)(ns))]))))));
+            ]), ([h, ...ns]) => [h.length <= 6 ? (0, typed_dom_1.html)(`h${ h.length }`, (0, typed_dom_1.defrag)(ns)) : (0, typed_dom_1.html)(`h6`, {
+                    class: 'invalid',
+                    'data-invalid-syntax': 'heading',
+                    'data-invalid-type': 'syntax',
+                    'data-invalid-message': 'Heading level must be up to 6'
+                }, (0, typed_dom_1.defrag)(ns))]))))));
         },
         {
             '../../combinator': 27,
             '../inline': 88,
             '../source': 128,
             '../util': 134,
-            'spica/array': 6,
             'typed-dom': 26
         }
     ],
@@ -5726,7 +5729,7 @@ require = function () {
                         class: 'invalid',
                         translate: 'no',
                         'data-invalid-syntax': 'mathblock',
-                        'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'closer' : 'argument',
+                        'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'fence' : 'argument',
                         'data-invalid-message': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
                     }, `${ opener }${ body }${ closer }`)];
             })));
@@ -8166,7 +8169,7 @@ require = function () {
             const multimap_1 = _dereq_('spica/multimap');
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
-                var _a, _b, _c;
+                var _a, _b, _c, _d;
                 const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), (_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotations.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : []), (_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.references.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []).map(el => [
                     el.getAttribute('data-label'),
                     el
@@ -8176,40 +8179,71 @@ require = function () {
                 let base = '0';
                 let bases = base.split('.');
                 let index = bases;
-                for (let defs = target.querySelectorAll('figure[data-label], h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
+                for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), i = 0, len = defs.length; i < len; ++i) {
                     yield;
                     const def = defs[i];
                     if (def.parentNode !== target)
                         continue;
-                    if (bases.length === 1 && def.tagName[0] === 'H')
+                    const {tagName, classList} = def;
+                    if (bases.length === 1 && tagName[0] === 'H')
                         continue;
-                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(index, def) }`;
+                    const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(index, def) }`;
                     if (label.endsWith('-'))
                         continue;
-                    if (label.endsWith('-0'))
+                    if (label.endsWith('-0')) {
+                        (0, typed_dom_1.define)(def, {
+                            class: void classList.add('invalid'),
+                            'data-invalid-syntax': 'figure',
+                            'data-invalid-type': 'argument',
+                            'data-invalid-message': 'Invalid base index',
+                            hidden: null
+                        });
                         continue;
-                    if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
-                        if (label.lastIndexOf('.', label.length - 3) < 0 && !(+((_c = def.previousElementSibling) === null || _c === void 0 ? void 0 : _c.tagName[1]) <= 2))
+                    }
+                    if (tagName === 'FIGURE' && label.endsWith('.0')) {
+                        if (label.lastIndexOf('.', label.length - 3) !== -1) {
+                            (0, typed_dom_1.define)(def, {
+                                class: void classList.add('invalid'),
+                                'data-invalid-syntax': 'figure',
+                                'data-invalid-type': 'argument',
+                                'data-invalid-message': 'Base index must be $-x.0 format',
+                                hidden: null
+                            });
                             continue;
-                        if (label.lastIndexOf('.', label.length - 3) > 0)
+                        }
+                        if (!/^H[1-6]$/.test((_d = (_c = def.previousElementSibling) === null || _c === void 0 ? void 0 : _c.tagName) !== null && _d !== void 0 ? _d : '')) {
+                            (0, typed_dom_1.define)(def, {
+                                class: void classList.add('invalid'),
+                                'data-invalid-syntax': 'figure',
+                                'data-invalid-type': 'position',
+                                'data-invalid-message': 'Base index declarations must be after level 1 or 2 headings',
+                                hidden: null
+                            });
                             continue;
+                        } else {
+                            classList.contains('invalid') && (0, typed_dom_1.define)(def, {
+                                class: void classList.remove('invalid'),
+                                'data-invalid-syntax': null,
+                                'data-invalid-type': null,
+                                'data-invalid-message': null,
+                                hidden: ''
+                            });
+                        }
                     }
                     const group = label.split('-', 1)[0];
                     let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? (0, array_1.join)(numbers.get(group).split('.').slice(0, bases.length), '.') : base);
                     if (number.endsWith('.0')) {
-                        if (number.split('.').length > 2)
-                            continue;
-                        if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild)
+                        if (group !== '$' || tagName === 'FIGURE' && def.firstChild)
                             continue;
                         if (number.startsWith('0.')) {
-                            number = (0, array_1.join)(index.slice(0).reduce((ns, _, i, bs) => {
-                                i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
+                            number = (0, array_1.join)(index.slice(0).reduce((ns, _, i, xs) => {
+                                i === ns.length ? xs.length = i : ns[i] = +ns[i] > +xs[i] ? ns[i] : +ns[i] === 0 ? xs[i] : `${ +xs[i] + 1 }`;
                                 return ns;
                             }, number.split('.')), '.');
                         }
                         base = number;
                         bases = index = base.split('.');
-                        numbers.clear();
+                        tagName !== 'FIGURE' && numbers.clear();
                         continue;
                     }
                     !(0, label_1.isFixed)(label) && numbers.set(group, number);
@@ -8217,11 +8251,11 @@ require = function () {
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
                     (0, typed_dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     if (labels.has(label)) {
-                        if (def.classList.contains('invalid') && def.getAttribute('data-invalid-message') !== 'Duplicate label')
+                        if (classList.contains('invalid') && def.getAttribute('data-invalid-message') !== 'Duplicate label')
                             continue;
                         (0, typed_dom_1.define)(def, {
                             id: null,
-                            class: void def.classList.add('invalid'),
+                            class: void classList.add('invalid'),
                             'data-invalid-syntax': 'figure',
                             'data-invalid-type': 'argument',
                             'data-invalid-message': 'Duplicate label'
@@ -8230,7 +8264,7 @@ require = function () {
                     } else {
                         labels.add(label);
                         (0, typed_dom_1.define)(def, {
-                            class: void def.classList.remove('invalid'),
+                            class: void classList.remove('invalid'),
                             'data-invalid-syntax': null,
                             'data-invalid-type': null,
                             'data-invalid-message': null
@@ -8320,7 +8354,7 @@ require = function () {
                         style !== null && style !== void 0 ? style : style = abbr ? 'abbr' : 'count';
                         if (style === 'count' ? abbr : !abbr) {
                             (0, typed_dom_1.define)(ref, {
-                                class: `${ ref.className } invalid`,
+                                class: void ref.classList.add('invalid'),
                                 'data-invalid-syntax': syntax,
                                 'data-invalid-type': 'style',
                                 'data-invalid-message': `${ syntax[0].toUpperCase() + syntax.slice(1) } style must be consistent`
@@ -9477,6 +9511,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.quote = void 0;
+            const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const cite_1 = _dereq_('../parser/block/reply/cite');
             const typed_dom_1 = _dereq_('typed-dom');
@@ -9511,7 +9546,7 @@ require = function () {
                 }
                 for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
-                    if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
+                    if (anchor && el.nextSibling instanceof global_1.Element && el.nextSibling.matches('.cite, .quote')) {
                         el.replaceWith(`\n>${ el.nextSibling.matches('.quote.invalid') ? ' ' : '' }`);
                         continue;
                     }
@@ -9538,7 +9573,7 @@ require = function () {
                 if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.cite > .anchor')) {
                     return void range.setStart(node.parentElement.previousSibling, 0);
                 }
-                if (node.nodeName === 'BR' && node.nextSibling instanceof Element && node.nextSibling.matches('.cite, .quote')) {
+                if (node.nodeName === 'BR' && node.nextSibling instanceof global_1.Element && node.nextSibling.matches('.cite, .quote')) {
                     return void range.setStart(node.nextSibling.firstChild, 0);
                 }
                 const offset = range.startOffset;
@@ -9558,6 +9593,7 @@ require = function () {
         {
             '../combinator/data/parser': 47,
             '../parser/block/reply/cite': 83,
+            'spica/global': 15,
             'typed-dom': 26
         }
     ],
