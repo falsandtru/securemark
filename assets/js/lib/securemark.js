@@ -4215,9 +4215,8 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
                 var _a, _b;
-                let context = (0, alias_1.ObjectAssign)({ ...settings }, {
+                const context = (0, alias_1.ObjectAssign)((0, alias_1.ObjectCreate)(settings), {
                     host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
-                    footnotes: global_1.undefined,
                     chunk: global_1.undefined
                 });
                 if (((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
@@ -4238,7 +4237,7 @@ require = function () {
                         throw new Error('Chunks cannot be updated.');
                     const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                     source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1));
-                    context = (0, alias_1.ObjectAssign)({ ...context }, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
+                    (0, alias_1.ObjectAssign)(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
                     const rev = revision = Symbol();
                     const sourceSegments = [];
                     for (const seg of (0, segment_1.segment)(source)) {
@@ -4530,7 +4529,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.parse = void 0;
             const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
             const parser_1 = _dereq_('../../combinator/data/parser');
             const header_1 = _dereq_('../header');
             const block_1 = _dereq_('../block');
@@ -4542,19 +4540,19 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const url_1 = _dereq_('spica/url');
             function parse(source, opts = {}, context) {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+                var _a, _b, _c, _d, _e, _f, _g;
                 if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE))
                     throw new Error(`Too large input over ${ segment_1.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.`);
                 const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                 source = !context ? (0, normalize_1.normalize)(source) : source;
-                context = context && url === '' && context.id === opts.id ? context : (0, alias_1.ObjectAssign)((0, alias_1.ObjectCreate)(context !== null && context !== void 0 ? context : {}), opts, {
-                    host: (_d = (_c = opts.host) !== null && _c !== void 0 ? _c : context === null || context === void 0 ? void 0 : context.host) !== null && _d !== void 0 ? _d : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+                context = {
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
-                    id: (_e = opts.id) !== null && _e !== void 0 ? _e : context === null || context === void 0 ? void 0 : context.id,
-                    footnotes: global_1.undefined,
-                    test: global_1.undefined
-                });
-                if (((_g = context.host) === null || _g === void 0 ? void 0 : _g.origin) === 'null')
+                    host: (_d = (_c = opts.host) !== null && _c !== void 0 ? _c : context === null || context === void 0 ? void 0 : context.host) !== null && _d !== void 0 ? _d : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+                    caches: context === null || context === void 0 ? void 0 : context.caches,
+                    test: global_1.undefined,
+                    ...opts
+                };
+                if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
                 const node = (0, typed_dom_1.frag)();
                 let index = 0;
@@ -4578,7 +4576,6 @@ require = function () {
             '../segment': 127,
             './header': 59,
             './normalize': 60,
-            'spica/alias': 5,
             'spica/global': 15,
             'spica/url': 24,
             'typed-dom': 26
