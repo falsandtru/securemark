@@ -7,7 +7,7 @@ module.exports = function (config) {
       { pattern: 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js', watched: false, served: false, included: true },
-      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.1.2/es5/tex-chtml.min.js', watched: false, served: false, included: true },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.2.2/purify.js', watched: false, served: false, included: true },
       { pattern: 'node_modules/power-assert/build/power-assert.js', watched: true, served: true, included: true },
       { pattern: 'dist/*.test.js', watched: true, served: true, included: true }
