@@ -4,10 +4,9 @@ import { inline, indexee, indexer } from '../inline';
 import { str } from '../source';
 import { visualize } from '../util';
 import { html, defrag } from 'typed-dom';
-import { shift } from 'spica/array';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
-  /^#{1,6}[^\S\n]+\S[^\n]*(?:\n#{1,6}(?!\S)[^\n]*)*(?:$|\n)/,
+  /^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/,
   some(line(source => [[source], ''])))));
 
 export const heading: HeadingParser = block(rewrite(segment,
@@ -30,6 +29,13 @@ export const heading: HeadingParser = block(rewrite(segment,
       }}},
       trim(visualize(some(union([indexer, inline]))))), true),
   ]),
-  (ns: [string, ...(HTMLElement | string)[]]) => [
-    html(`h${shift(ns)[0].length}` as 'h1', defrag(ns))
+  ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
+    h.length <= 6
+      ? html(`h${h.length as 1}`, defrag(ns))
+      : html(`h6`, {
+          class: 'invalid',
+          'data-invalid-syntax': 'heading',
+          'data-invalid-type': 'syntax',
+          'data-invalid-message': 'Heading level must be up to 6',
+        }, defrag(ns))
   ]))))));
