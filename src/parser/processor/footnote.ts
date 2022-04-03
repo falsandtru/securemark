@@ -53,7 +53,7 @@ function build(
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         define(ref, {
-          class: `${ref.className} invalid`,
+          class: void ref.classList.add('invalid'),
           'data-invalid-syntax': syntax,
           'data-invalid-type': 'style',
           'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`,

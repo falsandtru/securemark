@@ -29,15 +29,16 @@ export function* figure(
     yield;
     const def = defs[i];
     if (def.parentNode !== target) continue;
-    if (bases.length === 1 && def.tagName[0] === 'H') continue;
+    const { tagName, classList } = def;
+    if (bases.length === 1 && tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
-    const label = def.tagName === 'FIGURE'
+    const label = tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
       : `$-${increment(index, def as HTMLHeadingElement)}`;
     if (label.endsWith('-')) continue;
     if (label.endsWith('-0')) {
       define(def, {
-        class: void def.classList.add('invalid'),
+        class: void classList.add('invalid'),
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
         'data-invalid-message': 'Index 0 is not allowed',
@@ -45,11 +46,11 @@ export function* figure(
       });
       continue;
     }
-    if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
+    if (tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.0 after h1 or h2.
       if (!['H1', 'H2'].includes(def.previousElementSibling?.tagName!)) {
         define(def, {
-          class: void def.classList.add('invalid'),
+          class: void classList.add('invalid'),
           'data-invalid-syntax': 'figure',
           'data-invalid-type': 'position',
           'data-invalid-message': 'Base indexes must be after level 1(#) or 2(##) headings',
@@ -57,9 +58,9 @@ export function* figure(
         });
         continue;
       }
-      else if (def.classList.contains('invalid')) {
+      else if (classList.contains('invalid')) {
         define(def, {
-          class: void def.classList.remove('invalid'),
+          class: void classList.remove('invalid'),
           'data-invalid-syntax': null,
           'data-invalid-type': null,
           'data-invalid-message': null,
@@ -69,7 +70,7 @@ export function* figure(
       // $-x.x.0 is disabled.
       if (label.lastIndexOf('.', label.length - 3) !== -1) {
         define(def, {
-          class: void def.classList.add('invalid'),
+          class: void classList.add('invalid'),
           'data-invalid-syntax': 'figure',
           'data-invalid-type': 'argument',
           'data-invalid-message': `Base index's format must be $-x.0`,
@@ -90,7 +91,7 @@ export function* figure(
     if (number.endsWith('.0')) {
       assert(isFixed(label));
       assert(number.split('.').length <= 2);
-      if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild) continue;
+      if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));
         number = join(
@@ -125,11 +126,11 @@ export function* figure(
       def.querySelector(':scope > figcaption > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);
     if (labels.has(label)) {
-      if (def.classList.contains('invalid') &&
+      if (classList.contains('invalid') &&
           def.getAttribute('data-invalid-message') !== 'Duplicate label') continue;
       define(def, {
         id: null,
-        class: void def.classList.add('invalid'),
+        class: void classList.add('invalid'),
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
         'data-invalid-message': 'Duplicate label',
@@ -139,7 +140,7 @@ export function* figure(
     else {
       labels.add(label);
       define(def, {
-        class: void def.classList.remove('invalid'),
+        class: void classList.remove('invalid'),
         'data-invalid-syntax': null,
         'data-invalid-type': null,
         'data-invalid-message': null,
