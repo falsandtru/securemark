@@ -23,6 +23,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
 } {
   const context: MarkdownParser.Context = ObjectAssign(ObjectCreate(settings), {
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
+    footnotes: undefined,
     chunk: undefined,
   });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);

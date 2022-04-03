@@ -25,6 +25,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     url: url ? new ReadonlyURL(url as ':') : context?.url,
     host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
     caches: context?.caches,
+    footnotes: undefined,
     test: undefined,
     ...opts,
   };
