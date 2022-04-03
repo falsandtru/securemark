@@ -1,5 +1,4 @@
 import { undefined, location } from 'spica/global';
-import { ObjectAssign, ObjectCreate } from 'spica/alias';
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
@@ -22,16 +21,13 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
   assert(!context?.delimiters);
-  context = context && url === '' && context.id === opts.id
-    ? context
-    : ObjectAssign(ObjectCreate(context ?? {}), opts, {
-        host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
-        url: url ? new ReadonlyURL(url as ':') : context?.url,
-        id: opts.id ?? context?.id,
-        footnotes: undefined,
-        test: undefined,
-      });
-  assert(context.caches === arguments[2]?.caches);
+  context = {
+    url: url ? new ReadonlyURL(url as ':') : context?.url,
+    host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
+    caches: context?.caches,
+    test: undefined,
+    ...opts,
+  };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
   let index = 0;

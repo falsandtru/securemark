@@ -1,5 +1,5 @@
 import { undefined, location } from 'spica/global';
-import { ObjectAssign } from 'spica/alias';
+import { ObjectAssign, ObjectCreate } from 'spica/alias';
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
@@ -21,9 +21,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  let context: MarkdownParser.Context = ObjectAssign({ ...settings }, {
+  const context: MarkdownParser.Context = ObjectAssign(ObjectCreate(settings), {
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-    footnotes: undefined,
     chunk: undefined,
   });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
@@ -44,7 +43,11 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = normalize(validate(source, MAX_INPUT_SIZE) ? source : source.slice(0, MAX_INPUT_SIZE + 1));
-    context = ObjectAssign({ ...context }, { url: url ? new ReadonlyURL(url as ':') : undefined });
+    ObjectAssign<MarkdownParser.Context, MarkdownParser.Context>(
+      context,
+      {
+        url: url ? new ReadonlyURL(url as ':') : undefined,
+      });
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {
