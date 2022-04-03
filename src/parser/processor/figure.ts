@@ -58,8 +58,8 @@ export function* figure(
         });
         continue;
       }
-      // $-x.0 after h1 or h2.
-      if (!def.previousElementSibling?.tagName.match(`H[1-${label.split('.', 9).length}]`)) {
+      // $-x.0 after h1-h6.
+      if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
         define(def, {
           class: void classList.add('invalid'),
           'data-invalid-syntax': 'figure',
