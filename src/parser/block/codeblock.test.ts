@@ -47,7 +47,7 @@ describe('Unit: parser/block/codeblock', () => {
     it('attribute', () => {
       assert.deepStrictEqual(inspect(parser('```0\n```')), [['<pre class="code language-0" translate="no" data-lang="0"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a\n```')), [['<pre class="code language-a" translate="no" data-lang="a"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```A\n```')), [['<pre class="text" translate="no" data-path="A"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```A\n```')), [['<pre class="code language-a" translate="no" data-lang="a"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a-b\n```')), [['<pre class="code language-a-b" translate="no" data-lang="a-b"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a-b0\n```')), [['<pre class="code language-a-b0" translate="no" data-lang="a-b0"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a--b\n```')), [['<pre class="text" translate="no" data-path="a--b"></pre>'], '']);
@@ -62,7 +62,6 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```.b\n```')), [['<pre class="text" translate="no" data-path=".b"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```b.c\n```')), [['<pre class="code language-c" translate="no" data-lang="c" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a b.c\n```')), [['<pre class="code language-a" translate="no" data-lang="a" data-path="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```A b.c\n```')), [['<pre class="invalid" translate="no">```A b.c\n```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a 1\n```')), [['<pre class="code language-a" translate="no" data-lang="a" data-line="1"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` 1\n```')), [['<pre class="text" translate="no" data-line="1"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` 1,2-3\n```')), [['<pre class="text" translate="no" data-line="1,2-3"></pre>'], '']);

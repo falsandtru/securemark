@@ -6,7 +6,7 @@ import { autolink } from '../autolink';
 import { html, defrag } from 'typed-dom';
 
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
-const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;
+const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 
 export const segment: CodeBlockParser.SegmentParser = block(validate('```',
   clear(fence(opener, 300))));
@@ -30,6 +30,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
           && value[0] === param[0]
           && language.test(value):
           name = 'lang';
+          value = value.toLowerCase();
           break;
         case /^\d+(?:[,-]\d+)*$/.test(value):
           name = 'line';
@@ -39,7 +40,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
           if (!params.lang) {
             const file = value.split('/').pop() ?? '';
             params.lang = file && file.includes('.', 1)
-              ? file.split('.').pop()?.match(language)?.[0]
+              ? file.split('.').pop()?.match(language)?.[0].toLowerCase()
               : params.lang;
           }
       }
