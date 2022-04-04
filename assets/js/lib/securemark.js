@@ -4753,41 +4753,49 @@ require = function () {
             const parser_1 = _dereq_('../../combinator/data/parser');
             const combinator_1 = _dereq_('../../combinator');
             const autolink_1 = _dereq_('../autolink');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            const array_1 = _dereq_('spica/array');
-            const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
-            const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;
+            const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
+            const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-            exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, lang, param], _, context) => {
-                var _a, _b, _c, _d;
-                [lang, param] = language.test(lang) ? [
-                    lang,
-                    param
-                ] : [
-                    '',
-                    lang + param
-                ];
-                param = param.trim();
-                const path = (0, array_1.join)((0, parser_1.eval)((0, combinator_1.some)(source_1.escsource, /^\s/)(param, context), []));
-                if (!closer || param !== path)
+            exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, param], _, context) => {
+                var _a, _b, _c, _d, _e, _f;
+                const params = (_b = (_a = param.match(/(?:\\.?|\S)+/g)) === null || _a === void 0 ? void 0 : _a.reduce((params, value, i) => {
+                    var _a, _b, _c;
+                    let name;
+                    switch (true) {
+                    case i === 0 && value[0] === param[0] && language.test(value):
+                        name = 'lang';
+                        value = value.toLowerCase();
+                        break;
+                    case /^\d+(?:[,-]\d+)*$/.test(value):
+                        name = 'line';
+                        break;
+                    default:
+                        name = 'path';
+                        if (!params.lang) {
+                            const file = (_a = value.split('/').pop()) !== null && _a !== void 0 ? _a : '';
+                            params.lang = file && file.includes('.', 1) ? (_c = (_b = file.split('.').pop()) === null || _b === void 0 ? void 0 : _b.match(language)) === null || _c === void 0 ? void 0 : _c[0].toLowerCase() : params.lang;
+                        }
+                    }
+                    name in params ? params.invalid = `Duplicate ${ name } value` : params[name] = value;
+                    return params;
+                }, {})) !== null && _b !== void 0 ? _b : {};
+                if (!closer || params.invalid)
                     return [(0, typed_dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
                             'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : params.invalid
                         }, `${ opener }${ body }${ closer }`)];
-                const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
-                const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
-                lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = (0, typed_dom_1.html)('pre', {
-                    class: lang ? `code language-${ lang }` : 'text',
+                    class: params.lang ? `code language-${ params.lang }` : 'text',
                     translate: 'no',
-                    'data-lang': lang || global_1.undefined,
-                    'data-path': path || global_1.undefined
-                }, lang ? ((_d = (_c = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.code) === null || _c === void 0 ? void 0 : _c.get(`${ lang }\n${ body.slice(0, -1) }`)) === null || _d === void 0 ? void 0 : _d.cloneNode(true).childNodes) || body.slice(0, -1) || global_1.undefined : (0, typed_dom_1.defrag)((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)(body.slice(0, -1), context), [])));
+                    'data-lang': params.lang || global_1.undefined,
+                    'data-line': params.line || global_1.undefined,
+                    'data-path': params.path || global_1.undefined
+                }, params.lang ? ((_f = (_d = (_c = context.caches) === null || _c === void 0 ? void 0 : _c.code) === null || _d === void 0 ? void 0 : _d.get(`${ (_e = params.lang) !== null && _e !== void 0 ? _e : '' }\n${ body.slice(0, -1) }`)) === null || _f === void 0 ? void 0 : _f.cloneNode(true).childNodes) || body.slice(0, -1) || global_1.undefined : (0, typed_dom_1.defrag)((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)(body.slice(0, -1), context), [])));
                 return [el];
             })));
         },
@@ -4795,8 +4803,6 @@ require = function () {
             '../../combinator': 27,
             '../../combinator/data/parser': 47,
             '../autolink': 62,
-            '../source': 128,
-            'spica/array': 6,
             'spica/global': 15,
             'typed-dom': 26
         }
@@ -6740,7 +6746,7 @@ require = function () {
             ], ([as, bs = []], rest) => [
                 (0, array_1.unshift)(as, bs),
                 rest
-            ]), ([, fence]) => fence)))));
+            ]), ([, fence]) => fence.length)))));
         },
         {
             '../../combinator': 27,
@@ -8216,7 +8222,7 @@ require = function () {
                                 class: void classList.add('invalid'),
                                 'data-invalid-syntax': 'figure',
                                 'data-invalid-type': 'position',
-                                'data-invalid-message': 'Base index declarations must be after level 1 or 2 headings',
+                                'data-invalid-message': 'Base index declarations must be after level 1 to 6 headings',
                                 hidden: null
                             });
                             continue;
