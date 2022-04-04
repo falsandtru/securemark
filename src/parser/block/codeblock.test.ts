@@ -63,6 +63,10 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```b.c\n```')), [['<pre class="code language-c" translate="no" data-lang="c" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a b.c\n```')), [['<pre class="code language-a" translate="no" data-lang="a" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```A b.c\n```')), [['<pre class="invalid" translate="no">```A b.c\n```</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a 1\n```')), [['<pre class="code language-a" translate="no" data-lang="a" data-line="1"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` 1\n```')), [['<pre class="text" translate="no" data-line="1"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` 1,2-3\n```')), [['<pre class="text" translate="no" data-line="1,2-3"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` 1 b.c\n```')), [['<pre class="code language-c" translate="no" data-lang="c" data-line="1" data-path="b.c"></pre>'], '']);
     });
 
   });
