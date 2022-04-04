@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.238.0
+
+- Revert signature syntax not to require leading whitespace.
+
 ## 0.237.2
 
 - Refactoring.

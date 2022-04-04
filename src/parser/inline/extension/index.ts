@@ -3,7 +3,7 @@ import { ExtensionParser } from '../../inline';
 import { union, some, validate, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
-import { txt, str } from '../../source';
+import { txt, str, stropt } from '../../source';
 import { startTight, trimNodeEnd } from '../../util';
 import { html, define, defrag } from 'typed-dom';
 import { join } from 'spica/array';
@@ -23,10 +23,11 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
+  open(stropt('|'),
   some(union([
     signature,
     inline,
-  ]), ']', /^\\?\n/)))),
+  ]), ']', /^\\?\n/), true)))),
   ']'),
   ns => [html('a', trimNodeEnd(defrag(ns)))])),
   ([el]: [HTMLAnchorElement]) => [
@@ -40,7 +41,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
   ]))));
 
 const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
-  /^\s+\|#/,
+  '|#',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity(join(ns)).slice(6) }),

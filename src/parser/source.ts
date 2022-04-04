@@ -14,5 +14,5 @@ export import AnyLineParser = SourceParser.AnyLineParser;
 export { text, txt, linebreak } from './source/text';
 export { escsource } from './source/escapable';
 export { unescsource } from './source/unescapable';
-export { str } from './source/str';
+export { str, stropt } from './source/str';
 export { contentline, emptyline, anyline } from './source/line';
