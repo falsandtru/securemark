@@ -54,7 +54,7 @@ export const block: BlockParser = creator(error(
 
 function error(parser: BlockParser): BlockParser {
   return recover<BlockParser>(fallback(
-    open('\0', source => { throw new Error(source.split('\n', 1)[0]); }),
+    open('\x07', source => { throw new Error(source.split('\n', 1)[0]); }),
     parser),
     (source, { id }, reason) => [[
       html('h1',
@@ -71,7 +71,7 @@ function error(parser: BlockParser): BlockParser {
           translate: 'no',
         },
         source
-          .replace(/^\0.*\n/, '')
+          .replace(/^\x07.*\n/, '')
           .slice(0, 1001)
           .replace(/^(.{997}).{4}$/s, '$1...') || undefined),
     ], '']);

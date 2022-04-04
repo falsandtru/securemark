@@ -4,12 +4,12 @@ describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('huge input', () => {
       const result = segment(`${'\n'.repeat(10 * 1000 ** 2)}`).next().value?.split('\n', 1)[0];
-      assert(result?.startsWith('\0Too large input'));
+      assert(result?.startsWith('\x07Too large input'));
     });
 
     it('huge segment', () => {
       const result = segment(`${'\n'.repeat(1000 ** 2 - 1)}`).next().value?.split('\n', 1)[0];
-      assert(result?.startsWith('\0Too large segment'));
+      assert(result?.startsWith('\x07Too large segment'));
     });
 
     it('basic', () => {

@@ -19,7 +19,7 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
         ? until
         : ~(~node.outerHTML.indexOf(until) || -Infinity) + until.length;
       const el = html('div');
-      assert(!node.outerHTML.match(/[\0\x7F]/));
+      assert(!node.outerHTML.match(/[\x00-\x08\x0B-\x1F\x7F]/));
       el.innerHTML = node.outerHTML.slice(0, until);
       if (node.outerHTML.length <= until) {
         assert(node.outerHTML === el.innerHTML);

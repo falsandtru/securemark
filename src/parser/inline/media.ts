@@ -95,13 +95,13 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
       });
       return false;
   }
-  if (alt.includes('\0')) {
+  if (alt.includes('\x1B')) {
     define(target, {
       class: void target.classList.add('invalid'),
       'data-invalid-syntax': 'media',
       'data-invalid-type': 'content',
       'data-invalid-message': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`,
-      alt: target.getAttribute('alt')?.replace(/\0/g, ''),
+      alt: target.getAttribute('alt')?.replace(/\x1B/g, ''),
     });
     return false;
   }

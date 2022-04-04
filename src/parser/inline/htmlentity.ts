@@ -6,12 +6,12 @@ import { reduce } from 'spica/memoize';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', focus(
   /^&[0-9A-Za-z]+;/,
-  entity => [[parse(entity) ?? `\0${entity}`], ''])));
+  entity => [[parse(entity) ?? `\x1B${entity}`], ''])));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([test]) => [
-    test[0] === '\0'
+    test[0] === '\x1B'
       ? html('span', {
           class: 'invalid',
           'data-invalid-syntax': 'htmlentity',

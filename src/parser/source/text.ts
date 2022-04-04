@@ -24,6 +24,7 @@ export const text: TextParser = creator((source, context) => {
             case '。':
             case '！':
             case '？':
+              assert(source[0] !== '\x1B');
               return text(source.slice(1), context);
           }
           break;
@@ -39,8 +40,10 @@ export const text: TextParser = creator((source, context) => {
         case '\\':
           switch (source[1]) {
             case undefined:
+              assert(source[0] !== '\x1B');
               return [[], ''];
             case '\n':
+              assert(source[0] !== '\x1B');
               return [[html('span', { class: 'linebreak' }, ' ')], source.slice(2)];
             default:
               return [[source.slice(1, 2)], source.slice(2)];

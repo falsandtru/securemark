@@ -55,7 +55,7 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
 }
 export const isStartLoose = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
   return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
-}, (source, _, except = '') => `${source}\0${except}`);
+}, (source, _, except = '') => `${source}\x1E${except}`);
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
   return (source, context) =>
@@ -93,7 +93,7 @@ const isStartTight = reduce((source: string, context: MarkdownParser.Context, ex
     default:
       return source[0].trimStart() !== '';
   }
-}, (source, _, except = '') => `${source}\0${except}`);
+}, (source, _, except = '') => `${source}\x1E${except}`);
 export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
