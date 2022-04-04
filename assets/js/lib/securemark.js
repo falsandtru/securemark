@@ -5112,7 +5112,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
-            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
+            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
                 (0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^.*\n/)),
                 (0, combinator_1.inits)([
                     (0, combinator_1.union)([
