@@ -64,7 +64,7 @@ export function* figure(
           class: void classList.add('invalid'),
           'data-invalid-syntax': 'figure',
           'data-invalid-type': 'position',
-          'data-invalid-message': 'Base index declarations must be after level 1 or 2 headings',
+          'data-invalid-message': 'Base index declarations must be after level 1 to 6 headings',
           hidden: null,
         });
         continue;
