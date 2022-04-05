@@ -85,10 +85,6 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
-  const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
-  const invalidParam = param.trimStart() !== '';
-  const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
-  const invalid = invalidLabel || invalidParam || invalidContent || undefined;
   let type: string = content.className.split(/\s/)[0];
   switch (type || content.tagName) {
     case 'UL':
@@ -113,27 +109,28 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
     default:
       assert(false);
   }
+  const invalid =
+    /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
+      'data-invalid-type': 'label',
+      'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
+    } ||
+    param.trimStart() !== '' && {
+      'data-invalid-type': 'argument',
+      'data-invalid-message': 'Invalid argument',
+    } ||
+    group === '$' && (!content.classList.contains('math') || caption.length > 0) && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption',
+    } ||
+    undefined;
   return {
     'data-type': type,
     'data-label': label,
     'data-group': group,
-    class: invalid && 'invalid',
-    ...
-      invalidLabel && {
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'label',
-        'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
-      } ||
-      invalidParam && {
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid argument',
-      } ||
-      invalidContent && {
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'content',
-        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption',
-      } ||
-      undefined,
+    ...invalid && {
+      class: 'invalid',
+      'data-invalid-syntax': 'figure',
+      ...invalid,
+    },
   };
 }
