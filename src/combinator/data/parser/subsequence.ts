@@ -7,7 +7,7 @@ export function subsequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx
   assert(parsers.every(f => f));
   return union(
     parsers.map((_, i) =>
-      i < parsers.length - 1
+      i + 1 < parsers.length
         ? inits([parsers[i], subsequence(parsers.slice(i + 1))])
         : parsers[i]) as D);
 }
