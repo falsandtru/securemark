@@ -14,7 +14,7 @@ describe('Unit: parser/block/extension/fig', () => {
       assert.deepStrictEqual(inspect(parser('[$group-name]\n !https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]\n\n!https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]a\nhttps://host')), undefined);
-      assert.deepStrictEqual(inspect(parser('[$group-name]a\n!https://host')), [['<figure data-type="media" data-label="group-name" data-group="group" class="invalid"><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><figcaption><span class="figindex"></span></figcaption></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('[$group-name]a\n!https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name] a\nhttps://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name] a\n!https://host')), [['<figure data-type="media" data-label="group-name" data-group="group" class="invalid"><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><figcaption><span class="figindex"></span></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('$-a\n$-b')), undefined);

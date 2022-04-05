@@ -13,7 +13,7 @@ import FigParser = ExtensionParser.FigParser;
 
 export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
   sequence([
-    line(close(seg_label, /^.*\n/)),
+    line(close(seg_label, /^(?=\s).*\n/)),
     union([
       seg_code,
       seg_math,
