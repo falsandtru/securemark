@@ -4648,7 +4648,7 @@ require = function () {
                 paragraph_1.paragraph
             ]))));
             function error(parser) {
-                return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\0', source => {
+                return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', source => {
                     throw new Error(source.split('\n', 1)[0]);
                 }), parser), (source, {id}, reason) => [
                     [
@@ -4659,7 +4659,7 @@ require = function () {
                         (0, typed_dom_1.html)('pre', {
                             class: 'error',
                             translate: 'no'
-                        }, source.replace(/^\0.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)
+                        }, source.replace(/^\x07.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)
                     ],
                     ''
                 ]);
@@ -5043,7 +5043,7 @@ require = function () {
                 '[$',
                 '$'
             ], (0, combinator_1.sequence)([
-                (0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^.*\n/)),
+                (0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^(?=\s).*\n/)),
                 (0, combinator_1.union)([
                     codeblock_1.segment,
                     mathblock_1.segment,
@@ -5119,7 +5119,7 @@ require = function () {
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
             exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
-                (0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^.*\n/)),
+                source_1.contentline,
                 (0, combinator_1.inits)([
                     (0, combinator_1.union)([
                         codeblock_1.segment_,
@@ -5164,10 +5164,6 @@ require = function () {
                 ])])));
             function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
-                const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
-                const invalidParam = param.trimStart() !== '';
-                const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
-                const invalid = invalidLabel || invalidParam || invalidContent || global_1.undefined;
                 let type = content.className.split(/\s/)[0];
                 switch (type || content.tagName) {
                 case 'UL':
@@ -5191,24 +5187,25 @@ require = function () {
                     break;
                 default:
                 }
+                const invalid = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': 'The last part of the fixed label numbers must not be 0'
+                } || param.trimStart() !== '' && {
+                    'data-invalid-type': 'argument',
+                    'data-invalid-message': 'Invalid argument'
+                } || group === '$' && (!content.classList.contains('math') || caption.length > 0) && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption'
+                } || global_1.undefined;
                 return {
                     'data-type': type,
                     'data-label': label,
                     'data-group': group,
-                    class: invalid && 'invalid',
-                    ...invalidLabel && {
+                    ...invalid && {
+                        class: 'invalid',
                         'data-invalid-syntax': 'figure',
-                        'data-invalid-type': 'label',
-                        'data-invalid-message': 'The last part of the fixed label numbers must not be 0'
-                    } || invalidParam && {
-                        'data-invalid-syntax': 'figure',
-                        'data-invalid-type': 'argument',
-                        'data-invalid-message': 'Invalid argument'
-                    } || invalidContent && {
-                        'data-invalid-syntax': 'figure',
-                        'data-invalid-type': 'content',
-                        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption'
-                    } || global_1.undefined
+                        ...invalid
+                    }
                 };
             }
         },
@@ -6989,15 +6986,15 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, (0, combinator_1.some)((0, combinator_1.union)([
+            }, (0, combinator_1.open)((0, source_1.stropt)('|'), (0, combinator_1.some)((0, combinator_1.union)([
                 signature,
                 inline_1.inline
-            ]), ']', /^\\?\n/)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, util_1.trimNodeEnd)((0, typed_dom_1.defrag)(ns)))])), ([el]) => [(0, typed_dom_1.define)(el, {
+            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, util_1.trimNodeEnd)((0, typed_dom_1.defrag)(ns)))])), ([el]) => [(0, typed_dom_1.define)(el, {
                     id: el.id ? null : global_1.undefined,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
                 }, el.childNodes)]))));
-            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)(/^\s+\|#/, (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 bracket,
                 source_1.txt
             ]), ']'))), ns => [(0, typed_dom_1.html)('span', {
@@ -7378,11 +7375,11 @@ require = function () {
             exports.unsafehtmlentity = (0, combinator_1.creator)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, entity => {
                 var _a;
                 return [
-                    [(_a = parse(entity)) !== null && _a !== void 0 ? _a : `\0${ entity }`],
+                    [(_a = parse(entity)) !== null && _a !== void 0 ? _a : `\x1B${ entity }`],
                     ''
                 ];
             })));
-            exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([test]) => [test[0] === '\0' ? (0, typed_dom_1.html)('span', {
+            exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([test]) => [test[0] === '\x1B' ? (0, typed_dom_1.html)('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'htmlentity',
                     'data-invalid-type': 'syntax',
@@ -7780,13 +7777,13 @@ require = function () {
                     });
                     return false;
                 }
-                if (alt.includes('\0')) {
+                if (alt.includes('\x1B')) {
                     (0, typed_dom_1.define)(target, {
                         class: void target.classList.add('invalid'),
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'content',
                         'data-invalid-message': `Cannot use invalid HTML entitiy "${ alt.match(/&[0-9A-Za-z]+;/)[0] }"`,
-                        alt: (_a = target.getAttribute('alt')) === null || _a === void 0 ? void 0 : _a.replace(/\0/g, '')
+                        alt: (_a = target.getAttribute('alt')) === null || _a === void 0 ? void 0 : _a.replace(/\x1B/g, '')
                     });
                     return false;
                 }
@@ -7949,9 +7946,9 @@ require = function () {
                         rubies
                     ]) {
                     for (let i = 0; i < ss.length; ++i) {
-                        if (ss[i].indexOf('\0') === -1)
+                        if (ss[i].indexOf('\x1B') === -1)
                             continue;
-                        ss[i] = ss[i].replace(/\0/g, '');
+                        ss[i] = ss[i].replace(/\x1B/g, '');
                         attrs !== null && attrs !== void 0 ? attrs : attrs = {
                             class: 'invalid',
                             'data-invalid-syntax': 'ruby',
@@ -8477,14 +8474,14 @@ require = function () {
             ]);
             function* segment(source) {
                 if (!validate(source, exports.MAX_INPUT_SIZE))
-                    return yield `\0Too large input over ${ exports.MAX_INPUT_SIZE.toLocaleString('en') } bytes.\n${ source.slice(0, 1001) }`;
+                    return yield `\x07Too large input over ${ exports.MAX_INPUT_SIZE.toLocaleString('en') } bytes.\n${ source.slice(0, 1001) }`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = (0, parser_1.exec)(result);
                     const segs = (0, parser_1.eval)(result).length ? (0, parser_1.eval)(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        validate(seg, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\0Too large segment over ${ exports.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.\n${ seg }`;
+                        validate(seg, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\x07Too large segment over ${ exports.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.\n${ seg }`;
                     }
                     source = rest;
                 }
@@ -8510,7 +8507,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.anyline = exports.emptyline = exports.contentline = exports.str = exports.unescsource = exports.escsource = exports.linebreak = exports.txt = exports.text = void 0;
+            exports.anyline = exports.emptyline = exports.contentline = exports.stropt = exports.str = exports.unescsource = exports.escsource = exports.linebreak = exports.txt = exports.text = void 0;
             var text_1 = _dereq_('./source/text');
             Object.defineProperty(exports, 'text', {
                 enumerable: true,
@@ -8549,6 +8546,12 @@ require = function () {
                 enumerable: true,
                 get: function () {
                     return str_1.str;
+                }
+            });
+            Object.defineProperty(exports, 'stropt', {
+                enumerable: true,
+                get: function () {
+                    return str_1.stropt;
                 }
             });
             var line_1 = _dereq_('./source/line');
@@ -8659,10 +8662,10 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.str = void 0;
+            exports.stropt = exports.str = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
-            function str(pattern, mustConsume = true) {
+            function str(pattern) {
                 return typeof pattern === 'string' ? (0, combinator_1.creator)(source => {
                     if (source === '')
                         return;
@@ -8674,14 +8677,38 @@ require = function () {
                     if (source === '')
                         return;
                     const m = source.match(pattern);
-                    return m && (!mustConsume || m[0].length > 0) ? [
+                    return m && m[0].length > 0 ? [
                         [m[0]],
                         source.slice(m[0].length)
                     ] : global_1.undefined;
                 });
             }
             exports.str = str;
-            ;
+            function stropt(pattern) {
+                return typeof pattern === 'string' ? (0, combinator_1.creator)(source => {
+                    if (source === '')
+                        return;
+                    return source.slice(0, pattern.length) === pattern ? [
+                        [pattern],
+                        source.slice(pattern.length)
+                    ] : [
+                        [],
+                        source
+                    ];
+                }) : (0, combinator_1.creator)(source => {
+                    if (source === '')
+                        return;
+                    const m = source.match(pattern);
+                    return m ? [
+                        [m[0]],
+                        source.slice(m[0].length)
+                    ] : [
+                        [],
+                        source
+                    ];
+                });
+            }
+            exports.stropt = stropt;
         },
         {
             '../../combinator': 27,
@@ -8898,7 +8925,7 @@ require = function () {
             exports.startLoose = startLoose;
             exports.isStartLoose = (0, memoize_1.reduce)((source, context, except) => {
                 return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
-            }, (source, _, except = '') => `${ source }\0${ except }`);
+            }, (source, _, except = '') => `${ source }\x1E${ except }`);
             function startTight(parser, except) {
                 return (source, context) => isStartTight(source, context, except) ? parser(source, context) : global_1.undefined;
             }
@@ -8932,7 +8959,7 @@ require = function () {
                 default:
                     return source[0].trimStart() !== '';
                 }
-            }, (source, _, except = '') => `${ source }\0${ except }`);
+            }, (source, _, except = '') => `${ source }\x1E${ except }`);
             function isStartTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
