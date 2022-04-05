@@ -388,7 +388,7 @@ export namespace MarkdownParser {
         export interface SegmentParser extends
           Block<'extension/figure/segment'>,
           Parser<never, Context, [
-            InlineParser.ExtensionParser.LabelParser.SegmentParser,
+            SourceParser.ContentLineParser,
             Parser<never, Context, [
               Parser<never, Context, [
                 CodeBlockParser.SegmentParser,
