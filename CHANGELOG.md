@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.239.0
+
+- Extend indexer syntax to make its own index optional.
+
 ## 0.238.0
 
 - Revert signature syntax not to require leading whitespace.

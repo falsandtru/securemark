@@ -22,12 +22,13 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   const indexer = source.querySelector(':scope > .indexer');
-  if (indexer) return indexer.getAttribute('data-index')!;
-  if (optional) return '';
+  if (!indexer && optional) return '';
+  const index = indexer?.getAttribute('data-index');
+  if (index) return index;
   assert(!source.querySelector('.annotation, br'));
   const target = source.cloneNode(true) as typeof source;
   for (
-    let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'),
+    let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'),
         i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -36,6 +37,8 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
         continue;
       case 'RT':
       case 'RP':
+      case 'UL':
+      case 'OL':
         el.remove();
         continue;
     }
@@ -44,6 +47,7 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
         define(el, el.getAttribute('data-src')!);
         continue;
       case 'comment':
+      case 'checkbox':
         el.remove();
         continue;
       case 'reference':
