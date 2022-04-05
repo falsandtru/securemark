@@ -8187,7 +8187,7 @@ require = function () {
                     const def = defs[i];
                     if (def.parentNode !== target)
                         continue;
-                    const {tagName, classList} = def;
+                    const {tagName} = def;
                     if (bases.length === 1 && tagName[0] === 'H')
                         continue;
                     const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(index, def) }`;
@@ -8195,7 +8195,7 @@ require = function () {
                         continue;
                     if (label.endsWith('-0')) {
                         (0, typed_dom_1.define)(def, {
-                            class: void classList.add('invalid'),
+                            class: void def.classList.add('invalid'),
                             'data-invalid-syntax': 'figure',
                             'data-invalid-type': 'argument',
                             'data-invalid-message': 'Invalid base index',
@@ -8206,7 +8206,7 @@ require = function () {
                     if (tagName === 'FIGURE' && label.endsWith('.0')) {
                         if (label.lastIndexOf('.', label.length - 3) !== -1) {
                             (0, typed_dom_1.define)(def, {
-                                class: void classList.add('invalid'),
+                                class: void def.classList.add('invalid'),
                                 'data-invalid-syntax': 'figure',
                                 'data-invalid-type': 'argument',
                                 'data-invalid-message': 'Base index must be $-x.0 format',
@@ -8216,16 +8216,16 @@ require = function () {
                         }
                         if (!/^H[1-6]$/.test((_d = (_c = def.previousElementSibling) === null || _c === void 0 ? void 0 : _c.tagName) !== null && _d !== void 0 ? _d : '')) {
                             (0, typed_dom_1.define)(def, {
-                                class: void classList.add('invalid'),
+                                class: void def.classList.add('invalid'),
                                 'data-invalid-syntax': 'figure',
                                 'data-invalid-type': 'position',
                                 'data-invalid-message': 'Base index declarations must be after level 1 to 6 headings',
                                 hidden: null
                             });
                             continue;
-                        } else {
-                            classList.contains('invalid') && (0, typed_dom_1.define)(def, {
-                                class: void classList.remove('invalid'),
+                        } else if (def.getAttribute('data-invalid-message') === 'Base index declarations must be after level 1 to 6 headings') {
+                            (0, typed_dom_1.define)(def, {
+                                class: void def.classList.remove('invalid'),
                                 'data-invalid-syntax': null,
                                 'data-invalid-type': null,
                                 'data-invalid-message': null,
@@ -8250,39 +8250,47 @@ require = function () {
                         continue;
                     }
                     !(0, label_1.isFixed)(label) && numbers.set(group, number);
-                    opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
                     (0, typed_dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     if (labels.has(label)) {
-                        if (classList.contains('invalid') && def.getAttribute('data-invalid-message') !== 'Duplicate label')
+                        if (def.classList.contains('invalid'))
                             continue;
                         (0, typed_dom_1.define)(def, {
                             id: null,
-                            class: void classList.add('invalid'),
+                            class: void def.classList.add('invalid'),
                             'data-invalid-syntax': 'figure',
                             'data-invalid-type': 'argument',
                             'data-invalid-message': 'Duplicate label'
                         });
                         continue;
-                    } else {
-                        labels.add(label);
+                    } else if (def.getAttribute('data-invalid-message') === 'Duplicate label') {
                         (0, typed_dom_1.define)(def, {
-                            class: void classList.remove('invalid'),
+                            class: void def.classList.remove('invalid'),
                             'data-invalid-syntax': null,
                             'data-invalid-type': null,
                             'data-invalid-message': null
                         });
                     }
+                    labels.add(label);
+                    opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     for (const ref of refs.take(label, global_1.Infinity)) {
+                        if (ref.getAttribute('data-invalid-message') === 'Missing the target figure') {
+                            (0, typed_dom_1.define)(ref, {
+                                class: void ref.classList.remove('invalid'),
+                                'data-invalid-syntax': null,
+                                'data-invalid-type': null,
+                                'data-invalid-message': null
+                            });
+                        }
                         if (ref.hash.slice(1) === def.id && ref.innerText === figindex)
                             continue;
                         yield (0, typed_dom_1.define)(ref, opts.id !== '' ? { href: `#${ def.id }` } : { class: `${ ref.className } disabled` }, figindex);
                     }
                 }
                 for (const [, ref] of refs) {
-                    if (opts.id !== '') {
+                    if (opts.id !== '' && !ref.classList.contains('invalid')) {
                         (0, typed_dom_1.define)(ref, {
-                            class: `${ ref.className } disabled invalid`,
+                            class: void ref.classList.add('invalid'),
                             'data-invalid-syntax': 'label',
                             'data-invalid-type': 'reference',
                             'data-invalid-message': 'Missing the target figure'
