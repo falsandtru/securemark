@@ -4,5 +4,5 @@ import { sequence } from './sequence';
 
 export function tails<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, Context<P>, SubParsers<P>>;
 export function tails<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D> {
-  return union(parsers.map((_, i) => sequence(parsers.slice(i))) as unknown as D);
+  return union(parsers.map((_, i) => sequence(parsers.slice(i))) as D);
 }

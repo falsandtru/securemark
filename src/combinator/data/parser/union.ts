@@ -15,6 +15,6 @@ export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D> {
         'return (source, context) =>',
         '0',
         ...parsers.map((_, i) => `|| parsers[${i}](source, context)`),
-      ].join(''))(parsers);
+      ].join('\n'))(parsers);
   }
 }
