@@ -64,12 +64,12 @@ export function* figure(
           class: void def.classList.add('invalid'),
           'data-invalid-syntax': 'figure',
           'data-invalid-type': 'position',
-          'data-invalid-message': 'Base index declarations must be after level 1 to 6 headings',
+          'data-invalid-message': messages.declaration,
           hidden: null,
         });
         continue;
       }
-      else if (def.getAttribute('data-invalid-message') === 'Base index declarations must be after level 1 to 6 headings') {
+      else if (def.getAttribute('data-invalid-message') === messages.declaration) {
         define(def, {
           class: void def.classList.remove('invalid'),
           'data-invalid-syntax': null,
@@ -131,11 +131,11 @@ export function* figure(
         class: void def.classList.add('invalid'),
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'argument',
-        'data-invalid-message': 'Duplicate label',
+        'data-invalid-message': messages.duplicate,
       });
       continue;
     }
-    else if (def.getAttribute('data-invalid-message') === 'Duplicate label') {
+    else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
       define(def, {
         class: void def.classList.remove('invalid'),
         'data-invalid-syntax': null,
@@ -146,7 +146,7 @@ export function* figure(
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     for (const ref of refs.take(label, Infinity)) {
-      if (ref.getAttribute('data-invalid-message') === 'Missing the target figure') {
+      if (ref.getAttribute('data-invalid-message') === messages.reference) {
         define(ref, {
           class: void ref.classList.remove('invalid'),
           'data-invalid-syntax': null,
@@ -166,13 +166,19 @@ export function* figure(
         class: void ref.classList.add('invalid'),
         'data-invalid-syntax': 'label',
         'data-invalid-type': 'reference',
-        'data-invalid-message': 'Missing the target figure',
+        'data-invalid-message': messages.reference,
       });
     }
     yield ref;
   }
   return;
 }
+
+const messages = {
+  declaration: 'Base index declarations must be after level 1 to 6 headings',
+  duplicate: 'Duplicate label',
+  reference: 'Missing the target figure',
+} as const;
 
 function increment(bases: readonly string[], el: HTMLHeadingElement): string {
   const index = (+el.tagName[1] - 1 || 1) - 1;
