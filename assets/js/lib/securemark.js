@@ -4037,21 +4037,10 @@ require = function () {
             const union_1 = _dereq_('./union');
             const inits_1 = _dereq_('./inits');
             function subsequence(parsers) {
-                switch (parsers.length) {
-                case 0:
-                case 1:
-                    return (0, union_1.union)(parsers);
-                case 2:
-                    return (0, union_1.union)([
-                        (0, inits_1.inits)(parsers),
-                        parsers[1]
-                    ]);
-                default:
-                    return subsequence([
-                        parsers[0],
-                        subsequence(parsers.slice(1))
-                    ]);
-                }
+                return (0, union_1.union)(parsers.map((_, i) => i < parsers.length - 1 ? (0, inits_1.inits)([
+                    parsers[i],
+                    subsequence(parsers.slice(i + 1))
+                ]) : parsers[i]));
             }
             exports.subsequence = subsequence;
         },
@@ -4095,7 +4084,7 @@ require = function () {
                         'return (source, context) =>',
                         '0',
                         ...parsers.map((_, i) => `|| parsers[${ i }](source, context)`)
-                    ].join(''))(parsers);
+                    ].join('\n'))(parsers);
                 }
             }
             exports.union = union;
@@ -7048,12 +7037,13 @@ require = function () {
             function text(source, optional = false) {
                 var _a;
                 const indexer = source.querySelector(':scope > .indexer');
-                if (indexer)
-                    return indexer.getAttribute('data-index');
-                if (optional)
+                if (!indexer && optional)
                     return '';
+                const index = indexer === null || indexer === void 0 ? void 0 : indexer.getAttribute('data-index');
+                if (index)
+                    return index;
                 const target = source.cloneNode(true);
-                for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference'), i = 0, len = es.length; i < len; ++i) {
+                for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (el.tagName) {
                     case 'CODE':
@@ -7061,6 +7051,8 @@ require = function () {
                         continue;
                     case 'RT':
                     case 'RP':
+                    case 'UL':
+                    case 'OL':
                         el.remove();
                         continue;
                     }
@@ -7069,6 +7061,7 @@ require = function () {
                         (0, typed_dom_1.define)(el, el.getAttribute('data-src'));
                         continue;
                     case 'comment':
+                    case 'checkbox':
                         el.remove();
                         continue;
                     case 'reference':
@@ -7094,7 +7087,13 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const index_1 = _dereq_('./index');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.indexer = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#[^\s\]])/, (0, combinator_1.context)({ syntax: { inline: { index: true } } }, (0, combinator_1.union)([index_1.index])), /^\s*$/), ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, typed_dom_1.html)('span', {
+            exports.indexer = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, combinator_1.context)({ syntax: { inline: { index: true } } }, (0, combinator_1.union)([
+                (0, combinator_1.focus)('[#]', () => [
+                    [(0, typed_dom_1.html)('a', { href: '#' })],
+                    ''
+                ]),
+                index_1.index
+            ])), /^\s*$/), ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, typed_dom_1.html)('span', {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(7)
                 })]));
@@ -8219,11 +8218,11 @@ require = function () {
                                 class: void def.classList.add('invalid'),
                                 'data-invalid-syntax': 'figure',
                                 'data-invalid-type': 'position',
-                                'data-invalid-message': 'Base index declarations must be after level 1 to 6 headings',
+                                'data-invalid-message': messages.declaration,
                                 hidden: null
                             });
                             continue;
-                        } else if (def.getAttribute('data-invalid-message') === 'Base index declarations must be after level 1 to 6 headings') {
+                        } else if (def.getAttribute('data-invalid-message') === messages.declaration) {
                             (0, typed_dom_1.define)(def, {
                                 class: void def.classList.remove('invalid'),
                                 'data-invalid-syntax': null,
@@ -8260,10 +8259,10 @@ require = function () {
                             class: void def.classList.add('invalid'),
                             'data-invalid-syntax': 'figure',
                             'data-invalid-type': 'argument',
-                            'data-invalid-message': 'Duplicate label'
+                            'data-invalid-message': messages.duplicate
                         });
                         continue;
-                    } else if (def.getAttribute('data-invalid-message') === 'Duplicate label') {
+                    } else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
                         (0, typed_dom_1.define)(def, {
                             class: void def.classList.remove('invalid'),
                             'data-invalid-syntax': null,
@@ -8274,7 +8273,7 @@ require = function () {
                     labels.add(label);
                     opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     for (const ref of refs.take(label, global_1.Infinity)) {
-                        if (ref.getAttribute('data-invalid-message') === 'Missing the target figure') {
+                        if (ref.getAttribute('data-invalid-message') === messages.reference) {
                             (0, typed_dom_1.define)(ref, {
                                 class: void ref.classList.remove('invalid'),
                                 'data-invalid-syntax': null,
@@ -8293,7 +8292,7 @@ require = function () {
                             class: void ref.classList.add('invalid'),
                             'data-invalid-syntax': 'label',
                             'data-invalid-type': 'reference',
-                            'data-invalid-message': 'Missing the target figure'
+                            'data-invalid-message': messages.reference
                         });
                     }
                     yield ref;
@@ -8301,6 +8300,11 @@ require = function () {
                 return;
             }
             exports.figure = figure;
+            const messages = {
+                declaration: 'Base index declarations must be after level 1 to 6 headings',
+                duplicate: 'Duplicate label',
+                reference: 'Missing the target figure'
+            };
             function increment(bases, el) {
                 const index = (+el.tagName[1] - 1 || 1) - 1;
                 return index + 1 < bases.length ? (0, array_1.join)(bases.slice(0, index + 2).map((v, i) => {
