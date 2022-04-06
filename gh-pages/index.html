@@ -132,8 +132,13 @@
   figure > div > pre[class] {
     margin: 0;
   }
-  figure[data-group="$"] {
+  figure[data-group="$"],
+  figure[data-group="fig"],
+  figure[data-group="figure"] {
     display: flex;
+  }
+  figure[data-group="$"] {
+    flex-direction: row-reverse;
     flex-wrap: nowrap;
     align-items: baseline;
   }
@@ -146,13 +151,14 @@
   figure[data-group="$"] > figcaption > .figindex {
     font-weight: unset;
   }
-  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]) {
-    display: flex;
+  figure[data-group="fig"],
+  figure[data-group="figure"] {
     flex-direction: column-reverse;
+    flex-wrap: nowrap;
   }
-  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]):not([data-type="table"]):not([data-type="text"]):not([data-type="code"]):not([data-type="math"]):not([data-type="example"]):not([data-type="media"]):not([data-type="invalid"]) > div {
+  figure[data-type="list"] > div {
     border-inline-start: solid 1px lightgray;
-    padding: .5em;
+    padding-inline-start: .5em;
   }
   ul {
     margin-inline-start: 1.7em;
