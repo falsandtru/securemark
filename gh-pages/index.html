@@ -132,12 +132,8 @@
   figure > div > pre[class] {
     margin: 0;
   }
-  figure[data-group="$"],
-  figure[data-group="fig"],
-  figure[data-group="figure"] {
-    display: flex;
-  }
   figure[data-group="$"] {
+    display: flex;
     align-items: baseline;
   }
   figure[data-group="$"] > div {
@@ -153,6 +149,7 @@
   }
   figure[data-group="fig"],
   figure[data-group="figure"] {
+    display: flex;
     flex-direction: column-reverse;
   }
   figure[data-type="list"] > div {
