@@ -20,10 +20,12 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
             fmap(
               some(union([field])),
               es => [
-                html('details', { class: 'header', open: '' }, defrag([
-                  html('summary', 'Header'),
-                  ...es,
-                ])),
+                html('aside', { class: 'header' }, [
+                  html('details', { open: '' }, defrag([
+                    html('summary', 'Header'),
+                    ...es,
+                  ])),
+                ]),
               ])))),
           source => [[
             html('pre', {

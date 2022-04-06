@@ -56,9 +56,9 @@ export namespace MarkdownParser {
     // url: https://host/path
     // ---
     Markdown<'header'>,
-    Parser<HTMLDetailsElement | HTMLPreElement, Context, [
-      Parser<HTMLDetailsElement | HTMLPreElement, Context, [
-        Parser<HTMLDetailsElement, Context, [
+    Parser<HTMLElement | HTMLPreElement, Context, [
+      Parser<HTMLElement | HTMLPreElement, Context, [
+        Parser<HTMLElement, Context, [
           HeaderParser.FieldParser,
         ]>,
         Parser<HTMLPreElement, Context, []>,

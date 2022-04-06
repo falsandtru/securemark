@@ -96,13 +96,13 @@
     white-space: pre-wrap;
     letter-spacing: 0.03em;
   }
-  details.header {
+  aside.header {
     margin-top: 0;
     margin-bottom: 1rem;
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  details.header > .field[data-name="url"] {
+  aside.header .field[data-name="url"] {
     font-weight: bold;
     color: orange;
   }
@@ -630,7 +630,7 @@
     content: "References";
   }
   @media print {
-    #viewer > details.header {
+    #viewer > aside.header {
       display: none;
     }
     #viewer > hr {

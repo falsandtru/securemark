@@ -8,13 +8,13 @@ export function header(source: string): string {
 
 export function headers(source: string): string[] {
   const [el] = parse(source);
-  return el?.textContent!.trimEnd().slice(el.firstChild!.textContent!.length).split('\n') ?? [];
+  return el?.textContent!.trimEnd().slice(el.firstChild!.firstChild!.textContent!.length).split('\n') ?? [];
 }
 
-function parse(source: string): [HTMLDetailsElement, string] | [] {
+function parse(source: string): [HTMLElement, string] | [] {
   const result = h(source, {});
   const [el] = eval(result, []);
-  return el instanceof HTMLDetailsElement
+  return el?.tagName === 'ASIDE'
     ? [el, exec(result!)]
     : [];
 }
