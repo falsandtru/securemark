@@ -19,44 +19,44 @@ describe('Unit: parser/processor/figure', () => {
 
     it('one', () => {
       const target = parse([
-        '$fig-a\n> ',
-        '$fig-a',
-        '$fig-b',
-        '$fig-a',
+        '$test-a\n> ',
+        '$test-a',
+        '$test-b',
+        '$test-a',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
-            '<p><a class="label invalid" data-label="fig-b" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the target figure">$fig-b</a></p>',
-            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:test-a"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<p><a class="label" data-label="test-a" href="#label:test-a">Test 1</a></p>',
+            '<p><a class="label invalid" data-label="test-b" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the target figure">$test-b</a></p>',
+            '<p><a class="label" data-label="test-a" href="#label:test-a">Test 1</a></p>',
           ]);
       }
     });
 
     it('some', () => {
       const target = parse([
-        '$fig-a\n> ',
+        '$test-a\n> ',
         '## 0',
-        '$fig-b\n> ',
-        '$table-a\n> ',
-        '$fig-b\n> ',
-        '$fig-c\n> ',
+        '$test-b\n> ',
+        '$quote-a\n> ',
+        '$test-b\n> ',
+        '$test-c\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:test-a"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="2" id="label:fig-b"><figcaption><span class="figindex">Fig. 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<figure data-type="quote" data-label="table-a" data-group="table" data-number="1" id="label:table-a"><figcaption><span class="figindex">Table 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="3" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Duplicate label"><figcaption><span class="figindex">Fig. 3. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<figure data-type="quote" data-label="fig-c" data-group="fig" data-number="4" id="label:fig-c"><figcaption><span class="figindex">Fig. 4. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-b" data-group="test" data-number="2" id="label:test-b"><figcaption><span class="figindex">Test 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="quote-a" data-group="quote" data-number="1" id="label:quote-a"><figcaption><span class="figindex">Quote 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-b" data-group="test" data-number="3" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Duplicate label"><figcaption><span class="figindex">Test 3. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-c" data-group="test" data-number="4" id="label:test-c"><figcaption><span class="figindex">Test 4. </span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
       }
     });
@@ -79,48 +79,48 @@ describe('Unit: parser/processor/figure', () => {
 
     it('fixed', () => {
       const target = parse([
-        '$fig-2\n> ',
-        '$fig-3.1\n> ',
+        '$test-2\n> ',
+        '$test-3.1\n> ',
         '$-4.1.1\n$$\n$$',
         '$-a\n$$\n$$',
-        '$fig-a\n> ',
-        '$fig-2',
+        '$test-a\n> ',
+        '$test-2',
         '$-4.1.1',
-        '$fig-1',
+        '$test-1',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-type="quote" data-label="fig-2" data-group="fig" data-number="2" id="label:fig-2"><figcaption><span class="figindex">Fig. 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<figure data-type="quote" data-label="fig-3.1" data-group="fig" data-number="3.1" id="label:fig-3.1"><figcaption><span class="figindex">Fig. 3.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-2" data-group="test" data-number="2" id="label:test-2"><figcaption><span class="figindex">Test 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-3.1" data-group="test" data-number="3.1" id="label:test-3.1"><figcaption><span class="figindex">Test 3.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-type="math" data-label="$-4.1.1" data-group="$" data-number="4.1.1" id="label:$-4.1.1"><figcaption><span class="figindex">(4.1.1)</span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
             '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<p><a class="label" data-label="fig-2" href="#label:fig-2">Fig. 2</a></p>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:test-a"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<p><a class="label" data-label="test-2" href="#label:test-2">Test 2</a></p>',
             '<p><a class="label" data-label="$-4.1.1" href="#label:$-4.1.1">(4.1.1)</a></p>',
-            '<p><a class="label invalid" data-label="fig-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the target figure">$fig-1</a></p>',
+            '<p><a class="label invalid" data-label="test-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the target figure">$test-1</a></p>',
           ]);
       }
     });
 
     it('separation', () => {
       const target = html('blockquote', parse([
-        '!>> ~~~figure $fig-a\n>> > \n>>\n~~~\n> ~~~figure $fig-a\n> > \n>\n~~~',
-        '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n\n$fig-a\n~~~~',
-        '~~~figure $fig-b\n> \n\n~~~',
-        '~~~figure $fig-a\n> \n\n~~~',
+        '!>> ~~~figure $test-a\n>> > \n>>\n~~~\n> ~~~figure $test-a\n> > \n>\n~~~',
+        '~~~~example/markdown\n~~~figure $test-a\n> \n\n~~~\n\n$test-a\n~~~~',
+        '~~~figure $test-b\n> \n\n~~~',
+        '~~~figure $test-a\n> \n\n~~~',
       ].join('\n\n')).children);
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><section><figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><hr><section><figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label disabled" data-label="fig-a">Fig. 1</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="1" id="label:fig-b"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="2" id="label:fig-a"><figcaption><span class="figindex">Fig. 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<blockquote><blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
+            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $test-a\n&gt; \n\n~~~\n\n$test-a</pre><hr><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label disabled" data-label="test-a">Test 1</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
+            '<figure data-type="quote" data-label="test-b" data-group="test" data-number="1" id="label:test-b"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="2" id="label:test-a"><figcaption><span class="figindex">Test 2. </span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
       }
     });
@@ -130,18 +130,18 @@ describe('Unit: parser/processor/figure', () => {
         '# 0',
         '$-0.0',
         '## 0',
-        '$fig-1\n> ',
+        '$test-1\n> ',
         '## 0',
         '!> ## 0',
-        '$fig-b\n> ',
+        '$test-b\n> ',
         '## 0',
         '$-0.0.0',
         '### 0',
         '$-0.0',
-        '$fig-c\n> ',
+        '$test-c\n> ',
         '## 0',
         '$-0.1.0',
-        '$fig-d\n> ',
+        '$test-d\n> ',
         '$-0.0',
         '$-0.1.0',
         '$-0.4.0',
@@ -149,19 +149,19 @@ describe('Unit: parser/processor/figure', () => {
         '## 0',
         '## 0',
         '$-0.0',
-        '$fig-e\n> ',
+        '$test-e\n> ',
         '## 0',
         '$-5.0',
-        '$fig-f\n> ',
+        '$test-f\n> ',
         '$-0',
-        '$fig-g\n> ',
+        '$test-g\n> ',
         '### 0',
         '$-0.0.0',
-        '$fig-h\n> ',
+        '$test-h\n> ',
         '### 0',
-        '$fig-i\n> ',
+        '$test-i\n> ',
         '# 0',
-        '$fig-j\n> ',
+        '$test-j\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
@@ -171,18 +171,18 @@ describe('Unit: parser/processor/figure', () => {
             '<h1 id="index:0">0</h1>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-type="quote" data-label="fig-1" data-group="fig" data-number="1" id="label:fig-1"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-1" data-group="test" data-number="1" id="label:test-1"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
             '<blockquote><section><h2>0</h2><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><figcaption><span class="figindex">Fig. 2.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-b" data-group="test" data-number="2.1" id="label:test-b"><figcaption><span class="figindex">Test 2.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
             '<h3 id="index:0">0</h3>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="3.0"></figure>',
-            '<figure data-type="quote" data-label="fig-c" data-group="fig" data-number="3.1" id="label:fig-c"><figcaption><span class="figindex">Fig. 3.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-c" data-group="test" data-number="3.1" id="label:test-c"><figcaption><span class="figindex">Test 3.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
-            '<figure data-type="quote" data-label="fig-d" data-group="fig" data-number="4.1" id="label:fig-d"><figcaption><span class="figindex">Fig. 4.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-d" data-group="test" data-number="4.1" id="label:test-d"><figcaption><span class="figindex">Test 4.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base index declarations must be after level 1 to 6 headings"></figure>',
             '<figure data-label="$-0.1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
             '<figure data-label="$-0.4.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
@@ -190,19 +190,19 @@ describe('Unit: parser/processor/figure', () => {
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="6.0"></figure>',
-            '<figure data-type="quote" data-label="fig-e" data-group="fig" data-number="6.1" id="label:fig-e"><figcaption><span class="figindex">Fig. 6.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-e" data-group="test" data-number="6.1" id="label:test-e"><figcaption><span class="figindex">Test 6.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-5.0" data-group="$" hidden="" data-number="5.0"></figure>',
-            '<figure data-type="quote" data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><figcaption><span class="figindex">Fig. 5.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-f" data-group="test" data-number="5.1" id="label:test-f"><figcaption><span class="figindex">Test 5.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-label="$-0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Invalid base index"></figure>',
-            '<figure data-type="quote" data-label="fig-g" data-group="fig" data-number="5.2" id="label:fig-g"><figcaption><span class="figindex">Fig. 5.2. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-g" data-group="test" data-number="5.2" id="label:test-g"><figcaption><span class="figindex">Test 5.2. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h3 id="index:0">0</h3>',
             '<figure data-label="$-0.0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',
-            '<figure data-type="quote" data-label="fig-h" data-group="fig" data-number="5.3" id="label:fig-h"><figcaption><span class="figindex">Fig. 5.3. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-h" data-group="test" data-number="5.3" id="label:test-h"><figcaption><span class="figindex">Test 5.3. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-type="quote" data-label="fig-i" data-group="fig" data-number="5.4" id="label:fig-i"><figcaption><span class="figindex">Fig. 5.4. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-i" data-group="test" data-number="5.4" id="label:test-i"><figcaption><span class="figindex">Test 5.4. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h1 id="index:0">0</h1>',
-            '<figure data-type="quote" data-label="fig-j" data-group="fig" data-number="6.1" id="label:fig-j"><figcaption><span class="figindex">Fig. 6.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-j" data-group="test" data-number="6.1" id="label:test-j"><figcaption><span class="figindex">Test 6.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
       }
     });
@@ -212,22 +212,22 @@ describe('Unit: parser/processor/figure', () => {
         '$-0.0',
         '## 0',
         '$-0.0',
-        '$fig-a\n> ',
+        '$test-a\n> ',
         '$-0.0',
         '## 0',
-        '$fig-b\n> ',
+        '$test-b\n> ',
         '$-0.0',
         '### 0',
-        '$fig-c\n> ',
+        '$test-c\n> ',
         '$-1.0',
         '## 0',
         '$-0.0',
-        '$fig-d\n> ',
+        '$test-d\n> ',
         '### 0',
         '$-0.0',
         '## 0',
         '$-9.0',
-        '$fig-e\n> ',
+        '$test-e\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
@@ -237,56 +237,56 @@ describe('Unit: parser/processor/figure', () => {
             '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base index declarations must be after level 1 to 6 headings"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure>',
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="0.1" id="label:fig-a"><figcaption><span class="figindex">Fig. 0.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="0.1" id="label:test-a"><figcaption><span class="figindex">Test 0.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base index declarations must be after level 1 to 6 headings"></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-type="quote" data-label="fig-b" data-group="fig" data-number="1.1" id="label:fig-b"><figcaption><span class="figindex">Fig. 1.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-b" data-group="test" data-number="1.1" id="label:test-b"><figcaption><span class="figindex">Test 1.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-label="$-0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base index declarations must be after level 1 to 6 headings"></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-type="quote" data-label="fig-c" data-group="fig" data-number="1.2" id="label:fig-c"><figcaption><span class="figindex">Fig. 1.2. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-c" data-group="test" data-number="1.2" id="label:test-c"><figcaption><span class="figindex">Test 1.2. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-label="$-1.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="position" data-invalid-message="Base index declarations must be after level 1 to 6 headings"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="2.0"></figure>',
-            '<figure data-type="quote" data-label="fig-d" data-group="fig" data-number="2.1" id="label:fig-d"><figcaption><span class="figindex">Fig. 2.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-d" data-group="test" data-number="2.1" id="label:test-d"><figcaption><span class="figindex">Test 2.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h3 id="index:0">0</h3>',
             '<figure data-label="$-0.0" data-group="$" hidden="" data-number="2.0"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-9.0" data-group="$" hidden="" data-number="9.0"></figure>',
-            '<figure data-type="quote" data-label="fig-e" data-group="fig" data-number="9.1" id="label:fig-e"><figcaption><span class="figindex">Fig. 9.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<figure data-type="quote" data-label="test-e" data-group="test" data-number="9.1" id="label:test-e"><figcaption><span class="figindex">Test 9.1. </span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
       }
     });
 
     it('verbose', () => {
       const target = parse([
-        '~~~figure [$fig-a]\n> \n\n~~~',
-        '[$fig-a]',
-        '[$fig-a]',
+        '~~~figure [$test-a]\n> \n\n~~~',
+        '[$test-a]',
+        '[$test-a]',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
-            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:test-a"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<p><a class="label" data-label="test-a" href="#label:test-a">Test 1</a></p>',
+            '<p><a class="label" data-label="test-a" href="#label:test-a">Test 1</a></p>',
           ]);
       }
     });
 
     it('id', () => {
       const target = parse([
-        '$fig-a\n> ',
-        '$fig-a',
+        '$test-a\n> ',
+        '$test-a',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...figure(target, undefined, { id: '0' })];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-type="quote" data-label="fig-a" data-group="fig" data-number="1" id="label:0:fig-a"><figcaption><span class="figindex">Fig. 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<p><a class="label" data-label="fig-a" href="#label:0:fig-a">Fig. 1</a></p>',
+            '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:0:test-a"><figcaption><span class="figindex">Test 1. </span></figcaption><div><blockquote></blockquote></div></figure>',
+            '<p><a class="label" data-label="test-a" href="#label:0:test-a">Test 1</a></p>',
           ]);
       }
     });

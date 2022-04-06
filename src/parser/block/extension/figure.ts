@@ -119,9 +119,37 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
       'data-invalid-type': 'argument',
       'data-invalid-message': 'Invalid argument',
     } ||
-    group === '$' && (!content.classList.contains('math') || caption.length > 0) && {
+    group === '$' && (type !== 'math' || caption.length > 0) && {
       'data-invalid-type': 'content',
-      'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption',
+      'data-invalid-message': '`$` label group can only be used with a math formula with no caption',
+    } ||
+    ['fig', 'figure'].includes(group) && type !== 'media' && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`fig` and `figure` label groups can only be used with media',
+    } ||
+    group === 'table' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`table` label group can only be used with a table',
+    } ||
+    group === 'list' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`list` label group can only be used with a list',
+    } ||
+    group === 'quote' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`quote` label group can only be used with a blockquote',
+    } ||
+    group === 'text' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`text` label group can only be used with a codeblock with no language',
+    } ||
+    group === 'code' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`code` label group can only be used with a codeblock',
+    } ||
+    group === 'example' && type !== group && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': '`example` label group can only be used with an example',
     } ||
     undefined;
   return {
