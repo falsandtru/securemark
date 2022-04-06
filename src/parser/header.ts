@@ -44,7 +44,7 @@ const field: MarkdownParser.HeaderParser.FieldParser = line(source => {
   const name = source.slice(0, source.indexOf(':'));
   const value = source.slice(name.length + 1).trim();
   return [[
-    html('span', { class: 'field', 'data-name': name, 'data-value': value }, [
+    html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
       ': ',
       html('span', { class: 'field-value' }, value),
