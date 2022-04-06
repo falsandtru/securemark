@@ -635,6 +635,18 @@
   ol.references::before {
     content: "References";
   }
+  blockquote > section > ol#annotations,
+  blockquote > section > ol.annotations,
+  blockquote > section > ol#references,
+  blockquote > section > ol.references {
+    margin-top: 3em;
+  }
+  blockquote > section > ol#annotations::before,
+  blockquote > section > ol.annotations::before,
+  blockquote > section > ol#references::before,
+  blockquote > section > ol.references::before {
+    top: -1.5em;
+  }
   @media print {
     #viewer > aside.header {
       display: none;
