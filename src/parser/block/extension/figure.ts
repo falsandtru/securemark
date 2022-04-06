@@ -89,6 +89,7 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
   switch (type || content.tagName) {
     case 'UL':
     case 'OL':
+    case 'checklist':
       type = 'list';
       break;
     case 'TABLE':
