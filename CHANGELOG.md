@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.240.0
+
+- Extend reference syntax not to require leading whitespace after abbr syntax.
+
 ## 0.239.0
 
 - Extend indexer syntax to make its own index optional.
