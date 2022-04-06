@@ -138,15 +138,15 @@
     display: flex;
   }
   figure[data-group="$"] {
-    flex-direction: row-reverse;
-    flex-wrap: nowrap;
     align-items: baseline;
   }
   figure[data-group="$"] > div {
     flex-grow: 1;
+    order: 1;
   }
   figure[data-group="$"] > figcaption {
     font-size: 1.2em;
+    order: 2;
   }
   figure[data-group="$"] > figcaption > .figindex {
     font-weight: unset;
@@ -154,7 +154,6 @@
   figure[data-group="fig"],
   figure[data-group="figure"] {
     flex-direction: column-reverse;
-    flex-wrap: nowrap;
   }
   figure[data-type="list"] > div {
     border-inline-start: solid 1px lightgray;
