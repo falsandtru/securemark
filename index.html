@@ -96,13 +96,13 @@
     white-space: pre-wrap;
     letter-spacing: 0.03em;
   }
-  details.header {
+  aside.header {
     margin-top: 0;
     margin-bottom: 1rem;
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  details.header > .field[data-name="url"] {
+  aside.header .field[data-name="url"] {
     font-weight: bold;
     color: orange;
   }
@@ -132,27 +132,32 @@
   figure > div > pre[class] {
     margin: 0;
   }
-  figure[data-group="$"] {
+  figure[data-group="$"],
+  figure[data-group="fig"],
+  figure[data-group="figure"] {
     display: flex;
-    flex-wrap: nowrap;
+  }
+  figure[data-group="$"] {
     align-items: baseline;
   }
   figure[data-group="$"] > div {
     flex-grow: 1;
+    order: 1;
   }
   figure[data-group="$"] > figcaption {
     font-size: 1.2em;
+    order: 2;
   }
   figure[data-group="$"] > figcaption > .figindex {
     font-weight: unset;
   }
-  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]) {
-    display: flex;
+  figure[data-group="fig"],
+  figure[data-group="figure"] {
     flex-direction: column-reverse;
   }
-  figure:not([data-group="$"]):not([data-group="fig"]):not([data-group="figure"]):not([data-type="table"]):not([data-type="text"]):not([data-type="code"]):not([data-type="math"]):not([data-type="example"]):not([data-type="media"]):not([data-type="invalid"]) > div {
+  figure[data-type="list"] > div {
     border-inline-start: solid 1px lightgray;
-    padding: .5em;
+    padding-inline-start: .5em;
   }
   ul {
     margin-inline-start: 1.7em;
@@ -629,8 +634,20 @@
   ol.references::before {
     content: "References";
   }
+  blockquote > section > ol#annotations,
+  blockquote > section > ol.annotations,
+  blockquote > section > ol#references,
+  blockquote > section > ol.references {
+    margin-top: 3em;
+  }
+  blockquote > section > ol#annotations::before,
+  blockquote > section > ol.annotations::before,
+  blockquote > section > ol#references::before,
+  blockquote > section > ol.references::before {
+    top: -1.5em;
+  }
   @media print {
-    #viewer > details.header {
+    #viewer > aside.header {
       display: none;
     }
     #viewer > hr {
@@ -1022,7 +1039,7 @@
     '',
     '## Reference',
     '',
-    'Reference syntax also generates footnotes[[^abbr]][[^abbr| A reference.]]',
+    'Reference syntax also generates footnotes[[^abbr]][[^abbr|A reference.]]',
     '',
     '## Comment',
     '',

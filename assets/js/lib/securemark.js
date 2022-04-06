@@ -4037,7 +4037,7 @@ require = function () {
             const union_1 = _dereq_('./union');
             const inits_1 = _dereq_('./inits');
             function subsequence(parsers) {
-                return (0, union_1.union)(parsers.map((_, i) => i < parsers.length - 1 ? (0, inits_1.inits)([
+                return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([
                     parsers[i],
                     subsequence(parsers.slice(i + 1))
                 ]) : parsers[i]));
@@ -4415,13 +4415,13 @@ require = function () {
             function headers(source) {
                 var _a;
                 const [el] = parse(source);
-                return (_a = el === null || el === void 0 ? void 0 : el.textContent.trimEnd().slice(el.firstChild.textContent.length).split('\n')) !== null && _a !== void 0 ? _a : [];
+                return (_a = el === null || el === void 0 ? void 0 : el.textContent.trimEnd().slice(el.firstChild.firstChild.textContent.length).split('\n')) !== null && _a !== void 0 ? _a : [];
             }
             exports.headers = headers;
             function parse(source) {
                 const result = (0, header_1.header)(source, {});
                 const [el] = (0, parser_1.eval)(result, []);
-                return el instanceof HTMLDetailsElement ? [
+                return (el === null || el === void 0 ? void 0 : el.tagName) === 'ASIDE' ? [
                     el,
                     (0, parser_1.exec)(result)
                 ] : [];
@@ -5148,8 +5148,8 @@ require = function () {
                     (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline))))))
                 ])
             ])), ([label, param, content, ...caption]) => [(0, typed_dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
-                    (0, typed_dom_1.html)('div', [content]),
-                    (0, typed_dom_1.html)('figcaption', (0, array_1.unshift)([(0, typed_dom_1.html)('span', { class: 'figindex' })], (0, typed_dom_1.defrag)(caption)))
+                    (0, typed_dom_1.html)('figcaption', (0, array_1.unshift)([(0, typed_dom_1.html)('span', { class: 'figindex' })], (0, typed_dom_1.defrag)(caption))),
+                    (0, typed_dom_1.html)('div', [content])
                 ])])));
             function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
@@ -5157,6 +5157,7 @@ require = function () {
                 switch (type || content.tagName) {
                 case 'UL':
                 case 'OL':
+                case 'checklist':
                     type = 'list';
                     break;
                 case 'TABLE':
@@ -5182,9 +5183,33 @@ require = function () {
                 } || param.trimStart() !== '' && {
                     'data-invalid-type': 'argument',
                     'data-invalid-message': 'Invalid argument'
-                } || group === '$' && (!content.classList.contains('math') || caption.length > 0) && {
+                } || group === '$' && (type !== 'math' || caption.length > 0) && {
                     'data-invalid-type': 'content',
-                    'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption'
+                    'data-invalid-message': '`$` label group can only be used with a math formula with no caption'
+                } || [
+                    'fig',
+                    'figure'
+                ].includes(group) && type !== 'media' && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`fig` and `figure` label groups can only be used with media'
+                } || group === 'table' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`table` label group can only be used with a table'
+                } || group === 'list' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`list` label group can only be used with a list'
+                } || group === 'quote' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`quote` label group can only be used with a blockquote'
+                } || group === 'text' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`text` label group can only be used with a codeblock with no language'
+                } || group === 'code' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`code` label group can only be used with a codeblock'
+                } || group === 'example' && type !== group && {
+                    'data-invalid-type': 'content',
+                    'data-invalid-message': '`example` label group can only be used with an example'
                 } || global_1.undefined;
                 return {
                     'data-type': type,
@@ -6195,13 +6220,10 @@ require = function () {
                     (0, combinator_1.guard)(context => {
                         var _a;
                         return (_a = context.header) !== null && _a !== void 0 ? _a : true;
-                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, typed_dom_1.html)('details', {
-                            class: 'header',
-                            open: ''
-                        }, (0, typed_dom_1.defrag)([
-                            (0, typed_dom_1.html)('summary', 'Header'),
-                            ...es
-                        ]))])))),
+                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, typed_dom_1.html)('aside', { class: 'header' }, [(0, typed_dom_1.html)('details', { open: '' }, (0, typed_dom_1.defrag)([
+                                (0, typed_dom_1.html)('summary', 'Header'),
+                                ...es
+                            ]))])])))),
                     source => [
                         [(0, typed_dom_1.html)('pre', {
                                 class: 'invalid',
@@ -6221,7 +6243,7 @@ require = function () {
                 return [
                     [(0, typed_dom_1.html)('span', {
                             class: 'field',
-                            'data-name': name,
+                            'data-name': name.toLowerCase(),
                             'data-value': value
                         }, [
                             (0, typed_dom_1.html)('span', { class: 'field-name' }, name),
@@ -7836,7 +7858,7 @@ require = function () {
                 ]),
                 (0, util_1.trimSpaceStart)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))
             ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimNodeEnd)((0, typed_dom_1.defrag)(ns)))]))));
-            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartLoose)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
+            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), (_, rest, context) => (0, util_1.isStartLoose)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
                     class: 'reference',
