@@ -120,43 +120,44 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
       'data-invalid-message': 'Invalid argument',
     } ||
     group === '$' && (type !== 'math' || caption.length > 0) && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`$` label group can only be used with a math formula with no caption',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"$" label group must be used to math formulas with no caption',
     } ||
-    ['fig', 'figure'].includes(group) && type !== 'media' && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`fig` and `figure` label groups can only be used with media',
+    type === 'media' && {} ||
+    ['fig', 'figure'].includes(group) && {
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"fig" and "figure" label groups must be used to media',
     } ||
     group === 'table' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`table` label group can only be used with a table',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"table" label group must be used to tables',
     } ||
     group === 'list' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`list` label group can only be used with a list',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"list" label group must be used to lists',
     } ||
     group === 'quote' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`quote` label group can only be used with a blockquote',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"quote" label group must be used to blockquotes',
     } ||
     group === 'text' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`text` label group can only be used with a codeblock with no language',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"text" label group must be used to codeblocks with no language',
     } ||
     group === 'code' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`code` label group can only be used with a codeblock',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"code" label group must be used to codeblocks with any language',
     } ||
     group === 'example' && type !== group && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': '`example` label group can only be used with an example',
+      'data-invalid-type': 'label',
+      'data-invalid-message': '"example" label group must be used to examples',
     } ||
     undefined;
   return {
     'data-type': type,
     'data-label': label,
     'data-group': group,
-    ...invalid && {
+    ...invalid?.['data-invalid-type'] && {
       class: 'invalid',
       'data-invalid-syntax': 'figure',
       ...invalid,
