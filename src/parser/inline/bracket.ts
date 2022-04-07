@@ -6,14 +6,14 @@ import { str } from '../source';
 import { html, defrag } from 'typed-dom';
 import { unshift, push } from 'spica/array';
 
-const index = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Za-z])/;
+const index = /^(?:[0-9]+(?:(?:[.-]|, )[0-9]+)*|[A-Za-z])/;
 
 export const bracket: BracketParser = lazy(() => creator(union([
   surround(str('('), str(index), str(')')),
   surround(str('('), some(inline, ')'), str(')'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('（'), str(new RegExp(index.source.replace(/[09AZaz.]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
+  surround(str('（'), str(new RegExp(index.source.replace(/[09AZaz., ]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
   surround(str('（'), some(inline, '）'), str('）'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
