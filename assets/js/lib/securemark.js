@@ -5184,38 +5184,38 @@ require = function () {
                     'data-invalid-type': 'argument',
                     'data-invalid-message': 'Invalid argument'
                 } || group === '$' && (type !== 'math' || caption.length > 0) && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`$` label group can only be used with a math formula with no caption'
-                } || [
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"$" label group must be used to math formulas with no caption'
+                } || type === 'media' && {} || [
                     'fig',
                     'figure'
-                ].includes(group) && type !== 'media' && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`fig` and `figure` label groups can only be used with media'
+                ].includes(group) && {
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"fig" and "figure" label groups must be used to media'
                 } || group === 'table' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`table` label group can only be used with a table'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"table" label group must be used to tables'
                 } || group === 'list' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`list` label group can only be used with a list'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"list" label group must be used to lists'
                 } || group === 'quote' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`quote` label group can only be used with a blockquote'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"quote" label group must be used to blockquotes'
                 } || group === 'text' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`text` label group can only be used with a codeblock with no language'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"text" label group must be used to codeblocks with no language'
                 } || group === 'code' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`code` label group can only be used with a codeblock'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"code" label group must be used to codeblocks with any language'
                 } || group === 'example' && type !== group && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': '`example` label group can only be used with an example'
+                    'data-invalid-type': 'label',
+                    'data-invalid-message': '"example" label group must be used to examples'
                 } || global_1.undefined;
                 return {
                     'data-type': type,
                     'data-label': label,
                     'data-group': group,
-                    ...invalid && {
+                    ...(invalid === null || invalid === void 0 ? void 0 : invalid['data-invalid-type']) && {
                         class: 'invalid',
                         'data-invalid-syntax': 'figure',
                         ...invalid
@@ -6673,7 +6673,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const index = /^(?:[0-9]+(?:\.[0-9]+)*|[A-Za-z])/;
+            const index = /^(?:[0-9]+(?:(?:[.-]|, )[0-9]+)*|[A-Za-z])/;
             exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')')),
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')'), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [
@@ -6683,7 +6683,7 @@ require = function () {
                     (0, array_1.unshift)(as, bs),
                     rest
                 ]),
-                (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, source_1.str)(new RegExp(index.source.replace(/[09AZaz.]/g, c => String.fromCharCode(c.charCodeAt(0) + 65248)))), (0, source_1.str)('\uFF09')),
+                (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, source_1.str)(new RegExp(index.source.replace(/[09AZaz., ]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 65248)))), (0, source_1.str)('\uFF09')),
                 (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, combinator_1.some)(inline_1.inline, '\uFF09'), (0, source_1.str)('\uFF09'), true, ([as, bs = [], cs], rest) => [
                     [(0, typed_dom_1.html)('span', { class: 'paren' }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))],
                     rest
