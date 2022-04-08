@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.240.1
+
+- Refactoring.
+
 ## 0.240.0
 
 - Extend reference syntax not to require leading whitespace after abbr syntax.
