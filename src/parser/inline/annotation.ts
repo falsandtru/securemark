@@ -19,7 +19,7 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
     //label: true,
     //link: true,
     //autolink: true,
-  }}, state: undefined },
+  }}, state: undefined, delimiters: undefined },
   trimSpaceStart(union([some(inline, ')', /^\\?\n/)]))))),
   '))'),
   ns => [html('sup', { class: 'annotation' }, trimNodeEnd(defrag(ns)))]))));

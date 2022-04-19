@@ -42,8 +42,8 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     let rest = source;
     let nodes: T[] | undefined;
     if (deep && context) {
-      // bracket > annotation > bracket > reference > bracket > link > media | bracket
-      // bracket > annotation > bracket > reference > bracket > index > bracket
+      // bracket > link > media | bracket
+      // bracket > index > bracket
       context.delimiters ??= new Delimiters();
       context.delimiters.push(delimiter);
     }
