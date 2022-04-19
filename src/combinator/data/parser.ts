@@ -24,9 +24,13 @@ export class Delimiters {
   private readonly matchers: Record<string, (source: string) => boolean> = {};
   public push(delimiter: { readonly signature: string; readonly matcher: (source: string) => boolean; }): void {
     const { signature, matcher } = delimiter;
-    this.stack.push(signature);
-    this.matchers[signature] ??= matcher;
-    assert(this.matchers[signature] === matcher);
+    if (signature in this.matchers) {
+      this.stack.push('');
+    }
+    else {
+      this.stack.push(signature);
+      this.matchers[signature] = matcher;
+    }
   }
   public pop(): void {
     assert(this.stack.length > 0);
@@ -34,12 +38,9 @@ export class Delimiters {
   }
   public match(source: string): boolean {
     const { stack, matchers } = this;
-    const log = {};
     for (let i = 0; i < stack.length; ++i) {
       const sig = stack[i];
-      if (sig in log) continue;
-      if (matchers[sig](source)) return true;
-      log[sig] = false;
+      if (sig && matchers[sig](source)) return true;
     }
     return false;
   }
