@@ -20,27 +20,26 @@ type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends i
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export class Delimiters {
-  private readonly stack: string[] = [];
-  private readonly matchers: Record<string, (source: string) => boolean> = {};
+  private readonly matchers: ((source: string) => boolean)[] = [];
+  private readonly record: Record<string, 0> = {};
   public push(delimiter: { readonly signature: string; readonly matcher: (source: string) => boolean; }): void {
     const { signature, matcher } = delimiter;
-    if (signature in this.matchers) {
-      this.stack.push('');
+    if (signature in this.record) {
+      this.matchers.push(() => false);
     }
     else {
-      this.stack.push(signature);
-      this.matchers[signature] = matcher;
+      this.matchers.push(matcher);
+      this.record[signature] = 0;
     }
   }
   public pop(): void {
-    assert(this.stack.length > 0);
-    this.stack.pop();
+    assert(this.matchers.length > 0);
+    this.matchers.pop();
   }
   public match(source: string): boolean {
-    const { stack, matchers } = this;
-    for (let i = 0; i < stack.length; ++i) {
-      const sig = stack[i];
-      if (sig && matchers[sig](source)) return true;
+    const { matchers } = this;
+    for (let i = 0; i < matchers.length; ++i) {
+      if (matchers[i](source)) return true;
     }
     return false;
   }
