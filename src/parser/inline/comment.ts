@@ -1,6 +1,5 @@
-import { undefined } from 'spica/global';
 import { CommentParser } from '../inline';
-import { union, some, escape, validate, creator, surround, open, close, match, lazy } from '../../combinator';
+import { union, some, validate, creator, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { html, defrag } from 'typed-dom';
@@ -13,7 +12,7 @@ export const comment: CommentParser = lazy(() => creator(validate('[#', match(
   ([, fence]) =>
     surround(
       open(str(`[${fence}`), some(text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true),
-      union([escape(some(inline, new RegExp(String.raw`^\s+${fence}\]`)), '"')]),
+      union([some(inline, new RegExp(String.raw`^\s+${fence}\]`))]),
       close(some(text, /^\S/), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
         html('span', { class: 'comment' }, [
@@ -21,6 +20,5 @@ export const comment: CommentParser = lazy(() => creator(validate('[#', match(
           html('span', defrag(push(unshift(as, bs), cs))),
         ]),
       ], rest],
-      ([as, bs = []], rest, context) =>
-        context.delimiters?.match('"') ? undefined : [unshift(as, bs), rest]),
+      ([as, bs = []], rest) => [unshift(as, bs), rest]),
   ([, fence]) => fence.length)))));

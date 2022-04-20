@@ -218,6 +218,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
+    it('creation', () => {
+      assert.deepStrictEqual(
+        [...parse('"[# '.repeat(100)).children].map(el => el.outerHTML),
+        [`<p>${'"[# '.repeat(100).trim()}</p>`]);
+    });
+
     it('recursion', () => {
       assert.deepStrictEqual(
         [...parse('('.repeat(199)).children].map(el => el.outerHTML),
