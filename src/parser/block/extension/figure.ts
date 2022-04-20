@@ -46,7 +46,7 @@ export const segment: FigureParser.SegmentParser = block(match(
         ]),
       ]),
       closer),
-  ([, fence]) => fence.length)));
+  ([, fence]) => fence.length, [])));
 
 export const figure: FigureParser = block(rewrite(segment, fmap(
   convert(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')),

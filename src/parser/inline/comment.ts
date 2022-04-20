@@ -21,4 +21,4 @@ export const comment: CommentParser = lazy(() => creator(validate('[#', match(
         ]),
       ], rest],
       ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ([, fence]) => fence.length)))));
+  ([, fence]) => fence.length, [])))));

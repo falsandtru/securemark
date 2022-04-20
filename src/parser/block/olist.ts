@@ -25,10 +25,10 @@ export const olist: OListParser = lazy(() => block(validate(
 export const olist_: OListParser = lazy(() => block(union([
   match(
     new RegExp(`^(?=${openers['.'].source.replace('?:', '')})`),
-    memoize(ms => list(type(ms[1]), '.'), ms => type(ms[1]))),
+    memoize(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])),
   match(
     new RegExp(`^(?=${openers['('].source.replace('?:', '')})`),
-    memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]))),
+    memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, [])),
 ])));
 
 const list = (type: string, delim: string): OListParser.ListParser => fmap(
