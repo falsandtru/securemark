@@ -31,17 +31,17 @@ export const olist_: OListParser = lazy(() => block(union([
     memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, [])),
 ])));
 
-const list = (type: string, delim: string): OListParser.ListParser => fmap(
+const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creator(union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[delim], trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
+        line(open(heads[form], trim(subsequence([checkbox, trimStart(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]), true),
   ]))),
-  es => [format(html('ol', es), type, delim)]);
+  es => [format(html('ol', es), type, form)]);
 
 const heads = {
   '.': focus(
@@ -107,13 +107,13 @@ function initial(type: string): RegExp {
   }
 }
 
-function format(el: HTMLOListElement, type: string, delim: string): HTMLOListElement {
+function format(el: HTMLOListElement, type: string, form: string): HTMLOListElement {
   if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
     el.setAttribute('class', 'checklist');
   }
   define(el, {
     type: type || undefined,
-    'data-format': delim === '.' ? undefined : 'paren',
+    'data-format': form === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined,
   });
   const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
