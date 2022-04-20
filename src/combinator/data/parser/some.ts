@@ -14,14 +14,14 @@ const signature = (pattern: string | RegExp | undefined): string => {
   }
 };
 const matcher = memoize(
-  (pattern: string | RegExp | undefined): (source: string) => boolean => {
+  (pattern: string | RegExp | undefined): (source: string) => true | undefined => {
     switch (typeof pattern) {
       case 'undefined':
-        return () => false;
+        return () => undefined;
       case 'string':
-        return source => source.slice(0, pattern.length) === pattern;
+        return source => source.slice(0, pattern.length) === pattern || undefined;
       case 'object':
-        return reduce(source => pattern.test(source));
+        return reduce(source => pattern.test(source) || undefined);
     }
   },
   signature);
@@ -67,5 +67,27 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
     return nodes && rest.length < source.length
       ? [nodes, rest]
       : undefined;
+  };
+}
+
+export function escape<P extends Parser<unknown>>(parser: P, delim: string): P;
+export function escape<T>(parser: Parser<T>, delim: string): Parser<T> {
+  assert(parser);
+  const delimiter = {
+    signature: signature(delim),
+    matcher: (source: string) => source.slice(0, delim.length) !== delim && undefined,
+    escape: true,
+  } as const;
+  return (source, context) => {
+    if (source === '') return;
+    if (context) {
+      context.delimiters ??= new Delimiters();
+      context.delimiters.push(delimiter);
+    }
+    const result = parser(source, context);
+    if (context.delimiters) {
+      context.delimiters.pop();
+    }
+    return result;
   };
 }
