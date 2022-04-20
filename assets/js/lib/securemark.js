@@ -500,7 +500,7 @@ require = function () {
                         case LFU.length > this.capacity * this.ratio / 100:
                             target = LFU.last !== skip ? LFU.last : LFU.length >= 2 ? LFU.last.prev : skip;
                             if (target !== skip) {
-                                if (this.ratio > 50)
+                                if (this.ratio >= 50)
                                     break;
                                 LRU.unshiftNode(target);
                                 LRU.head.value.node = LRU.head;
@@ -697,17 +697,16 @@ require = function () {
             const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
             const exception_1 = _dereq_('./exception');
-            let now_;
+            let mem;
             let count = 0;
-            function now() {
-                if (now_ === void 0) {
-                    tick(() => now_ = void 0);
-                } else {
-                    if (++count !== 100)
-                        return now_;
-                    count = 0;
+            function now(nocache = false) {
+                if (mem === void 0) {
+                    tick(() => mem = void 0);
+                } else if (!nocache && ++count !== 100) {
+                    return mem;
                 }
-                return now_ = global_1.Date.now();
+                count = 0;
+                return mem = global_1.Date.now();
             }
             exports.now = now;
             exports.clock = Promise.resolve(void 0);
@@ -1112,12 +1111,29 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.reduce = exports.memoize = void 0;
             const global_1 = _dereq_('./global');
+            const alias_1 = _dereq_('./alias');
             const compare_1 = _dereq_('./compare');
             function memoize(f, identify = (...as) => as[0], memory) {
                 if (typeof identify === 'object')
                     return memoize(f, void 0, identify);
                 if (memory === void 0)
                     return memoize(f, identify, new global_1.Map());
+                if ((0, alias_1.isArray)(memory))
+                    return memoize(f, identify, {
+                        has(key) {
+                            return memory[key] !== void 0;
+                        },
+                        get(key) {
+                            return memory[key];
+                        },
+                        set(key, value) {
+                            memory[key] = value;
+                            return this;
+                        },
+                        delete() {
+                            throw 0;
+                        }
+                    });
                 let nullish = false;
                 return (...as) => {
                     const b = identify(...as);
@@ -1146,6 +1162,7 @@ require = function () {
             exports.reduce = reduce;
         },
         {
+            './alias': 5,
             './compare': 12,
             './global': 15
         }
@@ -1196,12 +1213,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.unique = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
+            exports.unique = exports.rnd0_ = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
             const global_1 = _dereq_('./global');
             const bases = [...Array(7)].map((_, i) => 1 << i);
             const dict = [
                 ...[...Array(36)].map((_, i) => i.toString(36)),
-                ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26)
+                ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26),
+                '-',
+                '_'
             ];
             exports.rnd16 = cons(16);
             exports.rnd32 = cons(32);
@@ -1211,6 +1230,7 @@ require = function () {
             exports.rnd0f = conv(exports.rnd16);
             exports.rnd0z = conv(exports.rnd36);
             exports.rnd0Z = conv(exports.rnd62);
+            exports.rnd0_ = conv(exports.rnd64);
             function unique(rnd, len, mem) {
                 const clear = !mem;
                 mem !== null && mem !== void 0 ? mem : mem = new global_1.Set();
@@ -3830,29 +3850,30 @@ require = function () {
             exports.check = exports.exec = exports.eval = exports.Delimiters = void 0;
             class Delimiters {
                 constructor() {
-                    this.stack = [];
-                    this.matchers = {};
+                    this.matchers = [];
+                    this.record = {};
                 }
                 push(delimiter) {
-                    var _a;
-                    var _b;
-                    const {signature, matcher} = delimiter;
-                    this.stack.push(signature);
-                    (_a = (_b = this.matchers)[signature]) !== null && _a !== void 0 ? _a : _b[signature] = matcher;
+                    const {signature, matcher, escape} = delimiter;
+                    if (this.record[signature] === !escape) {
+                        this.matchers.unshift(() => undefined);
+                    } else {
+                        this.matchers.unshift(matcher);
+                        this.record[signature] = !escape;
+                    }
                 }
                 pop() {
-                    this.stack.pop();
+                    this.matchers.shift();
                 }
                 match(source) {
-                    const {stack, matchers} = this;
-                    const log = {};
-                    for (let i = 0; i < stack.length; ++i) {
-                        const sig = stack[i];
-                        if (sig in log)
-                            continue;
-                        if (matchers[sig](source))
+                    const {matchers} = this;
+                    for (let i = 0; i < matchers.length; ++i) {
+                        switch (matchers[i](source)) {
+                        case true:
                             return true;
-                        log[sig] = false;
+                        case false:
+                            return false;
+                        }
                     }
                     return false;
                 }
@@ -3953,7 +3974,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.some = void 0;
+            exports.escape = exports.some = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../parser');
             const memoize_1 = _dereq_('spica/memoize');
@@ -3971,11 +3992,11 @@ require = function () {
             const matcher = (0, memoize_1.memoize)(pattern => {
                 switch (typeof pattern) {
                 case 'undefined':
-                    return () => false;
+                    return () => global_1.undefined;
                 case 'string':
-                    return source => source.slice(0, pattern.length) === pattern;
+                    return source => source.slice(0, pattern.length) === pattern || global_1.undefined;
                 case 'object':
-                    return (0, memoize_1.reduce)(source => pattern.test(source));
+                    return (0, memoize_1.reduce)(source => pattern.test(source) || global_1.undefined);
                 }
             }, signature);
             function some(parser, until, deep, limit = -1) {
@@ -4021,6 +4042,28 @@ require = function () {
                 };
             }
             exports.some = some;
+            function escape(parser, delim) {
+                const delimiter = {
+                    signature: signature(delim),
+                    matcher: source => source.slice(0, delim.length) !== delim && global_1.undefined,
+                    escape: true
+                };
+                return (source, context) => {
+                    var _a;
+                    if (source === '')
+                        return;
+                    if (context) {
+                        (_a = context.delimiters) !== null && _a !== void 0 ? _a : context.delimiters = new parser_1.Delimiters();
+                        context.delimiters.push(delimiter);
+                    }
+                    const result = parser(source, context);
+                    if (context.delimiters) {
+                        context.delimiters.pop();
+                    }
+                    return result;
+                };
+            }
+            exports.escape = escape;
         },
         {
             '../parser': 47,
@@ -5124,7 +5167,7 @@ require = function () {
                         (0, combinator_1.some)(source_1.contentline, closer)
                     ])
                 ])
-            ]), closer), ([, fence]) => fence.length)));
+            ]), closer), ([, fence]) => fence.length, [])));
             exports.figure = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
                 (0, combinator_1.line)((0, combinator_1.sequence)([
                     label_1.label,
@@ -5780,8 +5823,8 @@ require = function () {
                 /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/
             ], (0, combinator_1.context)({ syntax: { inline: { media: false } } }, exports.olist_))));
             exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([
-                (0, combinator_1.match)(new RegExp(`^(?=${ openers['.'].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]))),
-                (0, combinator_1.match)(new RegExp(`^(?=${ openers['('].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1])))
+                (0, combinator_1.match)(new RegExp(`^(?=${ openers['.'].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])),
+                (0, combinator_1.match)(new RegExp(`^(?=${ openers['('].source.replace('?:', '') })`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))
             ])));
             const list = (type, delim) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([
                     (0, combinator_1.line)((0, combinator_1.open)(heads[delim], (0, combinator_1.trim)((0, combinator_1.subsequence)([
@@ -6395,7 +6438,8 @@ require = function () {
                         media: false
                     }
                 },
-                state: global_1.undefined
+                state: global_1.undefined,
+                delimiters: global_1.undefined
             }, (0, util_1.trimSpaceStart)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)]))))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimNodeEnd)((0, typed_dom_1.defrag)(ns)))]))));
         },
         {
@@ -6754,7 +6798,7 @@ require = function () {
             ], ([as, bs = []], rest) => [
                 (0, array_1.unshift)(as, bs),
                 rest
-            ]), ([, fence]) => fence.length)))));
+            ]), ([, fence]) => fence.length, [])))));
         },
         {
             '../../combinator': 27,
@@ -7846,7 +7890,8 @@ require = function () {
                         media: false
                     }
                 },
-                state: global_1.undefined
+                state: global_1.undefined,
+                delimiters: global_1.undefined
             }, (0, combinator_1.subsequence)([
                 abbr,
                 (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [
