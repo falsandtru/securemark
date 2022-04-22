@@ -127,12 +127,13 @@ function build(
     }
     if (!footnote) return;
     const { children } = footnote;
+    const size = defs.size;
     let count = 0;
     let length = children.length;
     I:
     for (const def of defs.values()) {
       ++count;
-      while (length > defs.size) {
+      while (length > size) {
         const node = children[count - 1] as HTMLLIElement;
         if (equal(node, def)) continue I;
         yield footnote.removeChild(node);
@@ -148,8 +149,8 @@ function build(
       ++length;
       assert(children.length === length);
     }
-    while (length > defs.size) {
-      yield footnote.removeChild(children[defs.size] as HTMLLIElement);
+    while (length > size) {
+      yield footnote.removeChild(children[size] as HTMLLIElement);
       --length;
       assert(children.length === length);
     }
