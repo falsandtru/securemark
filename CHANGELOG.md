@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.241.0
+
+- Remove sync function.
+
 ## 0.240.2
 
 - Refactoring.
