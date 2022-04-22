@@ -1,4 +1,4 @@
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 const extensions = [
   '.oga',

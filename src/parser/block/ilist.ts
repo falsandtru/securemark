@@ -4,7 +4,7 @@ import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
 import { contentline } from '../source';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
   /^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/,

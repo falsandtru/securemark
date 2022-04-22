@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { union, focus, creator } from '../../combinator';
 import { str } from './str';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 export const separator = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
 export const nonWhitespace = /[\S\n]|$/;

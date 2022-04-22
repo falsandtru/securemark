@@ -1,6 +1,6 @@
 import { figure } from './figure';
 import { parse as parse_ } from '../../parser';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 import { normalize } from '../../debug.test';
 
 const parse = (s: string) => parse_(s, { test: true });

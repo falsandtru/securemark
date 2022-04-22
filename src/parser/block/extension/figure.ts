@@ -15,7 +15,7 @@ import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
 import { localize } from '../../locale';
 import { visualize } from '../../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift } from 'spica/array';
 

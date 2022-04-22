@@ -5,7 +5,7 @@ import { sequence, validate, verify, focus, creator, surround, lazy, bind } from
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isStartTightNodes } from '../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { unshift, push, join } from 'spica/array';
 
 export const ruby: RubyParser = lazy(() => creator(validate('[', ')', '\n', bind(verify(

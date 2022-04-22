@@ -3,7 +3,7 @@ import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { startLoose, trimSpaceStart, trimNodeEnd } from '../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', fmap(surround(
   '((',

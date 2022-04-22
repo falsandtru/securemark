@@ -3,7 +3,7 @@ import { CodeBlockParser } from '../block';
 import { eval } from '../../combinator/data/parser';
 import { some, block, validate, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;

@@ -2,7 +2,7 @@ import { AutolinkParser } from '../../inline';
 import { union, tails, verify, rewrite, context, open, convert, fmap, lazy } from '../../../combinator';
 import { link } from '../link';
 import { str } from '../../source';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 

@@ -1,4 +1,4 @@
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 import { Collection } from 'spica/collection';
 import { ObjectFromEntries } from 'spica/alias';
 

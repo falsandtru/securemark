@@ -5,7 +5,7 @@ import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
 import { startTight, trimNodeEnd } from '../../util';
-import { html, define, defrag } from 'typed-dom';
+import { html, define, defrag } from 'typed-dom/dom';
 import { join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;

@@ -6,7 +6,7 @@ import { union, some, validate, context, creator, surround, open, match, lazy } 
 import { inline } from '../inline';
 import { str } from '../source';
 import { startLoose, blank } from '../util';
-import { html as h, defrag } from 'typed-dom';
+import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';

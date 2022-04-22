@@ -6,7 +6,7 @@ import { link, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { html, define } from 'typed-dom';
+import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
 

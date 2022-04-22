@@ -3,7 +3,7 @@ import { union, inits, some, block, line, validate, focus, rewrite, guard, clear
 import { segment } from './segment';
 import { str } from './source';
 import { normalize } from './api/normalize';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,

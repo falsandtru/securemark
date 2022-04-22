@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../../../markdown';
 import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {

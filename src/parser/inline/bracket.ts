@@ -3,7 +3,7 @@ import { BracketParser } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
 const index = /^(?:[0-9]+(?:(?:[.-]|, )[0-9]+)*|[A-Za-z])/;

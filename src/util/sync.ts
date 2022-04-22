@@ -2,7 +2,7 @@ import { undefined, window, document } from 'spica/global';
 import { abs, ceil, sign } from 'spica/alias';
 import { aggregate } from 'spica/arrow';
 import { clear } from 'spica/function';
-import { bind, once } from 'typed-dom';
+import { bind, once } from 'typed-dom/listener';
 
 export function sync(
   editor: HTMLElement,

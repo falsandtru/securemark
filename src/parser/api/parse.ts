@@ -9,7 +9,7 @@ import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
 import { footnote } from '../processor/footnote';
-import { frag } from 'typed-dom';
+import { frag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
 interface Options extends ParserOptions {

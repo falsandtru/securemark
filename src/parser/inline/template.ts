@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { TemplateParser } from '../inline';
 import { union, some, rewrite, creator, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 export const template: TemplateParser = lazy(() => creator(rewrite(

@@ -3,7 +3,7 @@ import { union, some, block, validate, rewrite, creator, open, convert, lazy, fm
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { parse } from '../api/parse';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(validate(['!>', '>'], union([
   validate(/^!?>+(?=[^\S\n]|\n[^\S\n]*\S)/, some(contentline)),

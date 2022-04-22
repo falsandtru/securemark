@@ -2,7 +2,7 @@ import { CommentParser } from '../inline';
 import { union, some, validate, creator, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 

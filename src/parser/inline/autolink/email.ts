@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { verify, rewrite, creator } from '../../../combinator';
 import { str } from '../../source';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 // https://html.spec.whatwg.org/multipage/input.html
 

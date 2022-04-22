@@ -8,7 +8,7 @@ import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
 import { startLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
-import { html, define, defrag } from 'typed-dom';
+import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
 const optspec = {

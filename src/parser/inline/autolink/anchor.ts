@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { union, validate, focus, context, convert, fmap, lazy } from '../../../combinator';
 import { link } from '../link';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid

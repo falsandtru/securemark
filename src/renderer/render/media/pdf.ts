@@ -1,5 +1,5 @@
 import { parse } from '../../../parser';
-import { html, define } from 'typed-dom';
+import { html, define } from 'typed-dom/dom';
 
 const extensions = [
   '.pdf',

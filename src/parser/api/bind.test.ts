@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../../..';
 import { bind } from './bind';
-import { frag, html } from 'typed-dom';
+import { frag, html } from 'typed-dom/dom';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {

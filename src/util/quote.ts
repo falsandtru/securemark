@@ -1,7 +1,7 @@
 import { Element } from 'spica/global';
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite(`>>${anchor}`, {})) !== '') throw new Error(`Invalid anchor: ${anchor}`);

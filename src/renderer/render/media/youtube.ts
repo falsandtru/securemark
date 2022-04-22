@@ -1,4 +1,4 @@
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 export function youtube(source: HTMLImageElement, url: URL): HTMLElement | undefined {
   const id = resolve(url);

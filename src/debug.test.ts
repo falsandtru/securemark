@@ -1,5 +1,5 @@
 import { Result, eval, exec } from './combinator/data/parser';
-import { html, define } from 'typed-dom';
+import { html, define } from 'typed-dom/dom';
 
 export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
   return result && [

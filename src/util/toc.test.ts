@@ -1,6 +1,6 @@
 import { toc } from './toc';
 import { parse } from '../parser';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 describe('Unit: util/toc', () => {
   describe('toc', () => {

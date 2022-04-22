@@ -1,7 +1,7 @@
 import { Parser } from '../combinator/data/parser';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 export function localize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLElement | string> {

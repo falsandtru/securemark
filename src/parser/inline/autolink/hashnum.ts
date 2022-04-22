@@ -3,7 +3,7 @@ import { union, rewrite, context, open, convert, fmap, lazy } from '../../../com
 import { link } from '../link';
 import { emoji } from './hashtag';
 import { str } from '../../source';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => fmap(rewrite(
   open('#', str(new RegExp(String.raw`^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|${emoji}|['_])`, 'u'))),

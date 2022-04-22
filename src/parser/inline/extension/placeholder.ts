@@ -3,7 +3,7 @@ import { union, some, validate, creator, surround, lazy } from '../../../combina
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight } from '../../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 // Don't use the symbols already used: !#$@&*+~=

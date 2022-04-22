@@ -1,6 +1,6 @@
 import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
-import { define } from 'typed-dom';
+import { define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
 import { push, join } from 'spica/array';
 

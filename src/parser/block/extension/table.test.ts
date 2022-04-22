@@ -1,7 +1,7 @@
 import { table } from './table';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 describe('Unit: parser/block/extension/table', () => {
   describe('table', () => {

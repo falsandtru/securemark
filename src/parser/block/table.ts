@@ -2,7 +2,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, rewrite, creator, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { contentline } from '../source';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;

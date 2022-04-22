@@ -15,7 +15,7 @@ import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 import { rnd0Z } from 'spica/random';
 
 export import BlockParser = MarkdownParser.BlockParser;

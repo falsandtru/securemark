@@ -1,6 +1,6 @@
 import { annotation, reference } from './footnote';
 import { parse as parse_ } from '../../parser';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 

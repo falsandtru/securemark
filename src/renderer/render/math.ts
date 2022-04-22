@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { Collection } from 'spica/collection';
-import { html, define } from 'typed-dom';
+import { html, define } from 'typed-dom/dom';
 
 export function math(target: HTMLElement, cache?: Collection<string, HTMLElement>): void {
   assert(target.children.length === 0);

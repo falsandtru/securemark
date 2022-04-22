@@ -1,6 +1,6 @@
 import { CodeParser } from '../inline';
 import { validate, creator, match } from '../../combinator';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = creator(validate('`', match(
   /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,

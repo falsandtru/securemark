@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { union, validate, focus, creator, fmap } from '../../combinator';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', focus(

@@ -1,7 +1,7 @@
 import { MathParser } from '../inline';
 import { union, some, validate, rewrite, creator, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
 

@@ -3,7 +3,7 @@ import { union, some, block, line, validate, focus, rewrite, context, open, trim
 import { inline, indexee, indexer } from '../inline';
 import { str } from '../source';
 import { visualize } from '../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   /^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/,

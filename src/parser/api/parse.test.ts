@@ -1,5 +1,5 @@
 import { parse } from './parse';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 
 describe('Unit: parser/api/parse', () => {
   describe('parse', () => {

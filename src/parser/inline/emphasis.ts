@@ -4,7 +4,7 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
 import { startTight, blank } from '../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 export const emphasis: EmphasisParser = lazy(() => creator(surround(

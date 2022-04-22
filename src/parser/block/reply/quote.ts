@@ -4,7 +4,7 @@ import { union, some, block, line, validate, rewrite, creator, lazy, fmap } from
 import { math } from '../../inline/math';
 import { str, anyline } from '../../source';
 import { autolink } from '../../autolink';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 

@@ -1,5 +1,5 @@
 import { undefined, Array } from 'spica/global';
-import { html } from 'typed-dom';
+import { html } from 'typed-dom/dom';
 import { push } from 'spica/array';
 
 // Bug: Firefox

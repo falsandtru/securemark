@@ -4,7 +4,7 @@ import { union, subsequence, some, validate, verify, focus, guard, context, crea
 import { inline } from '../inline';
 import { str } from '../source';
 import { startLoose, isStartLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
-import { html, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
   '[[',
