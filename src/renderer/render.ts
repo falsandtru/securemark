@@ -3,6 +3,7 @@ import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';
+import { querySelectorAll } from 'typed-dom/query';
 import { reduce } from 'spica/memoize';
 
 const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
@@ -13,11 +14,8 @@ const extend = reduce((opts: RenderingOptions): RenderingOptions =>
 export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
   opts = extend(opts);
   const base = location.href;
-  if (source.matches(selector)) return void render_(base, source, opts);
-  for (
-    let es = source.querySelectorAll<HTMLElement>(selector),
-        i = 0, len = es.length; i < len; ++i) {
-    render_(base, es[i], opts);
+  for (const el of querySelectorAll<HTMLElement>(source, selector)) {
+    render_(base, el, opts);
   }
 }
 

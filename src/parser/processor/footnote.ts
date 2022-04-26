@@ -42,7 +42,7 @@ function build(
     const check = footnotes.some(el => target.contains(el));
     let style: 'count' | 'abbr';
     for (
-      let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`),
+      let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
           i = 0, len = refs.length; i < len; ++i) {
       yield;
       const ref = refs[i];

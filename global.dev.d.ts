@@ -1,3 +1,7 @@
-interface Node {
-  cloneNode(deep?: boolean): this;
+import 'typed-query-selector';
+
+declare global {
+  interface Node {
+    cloneNode(deep?: boolean): this;
+  }
 }

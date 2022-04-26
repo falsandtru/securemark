@@ -12,9 +12,9 @@ export function* figure(
   }> = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(push(push(push([],
-    target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]')),
-    footnotes?.annotations.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? []),
-    footnotes?.references.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [])
+    target.querySelectorAll('a.label:not(.disabled)[data-label]')),
+    footnotes?.annotations.querySelectorAll('a.label:not(.disabled)') ?? []),
+    footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();

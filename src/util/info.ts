@@ -1,5 +1,6 @@
 import { Info } from '../..';
 import { scope } from './scope';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = scope(source, '.invalid');
@@ -19,12 +20,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
   };
 
   function find<T extends HTMLElement>(selector: string): T[] {
-    const acc: T[] = [];
-    for (let es = source.querySelectorAll<T>(selector), i = 0, len = es.length; i < len; ++i) {
-      const el = es[i];
-      if (!match(el)) continue;
-      acc.push(el);
-    }
-    return acc;
+    return querySelectorAll<T>(source, selector)
+      .filter(match);
   }
 }
