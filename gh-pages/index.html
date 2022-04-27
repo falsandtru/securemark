@@ -527,11 +527,11 @@
     font-weight: bold;
     color: hotpink;
   }
-  :is(div, pre, figure, ul, p, tr, th, td).invalid {
+  :is(div, pre, figure, blockquote, ul, p, tr, th, td).invalid {
     outline: solid 2px lightpink;
     background-image: unset;
   }
-  :is(div, pre, figure, ul, p, tr, th, td).invalid::before {
+  :is(div, pre, figure, blockquote, ul, p, tr, th, td).invalid::before {
     display: block;
     margin-block-end: 1em;
   }

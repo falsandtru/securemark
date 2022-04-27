@@ -10,6 +10,7 @@ import { table } from '../table';
 import { indentblock } from '../indentblock';
 import { codeblock } from '../codeblock';
 import { mathblock } from '../mathblock';
+import { sidefence } from '../sidefence';
 import { blockquote } from '../blockquote';
 import { paragraph } from '../paragraph';
 import { html } from 'typed-dom/dom';
@@ -69,6 +70,7 @@ const content: MessageParser.ContentParser = union([
   indentblock,
   codeblock,
   mathblock,
+  sidefence,
   blockquote,
   paragraph,
 ]);

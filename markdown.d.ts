@@ -87,6 +87,7 @@ export namespace MarkdownParser {
       BlockParser.CodeBlockParser,
       BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
+      BlockParser.SidefenceParser,
       BlockParser.BlockquoteParser,
       BlockParser.ReplyParser,
       BlockParser.ParagraphParser,
@@ -224,6 +225,22 @@ export namespace MarkdownParser {
         Block<'dlist/description'>,
         Parser<HTMLElement, Context, [
           InlineParser,
+        ]> {
+      }
+    }
+    export interface SidefenceParser extends
+      // | abc
+      Block<'sidefence'>,
+      Parser<HTMLQuoteElement, Context, [
+        SidefenceParser.SourceParser,
+      ]> {
+    }
+    export namespace SidefenceParser {
+      export interface SourceParser extends
+        Block<'sidefence/source'>,
+        Parser<HTMLQuoteElement, Context, [
+          SourceParser,
+          AutolinkParser,
         ]> {
       }
     }
@@ -495,6 +512,7 @@ export namespace MarkdownParser {
             BlockParser.IndentBlockParser,
             BlockParser.CodeBlockParser,
             BlockParser.MathBlockParser,
+            BlockParser.SidefenceParser,
             BlockParser.BlockquoteParser,
             BlockParser.ParagraphParser,
           ]> {

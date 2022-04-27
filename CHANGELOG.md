@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.243.0
+
+- Reserve sidefence syntax.
+
 ## 0.242.0
 
 - Add indentblock syntax.

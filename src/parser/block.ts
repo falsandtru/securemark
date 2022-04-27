@@ -13,6 +13,7 @@ import { indentblock } from './block/indentblock';
 import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
+import { sidefence } from './block/sidefence';
 import { blockquote } from './block/blockquote';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
@@ -31,6 +32,7 @@ export import IndentBlockParser = BlockParser.IndentBlockParser;
 export import CodeBlockParser = BlockParser.CodeBlockParser;
 export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
+export import SidefenceParser = BlockParser.SidefenceParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
@@ -50,6 +52,7 @@ export const block: BlockParser = creator(error(
     codeblock,
     mathblock,
     extension,
+    sidefence,
     blockquote,
     reply,
     paragraph
