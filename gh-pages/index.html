@@ -517,10 +517,6 @@
     font-weight: bold;
     color: red;
   }
-  :is(pre, ul, tr, th, td, figure, div).invalid {
-    outline: solid 2px lightpink;
-    background-image: unset;
-  }
   .invalid {
     background-image: linear-gradient(transparent 90%, lightpink 0%);
     white-space: pre-wrap;
@@ -531,7 +527,11 @@
     font-weight: bold;
     color: hotpink;
   }
-  :is(div, pre, figure, ul, p).invalid::before {
+  :is(div, pre, figure, ul, p, tr, th, td).invalid {
+    outline: solid 2px lightpink;
+    background-image: unset;
+  }
+  :is(div, pre, figure, ul, p, tr, th, td).invalid::before {
     display: block;
     margin-block-end: 1em;
   }
