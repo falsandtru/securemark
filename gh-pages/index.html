@@ -117,7 +117,7 @@
     white-space: pre;
     font-weight: 600;
   }
-  figure > div > pre[class] {
+  figure > div > pre {
     margin: 0;
   }
   figure[data-group="$"] {
@@ -303,6 +303,9 @@
     padding: 1em;
     margin-top: 0;
     margin-bottom: 1rem;
+  }
+  pre.text {
+    white-space: pre-wrap;
   }
   pre[data-path]::before {
     content: attr(data-path);
