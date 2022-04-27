@@ -22,8 +22,7 @@
   a {
     text-decoration: none;
   }
-  body,
-  .comment {
+  body, .comment {
     font-family:
       -apple-system,
       Segoe UI,
@@ -50,8 +49,7 @@
       */
     background-color: #fdfdfd;
   }
-  em,
-  .index {
+  em, .index {
     font-family:
       -apple-system,
       Segoe UI,
@@ -102,24 +100,14 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  aside.header .field[data-name="url"] {
+  aside.header .field:is([data-name="url"]) {
     font-weight: bold;
     color: orange;
   }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  :is(h1, h2, h3, h4, h5, h6) {
     margin-bottom: 1rem;
   }
-  h1:not(:first-child),
-  h2:not(:first-child),
-  h3:not(:first-child),
-  h4:not(:first-child),
-  h5:not(:first-child),
-  h6:not(:first-child) {
+  :is(h1, h2, h3, h4, h5, h6):not(:first-child) {
     margin-top: 1.5rem;
   }
   figcaption {
@@ -214,8 +202,7 @@
     content: attr(data-marker) " " !important;
     letter-spacing: normal;
   }
-  .checklist > li > ul,
-  .checklist > li > ol {
+  .checklist > li > :is(ul, ol) {
     padding-inline-start: 2em;
   }
   ul.checklist {
@@ -241,72 +228,55 @@
   table .media {
     min-width: 2rem;
   }
-  thead,
-  tfoot {
+  thead, tfoot {
     text-align: center;
   }
-  th,
-  td {
+  th, td {
     border: 1px solid #bbb;
     padding: .2em .4em;
   }
-  th,
-  thead > tr > td,
-  tfoot > tr > td {
+  th, :is(thead, tfoot) > tr > td {
     background-color: #f6f6f6;
     font-weight: bold;
   }
-  th[align="start"],
-  td[align="start"] {
+  :is(th, td)[align="start"] {
     text-align: start;
   }
-  th[align="end"],
-  td[align="end"] {
+  :is(th, td)[align="end"] {
     text-align: end;
   }
-  th[align="center"],
-  td[align="center"] {
+  :is(th, td)[align="center"] {
     text-align: center;
   }
-  th[valign="top"],
-  td[valign="top"] {
+  :is(th, td)[align="top"] {
     vertical-align: top;
   }
-  th[valign="bottom"],
-  td[valign="bottom"] {
+  :is(th, td)[align="bottom"] {
     vertical-align: bottom;
   }
-  th[valign="middle"],
-  td[valign="middle"] {
+  :is(th, td)[align="middle"] {
     vertical-align: middle;
   }
-  th.highlight,
-  td.highlight,
-  td.highlight[data-highlight-level="1"] {
+  :is(th, td).highlight,
+  tbody > tr > td.highlight[data-highlight-level="1"] {
     background-color: yellow;
   }
-  th.highlight mark,
-  td.highlight mark {
+  :is(th, td).highlight mark {
     background-image: none;
   }
-  tbody > tr >
-  td.highlight[data-highlight-level="2"] {
+  tbody > tr > td.highlight[data-highlight-level="2"] {
     background-color: gold;
   }
-  tbody > tr >
-  td.highlight[data-highlight-level="3"] {
+  tbody > tr > td.highlight[data-highlight-level="3"] {
     background-color: orange;
   }
-  tbody > tr >
-  td.highlight[data-highlight-level="4"] {
+  tbody > tr > td.highlight[data-highlight-level="4"] {
     background-color: #f60;
   }
-  tbody > tr >
-  td.highlight[data-highlight-level="5"] {
+  tbody > tr > td.highlight[data-highlight-level="5"] {
     background-color: #f33;
   }
-  tbody > tr >
-  td.highlight[data-highlight-level="6"] {
+  tbody > tr > td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
   blockquote {
@@ -324,10 +294,7 @@
     /* Unset bootstrap's CSS */
     font-size: unset;
   }
-  pre.text,
-  pre.code,
-  pre.invalid,
-  pre.error {
+  pre:is(.text, .code, .invalid, .error) {
     background-color: #fcfcfc;
     position: relative;
     overflow: auto;
@@ -358,8 +325,7 @@
     border: solid 2px #ddd;
     border-radius: 5px;
   }
-  aside.example > pre,
-  aside.example > section {
+  aside.example > :is(pre, section) {
     position: relative;
     overflow: auto;
     padding: 1rem;
@@ -371,8 +337,7 @@
     margin-bottom: 0;
     padding-bottom: 2rem;
   }
-  aside.example > pre::before,
-  aside.example > section::before {
+  aside.example > :is(pre, section)::before {
     position: absolute;
     top: 0;
     right: 0;
@@ -406,19 +371,19 @@
     border-radius: 5px;
     padding: 1rem;
   }
-  .message.type-note {
+  .message[data-type="note"] {
     background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
     background-repeat: repeat-x;
     border-color: #b2dba1;
     color: #3c763d;
   }
-  .message.type-caution {
+  .message[data-type="caution"] {
     background-image: linear-gradient(to bottom,#fcf8e3 0,#f8efc0 100%);
     background-repeat: repeat-x;
     border-color: #f5e79e;
     color: #8a6d3b;
   }
-  .message.type-warning {
+  .message[data-type="warning"] {
     background-image: linear-gradient(to bottom,#f2dede 0,#e7c3c3 100%);
     background-repeat: repeat-x;
     border-color: #dca7a7;
@@ -429,8 +394,7 @@
     font-size: 1rem;
     font-weight: bold;
   }
-  .cite,
-  .quote {
+  .cite, .quote {
     white-space: pre-wrap;
     color: hsl(130 50% 50% / 1);
   }
@@ -473,8 +437,7 @@
   .paren > .paren {
     font-size: 90%;
   }
-  ins,
-  del {
+  ins, del {
     position: relative;
     text-decoration: inherit;
   }
@@ -484,6 +447,13 @@
   del {
     background-image: linear-gradient(transparent 70%, #b8e4fd 0%);
   }
+  :is(ins, del)::before {
+    position: relative;
+    top: -.5em;
+    line-height: 0;
+    vertical-align: baseline;
+    font-size: 75%;
+  }
   ins::before {
     content: "ins";
     color: green;
@@ -492,20 +462,10 @@
     content: "del";
     color: blue;
   }
-  ins::before,
-  del::before {
-    position: relative;
-    top: -.5em;
-    line-height: 0;
-    vertical-align: baseline;
-    font-size: 75%;
-  }
-  ins ins,
-  ins del {
+  ins :is(ins, del) {
     border-bottom: solid 0.15em #00f200;
   }
-  del ins,
-  del del {
+  del :is(ins, del) {
     border-bottom: solid 0.15em #6666fd;
   }
   mark {
@@ -523,8 +483,7 @@
     font-size: 90%;
     color: inherit;
   }
-  ins code,
-  del code {
+  :is(ins, del) code {
     background-image: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
   .comment {
@@ -555,13 +514,7 @@
     font-weight: bold;
     color: red;
   }
-  pre.invalid,
-  ul.invalid,
-  tr.invalid,
-  th.invalid,
-  td.invalid,
-  figure.invalid,
-  div.invalid {
+  :is(pre, ul, tr, th, td, figure, div).invalid {
     outline: solid 2px lightpink;
     background-image: unset;
   }
@@ -575,11 +528,7 @@
     font-weight: bold;
     color: hotpink;
   }
-  div.invalid::before,
-  pre.invalid::before,
-  figure.invalid::before,
-  ul.invalid::before,
-  p.invalid::before {
+  :is(div, pre, figure, ul, p).invalid::before {
     display: block;
     margin-bottom: 1em;
   }
@@ -604,18 +553,12 @@
   ol:empty {
     display: none;
   }
-  ol#annotations,
-  ol.annotations,
-  ol#references,
-  ol.references {
+  ol:is(#annotations, .annotations, #references, .references) {
     position: relative;
     margin-top: 7em;
     width: 100%;
   }
-  ol#annotations::before,
-  ol.annotations::before,
-  ol#references::before,
-  ol.references::before {
+  ol:is(#annotations, .annotations, #references, .references)::before {
     display: table-row;
     position: absolute;
     top: -2em;
@@ -623,24 +566,16 @@
     text-align: center;
     font-size: 2em;
   }
-  ol#annotations::before,
-  ol.annotations::before {
+  ol:is(#annotations, .annotations)::before {
     content: "Annotations";
   }
-  ol#references::before,
-  ol.references::before {
+  ol:is(#references, .references)::before {
     content: "References";
   }
-  blockquote > section > ol#annotations,
-  blockquote > section > ol.annotations,
-  blockquote > section > ol#references,
-  blockquote > section > ol.references {
+  blockquote > section > ol:is(#annotations, .annotations, #references, .references) {
     margin-top: 3em;
   }
-  blockquote > section > ol#annotations::before,
-  blockquote > section > ol.annotations::before,
-  blockquote > section > ol#references::before,
-  blockquote > section > ol.references::before {
+  blockquote > section > ol:is(#annotations, .annotations, #references, .references)::before {
     top: -1.5em;
   }
   @media print {
