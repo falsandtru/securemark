@@ -271,37 +271,6 @@ export namespace MarkdownParser {
         }
       }
     }
-    export interface BlockquoteParser extends
-      // > abc
-      // !> *abc*
-      Block<'blockquote'>,
-      Parser<HTMLQuoteElement, Context, [
-        BlockquoteParser.SourceParser,
-        BlockquoteParser.MarkdownParser,
-      ]> {
-    }
-    export namespace BlockquoteParser {
-      export interface SegmentParser extends
-        Block<'blockquote/segment'>,
-        Parser<never, Context, [
-          SourceParser.ContentLineParser,
-        ]> {
-      }
-      export interface SourceParser extends
-        Block<'blockquote/source'>,
-        Parser<HTMLQuoteElement, Context, [
-          SourceParser,
-          AutolinkParser,
-        ]> {
-      }
-      export interface MarkdownParser extends
-        Block<'blockquote/markdown'>,
-        Parser<HTMLQuoteElement, Context, [
-          MarkdownParser,
-          Parser<HTMLElement, Context, []>,
-        ]> {
-      }
-    }
     export interface CodeBlockParser extends
       // ```js index.js
       // abc
@@ -372,9 +341,9 @@ export namespace MarkdownParser {
               BlockParser.TableParser,
               CodeBlockParser,
               MathBlockParser,
-              BlockquoteParser,
               ExampleParser,
               TableParser,
+              BlockquoteParser,
               PlaceholderParser,
               InlineParser.MediaParser,
               InlineParser.ShortmediaParser,
@@ -549,6 +518,37 @@ export namespace MarkdownParser {
           Block<'extension/placeholder/segment'>,
           Parser<never, Context, []> {
         }
+      }
+    }
+    export interface BlockquoteParser extends
+      // > abc
+      // !> *abc*
+      Block<'blockquote'>,
+      Parser<HTMLQuoteElement, Context, [
+        BlockquoteParser.SourceParser,
+        BlockquoteParser.MarkdownParser,
+      ]> {
+    }
+    export namespace BlockquoteParser {
+      export interface SegmentParser extends
+        Block<'blockquote/segment'>,
+        Parser<never, Context, [
+          SourceParser.ContentLineParser,
+        ]> {
+      }
+      export interface SourceParser extends
+        Block<'blockquote/source'>,
+        Parser<HTMLQuoteElement, Context, [
+          SourceParser,
+          AutolinkParser,
+        ]> {
+      }
+      export interface MarkdownParser extends
+        Block<'blockquote/markdown'>,
+        Parser<HTMLQuoteElement, Context, [
+          MarkdownParser,
+          Parser<HTMLElement, Context, []>,
+        ]> {
       }
     }
     export interface ReplyParser extends

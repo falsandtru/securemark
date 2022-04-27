@@ -8,9 +8,9 @@ import { olist } from '../olist';
 import { table as styled_table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
-import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { example } from './example';
 import { table, segment_ as seg_table } from './table';
+import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
 import { localize } from '../../locale';
@@ -59,9 +59,9 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         styled_table,
         codeblock,
         mathblock,
-        blockquote,
         example,
         table,
+        blockquote,
         placeholder,
         line(media),
         line(shortmedia),
