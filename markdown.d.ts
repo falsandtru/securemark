@@ -371,8 +371,8 @@ export namespace MarkdownParser {
               Parser<never, Context, [
                 CodeBlockParser.SegmentParser,
                 MathBlockParser.SegmentParser,
-                BlockquoteParser.SegmentParser,
                 TableParser.SegmentParser,
+                BlockquoteParser.SegmentParser,
                 PlaceholderParser.SegmentParser,
                 SourceParser.ContentLineParser,
               ]>,
@@ -401,8 +401,8 @@ export namespace MarkdownParser {
             Parser<never, Context, [
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
-              BlockquoteParser.SegmentParser,
               TableParser.SegmentParser,
+              BlockquoteParser.SegmentParser,
               PlaceholderParser.SegmentParser,
               SourceParser.ContentLineParser,
             ]>,

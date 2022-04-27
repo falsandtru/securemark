@@ -34,8 +34,8 @@ export const segment: FigureParser.SegmentParser = block(match(
           union([
             seg_code,
             seg_math,
-            seg_blockquote,
             seg_table,
+            seg_blockquote,
             seg_placeholder,
             some(contentline, closer),
           ]),
