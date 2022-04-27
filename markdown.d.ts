@@ -373,6 +373,7 @@ export namespace MarkdownParser {
               PlaceholderParser,
               InlineParser.MediaParser,
               InlineParser.ShortmediaParser,
+              Parser<HTMLElement, Context, []>,
             ]>,
             SourceParser.EmptyLineParser,
             InlineParser,

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, some, block, line, validate, rewrite, close, convert } from '../../../combinator';
+import { union, sequence, some, block, line, validate, verify, rewrite, close, convert } from '../../../combinator';
 import { contentline } from '../../source';
 import { figure } from './figure';
 import { segment as seg_label } from '../../inline/extension/label';
@@ -24,10 +24,11 @@ export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
     ]),
   ])));
 
-export const fig: FigParser = block(rewrite(segment, convert(
+export const fig: FigParser = block(rewrite(segment, verify(convert(
   source => {
     const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return `${fence}figure ${source}\n\n${fence}`;
   },
-  union([figure]))));
+  union([figure])),
+  ([el]) => el.className !== 'invalid' || el.getAttribute('data-invalid-type') !== 'content')));

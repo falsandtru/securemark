@@ -65,8 +65,9 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         table,
         blockquote,
         placeholder,
-        line(media),
-        line(shortmedia),
+        block(line(media)),
+        block(line(shortmedia)),
+        fmap(some(contentline), () => [html('br')]),
       ])),
       emptyline,
       block(localize(
@@ -103,6 +104,9 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
     case 'A':
       type = 'media';
       break;
+    case 'BR':
+      type = 'invalid';
+      break;
     case 'text':
     case 'code':
     case 'math':
@@ -113,6 +117,10 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
       assert(false);
   }
   const invalid =
+    type === 'invalid' && content.tagName === 'BR' && {
+      'data-invalid-type': 'content',
+      'data-invalid-message': 'Invalid content',
+    } ||
     /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
       'data-invalid-type': 'label',
       'data-invalid-message': 'The last part of the fixed label numbers must not be 0',

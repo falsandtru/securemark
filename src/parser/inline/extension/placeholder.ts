@@ -14,12 +14,12 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
   str(/^\[[:^]/),
   startTight(some(union([inline]), ']')),
   str(']'), false,
-  ([, bs], rest) => [[
+  ([as, bs], rest) => [[
     html('span', {
       class: 'invalid',
       'data-invalid-syntax': 'extension',
       'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Invalid symbol',
+      'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`,
     }, defrag(bs)),
   ], rest],
   ([as, bs], rest) => [unshift(as, bs), rest]))));
