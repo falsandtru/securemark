@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.242.0
+
+- Add indentblock syntax.
+
 ## 0.241.0
 
 - Remove sync function.

@@ -9,6 +9,7 @@ import { olist } from './block/olist';
 import { ilist } from './block/ilist';
 import { dlist } from './block/dlist';
 import { table } from './block/table';
+import { indentblock } from './block/indentblock';
 import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
@@ -26,6 +27,7 @@ export import OListParser = BlockParser.OListParser;
 export import IListParser = BlockParser.IListParser;
 export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
+export import IndentBlockParser = BlockParser.IndentBlockParser;
 export import CodeBlockParser = BlockParser.CodeBlockParser;
 export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
@@ -44,6 +46,7 @@ export const block: BlockParser = creator(error(
     ilist,
     dlist,
     table,
+    indentblock,
     codeblock,
     mathblock,
     extension,

@@ -7,6 +7,7 @@ import { ulist } from '../ulist';
 import { olist } from '../olist';
 import { ilist } from '../ilist';
 import { table } from '../table';
+import { indentblock } from '../indentblock';
 import { codeblock } from '../codeblock';
 import { mathblock } from '../mathblock';
 import { blockquote } from '../blockquote';
@@ -65,6 +66,7 @@ const content: MessageParser.ContentParser = union([
   olist,
   ilist,
   table,
+  indentblock,
   codeblock,
   mathblock,
   blockquote,
