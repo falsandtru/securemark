@@ -9,8 +9,10 @@ describe('Unit: combinator/indent', () => {
       assert.deepStrictEqual(inspect(parser(' ', {})), undefined);
       assert.deepStrictEqual(inspect(parser('  ', {})), undefined);
       assert.deepStrictEqual(inspect(parser('a ', {})), undefined);
+      assert.deepStrictEqual(inspect(parser(' a\n', {})), [['a'], '']);
       assert.deepStrictEqual(inspect(parser(' a ', {})), [['a '], '']);
-      assert.deepStrictEqual(inspect(parser('  a ', {})), [['a '], '']);
+      assert.deepStrictEqual(inspect(parser(' a \n', {})), [['a '], '']);
+      assert.deepStrictEqual(inspect(parser('  a', {})), [['a'], '']);
       assert.deepStrictEqual(inspect(parser(' a\n a', {})), [['a\na'], '']);
       assert.deepStrictEqual(inspect(parser(' a\n  a', {})), [['a\n a'], '']);
       assert.deepStrictEqual(inspect(parser('  a\n a', {})), [['a'], ' a']);
