@@ -104,7 +104,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fallback(fma
     }, source),
   ], ''])),
   fmap(
-    fence(/^(~{3,})(?:figure|\[?\$\S*)[^\n]*(?:$|\n)/, 300),
+    fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
     ([body, closer, opener, delim]: string[], _, context) => [
       html('pre', {
         class: 'invalid',

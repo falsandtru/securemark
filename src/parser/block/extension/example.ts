@@ -5,7 +5,7 @@ import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom/dom';
 
-const opener = /^(~{3,})(?:example\/(\S+)|(?!\S))([^\n]*)(?:$|\n)/;
+const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 
 export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
   fence(opener, 300),
