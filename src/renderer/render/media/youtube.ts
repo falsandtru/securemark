@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { html } from 'typed-dom/dom';
 
 export function youtube(source: HTMLImageElement, url: URL): HTMLElement | undefined {

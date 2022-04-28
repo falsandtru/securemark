@@ -1,5 +1,5 @@
-import { html } from 'typed-dom/dom';
 import { ObjectFromEntries } from 'spica/alias';
+import { html } from 'typed-dom/dom';
 
 const extensions = [
   '.webm',

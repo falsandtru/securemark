@@ -1,4 +1,4 @@
-import { location, encodeURI, decodeURI, Location } from 'spica/global';
+import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
 import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';

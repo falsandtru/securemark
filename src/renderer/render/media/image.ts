@@ -1,6 +1,6 @@
-import { define } from 'typed-dom/dom';
-import { Collection } from 'spica/collection';
 import { ObjectFromEntries } from 'spica/alias';
+import { Collection } from 'spica/collection';
+import { define } from 'typed-dom/dom';
 
 export function image(source: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLImageElement {
   if (cache?.has(url.href)) return define(

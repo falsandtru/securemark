@@ -1,3 +1,5 @@
+import { undefined } from 'spica/global';
+
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (source: string, context: C) => Result<T, C, D>;
 export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
