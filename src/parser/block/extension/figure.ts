@@ -48,7 +48,7 @@ export const segment: FigureParser.SegmentParser = block(match(
     closer),
   ([, fence]) => fence.length, [])));
 
-export const figure: FigureParser = block(fallback(rewrite(segment, fallback(fmap(
+export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
     line(sequence([label, str(/^(?=\s).*\n/)])),
@@ -82,27 +82,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fallback(fma
           defrag(caption))),
         html('div', [content]),
       ])
-  ]),
-  (source, context) => [[
-    html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      'data-invalid-syntax': 'figure',
-      ...
-      !seg_label(source.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context) && {
-        'data-invalid-type': 'label',
-        'data-invalid-message': 'Invalid label',
-      } ||
-      /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(source) && {
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid argument',
-      } ||
-      {
-        'data-invalid-type': 'content',
-        'data-invalid-message': 'Invalid content',
-      },
-    }, source),
-  ], ''])),
+  ])),
   fmap(
     fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
     ([body, closer, opener, delim]: string[], _, context) => [
