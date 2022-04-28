@@ -29,9 +29,9 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
   rewrite(contentline, source => [[
     html('tr', {
       class: 'invalid',
-      'data-invalid-syntax': 'tablerow',
+      'data-invalid-syntax': 'table-row',
       'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Invalid table row',
+      'data-invalid-message': 'Missing the start symbol of the table row',
     }, [html('td', source.replace('\n', ''))])
   ], ''])));
 
