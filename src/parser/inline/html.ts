@@ -1,5 +1,5 @@
 import { undefined } from 'spica/global';
-import { isFrozen, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
+import { isFrozen, ObjectEntries } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser } from '../inline';
 import { union, some, validate, context, creator, surround, open, match, lazy } from '../../combinator';
@@ -11,14 +11,14 @@ import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';
 
-const tags = ObjectFreeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
-    dir: ObjectFreeze(['ltr', 'rtl'] as const),
+    dir: Object.freeze(['ltr', 'rtl'] as const),
   },
 } as const;
-ObjectSetPrototypeOf(attrspec, null);
-ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
+Object.setPrototypeOf(attrspec, null);
+Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
   match(

@@ -1,5 +1,4 @@
 import { location, encodeURI, decodeURI, Location } from 'spica/global';
-import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
 import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
@@ -14,7 +13,7 @@ import { ReadonlyURL } from 'spica/url';
 const optspec = {
   rel: ['nofollow'],
 } as const;
-ObjectSetPrototypeOf(optspec, null);
+Object.setPrototypeOf(optspec, null);
 
 export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}', '\n', bind(
   guard(context => context.syntax?.inline?.link ?? true,

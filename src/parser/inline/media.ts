@@ -1,5 +1,4 @@
 import { undefined, location } from 'spica/global';
-import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, verify, guard, creator, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { link, uri, option as linkoption, resolve } from './link';
@@ -16,7 +15,7 @@ const optspec = {
   'aspect-ratio': [],
   rel: undefined,
 } as const;
-ObjectSetPrototypeOf(optspec, null);
+Object.setPrototypeOf(optspec, null);
 
 export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], '}', '\n', bind(verify(fmap(open(
   '!',
