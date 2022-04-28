@@ -4838,9 +4838,9 @@ require = function () {
             const row = (parser, optional) => (0, combinator_1.creator)((0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/^(?=\|)/, (0, combinator_1.some)((0, combinator_1.union)([parser])), /^\|?\s*$/, optional)), es => [(0, dom_1.html)('tr', es)]), (0, combinator_1.rewrite)(source_1.contentline, source => [
                 [(0, dom_1.html)('tr', {
                         class: 'invalid',
-                        'data-invalid-syntax': 'tablerow',
+                        'data-invalid-syntax': 'table-row',
                         'data-invalid-type': 'syntax',
-                        'data-invalid-message': 'Invalid table row'
+                        'data-invalid-message': 'Missing the start symbol of the table row'
                     }, [(0, dom_1.html)('td', source.replace('\n', ''))])],
                 ''
             ])));
