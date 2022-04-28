@@ -33,7 +33,7 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [$fig-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="fig-name" data-group="fig" class="invalid"><figcaption><span class="figindex"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$figure-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="figure-name" data-group="figure" class="invalid"><figcaption><span class="figindex"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$table-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="table-name" data-group="table" class="invalid"><figcaption><span class="figindex"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
-      assert(!parser('~~~figure [$group-name]\n```\n0' + '\n'.repeat(301) + '```\n~~~'));
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n```\n0' + '\n'.repeat(301) + '```\n~~~')), undefined);
     });
 
     it('valid', () => {
