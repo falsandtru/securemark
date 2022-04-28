@@ -82,8 +82,8 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           open(/^\n?/, some(inline, '</'), true),
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
-        ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs, {})], rest],
+        ([as, bs, cs], rest, context) =>
+          [[elem(tag, as, defrag(bs), cs, context)], rest],
         ([as, bs], rest) =>
           as.length === 1 ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tags.indexOf(tag), [])),
@@ -99,8 +99,8 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           open(/^\n?/, some(inline, '</'), true),
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
-        ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs, {})], rest],
+        ([as, bs, cs], rest, context) =>
+          [[elem(tag, as, defrag(bs), cs, context)], rest],
         ([as, bs], rest) =>
           as.length === 1 ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tag,
@@ -133,12 +133,11 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
       }
       break;
   }
-  let attrs: Record<string, string | undefined> | undefined;
+  const attrs = attributes('html', [], attrspec[tag], as.slice(1, -1));
   switch (true) {
-    case 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
+    case 'data-invalid-syntax' in attrs:
       return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
     default:
-      assert(attrs);
       return h(tag as 'span', attrs, bs);
   }
 }
@@ -158,7 +157,7 @@ const requiredAttributes = memoize(
 
 export function attributes(
   syntax: string,
-  classes: string[],
+  classes: readonly string[],
   spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
   params: string[],
 ): Record<string, string | undefined> {
@@ -183,8 +182,7 @@ export function attributes(
   }
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalid) {
-    !classes.includes('invalid') && classes.push('invalid');
-    attrs['class'] = join(classes, ' ');
+    attrs['class'] = join(classes.includes('invalid') ? classes : unshift(classes, ['invalid']), ' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
     attrs['data-invalid-message'] = 'Invalid argument';
