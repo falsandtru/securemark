@@ -85,7 +85,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   ])),
   fmap(
     fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
-    ([body, closer, opener, delim]: string[], _, context) => [
+    ([body, overflow, closer, opener, delim]: string[], _, context) => [
       html('pre', {
         class: 'invalid',
         translate: 'no',
@@ -94,6 +94,10 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         !closer && {
           'data-invalid-type': 'fence',
           'data-invalid-message': `Missing the closing delimiter "${delim}"`,
+        } ||
+        overflow && {
+          'data-invalid-type': 'fence',
+          'data-invalid-message': `Invalid trailing line after the closing delimiter "${delim}"`,
         } ||
         !seg_label(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context) && {
           'data-invalid-type': 'label',
@@ -107,7 +111,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'data-invalid-type': 'content',
           'data-invalid-message': 'Invalid content',
         },
-      }, `${opener}${body}${closer}`),
+      }, `${opener}${body}${overflow || closer}`),
     ])));
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {

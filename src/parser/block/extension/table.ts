@@ -26,14 +26,17 @@ export const segment_: TableParser.SegmentParser = block(validate('~~~',
 export const table: TableParser = block(validate('~~~', recover(fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, param]: string[], _, context) => {
-    if (!closer || param.trimStart()) return [html('pre', {
+  ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
+    if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'table',
-      'data-invalid-type': !closer ? 'fence' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
-    }, `${opener}${body}${closer}`)];
+      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        'Invalid argument',
+    }, `${opener}${body}${overflow || closer}`)];
     return eval(parser(body, context)) ?? [html('table')];
   }),
   (source, _, reason) =>

@@ -17,7 +17,7 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
 export const codeblock: CodeBlockParser = block(validate('```', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
     const params = param.match(/(?:\\.?|\S)+/g)?.reduce<{
       lang?: string;
       path?: string;
@@ -45,17 +45,20 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
           }
       }
       name in params
-        ? params.invalid = `Duplicate ${name} value`
+        ? params.invalid = `Duplicate ${name} attribute`
         : params[name] = value;
       return params;
     }, {}) ?? {};
-    if (!closer || params.invalid) return [html('pre', {
+    if (!closer || overflow || params.invalid) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'codeblock',
-      'data-invalid-type': !closer ? 'fence' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : params.invalid,
-    }, `${opener}${body}${closer}`)];
+      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        params.invalid,
+    }, `${opener}${body}${overflow || closer}`)];
     const el = html('pre',
       {
         class: params.lang ? `code language-${params.lang}` : 'text',

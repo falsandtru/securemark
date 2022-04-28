@@ -12,12 +12,13 @@ export const segment_: ExtensionParser.PlaceholderParser.SegmentParser = block(v
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
   fence(opener, Infinity),
-  ([body, closer, opener, delim]) => [
+  ([body, overflow, closer, opener, delim]) => [
     html('pre', {
       class: 'invalid',
       translate: 'no',
-      'data-invalid-syntax': 'extension',
-      'data-invalid-type': !closer ? 'fence' : 'syntax',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid extension name',
-    }, `${opener}${body}${closer}`),
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        'Invalid argument',
+    }, `${opener}${body}${overflow || closer}`),
   ])));

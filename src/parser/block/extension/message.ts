@@ -21,14 +21,17 @@ import MessageParser = ExtensionParser.MessageParser;
 export const message: MessageParser = block(validate('~~~', fmap(
   fence(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, type, param]: string[], _, context) => {
-    if (!closer || param.trimStart()) return [html('pre', {
+  ([body, overflow, closer, opener, delim, type, param]: string[], _, context) => {
+    if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'message',
-      'data-invalid-type': !closer ? 'fence' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
-    }, `${opener}${body}${closer}`)];
+      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        'Invalid argument',
+    }, `${opener}${body}${overflow || closer}`)];
     switch (type) {
       case 'note':
       case 'caution':
@@ -39,6 +42,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
           class: 'invalid',
           translate: 'no',
           'data-invalid-syntax': 'message',
+          'data-invalid-type': 'type',
           'data-invalid-message': 'Invalid message type',
         }, `${opener}${body}${closer}`)];
     }

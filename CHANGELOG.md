@@ -3,6 +3,7 @@
 ## 0.244.0
 
 - Change mathblock syntax to increase the maximum number of contained lines to 300.
+- Fix fence parser.
 
 ## 0.243.2
 

@@ -14,15 +14,18 @@ export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
-    delim.length === 2 && closer && param.trimStart() === ''
+  ([body, overflow, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
+    delim.length === 2 && closer && !overflow && param.trimStart() === ''
       ? cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
         html('div', { class: 'math', translate: 'no' }, `${delim}\n${body}${delim}`)
       : html('pre', {
           class: 'invalid',
           translate: 'no',
           'data-invalid-syntax': 'mathblock',
-          'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'fence' : 'argument',
-          'data-invalid-message': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
-        }, `${opener}${body}${closer}`),
+          'data-invalid-type': delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
+          'data-invalid-message': delim.length > 2 ? 'Invalid syntax' :
+             !closer ? `Missing the closing delimiter "${delim}"` :
+             overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+             'Invalid argument',
+        }, `${opener}${body}${overflow || closer}`),
   ])));

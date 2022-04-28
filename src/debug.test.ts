@@ -1,5 +1,6 @@
 import { Result, eval, exec } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
+import { querySelector, querySelectorAll } from 'typed-dom/query';
 
 export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
   return result && [
@@ -7,14 +8,15 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       assert(node);
       if (typeof node === 'string') return node;
       node = node.cloneNode(true);
-      assert(!node.matches('.invalid[data-invalid-message$="."]'));
-      assert(!node.querySelector('.invalid[data-invalid-message$="."]'));
-      [node, ...node.querySelectorAll('.invalid')].forEach(el =>
+      assert(!querySelector(node, '.invalid[data-invalid-message$="."]'));
+      querySelectorAll(node, '.invalid').forEach(el => {
+        assert(el.matches('[data-invalid-syntax][data-invalid-type][data-invalid-message]'));
         define(el, {
           'data-invalid-syntax': null,
           'data-invalid-type': null,
           'data-invalid-message': null,
-        }));
+        });
+      });
       until = typeof until === 'number'
         ? until
         : ~(~node.outerHTML.indexOf(until) || -Infinity) + until.length;

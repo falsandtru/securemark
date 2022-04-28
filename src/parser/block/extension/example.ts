@@ -10,14 +10,17 @@ const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
-    if (!closer || param.trimStart()) return [html('pre', {
+  ([body, overflow, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
+    if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'example',
-      'data-invalid-type': !closer ? 'fence' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
-    }, `${opener}${body}${closer}`)];
+      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        'Invalid argument',
+    }, `${opener}${body}${overflow || closer}`)];
     switch (type) {
       case 'markdown': {
         const annotations = html('ol', { class: 'annotations' });
@@ -52,6 +55,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
             class: 'invalid',
             translate: 'no',
             'data-invalid-syntax': 'example',
+            'data-invalid-type': 'type',
             'data-invalid-message': 'Invalid example type',
           }, `${opener}${body}${closer}`),
         ];

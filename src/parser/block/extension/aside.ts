@@ -7,14 +7,17 @@ import { html } from 'typed-dom/dom';
 export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~~~', fmap(
   fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, param]: string[], _, context) => {
-    if (!closer || param.trimStart()) return [html('pre', {
+  ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
+    if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
       'data-invalid-syntax': 'aside',
-      'data-invalid-type': !closer ? 'fence' : 'argument',
-      'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : 'Invalid argument',
-    }, `${opener}${body}${closer}`)];
+      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+      'data-invalid-message':
+        !closer ? `Missing the closing delimiter "${delim}"` :
+        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
+        'Invalid argument',
+    }, `${opener}${body}${overflow || closer}`)];
     const annotations = html('ol', { class: 'annotations' });
     const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
