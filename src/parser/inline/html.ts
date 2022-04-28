@@ -11,7 +11,7 @@ import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';
 
-const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = ObjectFreeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
     dir: ObjectFreeze(['ltr', 'rtl'] as const),
@@ -29,7 +29,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         `<${tag}`, some(union([attribute])), /^\s*>/, true,
         ([, bs = []], rest) =>
           [[h(tag as 'span', attributes('html', [], attrspec[tag], bs))], rest]),
-    ([, tag]) => tag)),
+    ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<(sup|sub|small)(?=[^\S\n]|>))/,
     memoize(
@@ -69,7 +69,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
           [[elem(tag, as, defrag(bs), cs, context)], rest])),
-      ([, tag]) => tag)),
+    ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<(bdo|bdi)(?=[^\S\n]|>))/,
     memoize(
@@ -86,7 +86,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           [[elem(tag, as, defrag(bs), cs, {})], rest],
         ([as, bs], rest) =>
           as.length === 1 ? [unshift(as, bs), rest] : undefined)),
-    ([, tag]) => tag)),
+    ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<([a-z]+)(?=[^\S\n]|>))/,
     memoize(
@@ -104,7 +104,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ([as, bs], rest) =>
           as.length === 1 ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tag,
-    new Cache(1000))),
+    new Cache(10000))),
 ])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
