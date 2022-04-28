@@ -3609,7 +3609,7 @@ require = function () {
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
             const dom_1 = _dereq_('typed-dom/dom');
-            const opener = /^(~{3,})(?:example\/(\S+)|(?!\S))([^\n]*)(?:$|\n)/;
+            const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
             exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, type = 'markdown', param], _, context) => {
                 if (!closer || param.trimStart())
                     return [(0, dom_1.html)('pre', {
@@ -3701,7 +3701,7 @@ require = function () {
             exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.verify)((0, combinator_1.convert)(source => {
                 const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
                 return `${ fence }figure ${ source }\n\n${ fence }`;
-            }, (0, combinator_1.union)([figure_1.figure])), ([el]) => el.className !== 'invalid' || el.getAttribute('data-invalid-type') !== 'content')));
+            }, (0, combinator_1.union)([figure_1.figure])), ([el]) => el.tagName === 'FIGURE')));
         },
         {
             '../../../combinator': 25,
@@ -3764,7 +3764,7 @@ require = function () {
             const dom_1 = _dereq_('typed-dom/dom');
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
-            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
+            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]|(?=\[?\$))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
                 source_1.contentline,
                 (0, combinator_1.inits)([
                     (0, combinator_1.union)([
@@ -3782,10 +3782,10 @@ require = function () {
                     ])
                 ])
             ]), closer), ([, fence]) => fence.length, [])));
-            exports.figure = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
+            exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
                 (0, combinator_1.line)((0, combinator_1.sequence)([
                     label_1.label,
-                    (0, source_1.str)(/^.*\n/)
+                    (0, source_1.str)(/^(?=\s).*\n/)
                 ])),
                 (0, combinator_1.inits)([
                     (0, combinator_1.block)((0, combinator_1.union)([
@@ -3799,9 +3799,8 @@ require = function () {
                         table_2.table,
                         blockquote_1.blockquote,
                         placeholder_1.placeholder,
-                        (0, combinator_1.block)((0, combinator_1.line)(inline_1.media)),
-                        (0, combinator_1.block)((0, combinator_1.line)(inline_1.shortmedia)),
-                        (0, combinator_1.fmap)((0, combinator_1.some)(source_1.contentline), () => [(0, dom_1.html)('br')])
+                        (0, combinator_1.line)(inline_1.media),
+                        (0, combinator_1.line)(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
                     (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline))))))
@@ -3809,7 +3808,47 @@ require = function () {
             ])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     (0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', { class: 'figindex' })], (0, dom_1.defrag)(caption))),
                     (0, dom_1.html)('div', [content])
-                ])])));
+                ])]), (source, context) => {
+                var _a, _b;
+                return [
+                    [(0, dom_1.html)('pre', {
+                            class: 'invalid',
+                            translate: 'no',
+                            'data-invalid-syntax': 'figure',
+                            ...!(0, label_1.segment)((_b = (_a = source.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : '', context) && {
+                                'data-invalid-type': 'label',
+                                'data-invalid-message': 'Invalid label'
+                            } || /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(source) && {
+                                'data-invalid-type': 'argument',
+                                'data-invalid-message': 'Invalid argument'
+                            } || {
+                                'data-invalid-type': 'content',
+                                'data-invalid-message': 'Invalid content'
+                            }
+                        }, source)],
+                    ''
+                ];
+            })), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, closer, opener, delim], _, context) => {
+                var _a, _b;
+                return [(0, dom_1.html)('pre', {
+                        class: 'invalid',
+                        translate: 'no',
+                        'data-invalid-syntax': 'figure',
+                        ...!closer && {
+                            'data-invalid-type': 'fence',
+                            'data-invalid-message': `Missing the closing delimiter "${ delim }"`
+                        } || !(0, label_1.segment)((_b = (_a = opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : '', context) && {
+                            'data-invalid-type': 'label',
+                            'data-invalid-message': 'Invalid label'
+                        } || /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(opener) && {
+                            'data-invalid-type': 'argument',
+                            'data-invalid-message': 'Invalid argument'
+                        } || {
+                            'data-invalid-type': 'content',
+                            'data-invalid-message': 'Invalid content'
+                        }
+                    }, `${ opener }${ body }${ closer }`)];
+            })));
             function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
                 let type = content.className.split(/\s/)[0];
@@ -3828,9 +3867,6 @@ require = function () {
                 case 'A':
                     type = 'media';
                     break;
-                case 'BR':
-                    type = 'invalid';
-                    break;
                 case 'text':
                 case 'code':
                 case 'math':
@@ -3839,15 +3875,12 @@ require = function () {
                     break;
                 default:
                 }
-                const invalid = type === 'invalid' && content.tagName === 'BR' && {
-                    'data-invalid-type': 'content',
-                    'data-invalid-message': 'Invalid content'
+                const invalid = param.trimStart() !== '' && {
+                    'data-invalid-type': 'argument',
+                    'data-invalid-message': 'Invalid argument'
                 } || /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
                     'data-invalid-type': 'label',
                     'data-invalid-message': 'The last part of the fixed label numbers must not be 0'
-                } || param.trimStart() !== '' && {
-                    'data-invalid-type': 'argument',
-                    'data-invalid-message': 'Invalid argument'
                 } || group === '$' && (type !== 'math' || caption.length > 0) && {
                     'data-invalid-type': 'label',
                     'data-invalid-message': '"$" label group must be used to math formulas with no caption'
@@ -4008,27 +4041,20 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.placeholder = exports.segment_ = exports.segment = void 0;
             const combinator_1 = _dereq_('../../../combinator');
-            const label_1 = _dereq_('../../inline/extension/label');
             const dom_1 = _dereq_('typed-dom/dom');
             const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-            exports.placeholder = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, Infinity), ([body, closer, opener, delim], _, context) => [(0, dom_1.html)('pre', {
+            exports.placeholder = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, Infinity), ([body, closer, opener, delim]) => [(0, dom_1.html)('pre', {
                     class: 'invalid',
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': !closer ? 'fence' : 'syntax',
-                    'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid extension name',
-                    ...closer && (opener.slice(delim.length).split(/\s/, 1)[0] === 'figure' || (0, label_1.segment)(opener.slice(delim.length), context)) && {
-                        'data-invalid-syntax': 'figure',
-                        'data-invalid-type': 'content',
-                        'data-invalid-message': 'Invalid content'
-                    }
+                    'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid extension name'
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
             '../../../combinator': 25,
-            '../../inline/extension/label': 109,
             'typed-dom/dom': 23
         }
     ],
