@@ -31,4 +31,4 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
     return `${fence}figure ${source}\n\n${fence}`;
   },
   union([figure])),
-  ([el]) => el.className !== 'invalid' || el.getAttribute('data-invalid-type') !== 'content')));
+  ([el]) => el.tagName === 'FIGURE')));

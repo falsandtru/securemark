@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
-import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
+import { union, inits, sequence, some, block, line, fence, rewrite, context, close, match, convert, trim, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
-import { label } from '../../inline/extension/label';
+import { label, segment as seg_label } from '../../inline/extension/label';
 import { ulist } from '../ulist';
 import { olist } from '../olist';
 import { table as styled_table } from '../table';
@@ -23,7 +23,7 @@ import { unshift } from 'spica/array';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n)/,
+  /^(~{3,})(?:figure[^\S\n]|(?=\[?\$))/,
   memoize(
   ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => close(
     sequence([
@@ -48,10 +48,10 @@ export const segment: FigureParser.SegmentParser = block(match(
     closer),
   ([, fence]) => fence.length, [])));
 
-export const figure: FigureParser = block(rewrite(segment, fmap(
-  convert(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')),
+export const figure: FigureParser = block(fallback(rewrite(segment, fallback(fmap(
+  convert(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(sequence([label, str(/^.*\n/)])),
+    line(sequence([label, str(/^(?=\s).*\n/)])),
     inits([
       block(union([
         ulist,
@@ -64,9 +64,8 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         table,
         blockquote,
         placeholder,
-        block(line(media)),
-        block(line(shortmedia)),
-        fmap(some(contentline), () => [html('br')]),
+        line(media),
+        line(shortmedia),
       ])),
       emptyline,
       block(localize(
@@ -83,7 +82,53 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
           defrag(caption))),
         html('div', [content]),
       ])
-  ])));
+  ]),
+  (source, context) => [[
+    html('pre', {
+      class: 'invalid',
+      translate: 'no',
+      'data-invalid-syntax': 'figure',
+      ...
+      !seg_label(source.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context) && {
+        'data-invalid-type': 'label',
+        'data-invalid-message': 'Invalid label',
+      } ||
+      /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(source) && {
+        'data-invalid-type': 'argument',
+        'data-invalid-message': 'Invalid argument',
+      } ||
+      {
+        'data-invalid-type': 'content',
+        'data-invalid-message': 'Invalid content',
+      },
+    }, source),
+  ], ''])),
+  fmap(
+    fence(/^(~{3,})(?:figure|\[?\$\S*)[^\n]*(?:$|\n)/, 300),
+    ([body, closer, opener, delim]: string[], _, context) => [
+      html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        'data-invalid-syntax': 'figure',
+        ...
+        !closer && {
+          'data-invalid-type': 'fence',
+          'data-invalid-message': `Missing the closing delimiter "${delim}"`,
+        } ||
+        !seg_label(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context) && {
+          'data-invalid-type': 'label',
+          'data-invalid-message': 'Invalid label',
+        } ||
+        /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(opener) && {
+          'data-invalid-type': 'argument',
+          'data-invalid-message': 'Invalid argument',
+        } ||
+        {
+          'data-invalid-type': 'content',
+          'data-invalid-message': 'Invalid content',
+        },
+      }, `${opener}${body}${closer}`),
+    ])));
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
@@ -103,9 +148,6 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
     case 'A':
       type = 'media';
       break;
-    case 'BR':
-      type = 'invalid';
-      break;
     case 'text':
     case 'code':
     case 'math':
@@ -116,17 +158,13 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
       assert(false);
   }
   const invalid =
-    type === 'invalid' && content.tagName === 'BR' && {
-      'data-invalid-type': 'content',
-      'data-invalid-message': 'Invalid content',
+    param.trimStart() !== '' && {
+      'data-invalid-type': 'argument',
+      'data-invalid-message': 'Invalid argument',
     } ||
     /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
       'data-invalid-type': 'label',
       'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
-    } ||
-    param.trimStart() !== '' && {
-      'data-invalid-type': 'argument',
-      'data-invalid-message': 'Invalid argument',
     } ||
     group === '$' && (type !== 'math' || caption.length > 0) && {
       'data-invalid-type': 'label',
