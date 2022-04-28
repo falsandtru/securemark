@@ -2067,24 +2067,37 @@ require = function () {
                         return;
                     let block = '';
                     let closer = '';
-                    for (let count = 1, next = (0, line_1.firstline)(rest);; ++count) {
+                    let overflow = '';
+                    for (let count = 1;; ++count) {
                         if (rest === '')
                             break;
-                        const line = next;
-                        next = (0, line_1.firstline)(rest.slice(line.length));
-                        if (count > limit + 1 && (0, line_1.isEmpty)(line))
+                        const line = (0, line_1.firstline)(rest);
+                        if ((closer || count > limit + 1) && (0, line_1.isEmpty)(line))
                             break;
-                        if (count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim && (!separation || (0, line_1.isEmpty)(next))) {
-                            closer = delim;
-                            rest = rest.slice(line.length);
-                            break;
+                        if (closer) {
+                            overflow += line;
                         }
-                        block += line;
+                        if (!closer && count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim) {
+                            closer = line;
+                            if ((0, line_1.isEmpty)((0, line_1.firstline)(rest.slice(line.length)))) {
+                                rest = rest.slice(line.length);
+                                break;
+                            }
+                            if (!separation) {
+                                rest = rest.slice(line.length);
+                                break;
+                            }
+                            overflow = line;
+                        }
+                        if (!overflow) {
+                            block += line;
+                        }
                         rest = rest.slice(line.length);
                     }
                     return [
                         (0, array_1.unshift)([
                             block,
+                            overflow,
                             closer
                         ], matches),
                         rest
@@ -2457,6 +2470,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.check = exports.exec = exports.eval = exports.Delimiters = void 0;
+            const global_1 = _dereq_('spica/global');
             class Delimiters {
                 constructor() {
                     this.matchers = [];
@@ -2465,7 +2479,7 @@ require = function () {
                 push(delimiter) {
                     const {signature, matcher, escape} = delimiter;
                     if (this.record[signature] === !escape) {
-                        this.matchers.unshift(() => undefined);
+                        this.matchers.unshift(() => global_1.undefined);
                     } else {
                         this.matchers.unshift(matcher);
                         this.record[signature] = !escape;
@@ -2501,7 +2515,7 @@ require = function () {
             }
             exports.check = check;
         },
-        {}
+        { 'spica/global': 13 }
     ],
     46: [
         function (_dereq_, module, exports) {
@@ -3403,7 +3417,7 @@ require = function () {
             const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-            exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, param], _, context) => {
+            exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, overflow, closer, opener, delim, param], _, context) => {
                 var _a, _b, _c, _d, _e, _f;
                 const params = (_b = (_a = param.match(/(?:\\.?|\S)+/g)) === null || _a === void 0 ? void 0 : _a.reduce((params, value, i) => {
                     var _a, _b, _c;
@@ -3423,17 +3437,17 @@ require = function () {
                             params.lang = file && file.includes('.', 1) ? (_c = (_b = file.split('.').pop()) === null || _b === void 0 ? void 0 : _b.match(language)) === null || _c === void 0 ? void 0 : _c[0].toLowerCase() : params.lang;
                         }
                     }
-                    name in params ? params.invalid = `Duplicate ${ name } value` : params[name] = value;
+                    name in params ? params.invalid = `Duplicate ${ name } attribute` : params[name] = value;
                     return params;
                 }, {})) !== null && _b !== void 0 ? _b : {};
-                if (!closer || params.invalid)
+                if (!closer || overflow || params.invalid)
                     return [(0, dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'codeblock',
-                            'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : params.invalid
-                        }, `${ opener }${ body }${ closer }`)];
+                            'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : params.invalid
+                        }, `${ opener }${ body }${ overflow || closer }`)];
                 const el = (0, dom_1.html)('pre', {
                     class: params.lang ? `code language-${ params.lang }` : 'text',
                     translate: params.lang ? 'no' : global_1.undefined,
@@ -3554,16 +3568,16 @@ require = function () {
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
             const dom_1 = _dereq_('typed-dom/dom');
-            exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), ([body, closer, opener, delim, param], _, context) => {
+            exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), ([body, overflow, closer, opener, delim, param], _, context) => {
                 var _a;
-                if (!closer || param.trimStart())
+                if (!closer || overflow || param.trimStart())
                     return [(0, dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'aside',
-                            'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
-                        }, `${ opener }${ body }${ closer }`)];
+                            'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                        }, `${ opener }${ body }${ overflow || closer }`)];
                 const annotations = (0, dom_1.html)('ol', { class: 'annotations' });
                 const references = (0, dom_1.html)('ol', { class: 'references' });
                 const document = (0, parse_1.parse)(body.slice(0, -1), {
@@ -3610,15 +3624,15 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const dom_1 = _dereq_('typed-dom/dom');
             const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
-            exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, type = 'markdown', param], _, context) => {
-                if (!closer || param.trimStart())
+            exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, overflow, closer, opener, delim, type = 'markdown', param], _, context) => {
+                if (!closer || overflow || param.trimStart())
                     return [(0, dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
-                        }, `${ opener }${ body }${ closer }`)];
+                            'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                        }, `${ opener }${ body }${ overflow || closer }`)];
                 switch (type) {
                 case 'markdown': {
                         const annotations = (0, dom_1.html)('ol', { class: 'annotations' });
@@ -3657,6 +3671,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
+                            'data-invalid-type': 'type',
                             'data-invalid-message': 'Invalid example type'
                         }, `${ opener }${ body }${ closer }`)];
                 }
@@ -3808,7 +3823,7 @@ require = function () {
             ])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     (0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', { class: 'figindex' })], (0, dom_1.defrag)(caption))),
                     (0, dom_1.html)('div', [content])
-                ])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, closer, opener, delim], _, context) => {
+                ])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, overflow, closer, opener, delim], _, context) => {
                 var _a, _b;
                 return [(0, dom_1.html)('pre', {
                         class: 'invalid',
@@ -3817,6 +3832,9 @@ require = function () {
                         ...!closer && {
                             'data-invalid-type': 'fence',
                             'data-invalid-message': `Missing the closing delimiter "${ delim }"`
+                        } || overflow && {
+                            'data-invalid-type': 'fence',
+                            'data-invalid-message': `Invalid trailing line after the closing delimiter "${ delim }"`
                         } || !(0, label_1.segment)((_b = (_a = opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : '', context) && {
                             'data-invalid-type': 'label',
                             'data-invalid-message': 'Invalid label'
@@ -3827,7 +3845,7 @@ require = function () {
                             'data-invalid-type': 'content',
                             'data-invalid-message': 'Invalid content'
                         }
-                    }, `${ opener }${ body }${ closer }`)];
+                    }, `${ opener }${ body }${ overflow || closer }`)];
             })));
             function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
@@ -3945,15 +3963,15 @@ require = function () {
             const paragraph_1 = _dereq_('../paragraph');
             const dom_1 = _dereq_('typed-dom/dom');
             const array_1 = _dereq_('spica/array');
-            exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300), ([body, closer, opener, delim, type, param], _, context) => {
-                if (!closer || param.trimStart())
+            exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300), ([body, overflow, closer, opener, delim, type, param], _, context) => {
+                if (!closer || overflow || param.trimStart())
                     return [(0, dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
-                            'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
-                        }, `${ opener }${ body }${ closer }`)];
+                            'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                        }, `${ opener }${ body }${ overflow || closer }`)];
                 switch (type) {
                 case 'note':
                 case 'caution':
@@ -3964,6 +3982,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
+                            'data-invalid-type': 'type',
                             'data-invalid-message': 'Invalid message type'
                         }, `${ opener }${ body }${ closer }`)];
                 }
@@ -4025,13 +4044,11 @@ require = function () {
             const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-            exports.placeholder = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, Infinity), ([body, closer, opener, delim]) => [(0, dom_1.html)('pre', {
+            exports.placeholder = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, Infinity), ([body, overflow, closer, opener, delim]) => [(0, dom_1.html)('pre', {
                     class: 'invalid',
                     translate: 'no',
-                    'data-invalid-syntax': 'extension',
-                    'data-invalid-type': !closer ? 'fence' : 'syntax',
-                    'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid extension name'
-                }, `${ opener }${ body }${ closer }`)])));
+                    'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                }, `${ opener }${ body }${ overflow || closer }`)])));
         },
         {
             '../../../combinator': 25,
@@ -4056,16 +4073,16 @@ require = function () {
             const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
-            exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.recover)((0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), ([body, closer, opener, delim, param], _, context) => {
+            exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.recover)((0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), ([body, overflow, closer, opener, delim, param], _, context) => {
                 var _a;
-                if (!closer || param.trimStart())
+                if (!closer || overflow || param.trimStart())
                     return [(0, dom_1.html)('pre', {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'table',
-                            'data-invalid-type': !closer ? 'fence' : 'argument',
-                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
-                        }, `${ opener }${ body }${ closer }`)];
+                            'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
+                            'data-invalid-message': !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                        }, `${ opener }${ body }${ overflow || closer }`)];
                 return (_a = (0, parser_1.eval)(parser(body, context))) !== null && _a !== void 0 ? _a : [(0, dom_1.html)('table')];
             }), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less' ? [
                 [(0, dom_1.html)('pre', {
@@ -4437,24 +4454,24 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const dom_1 = _dereq_('typed-dom/dom');
             const opener = /^(\${2,})(?!\$)([^\n]*)(?:$|\n)/;
-            exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 100))));
-            exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 100, false))), false);
-            exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 100), ([body, closer, opener, delim, param], _, {
+            exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
+            exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
+            exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, overflow, closer, opener, delim, param], _, {
                 caches: {
                     math: cache = global_1.undefined
                 } = {}
             }) => {
                 var _a;
-                return [delim.length === 2 && closer && param.trimStart() === '' ? ((_a = cache === null || cache === void 0 ? void 0 : cache.get(`${ delim }\n${ body }${ delim }`)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || (0, dom_1.html)('div', {
+                return [delim.length === 2 && closer && !overflow && param.trimStart() === '' ? ((_a = cache === null || cache === void 0 ? void 0 : cache.get(`${ delim }\n${ body }${ delim }`)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || (0, dom_1.html)('div', {
                         class: 'math',
                         translate: 'no'
                     }, `${ delim }\n${ body }${ delim }`) : (0, dom_1.html)('pre', {
                         class: 'invalid',
                         translate: 'no',
                         'data-invalid-syntax': 'mathblock',
-                        'data-invalid-type': delim.length > 2 ? 'syntax' : !closer ? 'fence' : 'argument',
-                        'data-invalid-message': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }"` : 'Invalid argument'
-                    }, `${ opener }${ body }${ closer }`)];
+                        'data-invalid-type': delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
+                        'data-invalid-message': delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${ delim }"` : overflow ? `Invalid trailing line after the closing delimiter "${ delim }"` : 'Invalid argument'
+                    }, `${ opener }${ body }${ overflow || closer }`)];
             })));
         },
         {
@@ -6284,7 +6301,7 @@ require = function () {
                     }
                     return (0, dom_1.html)('a', {
                         href: uri.source,
-                        target: undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
+                        target: global_1.undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : global_1.undefined
                     }, content.length === 0 ? decode(INSECURE_URI) : content);
                 case 'tel:':
                     if (content.length === 0) {
@@ -8036,8 +8053,8 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.image = void 0;
-            const dom_1 = _dereq_('typed-dom/dom');
             const alias_1 = _dereq_('spica/alias');
+            const dom_1 = _dereq_('typed-dom/dom');
             function image(source, url, cache) {
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return (0, dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [
@@ -8157,8 +8174,8 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.video = void 0;
-            const dom_1 = _dereq_('typed-dom/dom');
             const alias_1 = _dereq_('spica/alias');
+            const dom_1 = _dereq_('typed-dom/dom');
             const extensions = [
                 '.webm',
                 '.ogv'
@@ -8189,6 +8206,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
+            const global_1 = _dereq_('spica/global');
             const dom_1 = _dereq_('typed-dom/dom');
             function youtube(source, url) {
                 const id = resolve(url);
@@ -8208,15 +8226,18 @@ require = function () {
                 var _a;
                 switch (url.origin) {
                 case 'https://www.youtube.com':
-                    return url.pathname.match(/^\/watch\/?$/) ? (_a = url.searchParams.get('v')) === null || _a === void 0 ? void 0 : _a.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : undefined;
+                    return url.pathname.match(/^\/watch\/?$/) ? (_a = url.searchParams.get('v')) === null || _a === void 0 ? void 0 : _a.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : global_1.undefined;
                 case 'https://youtu.be':
-                    return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : undefined;
+                    return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : global_1.undefined;
                 default:
                     return;
                 }
             }
         },
-        { 'typed-dom/dom': 23 }
+        {
+            'spica/global': 13,
+            'typed-dom/dom': 23
+        }
     ],
     146: [
         function (_dereq_, module, exports) {
