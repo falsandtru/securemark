@@ -3782,7 +3782,7 @@ require = function () {
                     ])
                 ])
             ]), closer), ([, fence]) => fence.length, [])));
-            exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
+            exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
                 (0, combinator_1.line)((0, combinator_1.sequence)([
                     label_1.label,
                     (0, source_1.str)(/^(?=\s).*\n/)
@@ -3808,27 +3808,7 @@ require = function () {
             ])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     (0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', { class: 'figindex' })], (0, dom_1.defrag)(caption))),
                     (0, dom_1.html)('div', [content])
-                ])]), (source, context) => {
-                var _a, _b;
-                return [
-                    [(0, dom_1.html)('pre', {
-                            class: 'invalid',
-                            translate: 'no',
-                            'data-invalid-syntax': 'figure',
-                            ...!(0, label_1.segment)((_b = (_a = source.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : '', context) && {
-                                'data-invalid-type': 'label',
-                                'data-invalid-message': 'Invalid label'
-                            } || /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(source) && {
-                                'data-invalid-type': 'argument',
-                                'data-invalid-message': 'Invalid argument'
-                            } || {
-                                'data-invalid-type': 'content',
-                                'data-invalid-message': 'Invalid content'
-                            }
-                        }, source)],
-                    ''
-                ];
-            })), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, closer, opener, delim], _, context) => {
+                ])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, closer, opener, delim], _, context) => {
                 var _a, _b;
                 return [(0, dom_1.html)('pre', {
                         class: 'invalid',
@@ -5991,7 +5971,8 @@ require = function () {
             const memoize_1 = _dereq_('spica/memoize');
             const cache_1 = _dereq_('spica/cache');
             const array_1 = _dereq_('spica/array');
-            const tags = (0, alias_1.ObjectFreeze)([
+            const tags = Object.freeze([
+                'wbr',
                 'sup',
                 'sub',
                 'small',
@@ -6000,19 +5981,19 @@ require = function () {
             ]);
             const attrspec = {
                 bdo: {
-                    dir: (0, alias_1.ObjectFreeze)([
+                    dir: Object.freeze([
                         'ltr',
                         'rtl'
                     ])
                 }
             };
-            (0, alias_1.ObjectSetPrototypeOf)(attrspec, null);
-            (0, alias_1.ObjectValues)(attrspec).forEach(o => (0, alias_1.ObjectSetPrototypeOf)(o, null));
+            Object.setPrototypeOf(attrspec, null);
+            Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
             exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([
                 (0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${ tag }`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [
                     [(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))],
                     rest
-                ]), ([, tag]) => tag)),
+                ]), ([, tag]) => tags.indexOf(tag), [])),
                 (0, combinator_1.match)(/^(?=<(sup|sub|small)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.context)((() => {
                     switch (tag) {
                     case 'sup':
@@ -6041,27 +6022,27 @@ require = function () {
                 ]), `</${ tag }>`)), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
                     [elem(tag, as, (0, dom_1.defrag)(bs), cs, context)],
                     rest
-                ])), ([, tag]) => tag)),
+                ])), ([, tag]) => tags.indexOf(tag), [])),
                 (0, combinator_1.match)(/^(?=<(bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([
                     (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, `</${ tag }>`)),
                     (0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, '</'), true)
-                ]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
-                    [elem(tag, as, (0, dom_1.defrag)(bs), cs, {})],
+                ]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
+                    [elem(tag, as, (0, dom_1.defrag)(bs), cs, context)],
                     rest
                 ], ([as, bs], rest) => as.length === 1 ? [
                     (0, array_1.unshift)(as, bs),
                     rest
-                ] : global_1.undefined)), ([, tag]) => tag)),
+                ] : global_1.undefined)), ([, tag]) => tags.indexOf(tag), [])),
                 (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([
                     (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n?/, `</${ tag }>`)),
                     (0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, '</'), true)
-                ]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
-                    [elem(tag, as, (0, dom_1.defrag)(bs), cs, {})],
+                ]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
+                    [elem(tag, as, (0, dom_1.defrag)(bs), cs, context)],
                     rest
                 ], ([as, bs], rest) => as.length === 1 ? [
                     (0, array_1.unshift)(as, bs),
                     rest
-                ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(1000)))
+                ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(10000)))
             ])))));
             exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
             function elem(tag, as, bs, cs, context) {
@@ -6084,9 +6065,9 @@ require = function () {
                     }
                     break;
                 }
-                let attrs;
+                const attrs = attributes('html', [], attrspec[tag], as.slice(1, -1));
                 switch (true) {
-                case 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1))):
+                case 'data-invalid-syntax' in attrs:
                     return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
                 default:
                     return (0, dom_1.html)(tag, attrs, bs);
@@ -6117,8 +6098,7 @@ require = function () {
                 }
                 invalid || (invalid = !!spec && !requiredAttributes(spec).every(name => name in attrs));
                 if (invalid) {
-                    !classes.includes('invalid') && classes.push('invalid');
-                    attrs['class'] = (0, array_1.join)(classes, ' ');
+                    attrs['class'] = (0, array_1.join)(classes.includes('invalid') ? classes : (0, array_1.unshift)(classes, ['invalid']), ' ');
                     attrs['data-invalid-syntax'] = syntax;
                     attrs['data-invalid-type'] = 'argument';
                     attrs['data-invalid-message'] = 'Invalid argument';
@@ -6214,7 +6194,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.resolve = exports.option = exports.uri = exports.link = void 0;
             const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
             const parser_1 = _dereq_('../../combinator/data/parser');
             const combinator_1 = _dereq_('../../combinator');
             const inline_1 = _dereq_('../inline');
@@ -6225,7 +6204,7 @@ require = function () {
             const dom_1 = _dereq_('typed-dom/dom');
             const url_1 = _dereq_('spica/url');
             const optspec = { rel: ['nofollow'] };
-            (0, alias_1.ObjectSetPrototypeOf)(optspec, null);
+            Object.setPrototypeOf(optspec, null);
             exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.validate)([
                 '[',
                 '{'
@@ -6345,7 +6324,6 @@ require = function () {
             '../source': 128,
             '../util': 134,
             './html': 111,
-            'spica/alias': 5,
             'spica/global': 13,
             'spica/url': 21,
             'typed-dom/dom': 23
@@ -6430,7 +6408,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.media = void 0;
             const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const link_1 = _dereq_('./link');
             const html_1 = _dereq_('./html');
@@ -6445,7 +6422,7 @@ require = function () {
                 'aspect-ratio': [],
                 rel: global_1.undefined
             };
-            (0, alias_1.ObjectSetPrototypeOf)(optspec, null);
+            Object.setPrototypeOf(optspec, null);
             exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.validate)([
                 '![',
                 '!{'
@@ -6573,7 +6550,6 @@ require = function () {
             './html': 111,
             './htmlentity': 112,
             './link': 114,
-            'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 13,
             'spica/url': 21,
