@@ -17,6 +17,7 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n\n\n\n~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]\n!https://host\n\n\n\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n !https://host\n~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]\n !https://host\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n~~~\n~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]\n!https://host\n~~~\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n\ncaption\n~~~\n~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]\n!https://host\n\ncaption\n~~~\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n~~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]\n!https://host\n~~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~~figure [$group-name]\n!https://host\n~~~')), [['<pre class="invalid" translate="no">~~~~figure [$group-name]\n!https://host\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]a\nhttps://host\n~~~')), [['<pre class="invalid" translate="no">~~~figure [$group-name]a\nhttps://host\n~~~</pre>'], '']);
