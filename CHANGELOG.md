@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.244.0
+
+- Change mathblock syntax to increase the maximum number of contained lines to 300.
+
 ## 0.243.2
 
 - Refactoring.
