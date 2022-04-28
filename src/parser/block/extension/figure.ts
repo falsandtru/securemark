@@ -25,28 +25,27 @@ import FigureParser = ExtensionParser.FigureParser;
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n)/,
   memoize(
-  ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) =>
-    close(
-      sequence([
-        contentline,
-        inits([
-          // All parsers which can include closing terms.
-          union([
-            seg_code,
-            seg_math,
-            seg_table,
-            seg_blockquote,
-            seg_placeholder,
-            some(contentline, closer),
-          ]),
+  ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => close(
+    sequence([
+      contentline,
+      inits([
+        // All parsers which can include closing terms.
+        union([
+          seg_code,
+          seg_math,
+          seg_table,
+          seg_blockquote,
+          seg_placeholder,
+          some(contentline, closer),
+        ]),
+        emptyline,
+        union([
           emptyline,
-          union([
-            emptyline,
-            some(contentline, closer),
-          ]),
+          some(contentline, closer),
         ]),
       ]),
-      closer),
+    ]),
+    closer),
   ([, fence]) => fence.length, [])));
 
 export const figure: FigureParser = block(rewrite(segment, fmap(
