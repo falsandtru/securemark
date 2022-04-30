@@ -21,6 +21,7 @@ describe('Unit: parser/header', () => {
       assert.deepStrictEqual(inspect(parser('---\n \n---')), undefined);
       assert.deepStrictEqual(inspect(parser('---\n-\n---')), [['<pre class="invalid" translate="no">---\n-\n---</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('----\na: b\n----')), [['<pre class="invalid" translate="no">----\na: b\n----</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(`---\n${'a: b\n'.repeat(101)}---`)), [[`<pre class="invalid" translate="no">---\n${'a: b\n'.repeat(101)}---</pre>`], '']);
     });
 
     it('basic', () => {
