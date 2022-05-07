@@ -26,7 +26,9 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('(A)')), [['(', 'A', ')'], '']);
       assert.deepStrictEqual(inspect(parser('（１，２）')), [['（', '１，２', '）'], '']);
       assert.deepStrictEqual(inspect(parser('（０－１）')), [['（', '０－１', '）'], '']);
-      assert.deepStrictEqual(inspect(parser('（０．１）（Ａ）')), [['（', '０．１', '）', '（', 'Ａ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('（０．１）')), [['（', '０．１', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('（ａ）')), [['（', 'ａ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('（Ａ）')), [['（', 'Ａ', '）'], '']);
     });
 
     it('[', () => {
