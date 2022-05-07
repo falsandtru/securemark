@@ -670,7 +670,7 @@ require = function () {
                 ];
                 for (let i = 0; i < count; ++i) {
                     try {
-                        jobs[i]();
+                        (void 0, jobs[i])();
                         jobs[i] = void 0;
                     } catch (reason) {
                         (0, exception_1.causeAsyncException)(reason);
@@ -796,12 +796,13 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.causeAsyncException = void 0;
+            const global_1 = _dereq_('./global');
             function causeAsyncException(reason) {
-                void Promise.reject(reason);
+                global_1.Promise.reject(reason);
             }
             exports.causeAsyncException = causeAsyncException;
         },
-        {}
+        { './global': 13 }
     ],
     13: [
         function (_dereq_, module, exports) {
@@ -1225,6 +1226,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.isPrimitive = exports.isType = exports.type = void 0;
+            const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
             const toString = Object.prototype.toString.call.bind(Object.prototype.toString);
             const ObjectPrototype = Object.prototype;
@@ -1236,8 +1238,10 @@ require = function () {
                     return 'null';
                 const type = typeof value;
                 if (type === 'object') {
+                    if (value[global_1.Symbol.toStringTag])
+                        return value[global_1.Symbol.toStringTag];
                     const proto = (0, alias_1.ObjectGetPrototypeOf)(value);
-                    if (proto === ObjectPrototype || proto === null)
+                    if (proto === ObjectPrototype)
                         return 'Object';
                     if (proto === ArrayPrototype)
                         return 'Array';
@@ -1262,7 +1266,10 @@ require = function () {
             }
             exports.isPrimitive = isPrimitive;
         },
-        { './alias': 5 }
+        {
+            './alias': 5,
+            './global': 13
+        }
     ],
     21: [
         function (_dereq_, module, exports) {
@@ -1589,6 +1596,7 @@ require = function () {
             }
             exports.define = define;
             function defineAttrs(el, attrs) {
+                var _a, _b;
                 for (const name in attrs) {
                     if (!(0, alias_1.hasOwnProperty)(attrs, name))
                         continue;
@@ -1602,9 +1610,10 @@ require = function () {
                             throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${ name }".`);
                         const names = name.split(/\s+/);
                         for (const name of names) {
-                            if (name.slice(0, 2) !== 'on')
+                            if (!name.startsWith('on'))
                                 throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
-                            el.addEventListener(name.slice(2), value, {
+                            const eventname = name.slice(2).toLowerCase();
+                            el.addEventListener(eventname, value, {
                                 passive: [
                                     'wheel',
                                     'mousewheel',
@@ -1612,8 +1621,15 @@ require = function () {
                                     'touchmove',
                                     'touchend',
                                     'touchcancel'
-                                ].includes(name.slice(2))
+                                ].includes(eventname)
                             });
+                            switch (eventname) {
+                            case 'mutate':
+                            case 'connect':
+                            case 'disconnect':
+                                const prop = `on${ eventname }`;
+                                prop in el ? (_a = el[prop]) !== null && _a !== void 0 ? _a : el[prop] = ev => ev.returnValue : (_b = el[prop]) !== null && _b !== void 0 ? _b : el[prop] = '';
+                            }
                         }
                         continue;
                     case 'object':
@@ -5426,7 +5442,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const dom_1 = _dereq_('typed-dom/dom');
             const array_1 = _dereq_('spica/array');
-            const index = /^(?:[0-9]+(?:(?:[.-]|, )[0-9]+)*|[A-Za-z])/;
+            const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
             exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')')),
                 (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')'), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [
