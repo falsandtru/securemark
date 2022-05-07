@@ -6,7 +6,7 @@ import { str } from '../source';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-const index = /^(?:[0-9]+(?:(?:[.-]|, )[0-9]+)*|[A-Za-z])/;
+const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 
 export const bracket: BracketParser = lazy(() => creator(union([
   surround(str('('), str(index), str(')')),
