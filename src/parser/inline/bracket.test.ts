@@ -34,6 +34,7 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('(word, word)')), [['(', 'word, word', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(A)')), [['(', 'A', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(Name)')), [['(', 'Name', ')'], '']);
+      assert.deepStrictEqual(inspect(parser('(Word word)')), [['<span class="paren">(Word word)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(Word Word)')), [['<span class="paren">(Word Word)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(Name, Name)')), [['(', 'Name, Name', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(ABBR)')), [['(', 'ABBR', ')'], '']);
@@ -43,6 +44,8 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('（０．１）')), [['（', '０．１', '）'], '']);
       assert.deepStrictEqual(inspect(parser('（ａ）')), [['（', 'ａ', '）'], '']);
       assert.deepStrictEqual(inspect(parser('（Ａ）')), [['（', 'Ａ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('（Ａ，Ｂ）')), [['（', 'Ａ，Ｂ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('（Ａ、Ｂ）')), [['（', 'Ａ、Ｂ', '）'], '']);
     });
 
     it('[', () => {

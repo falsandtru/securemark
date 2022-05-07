@@ -13,7 +13,7 @@ export const bracket: BracketParser = lazy(() => creator(union([
   surround(str('('), some(inline, ')'), str(')'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('（'), str(new RegExp(index.source.replace(/[09AZaz., ]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
+  surround(str('（'), str(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
   surround(str('（'), some(inline, '）'), str('）'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
