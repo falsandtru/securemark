@@ -5452,7 +5452,7 @@ require = function () {
                     (0, array_1.unshift)(as, bs),
                     rest
                 ]),
-                (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, source_1.str)(new RegExp(index.source.replace(/[09AZaz., ]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 65248)))), (0, source_1.str)('\uFF09')),
+                (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, source_1.str)(new RegExp(index.source.replace(', ', '[\uFF0C\u3001]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 65248)))), (0, source_1.str)('\uFF09')),
                 (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, combinator_1.some)(inline_1.inline, '\uFF09'), (0, source_1.str)('\uFF09'), true, ([as, bs = [], cs], rest) => [
                     [(0, dom_1.html)('span', { class: 'paren' }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))],
                     rest
