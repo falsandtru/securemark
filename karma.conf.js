@@ -1,48 +1,30 @@
 module.exports = function (config) {
   config.set({
-    basePath: '',
+    browsers: ['Chrome', 'Firefox'],
     frameworks: ['mocha'],
     files: [
-      { pattern: 'https://cdn.polyfill.io/v3/polyfill.js?flags=gated&features=default', watched: false, served: false, included: true },
-      { pattern: 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js', watched: false, served: false, included: true },
-      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.js', watched: false, served: false, included: true },
-      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js', watched: false, served: false, included: true },
-      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js', watched: false, served: false, included: true },
-      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.2.2/purify.js', watched: false, served: false, included: true },
-      { pattern: 'node_modules/power-assert/build/power-assert.js', watched: true, served: true, included: true },
-      { pattern: 'dist/*.test.js', watched: true, served: true, included: true }
+      { pattern: 'https://cdn.jsdelivr.net/npm/power-assert@1.6.1/build/power-assert.js', watched: false, served: false, included: true, integrity: 'sha256-MuDC5CQFh3oWtiG0YE000HlkK08xAilD2v0ndZR+Kds=' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js', watched: false, served: false, included: true, integrity: 'sha512-2iwCHjuj+PmdCyvb88rMOch0UcKQxVHi/gsAml1fN3eg82IDaO/cdzzeXX4iF2VzIIes7pODE1/G0ts3QBwslA==' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/benchmark/2.1.4/benchmark.js', watched: false, served: false, included: true, integrity: 'sha512-XnVGk21Ij51MbU8XezQpkwZ1/GA8b5qmoVGIOdJLBYycutjkaeemipzRJP7P6mEJl99OfnweA7M3e4WLfuG7Aw==' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js', watched: false, served: false, included: true, integrity: 'sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g==' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js', watched: false, served: false, included: true, integrity: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.js' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/plugins/autoloader/prism-autoloader.min.js', watched: false, served: false, included: true, integrity: 'sha512-fTl/qcO1VgvKtOMApX2PdZzkziyr2stM65GYPLGuYMnuMm1z2JLJG6XVU7C/mR+E7xBUqCivykuhlzfqxXBXbg==' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js', watched: false, served: false, included: true, integrity: 'sha512-93xLZnNMlYI6xaQPf/cSdXoBZ23DThX7VehiGJJXB76HTTalQKPC5CIHuFX8dlQ5yzt6baBQRJ4sDXhzpojRJA==' },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.js', watched: false, served: false, included: true, integrity: 'sha512-QaF+0tDlqVmwZaQSc0kImgYmw+Cd66TxA5D9X70I5V9BNSqk6yBTbyqw2VEUsVYV5OTbxw8HD9d45on1wvYv7g==' },
+      { pattern: 'dist/**/*.{js,map}', watched: true, served: true, included: true },
     ],
-    exclude: [
-    ],
-    espowerPreprocessor: {
-      options: {
-        emitActualCode: false,
-        ignoreUpstreamSourceMap: true
-      }
+    reporters: ['dots', 'coverage'],
+    preprocessors: {
+      'dist/**/*.js': ['coverage'],
     },
-    reporters: ['dots'],
-    coverageIstanbulReporter: {
-      reports: ['html', 'lcovonly', 'text-summary'],
+    coverageReporter: {
       dir: 'coverage',
-      combineBrowserReports: true,
-      skipFilesWithNoCoverage: false,
-      verbose: false,
-      'report-config': {
-        html: {
-          subdir: 'html',
-        },
-      },
-      instrumentation: {
-        'default-excludes': false,
-      },
+      reporters: [
+        { type: 'html', subdir: browser => browser.split(/\s/)[0] },
+        { type: 'text-summary', subdir: '.', file: 'summary.txt' },
+      ],
     },
-    coverageIstanbulInstrumenter: {
-      esModules: true,
-    },
-    autoWatch: true,
-    autoWatchBatchDelay: 500,
-    browserDisconnectTimeout: 30000,
-    browsers: ['Chrome'],
-    singleRun: true,
+    browserDisconnectTimeout: 60 * 1e3,
+    browserNoActivityTimeout: 90 * 1e3,
   });
 };

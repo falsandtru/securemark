@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.245.0
+
+- Use webpack.
+
 ## 0.244.2
 
 - Refactoring.

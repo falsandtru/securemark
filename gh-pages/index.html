@@ -674,7 +674,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js" integrity="sha512-93xLZnNMlYI6xaQPf/cSdXoBZ23DThX7VehiGJJXB76HTTalQKPC5CIHuFX8dlQ5yzt6baBQRJ4sDXhzpojRJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.0/purify.min.js" integrity="sha512-FJzrdtFBVzaaehq9mzbhljqwJ7+jE0GyTa8UBxZdMsMUjflR25f5lJSGD0lmQPHnhQfnctG0B1TNQsObwyJUzA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/securemark/assets/js/lib/securemark.js"></script>
+<script src="/securemark/assets/dist/index.js"></script>
 
 <script>
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
@@ -1025,7 +1025,7 @@
     viewportMargin: Infinity,
   });
   const viewer = document.getElementById('viewer');
-  const { bind, render, caches } = require('securemark');
+  const { bind, render, caches } = global['securemark'];
   const { parse, nearest, index } = bind(viewer, {
     caches,
     footnotes: {
