@@ -1,4 +1,4 @@
-import * as Prism from 'prismjs';
+import Prism from 'prismjs';
 import { Collection } from 'spica/collection';
 
 export function code(target: HTMLElement, cache?: Collection<string, HTMLElement>): void {

@@ -1,7 +1,7 @@
 import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
 import { html as h, define } from 'typed-dom/dom';
-import { sanitize } from 'dompurify';
+import DOMPurify from 'dompurify';
 
 declare global {
   interface Window {
@@ -29,7 +29,7 @@ export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undef
     timeout: 10 * 1e3,
     cache: true,
     success({ html }): void {
-      el.innerHTML = sanitize(html);
+      el.innerHTML = DOMPurify.sanitize(html);
       if (window.twttr) return void window.twttr.widgets.load(el);
       const id = 'twitter-wjs';
       if (document.getElementById(id)) return;
