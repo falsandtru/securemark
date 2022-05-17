@@ -7919,49 +7919,15 @@ require = function () {
             (function (global) {
                 (function () {
                     'use strict';
-                    var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
-                        if (k2 === undefined)
-                            k2 = k;
-                        var desc = Object.getOwnPropertyDescriptor(m, k);
-                        if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-                            desc = {
-                                enumerable: true,
-                                get: function () {
-                                    return m[k];
-                                }
-                            };
-                        }
-                        Object.defineProperty(o, k2, desc);
-                    } : function (o, m, k, k2) {
-                        if (k2 === undefined)
-                            k2 = k;
-                        o[k2] = m[k];
-                    });
-                    var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
-                        Object.defineProperty(o, 'default', {
-                            enumerable: true,
-                            value: v
-                        });
-                    } : function (o, v) {
-                        o['default'] = v;
-                    });
-                    var __importStar = this && this.__importStar || function (mod) {
-                        if (mod && mod.__esModule)
-                            return mod;
-                        var result = {};
-                        if (mod != null)
-                            for (var k in mod)
-                                if (k !== 'default' && Object.prototype.hasOwnProperty.call(mod, k))
-                                    __createBinding(result, mod, k);
-                        __setModuleDefault(result, mod);
-                        return result;
+                    var __importDefault = this && this.__importDefault || function (mod) {
+                        return mod && mod.__esModule ? mod : { 'default': mod };
                     };
                     Object.defineProperty(exports, '__esModule', { value: true });
                     exports.code = void 0;
-                    const Prism = __importStar(typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null);
+                    const prismjs_1 = __importDefault(typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null);
                     function code(target, cache) {
                         const source = target.textContent;
-                        Prism.highlightElement(target, false, () => {
+                        prismjs_1.default.highlightElement(target, false, () => {
                             var _a;
                             return void (cache === null || cache === void 0 ? void 0 : cache.set(`${ (_a = target.getAttribute('data-lang')) !== null && _a !== void 0 ? _a : '' }\n${ source }`, target.cloneNode(true)));
                         });
@@ -8135,12 +8101,15 @@ require = function () {
             (function (global) {
                 (function () {
                     'use strict';
+                    var __importDefault = this && this.__importDefault || function (mod) {
+                        return mod && mod.__esModule ? mod : { 'default': mod };
+                    };
                     Object.defineProperty(exports, '__esModule', { value: true });
                     exports.twitter = void 0;
                     const global_1 = _dereq_('spica/global');
                     const parser_1 = _dereq_('../../../parser');
                     const dom_1 = _dereq_('typed-dom/dom');
-                    const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                    const dompurify_1 = __importDefault(typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null);
                     const origins = ['https://twitter.com'];
                     function twitter(source, url) {
                         if (!origins.includes(url.origin))
@@ -8158,7 +8127,7 @@ require = function () {
                             timeout: 10 * 1000,
                             cache: true,
                             success({html}) {
-                                el.innerHTML = (0, dompurify_1.sanitize)(html);
+                                el.innerHTML = dompurify_1.default.sanitize(html);
                                 if (global_1.window.twttr)
                                     return void global_1.window.twttr.widgets.load(el);
                                 const id = 'twitter-wjs';
