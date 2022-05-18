@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.246.0
+
+- Extend table syntax to add grid type.
+
 ## 0.245.0
 
 - Use webpack.

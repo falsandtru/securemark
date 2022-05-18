@@ -654,6 +654,15 @@ describe('Unit: parser/block/extension/table', () => {
         ]).outerHTML], '']);
     });
 
+    it('type', () => {
+      assert.deepStrictEqual(
+        inspect(parser('~~~table/invalid\n~~~')),
+        [['<pre class="invalid" translate="no">~~~table/invalid\n~~~</pre>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table/grid\n~~~')),
+        [[html('table', { 'data-type': 'grid' }).outerHTML], '']);
+    });
+
   });
 
 });

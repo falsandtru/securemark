@@ -223,6 +223,8 @@
   table {
     margin-block-end: 1rem;
     border-collapse: collapse;
+    border: 0 solid #bbb;
+    border-width: 1px 0;
     letter-spacing: normal;
     font-size: 97%;
   }
@@ -230,14 +232,17 @@
     min-width: 2rem;
   }
   thead, tfoot {
+    background-color: #fafafa;
+    border-width: 1px 0;
     text-align: center;
   }
+  tbody > tr:nth-child(even) {
+    background-color: #eee;
+  }
   th, td {
-    border: 1px solid #bbb;
     padding: .2em .4em;
   }
   th, :is(thead, tfoot) > tr > td {
-    background-color: #f6f6f6;
     font-weight: bold;
   }
   :is(th, td)[align="start"] {
@@ -279,6 +284,12 @@
   }
   tbody > tr > td.highlight[data-highlight-level="6"] {
     background-color: gray;
+  }
+  table:where([data-type="grid"]) > * > tr > :is(th, td) {
+    border-width: 1px;
+  }
+  table:where([data-type="grid"]) > tbody > tr > th {
+    background-color: #fafafa;
   }
   blockquote {
     border-inline-start: .2em solid #eee;
@@ -878,7 +889,7 @@
     '',
     '### Example',
     '',
-    '~~~table',
+    '~~~table/grid',
     '#:2 Category',
     '# Name',
     '# Mass',

@@ -7,7 +7,7 @@ import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
 import { visualize } from '../../util';
-import { html, defrag } from 'typed-dom/dom';
+import { html, define, defrag } from 'typed-dom/dom';
 import { unshift, splice } from 'spica/array';
 
 import TableParser = ExtensionParser.TableParser;
@@ -15,7 +15,7 @@ import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
-const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
+const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 
 export const segment: TableParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 10000))));
@@ -26,7 +26,7 @@ export const segment_: TableParser.SegmentParser = block(validate('~~~',
 export const table: TableParser = block(validate('~~~', fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, type, param]: string[], _, context) => {
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
@@ -37,7 +37,20 @@ export const table: TableParser = block(validate('~~~', fmap(
         overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
         'Invalid argument',
     }, `${opener}${body}${overflow || closer}`)];
-    return eval(parser(body, context)) ?? [html('table')];
+    switch (type) {
+      case 'grid':
+      case undefined:
+        return (eval(parser(body, context)) ?? [html('table')])
+          .map(el => define(el, { 'data-type': type }));
+      default:
+        return [html('pre', {
+          class: 'invalid',
+          translate: 'no',
+          'data-invalid-syntax': 'table',
+          'data-invalid-type': 'argument',
+          'data-invalid-message': 'Invalid table type',
+        }, `${opener}${body}${closer}`)];
+    }
   })));
 
 const parser: TableParser = lazy(() => block(localize(fmap(
