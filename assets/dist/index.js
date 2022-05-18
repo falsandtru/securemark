@@ -4307,11 +4307,11 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
+const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
 exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), // Bug: Type mismatch between outer and inner.
-([body, overflow, closer, opener, delim, param], _, context) => {
+([body, overflow, closer, opener, delim, type, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
@@ -4319,7 +4319,23 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
-  return (0, parser_1.eval)(parser(body, context)) ?? [(0, dom_1.html)('table')];
+
+  switch (type) {
+    case 'grid':
+    case global_1.undefined:
+      return ((0, parser_1.eval)(parser(body, context)) ?? [(0, dom_1.html)('table')]).map(el => (0, dom_1.define)(el, {
+        'data-type': type
+      }));
+
+    default:
+      return [(0, dom_1.html)('pre', {
+        class: 'invalid',
+        translate: 'no',
+        'data-invalid-syntax': 'table',
+        'data-invalid-type': 'argument',
+        'data-invalid-message': 'Invalid table type'
+      }, `${opener}${body}${closer}`)];
+  }
 })));
 const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => [(0, dom_1.html)('table', format(rows))]))));
 const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.union)([align])), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => !(0, alias_1.isArray)(ns[0]) ? (0, array_1.unshift)([[[]]], ns) : ns)));
