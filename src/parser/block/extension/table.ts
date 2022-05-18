@@ -1,8 +1,8 @@
-import { undefined, Array } from 'spica/global';
+import { undefined, BigInt, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
@@ -23,7 +23,7 @@ export const segment: TableParser.SegmentParser = block(validate('~~~',
 export const segment_: TableParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 10000, false))), false);
 
-export const table: TableParser = block(validate('~~~', recover(fmap(
+export const table: TableParser = block(validate('~~~', fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
@@ -38,19 +38,7 @@ export const table: TableParser = block(validate('~~~', recover(fmap(
         'Invalid argument',
     }, `${opener}${body}${overflow || closer}`)];
     return eval(parser(body, context)) ?? [html('table')];
-  }),
-  (source, _, reason) =>
-    reason instanceof Error && reason.message === 'Number of columns must be 32 or less'
-      ? [[
-          html('pre', {
-            class: 'invalid',
-            translate: 'no',
-            'data-invalid-syntax': 'table',
-            'data-invalid-type': 'content',
-            'data-invalid-message': reason.message,
-          }, source),
-        ], '']
-      : (() => { throw reason; })())));
+  })));
 
 const parser: TableParser = lazy(() => block(localize(fmap(
   some(union([row])),
@@ -144,7 +132,7 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
   const valigns: ('middle' | 'top' | 'bottom' | '')[] = [];
   let target = thead;
   let ranges: Record<number, Record<number, HTMLTableCellElement>> = {};
-  let verticalHighlights = 0;
+  let verticalHighlights = 0n;
   ROW:
   for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
@@ -214,25 +202,25 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     }
     assert(valigns.length > 0);
     const row = html('tr');
-    let heads = 0;
-    let highlights = 0;
+    let heads = 0n;
+    let highlights = 0n;
     let hasDataCell = false;
-    let lHeadCellIdx: number;
-    let rHeadCellIdx: number;
-    for (let j = 0; j < cells.length && cells.length <= 32; ++j) {
+    let lHeadCellIdx: bigint;
+    let rHeadCellIdx: bigint;
+    for (let j = 0, jn = 0n; j < cells.length; jn = BigInt(++j)) {
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual
         ? splice(cells, j, 0, undefined) && ranges[i][j]
         : cells[j];
       const isHeadCell = cell.tagName === 'TH';
-      heads |= +isHeadCell << j;
-      highlights |= +!!cell.classList.contains('highlight') << j;
+      heads |= BigInt(isHeadCell) << jn;
+      highlights |= BigInt(cell.classList.contains('highlight')) << jn;
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
-        lHeadCellIdx = j;
+        lHeadCellIdx = jn;
       }
       if (isHeadCell && hasDataCell) {
-        rHeadCellIdx ??= j;
+        rHeadCellIdx ??= jn;
       }
       const rowSpan = cell.rowSpan;
       assert(rowSpan > 0);
@@ -247,8 +235,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       assert(colSpan > 0);
       if (colSpan > 1) {
         splice(cells, j + 1, 0, ...Array(colSpan - 1));
-        heads |= +`0b${`${heads & 1 << j && 1}`.repeat(colSpan)}` << j;
-        highlights |= +`0b${`${highlights & 1 << j && 1}`.repeat(colSpan)}` << j;
+        heads |= BigInt(+`0b${`${heads & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
+        highlights |= BigInt(+`0b${`${highlights & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
         j += colSpan - 1;
       }
       if (target === thead) {
@@ -282,20 +270,19 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       aligns[j] && cell.setAttribute('align', aligns[j]);
       valigns[j] && cell.setAttribute('valign', valigns[j]);
     }
-    if (cells.length > 32) throw new Error('Number of columns must be 32 or less');
     target.appendChild(row);
     switch (target) {
       case thead:
         verticalHighlights = heads & highlights;
         continue;
       case tbody:
-        lHeadCellIdx ??= -1;
-        rHeadCellIdx ??= -1;
+        lHeadCellIdx ??= -1n;
+        rHeadCellIdx ??= -1n;
         const tHighlights = verticalHighlights;
         const horizontalHighlights = heads & highlights;
-        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1 << lHeadCellIdx;
-        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1 << rHeadCellIdx;
-        for (let i = 0, m = 1; i < cells.length; ++i, m <<= 1) {
+        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1n << lHeadCellIdx;
+        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1n << rHeadCellIdx;
+        for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
           const cell = cells[i];
           if (!cell) continue;
           if (heads & m) continue;

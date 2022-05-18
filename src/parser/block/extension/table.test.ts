@@ -10,20 +10,6 @@ describe('Unit: parser/block/extension/table', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
-      assert.deepStrictEqual(
-        inspect(parser([
-          '~~~table',
-          `${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}`,
-          '~~~'
-        ].join('\n'))),
-        [[`<pre class="invalid" translate="no">~~~table\n${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n~~~</pre>`], '']);
-      assert.deepStrictEqual(
-        inspect(parser([
-          '~~~table',
-          '::33 1',
-          '~~~'
-        ].join('\n'))),
-        [[`<pre class="invalid" translate="no">~~~table\n::33 1\n~~~</pre>`], '']);
     });
 
     it('data', () => {
@@ -483,8 +469,8 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n#  1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}`,
-          `-\n#! 1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}`,
+          `-\n#  1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
+          `-\n#! 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
         [[html('table', [
@@ -492,52 +478,52 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody', [
             html('tr', [
               html('th', '1'),
-              ...[...Array(31)].map((_, i) => html('td', `${i + 2}`)),
+              ...[...Array(32)].map((_, i) => html('td', `${i + 2}`)),
             ]),
             html('tr', [
               html('th', { class: 'highlight' }, '1'),
-              ...[...Array(31)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 2}`)),
+              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 2}`)),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  32`,
-          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#! 32`,
+          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  33`,
+          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#! 33`,
           '~~~'
         ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              ...[...Array(31)].map((_, i) => html('td', `${i + 1}`)),
-              html('th', '32'),
+              ...[...Array(32)].map((_, i) => html('td', `${i + 1}`)),
+              html('th', '33'),
             ]),
             html('tr', [
-              ...[...Array(31)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 1}`)),
-              html('th', { class: 'highlight' }, '32'),
+              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 1}`)),
+              html('th', { class: 'highlight' }, '33'),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n${[...Array(31)].map((_, i) => `# ${i + 1}`).join('\n')}\n#! 32`,
-          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}`,
+          `-\n${[...Array(32)].map((_, i) => `# ${i + 1}`).join('\n')}\n#! 33`,
+          `-\n${[...Array(33)].map((_, i) => `: ${i + 1}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
         [[html('table', [
           html('thead', [
             html('tr', [
-              ...[...Array(31)].map((_, i) => html('th', `${i + 1}`)),
-              html('th', { class: 'highlight' }, '32'),
+              ...[...Array(32)].map((_, i) => html('th', `${i + 1}`)),
+              html('th', { class: 'highlight' }, '33'),
             ]),
           ]),
           html('tbody', [
             html('tr', [
-              ...[...Array(31)].map((_, i) => html('td', `${i + 1}`)),
-              html('td', { class: 'highlight', highlight: 'v' }, '32'),
+              ...[...Array(32)].map((_, i) => html('td', `${i + 1}`)),
+              html('td', { class: 'highlight', highlight: 'v' }, '33'),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
