@@ -4310,7 +4310,7 @@ const array_1 = __webpack_require__(8112);
 const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
-exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.recover)((0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), // Bug: Type mismatch between outer and inner.
+exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -4320,15 +4320,7 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
   return (0, parser_1.eval)(parser(body, context)) ?? [(0, dom_1.html)('table')];
-}), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less' ? [[(0, dom_1.html)('pre', {
-  class: 'invalid',
-  translate: 'no',
-  'data-invalid-syntax': 'table',
-  'data-invalid-type': 'content',
-  'data-invalid-message': reason.message
-}, source)], ''] : (() => {
-  throw reason;
-})())));
+})));
 const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => [(0, dom_1.html)('table', format(rows))]))));
 const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.union)([align])), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => !(0, alias_1.isArray)(ns[0]) ? (0, array_1.unshift)([[[]]], ns) : ns)));
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
@@ -4368,7 +4360,7 @@ function format(rows) {
   const valigns = [];
   let target = thead;
   let ranges = {};
-  let verticalHighlights = 0;
+  let verticalHighlights = 0n;
 
   ROW: for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
@@ -4437,26 +4429,26 @@ function format(rows) {
     }
 
     const row = (0, dom_1.html)('tr');
-    let heads = 0;
-    let highlights = 0;
+    let heads = 0n;
+    let highlights = 0n;
     let hasDataCell = false;
     let lHeadCellIdx;
     let rHeadCellIdx;
 
-    for (let j = 0; j < cells.length && cells.length <= 32; ++j) {
+    for (let j = 0, jn = 0n; j < cells.length; jn = (0, global_1.BigInt)(++j)) {
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual ? (0, array_1.splice)(cells, j, 0, global_1.undefined) && ranges[i][j] : cells[j];
       const isHeadCell = cell.tagName === 'TH';
-      heads |= +isHeadCell << j;
-      highlights |= +!!cell.classList.contains('highlight') << j;
+      heads |= (0, global_1.BigInt)(isHeadCell) << jn;
+      highlights |= (0, global_1.BigInt)(cell.classList.contains('highlight')) << jn;
       hasDataCell ||= !isHeadCell;
 
       if (isHeadCell && !hasDataCell) {
-        lHeadCellIdx = j;
+        lHeadCellIdx = jn;
       }
 
       if (isHeadCell && hasDataCell) {
-        rHeadCellIdx ??= j;
+        rHeadCellIdx ??= jn;
       }
 
       const rowSpan = cell.rowSpan;
@@ -4474,8 +4466,8 @@ function format(rows) {
 
       if (colSpan > 1) {
         (0, array_1.splice)(cells, j + 1, 0, ...(0, global_1.Array)(colSpan - 1));
-        heads |= +`0b${`${heads & 1 << j && 1}`.repeat(colSpan)}` << j;
-        highlights |= +`0b${`${highlights & 1 << j && 1}`.repeat(colSpan)}` << j;
+        heads |= (0, global_1.BigInt)(+`0b${`${heads & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
+        highlights |= (0, global_1.BigInt)(+`0b${`${highlights & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
         j += colSpan - 1;
       }
 
@@ -4513,7 +4505,6 @@ function format(rows) {
       valigns[j] && cell.setAttribute('valign', valigns[j]);
     }
 
-    if (cells.length > 32) throw new Error('Number of columns must be 32 or less');
     target.appendChild(row);
 
     switch (target) {
@@ -4522,14 +4513,14 @@ function format(rows) {
         continue;
 
       case tbody:
-        lHeadCellIdx ??= -1;
-        rHeadCellIdx ??= -1;
+        lHeadCellIdx ??= -1n;
+        rHeadCellIdx ??= -1n;
         const tHighlights = verticalHighlights;
         const horizontalHighlights = heads & highlights;
-        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1 << lHeadCellIdx;
-        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1 << rHeadCellIdx;
+        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1n << lHeadCellIdx;
+        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1n << rHeadCellIdx;
 
-        for (let i = 0, m = 1; i < cells.length; ++i, m <<= 1) {
+        for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
           const cell = cells[i];
           if (!cell) continue;
           if (heads & m) continue;
