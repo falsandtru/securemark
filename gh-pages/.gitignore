@@ -1,5 +1,4 @@
 # jekyll
 .jekyll-metadata
 _site
-/assets/*
-!/assets/lib
+assets/dist
