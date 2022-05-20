@@ -228,19 +228,51 @@
     letter-spacing: normal;
     font-size: 97%;
   }
-  table .media {
-    min-width: 2rem;
-  }
   thead, tfoot {
-    background-color: #fafafa;
     border-width: 1px 0;
     text-align: center;
   }
+  thead > tr > :not(:empty) {
+    border-block-end-width: 1px;
+  }
+  tfoot > tr > :not(:empty) {
+    border-block-start-width: 1px;
+  }
+  :is(thead, tfoot) > tr > th {
+    position: relative;
+  }
+  :is(thead, tfoot) > tr > th + th::before {
+    content: "";
+    position: absolute;
+    left: -.2em;
+    right: auto;
+    border: 0 solid #fff;
+    width: .4em;
+  }
+  :is(thead, tfoot):dir(ltr) > tr > th + th::before {
+    left: -.2em;
+    right: auto;
+  }
+  :is(thead, tfoot):dir(rtl) > tr > th + th::before {
+    left: auto;
+    right: -.2em;
+  }
+  thead > tr:not(:last-child) > th + th::before {
+    bottom: -1px;
+    border-block-end-width: 1px;
+  }
+  tfoot > tr:not(:first-child) > th + th::before {
+    top: -1px;
+    border-block-start-width: 1px;
+  }
   tbody > tr:nth-child(even) {
-    background-color: #eee;
+    background-color: #f0f2f4;
+  }
+  :is(thead, tfoot) > tr > th {
+    padding: .1em .4em .3em;
   }
   th, td {
-    padding: .2em .4em;
+    padding: .1em .4em .25em;
   }
   th, :is(thead, tfoot) > tr > td {
     font-weight: bold;
@@ -285,10 +317,13 @@
   tbody > tr > td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
-  table:where([data-type="grid"]) > * > tr > :is(th, td) {
+  table .media {
+    min-width: 2rem;
+  }
+  table:where([data-type="grid"]) > * > tr > * {
     border-width: 1px;
   }
-  table:where([data-type="grid"]) > tbody > tr > th {
+  table:where([data-type="grid"]) > * > tr > th {
     background-color: #fafafa;
   }
   blockquote {
