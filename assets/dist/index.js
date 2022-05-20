@@ -8,7 +8,7 @@
 		exports["securemark"] = factory(require("DOMPurify"), require("Prism"));
 	else
 		root["securemark"] = factory(root["DOMPurify"], root["Prism"]);
-})(globalThis, (__WEBPACK_EXTERNAL_MODULE__6231__, __WEBPACK_EXTERNAL_MODULE__9450__) => {
+})(this, (__WEBPACK_EXTERNAL_MODULE__6231__, __WEBPACK_EXTERNAL_MODULE__9450__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -8734,14 +8734,14 @@ function fix(h) {
 /***/ }),
 
 /***/ 3252:
-/***/ ((module) => {
+/***/ (function(module) {
 
-/*! typed-dom v0.0.292 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.295 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
 	else {}
-})(globalThis, () => {
+})(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -8820,11 +8820,11 @@ exports.equal = equal;
 /***/ }),
 
 /***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_4961__) => {
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_4955__) => {
 
 
 
-__nested_webpack_require_4961__(921);
+__nested_webpack_require_4955__(921);
 
 const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
@@ -8845,7 +8845,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /***/ }),
 
 /***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_5448__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_5442__) => {
 
 
 
@@ -8854,11 +8854,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reduce = exports.memoize = void 0;
 
-const global_1 = __nested_webpack_require_5448__(128);
+const global_1 = __nested_webpack_require_5442__(128);
 
-const alias_1 = __nested_webpack_require_5448__(406);
+const alias_1 = __nested_webpack_require_5442__(406);
 
-const compare_1 = __nested_webpack_require_5448__(529);
+const compare_1 = __nested_webpack_require_5442__(529);
 
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, void 0, identify);
@@ -8916,7 +8916,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_6838__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_6832__) => {
 
 
 
@@ -8925,11 +8925,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 
-const global_1 = __nested_webpack_require_6838__(128);
+const global_1 = __nested_webpack_require_6832__(128);
 
-const alias_1 = __nested_webpack_require_6838__(406);
+const alias_1 = __nested_webpack_require_6832__(406);
 
-const memoize_1 = __nested_webpack_require_6838__(808);
+const memoize_1 = __nested_webpack_require_6832__(808);
 
 var caches;
 
@@ -9034,7 +9034,7 @@ function defineAttrs(el, attrs) {
                 configurable: true,
                 enumerable: false,
                 writable: true,
-                value: prop in el ? ev => ev.returnValue : ''
+                value: prop in el && !(0, alias_1.hasOwnProperty)(el, prop) ? ev => ev.returnValue : ''
               });
           }
         }
@@ -9061,7 +9061,7 @@ function defineAttrs(el, attrs) {
                 configurable: true,
                 enumerable: false,
                 writable: true,
-                value: prop in el ? ev => ev.returnValue : ''
+                value: prop in el && !(0, alias_1.hasOwnProperty)(el, prop) ? ev => ev.returnValue : ''
               });
           }
         }
@@ -9165,7 +9165,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_13838__(moduleId) {
+/******/ 	function __nested_webpack_require_13916__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -9179,7 +9179,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_13838__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_13916__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -9190,7 +9190,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_13838__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_13916__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -9200,14 +9200,14 @@ exports.defrag = defrag;
 /***/ }),
 
 /***/ 6120:
-/***/ ((module) => {
+/***/ (function(module) {
 
-/*! typed-dom v0.0.292 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.295 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
 	else {}
-})(globalThis, () => {
+})(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 var __webpack_exports__ = {};
