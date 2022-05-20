@@ -57,6 +57,7 @@ describe('Unit: parser/inline/math', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('$0$')), [['<span class="math" translate="no" data-src="$0$">$0$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$0$$')), [['<span class="math" translate="no" data-src="$0$">$0$</span>'], '$']);
+      assert.deepStrictEqual(inspect(parser('$00$')), [['<span class="math" translate="no" data-src="$00$">$00$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$0-1$')), [['<span class="math" translate="no" data-src="$0-1$">$0-1$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$0+1$')), [['<span class="math" translate="no" data-src="$0+1$">$0+1$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$0*1$')), [['<span class="math" translate="no" data-src="$0*1$">$0*1$</span>'], '']);

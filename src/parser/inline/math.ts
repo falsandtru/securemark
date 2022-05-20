@@ -15,7 +15,7 @@ export const math: MathParser = lazy(() => creator(validate('$', rewrite(
       // $[A-z]*(?!-)               : Math
       // $[\^_[({|]                 : Math
       // $[#$%&]                    : Invalid first character in Latex syntax
-      str(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*[^-+*/=<>^_~\\$]|-[\da-z]|[a-z]+-)(?:\\\$|\x20(?!\$)|[\x21-\x23\x25-\x7E])+/i),
+      str(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*[^\d\-+*/=<>^_~\\$]|-[\da-z]|[a-z]+-)(?:\\\$|\x20(?!\$)|[\x21-\x23\x25-\x7E])+/i),
       /^\$(?![0-9a-z])/i),
     surround('$', bracket, '$'),
   ]),

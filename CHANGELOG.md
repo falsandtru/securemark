@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.246.1
+
+- Fix math parser.
+
 ## 0.246.0
 
 - Extend table syntax to add grid type.
