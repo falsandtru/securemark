@@ -39,7 +39,7 @@ module.exports = env => {
       path: path.resolve(__dirname, 'dist'),
       library: pkg.name,
       libraryTarget: 'umd',
-      globalObject: 'globalThis',
+      globalObject: 'this',
       clean: true,
     },
     module: {
