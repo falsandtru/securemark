@@ -5256,6 +5256,8 @@ const template_1 = __webpack_require__(4695);
 
 const comment_1 = __webpack_require__(8657);
 
+const math_1 = __webpack_require__(8946);
+
 const extension_1 = __webpack_require__(8053);
 
 const ruby_1 = __webpack_require__(6705);
@@ -5278,8 +5280,6 @@ const strong_1 = __webpack_require__(8072);
 
 const code_1 = __webpack_require__(5771);
 
-const math_1 = __webpack_require__(8946);
-
 const media_1 = __webpack_require__(1303);
 
 const htmlentity_1 = __webpack_require__(1562);
@@ -5292,7 +5292,7 @@ const bracket_1 = __webpack_require__(5196);
 
 const source_1 = __webpack_require__(6743);
 
-exports.inline = (0, combinator_1.union)([escape_1.escape, annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, extension_1.extension, ruby_1.ruby, link_1.link, media_1.media, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, code_1.code, math_1.math, htmlentity_1.htmlentity, shortmedia_1.shortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]);
+exports.inline = (0, combinator_1.union)([escape_1.escape, annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, math_1.math, extension_1.extension, ruby_1.ruby, link_1.link, media_1.media, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.shortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]);
 
 var indexee_1 = __webpack_require__(1269);
 
@@ -6544,18 +6544,13 @@ const source_1 = __webpack_require__(6743);
 
 const dom_1 = __webpack_require__(3252);
 
-const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
-exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)('$', // Latex's reserved characters: # $ % ^ & _ { } ~ \
-// $[0-9]+                    : Dollar
-// $[A-z]*-                   : Label
-// $[A-z]*(?!-)               : Math
-// $[\^_[({|]                 : Math
-// $[#$%&]                    : Invalid first character in Latex syntax
-(0, source_1.str)(/^(?![\s{}#$%&]|\d+(?:[,.]\d+)*[^-+*/=<>^_~\\$]|-[\da-z]|[a-z]+-)(?:\\\$|\x20(?!\$)|[\x21-\x23\x25-\x7E])+/i), /^\$(?![0-9a-z])/i), (0, combinator_1.surround)('$', bracket, '$')]), (source, {
+const syntax = /^(?:[ "([](?!\$)|\\{(?!\$)|\\[\\}$]?|^`|`(?!`)|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
+exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)('$', bracket, '$'), (0, combinator_1.surround)(/^\$(?!\s)/, (0, combinator_1.some)((0, combinator_1.union)([bracket, quote, (0, source_1.str)(syntax)])), /^\$(?![0-9A-Za-z])/)]), (source, {
   caches: {
     math: cache
   } = {}
-}) => [[cache?.get(source)?.cloneNode(true) || (0, dom_1.html)('span', !disallowedCommand.test(source) ? {
+}) => [[cache?.get(source)?.cloneNode(true) || (0, dom_1.html)('span', !forbiddenCommand.test(source) ? {
   class: 'math',
   translate: 'no',
   'data-src': source
@@ -6564,9 +6559,10 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combin
   translate: 'no',
   'data-invalid-syntax': 'math',
   'data-invalid-type': 'content',
-  'data-invalid-message': `"${source.match(disallowedCommand)[0]}" command is disallowed`
+  'data-invalid-message': `"${source.match(forbiddenCommand)[0]}" command is disallowed`
 }, source)], '']))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /^(?:[{}]|\\?\n)/)])), '}', true)));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /^(?:[{}$]|\\?\n)/)])), '}', true)));
+const quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)('``', (0, combinator_1.some)((0, combinator_1.union)([quote, bracket, (0, combinator_1.focus)(/^(?:\\[\\{}$]|`(?!`)|[^`{}"$\n])*/, (0, source_1.str)(syntax))])), /^"?/, true)));
 
 /***/ }),
 
