@@ -4,7 +4,7 @@ import { escsource, str } from '../source';
 import { html } from 'typed-dom/dom';
 
 const syntax = /^(?:[ "([](?!\$)|\\{(?!\$)|\\[\\}$]?|^`|`(?!`)|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
-const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => creator(validate('$', rewrite(
   union([
@@ -28,7 +28,7 @@ export const math: MathParser = lazy(() => creator(validate('$', rewrite(
             translate: 'no',
             'data-invalid-syntax': 'math',
             'data-invalid-type': 'content',
-            'data-invalid-message': `"${source.match(forbiddenCommand)![0]}" command is disallowed`,
+            'data-invalid-message': `"${source.match(forbiddenCommand)![0]}" command is forbidden`,
           },
       source)
   ], '']))));
