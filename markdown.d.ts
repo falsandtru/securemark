@@ -652,6 +652,7 @@ export namespace MarkdownParser {
       InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
       InlineParser.CommentParser,
+      InlineParser.MathParser,
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
       InlineParser.LinkParser,
@@ -664,7 +665,6 @@ export namespace MarkdownParser {
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
       InlineParser.CodeParser,
-      InlineParser.MathParser,
       InlineParser.HTMLEntityParser,
       InlineParser.ShortmediaParser,
       InlineParser.AutolinkParser,
@@ -747,6 +747,36 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         InlineParser,
       ]> {
+    }
+    export interface MathParser extends
+      // $expr$
+      // ${expr}$
+      Inline<'math'>,
+      Parser<HTMLElement, Context, [
+        MathParser.BracketParser,
+        Parser<string, Context, [
+          MathParser.BracketParser,
+          MathParser.QuoteParser,
+          SourceParser.StrParser,
+        ]>,
+      ]> {
+    }
+    export namespace MathParser {
+      export interface BracketParser extends
+        Inline<'math/bracket'>,
+        Parser<HTMLElement, Context, [
+          BracketParser,
+          SourceParser.EscapableSourceParser,
+        ]> {
+      }
+      export interface QuoteParser extends
+        Inline<'math/quote'>,
+        Parser<HTMLElement, Context, [
+          QuoteParser,
+          BracketParser,
+          SourceParser.StrParser,
+        ]> {
+      }
     }
     export interface ExtensionParser extends
       // [#abc]
@@ -1038,24 +1068,6 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         SourceParser.StrParser,
       ]> {
-    }
-    export interface MathParser extends
-      // $expr$
-      // ${expr}$
-      Inline<'math'>,
-      Parser<HTMLElement, Context, [
-        SourceParser.StrParser,
-        MathParser.BracketParser,
-      ]> {
-    }
-    export namespace MathParser {
-      export interface BracketParser extends
-        Inline<'math/bracket'>,
-        Parser<HTMLElement, Context, [
-          BracketParser,
-          SourceParser.EscapableSourceParser,
-        ]> {
-      }
     }
     export interface HTMLEntityParser extends
       // &copy;

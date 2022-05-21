@@ -112,7 +112,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[$1]')), [['[', '$', '1', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[$1-2]')), [['[', '$', '1', '-', '2', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[$-1][$-2]')), [['<a class="label" data-label="$-1">$-1</a>', '<a class="label" data-label="$-2">$-2</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('$-1$-2')), [['<a class="label" data-label="$-1">$-1</a>', '<a class="label" data-label="$-2">$-2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-1, $-2')), [['<a class="label" data-label="$-1">$-1</a>', ',', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-1 and $-2')), [['<a class="label" data-label="$-1">$-1</a>', ' ', 'and', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('$$-1')), [['$', '<a class="label" data-label="$-1">$-1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[#a]]')), [['<sup class="reference"><a href="/hashtags/a" class="hashtag">#a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[$-1]]')), [['<sup class="reference"><a class="label" data-label="$-1">$-1</a></sup>'], '']);

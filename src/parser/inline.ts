@@ -5,6 +5,7 @@ import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
 import { comment } from './inline/comment';
+import { math } from './inline/math';
 import { extension } from './inline/extension';
 import { ruby } from './inline/ruby';
 import { link } from './inline/link';
@@ -16,7 +17,6 @@ import { emstrong } from './inline/emstrong';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
-import { math } from './inline/math';
 import { media } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
 import { shortmedia } from './inline/shortmedia';
@@ -30,6 +30,7 @@ export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
 export import CommentParser = InlineParser.CommentParser;
+export import MathParser = InlineParser.MathParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import RubyParser = InlineParser.RubyParser;
 export import LinkParser = InlineParser.LinkParser;
@@ -41,7 +42,6 @@ export import EmStrongParser = InlineParser.EmStrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
 export import StrongParser = InlineParser.StrongParser;
 export import CodeParser = InlineParser.CodeParser;
-export import MathParser = InlineParser.MathParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import UnsafeHTMLEntityParser = InlineParser.UnsafeHTMLEntityParser;
@@ -55,6 +55,7 @@ export const inline: InlineParser = union([
   reference,
   template,
   comment,
+  math,
   extension,
   ruby,
   link,
@@ -67,7 +68,6 @@ export const inline: InlineParser = union([
   strong,
   emphasis,
   code,
-  math,
   htmlentity,
   shortmedia,
   autolink,

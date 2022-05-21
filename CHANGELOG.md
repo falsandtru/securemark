@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.246.1
+## 0.247.0
 
-- Fix math parser.
+- Refine math parser.
 
 ## 0.246.0
 
