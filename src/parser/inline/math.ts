@@ -47,7 +47,7 @@ const quote: MathParser.QuoteParser = lazy(() => creator(surround(
   some(union([
     quote,
     bracket,
-    focus(/^(?:\\[\\{}$]|`(?!`)|[^`{}"$\n])*/, str(syntax)),
+    focus(/^(?:\\[\\{}$]|`(?!`)|[^`{}"$\n\P{ASCII}])*/u, str(syntax)),
   ])),
   /^"?/,
   true)));
