@@ -6545,7 +6545,7 @@ const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
 
 const syntax = /^(?:[ "([](?!\$)|\\{(?!\$)|\\[\\}$]?|^`|`(?!`)|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
-const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)('$', bracket, '$'), (0, combinator_1.surround)(/^\$(?!\s)/, (0, combinator_1.some)((0, combinator_1.union)([bracket, quote, (0, source_1.str)(syntax)])), /^\$(?![0-9A-Za-z])/)]), (source, {
   caches: {
     math: cache
@@ -6559,7 +6559,7 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combin
   translate: 'no',
   'data-invalid-syntax': 'math',
   'data-invalid-type': 'content',
-  'data-invalid-message': `"${source.match(forbiddenCommand)[0]}" command is disallowed`
+  'data-invalid-message': `"${source.match(forbiddenCommand)[0]}" command is forbidden`
 }, source)], '']))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /^(?:[{}$]|\\?\n)/)])), '}', true)));
 const quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)('``', (0, combinator_1.some)((0, combinator_1.union)([quote, bracket, (0, combinator_1.focus)(/^(?:\\[\\{}$]|`(?!`)|[^`{}"$\n])*/, (0, source_1.str)(syntax))])), /^"?/, true)));
