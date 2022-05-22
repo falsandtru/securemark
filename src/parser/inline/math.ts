@@ -10,7 +10,7 @@ export const math: MathParser = lazy(() => creator(validate('$', rewrite(
   union([
     surround('$', bracket, '$'),
     surround(
-      /^\$(?!\s)/,
+      /^\$(?![\s{}])/,
       some(union([
         bracket,
         quote,
