@@ -44,7 +44,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ([as, bs, cs], rest) =>
           [[elem(tag, as, defrag(bs), cs)], rest],
         ([as, bs], rest) =>
-          as.length === 1 ? [unshift(as, bs), rest] : undefined)),
+          isReusable(as) ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<([a-z]+)(?=[^\S\n]|>))/,
@@ -61,7 +61,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ([as, bs, cs], rest) =>
           [[elem(tag, as, defrag(bs), cs)], rest],
         ([as, bs], rest) =>
-          as.length === 1 ? [unshift(as, bs), rest] : undefined)),
+          isReusable(as) ? [unshift(as, bs), rest] : undefined)),
     ([, tag]) => tag,
     new Cache(10000))),
 ])))));
@@ -128,4 +128,8 @@ export function attributes(
     attrs['data-invalid-message'] = 'Invalid argument';
   }
   return attrs;
+}
+
+function isReusable(as: readonly string[]): boolean {
+  return /^<[\w-]+(?:\s+[\w-]+(?:="[^`~@#$&*(_=+[{|:'<]*")?)*>$/.test(as.join(''));
 }
