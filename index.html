@@ -587,6 +587,7 @@
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": ";
     font-style: normal;
     font-weight: bold;
+    font-size: initial;
     color: hotpink;
   }
   :is(div, pre, figure, blockquote, ul, p, tr, th, td).invalid {
@@ -622,6 +623,15 @@
     position: unset;
     font-style: italic;
     font-weight: bold;
+    color: hotpink;
+  }
+  :is(sup, sub) :is(sup, sub, small)::before,
+  small small::before {
+    content: "Invalid nesting pattern of HTML tags";
+    position: unset;
+    font-style: italic;
+    font-weight: bold;
+    font-size: initial;
     color: hotpink;
   }
   ol:empty {
