@@ -157,6 +157,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" target="_blank">http://host</a>', '>'], '']);
       assert.deepStrictEqual(inspect(parser('<<small>a<</small>')), [['<', '<small>a&lt;</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<sup><sub>a</sub>')), [['<', 'sup', '>', '<sub>a</sub>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<small>*`</small>`')), [['<em>&lt;small&gt;</em>', '<code data-src="`</small>`">&lt;/small&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('[~http://host')), [['[', '~', '<a href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a@b')), [['[', '~', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~~a~~]')), [['[', '<del>a</del>', ']'], '']);

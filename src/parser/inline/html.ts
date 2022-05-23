@@ -33,7 +33,6 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     /^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/,
     memoize(
     ([, tag]) =>
-      validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
@@ -42,15 +41,12 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs)], rest],
-        ([as, bs], rest) =>
-          isReusable(as) ? [unshift(as, bs), rest] : undefined)),
+          [[elem(tag, as, defrag(bs), cs)], rest]),
     ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<([a-z]+)(?=[^\S\n]|>))/,
     memoize(
     ([, tag]) =>
-      validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
@@ -59,9 +55,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs)], rest],
-        ([as, bs], rest) =>
-          isReusable(as) ? [unshift(as, bs), rest] : undefined)),
+          [[elem(tag, as, defrag(bs), cs)], rest]),
     ([, tag]) => tag,
     new Cache(10000))),
 ])))));
@@ -128,8 +122,4 @@ export function attributes(
     attrs['data-invalid-message'] = 'Invalid argument';
   }
   return attrs;
-}
-
-function isReusable(as: readonly string[]): boolean {
-  return /^<[\w-]+(?:\s+[\w-]+(?:="[^`~@#$&*(_=+[{|:'<]*")?)*>$/.test(as.join(''));
 }

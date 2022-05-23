@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.248.1
+
+- Fix html parser.
+
 ## 0.248.0
 
 - Change html parser not to limit nesting patterns of HTML tags.
