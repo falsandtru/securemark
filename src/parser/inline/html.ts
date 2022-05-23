@@ -8,7 +8,7 @@ import { startLoose, blank } from '../util';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
-import { unshift, push, splice, join } from 'spica/array';
+import { unshift, push, splice } from 'spica/array';
 
 const tags = Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
@@ -122,7 +122,7 @@ export function attributes(
   }
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalid) {
-    attrs['class'] = join(classes.includes('invalid') ? classes : unshift(classes, ['invalid']), ' ');
+    attrs['class'] = (classes.includes('invalid') ? classes : unshift(classes, ['invalid'])).join(' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
     attrs['data-invalid-message'] = 'Invalid argument';

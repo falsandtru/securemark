@@ -2,7 +2,7 @@ import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
 import { define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
-import { push, join } from 'spica/array';
+import { push } from 'spica/array';
 
 export function* figure(
   target: ParentNode & Node,
@@ -85,7 +85,7 @@ export function* figure(
     let number = calculate(
       label,
       numbers.has(group) && !isFixed(label)
-        ? join(numbers.get(group)!.split('.').slice(0, bases.length), '.')
+        ? numbers.get(group)!.split('.').slice(0, bases.length).join('.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
@@ -94,19 +94,18 @@ export function* figure(
       if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));
-        number = join(
-          index.slice(0)
-            .reduce((ns, _, i, xs) => {
-              i === ns.length
-                ? xs.length = i
-                : ns[i] = +ns[i] > +xs[i]
-                  ? ns[i]
-                  : +ns[i] === 0
-                    ? xs[i]
-                    : `${+xs[i] + 1}`;
-              return ns;
-            }, number.split('.')),
-          '.');
+        number = index.slice(0)
+          .reduce((ns, _, i, xs) => {
+            i === ns.length
+              ? xs.length = i
+              : ns[i] = +ns[i] > +xs[i]
+                ? ns[i]
+                : +ns[i] === 0
+                  ? xs[i]
+                  : `${+xs[i] + 1}`;
+            return ns;
+          }, number.split('.'))
+          .join('.');
       }
       base = number;
       bases = index = base.split('.');
@@ -184,8 +183,8 @@ function increment(bases: readonly string[], el: HTMLHeadingElement): string {
   const index = (+el.tagName[1] - 1 || 1) - 1;
   assert(index >= 0);
   return index + 1 < bases.length
-    ? join(
-        bases.slice(0, index + 2).map((v, i) => {
+    ? bases.slice(0, index + 2)
+        .map((v, i) => {
           switch (true) {
             case i < index:
               return v;
@@ -194,8 +193,8 @@ function increment(bases: readonly string[], el: HTMLHeadingElement): string {
             default:
               return 0;
           }
-        }),
-        '.')
+        })
+        .join('.')
     : '';
 }
 

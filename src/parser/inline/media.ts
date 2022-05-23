@@ -7,7 +7,7 @@ import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
 import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
-import { unshift, push, join } from 'spica/array';
+import { unshift, push } from 'spica/array';
 
 const optspec = {
   'width': [],
@@ -28,7 +28,7 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
       true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ]))),
-  ([as, bs]) => bs ? [[join(as).trim() || join(as)], bs] : [[''], as]),
+  ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
     assert(text === text.trim());
@@ -52,7 +52,7 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
     return fmap(
       link as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URI}${join(params)} }${rest}`, context);
+      (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
   }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([

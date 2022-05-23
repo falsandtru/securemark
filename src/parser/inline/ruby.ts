@@ -6,7 +6,7 @@ import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom/dom';
-import { unshift, push, join } from 'spica/array';
+import { unshift, push } from 'spica/array';
 
 export const ruby: RubyParser = lazy(() => creator(validate('[', ')', '\n', bind(verify(
   sequence([
@@ -39,8 +39,8 @@ export const ruby: RubyParser = lazy(() => creator(validate('[', ')', '\n', bind
       default:
         assert(rubies.length > 0);
         return [[html('ruby', attributes(texts, rubies), defrag(push(unshift(
-          [join(texts, ' ')],
-          [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')]), tail)))
+          [texts.join(' ')],
+          [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]), tail)))
         ], rest];
     }
   }))));
@@ -74,7 +74,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
       }
     }
   }
-  return join(acc).trimStart()
+  return acc.join('').trimStart()
     ? [[acc], '']
     : undefined;
 });

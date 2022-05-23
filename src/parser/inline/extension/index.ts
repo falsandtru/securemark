@@ -6,7 +6,6 @@ import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
 import { startTight, trimNodeEnd } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
-import { join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;
 
@@ -44,7 +43,7 @@ const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   '|#',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
-    html('span', { class: 'indexer', 'data-index': identity(join(ns)).slice(6) }),
+    html('span', { class: 'indexer', 'data-index': identity(ns.join('')).slice(6) }),
   ])));
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creator(union([
