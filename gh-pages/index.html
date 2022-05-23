@@ -625,6 +625,15 @@
     font-weight: bold;
     color: hotpink;
   }
+  :is(sup, sub) :is(sup, sub, small)::before,
+  small small::before {
+    content: "Invalid nesting pattern of HTML tags";
+    position: unset;
+    font-style: italic;
+    font-weight: bold;
+    font-size: initial;
+    color: hotpink;
+  }
   ol:empty {
     display: none;
   }

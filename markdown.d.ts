@@ -28,12 +28,6 @@ export namespace MarkdownParser {
         readonly autolink?: boolean;
       };
     };
-    readonly state?: {
-      readonly in?: {
-        readonly supsub?: boolean;
-        readonly small?: boolean;
-      };
-    };
     readonly caches?: {
       readonly code?: Collection<string, HTMLElement>;
       readonly math?: Collection<string, HTMLElement>;
@@ -985,7 +979,6 @@ export namespace MarkdownParser {
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [
         HTMLParser.OpenTagParser,
-        HTMLParser.TagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
       ]> {

@@ -41,7 +41,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small/>')), undefined);
       assert.deepStrictEqual(inspect(parser('<b><b><b>a</b></b></b>')), [['<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;a&lt;/b&gt;</span>&lt;/b&gt;</span>&lt;/b&gt;</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small><small><small>a</small></small></small>')), [['<small><span class="invalid">&lt;small&gt;<span class="invalid">&lt;small&gt;a&lt;/small&gt;</span>&lt;/small&gt;</span></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><small><small>a</small></small></small>')), [['<small><small><small>a</small></small></small>'], '']);
       assert.deepStrictEqual(inspect(parser('<x a="*b*"')), undefined);
       assert.deepStrictEqual(inspect(parser('<x a="*b*">')), undefined);
       assert.deepStrictEqual(inspect(parser('<x a="*b*">c')), undefined);
@@ -72,8 +72,8 @@ describe('Unit: parser/inline/html', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('<small><small>a</small></small>')), [['<small><span class="invalid">&lt;small&gt;a&lt;/small&gt;</span></small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>a<small>b</small>c</small>')), [['<small>a<span class="invalid">&lt;small&gt;b&lt;/small&gt;</span>c</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><small>a</small></small>')), [['<small><small>a</small></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a<small>b</small>c</small>')), [['<small>a<small>b</small>c</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>`a`</small>')), [['<small><code data-src="`a`">a</code></small>'], '']);
     });
 

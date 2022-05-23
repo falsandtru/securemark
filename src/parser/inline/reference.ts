@@ -19,7 +19,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     //label: true,
     //link: true,
     //autolink: true,
-  }}, state: undefined, delimiters: undefined },
+  }}, delimiters: undefined },
   subsequence([
     abbr,
     focus(/^\^[^\S\n]*/, source => [['', source], '']),
