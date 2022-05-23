@@ -10,9 +10,9 @@ import { push } from 'spica/array';
 
 export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
   return new RegExp(String.raw
-    `^${
+    `^(?:${
       prefix && prefix.source
-    }(?:\\\s|[^\S\n]+|\n|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)?${
+    }(?:\\\s|[^\S\n]|\n|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*)?${
       typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source
     }`);
 }
