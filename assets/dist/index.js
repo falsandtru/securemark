@@ -2254,11 +2254,9 @@ const surround_1 = __webpack_require__(7130);
 
 const memoize_1 = __webpack_require__(1808);
 
-const array_1 = __webpack_require__(8112);
-
 function indent(parser, separation = false) {
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(/^(?=(([ \t])\2*))/, (0, memoize_1.memoize)(([, indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[unline(source)], '']))), ([, indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (nodes, rest, context) => {
-    const result = parser((0, array_1.join)(nodes, '\n'), context);
+    const result = parser(nodes.join('\n'), context);
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : global_1.undefined;
   });
 }
@@ -5914,8 +5912,6 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-const array_1 = __webpack_require__(8112);
-
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', ']', '\n', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => context.syntax?.inline?.index ?? true, (0, util_1.startTight)((0, combinator_1.context)({
   syntax: {
     inline: {
@@ -5935,7 +5931,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combi
 }, el.childNodes)]))));
 const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': (0, indexee_1.identity)((0, array_1.join)(ns)).slice(6)
+  'data-index': (0, indexee_1.identity)(ns.join('')).slice(6)
 })])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.some)(source_1.txt, '"'), (0, source_1.str)('"'), true)])));
 
@@ -6075,8 +6071,6 @@ const source_1 = __webpack_require__(6743);
 
 const dom_1 = __webpack_require__(3252);
 
-const array_1 = __webpack_require__(8112);
-
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])));
 exports.label = (0, combinator_1.creator)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.fmap)((0, combinator_1.guard)(context => context.syntax?.inline?.label ?? true, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
@@ -6105,7 +6099,7 @@ function increment(number, position) {
     ms[i] = i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1;
   }
 
-  return (0, array_1.join)(ms, '.');
+  return ms.join('.');
 }
 
 /***/ }),
@@ -6183,7 +6177,7 @@ const attrspec = {
 };
 Object.setPrototypeOf(attrspec, null);
 Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${tag}`, `</${tag}>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest], ([as, bs], rest) => as.length === 1 ? [(0, array_1.unshift)(as, bs), rest] : global_1.undefined)), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${tag}`, `</${tag}>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest], ([as, bs], rest) => as.length === 1 ? [(0, array_1.unshift)(as, bs), rest] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
 
 function elem(tag, as, bs, cs) {
@@ -6220,7 +6214,7 @@ function attributes(syntax, classes, spec, params) {
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
 
   if (invalid) {
-    attrs['class'] = (0, array_1.join)(classes.includes('invalid') ? classes : (0, array_1.unshift)(classes, ['invalid']), ' ');
+    attrs['class'] = (classes.includes('invalid') ? classes : (0, array_1.unshift)(classes, ['invalid'])).join(' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
     attrs['data-invalid-message'] = 'Invalid argument';
@@ -6537,7 +6531,7 @@ const optspec = {
   rel: global_1.undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.validate)(['![', '!{'], '}', '\n', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.guard)(context => context.syntax?.inline?.media ?? true, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)(/^\[(?!\s*\\\s)/, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', /^\\?\n/), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]))), ([as, bs]) => bs ? [[(0, array_1.join)(as).trim() || (0, array_1.join)(as)], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.validate)(['![', '!{'], '}', '\n', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.guard)(context => context.syntax?.inline?.media ?? true, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)(/^\[(?!\s*\\\s)/, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', /^\\?\n/), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]))), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
   let cache;
@@ -6552,7 +6546,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, c
   if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
   return (0, combinator_1.fmap)(link_1.link, ([link]) => [(0, dom_1.define)(link, {
     target: '_blank'
-  }, [el])])(`{ ${INSECURE_URI}${(0, array_1.join)(params)} }${rest}`, context);
+  }, [el])])(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
 }))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"'), (0, source_1.str)('"'), true)]));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
@@ -6694,7 +6688,7 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combin
       return [[(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)((0, array_1.push)([...texts[0]].reduce((acc, _, i, texts) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies[i]), (0, dom_1.html)('rp', ')')] : [(0, dom_1.html)('rt')])), []), tail)))], rest];
 
     default:
-      return [[(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([(0, array_1.join)(texts, ' ')], [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', (0, array_1.join)(rubies, ' ').trim()), (0, dom_1.html)('rp', ')')]), tail)))], rest];
+      return [[(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)([texts.join(' ')], [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies.join(' ').trim()), (0, dom_1.html)('rp', ')')]), tail)))], rest];
   }
 }))));
 const text = (0, combinator_1.creator)((source, context) => {
@@ -6731,7 +6725,7 @@ const text = (0, combinator_1.creator)((source, context) => {
     }
   }
 
-  return (0, array_1.join)(acc).trimStart() ? [[acc], ''] : global_1.undefined;
+  return acc.join('').trimStart() ? [[acc], ''] : global_1.undefined;
 });
 
 function attributes(texts, rubies) {
@@ -7026,16 +7020,16 @@ function* figure(target, footnotes, opts = {}) {
     }
 
     const group = label.split('-', 1)[0];
-    let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? (0, array_1.join)(numbers.get(group).split('.').slice(0, bases.length), '.') : base);
+    let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? numbers.get(group).split('.').slice(0, bases.length).join('.') : base);
 
     if (number.endsWith('.0')) {
       if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
 
       if (number.startsWith('0.')) {
-        number = (0, array_1.join)(index.slice(0).reduce((ns, _, i, xs) => {
+        number = index.slice(0).reduce((ns, _, i, xs) => {
           i === ns.length ? xs.length = i : ns[i] = +ns[i] > +xs[i] ? ns[i] : +ns[i] === 0 ? xs[i] : `${+xs[i] + 1}`;
           return ns;
-        }, number.split('.')), '.');
+        }, number.split('.')).join('.');
       }
 
       base = number;
@@ -7114,7 +7108,7 @@ const messages = {
 
 function increment(bases, el) {
   const index = (+el.tagName[1] - 1 || 1) - 1;
-  return index + 1 < bases.length ? (0, array_1.join)(bases.slice(0, index + 2).map((v, i) => {
+  return index + 1 < bases.length ? bases.slice(0, index + 2).map((v, i) => {
     switch (true) {
       case i < index:
         return v;
@@ -7125,7 +7119,7 @@ function increment(bases, el) {
       default:
         return 0;
     }
-  }), '.') : '';
+  }).join('.') : '';
 }
 
 function capitalize(label) {
