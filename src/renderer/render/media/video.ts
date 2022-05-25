@@ -1,4 +1,4 @@
-import { ObjectFromEntries } from 'spica/alias';
+import { Object } from 'spica/global';
 import { html } from 'typed-dom/dom';
 
 const extensions = [
@@ -11,7 +11,7 @@ export function video(source: HTMLImageElement, url: URL): HTMLVideoElement | un
   return html('video', {
     src: source.getAttribute('data-src'),
     'data-type': 'video',
-    ...ObjectFromEntries([...source.attributes]
+    ...Object.fromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])),
     muted: '',
     controls: '',

@@ -1,5 +1,4 @@
-import { undefined } from 'spica/global';
-import { isFrozen, ObjectEntries } from 'spica/alias';
+import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
 import { union, some, validate, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
@@ -86,7 +85,7 @@ function invalid(type: string, message: string, as: (HTMLElement | string)[], bs
 
 const requiredAttributes = memoize(
   (spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>>) =>
-    ObjectEntries(spec).flatMap(([k, v]) => v && isFrozen(v) ? [k] : []),
+    Object.entries(spec).flatMap(([k, v]) => v && Object.isFrozen(v) ? [k] : []),
   new WeakMap());
 
 export function attributes(
