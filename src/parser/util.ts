@@ -1,12 +1,15 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { Parser, eval } from '../combinator/data/parser';
-import { union, some, verify, convert } from '../combinator';
+import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
+
+export const regBlankInlineStart = new RegExp(String.raw
+  `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
 export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
   return new RegExp(String.raw
@@ -54,7 +57,7 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
       : undefined;
 }
 export const isStartLoose = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
-  return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
+  return isStartTight(source.replace(regBlankInlineStart, ''), context, except);
 }, (source, _, except = '') => `${source}\x1E${except}`);
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
@@ -130,10 +133,16 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
-export function trimSpaceStart<P extends Parser<unknown>>(parser: P): P;
-export function trimSpaceStart<T>(parser: Parser<T>): Parser<T> {
+export function trimBlankInline<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function trimBlankInline<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  return fmap(
+    trimBlankInlineStart(parser),
+    trimNodeEnd);
+}
+function trimBlankInlineStart<P extends Parser<unknown>>(parser: P): P;
+function trimBlankInlineStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    reduce(source => source.replace(/^[^\S\n]+/, '')),
+    reduce(source => source.replace(regBlankInlineStart, '')),
     parser);
 }
 //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
@@ -153,7 +162,7 @@ export function trimSpaceStart<T>(parser: Parser<T>): Parser<T> {
 //  }
 //  return nodes;
 //}
-export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&
     nodes[nodes.length - 1]['className'] === 'indexer'
@@ -163,7 +172,7 @@ export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | str
     if (typeof node === 'string') {
       const pos = node.trimEnd().length;
       if (pos > 0) {
-        nodes[nodes.length - 1] = node.slice(0, pos);
+        nodes[nodes.length - 1] = node.slice(0, pos) as T;
         break;
       }
     }

@@ -29,11 +29,12 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>\\ </small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>&Tab;</small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small><wbr></small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\na</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>\\ a</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\\\na</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><wbr></small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a</BDO>')), undefined);
       assert.deepStrictEqual(inspect(parser('<SMALL>a</SMALL>')), undefined);
@@ -60,6 +61,8 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small> a</small>')), [['<small> a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small> a </small>')), [['<small> a </small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>  a  </small>')), [['<small>  a  </small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>\\ a</small>')), [['<small> a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><wbr>a</small>')), [['<small><wbr>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<small>a </small>')), [['<small>a </small>'], '']);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.249.0
+
+- Change some parsers to trim leading blanks except linebreaks.
+
 ## 0.248.1
 
 - Fix html parser.

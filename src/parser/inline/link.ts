@@ -6,7 +6,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
+import { trimBlankInline, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -26,7 +26,6 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
       surround('[', shortmedia, ']'),
       surround(
         '[',
-        startLoose(
         context({ syntax: { inline: {
           annotation: false,
           reference: false,
@@ -37,7 +36,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
           media: false,
           autolink: false,
         }}},
-        trimSpaceStart(some(inline, ']', /^\\?\n/)))),
+        trimBlankInline(some(inline, ']', /^\\?\n/))),
         ']',
         true),
     ]))),
@@ -52,7 +51,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
     assert(!INSECURE_URI.match(/\s/));
     const el = elem(
       INSECURE_URI,
-      trimNodeEnd(defrag(content)),
+      defrag(content),
       new ReadonlyURL(
         resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
         context.host?.href || location.href),

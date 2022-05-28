@@ -16,9 +16,7 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser('(( ))')), undefined);
       assert.deepStrictEqual(inspect(parser('((\n))')), undefined);
       assert.deepStrictEqual(inspect(parser('((\na))')), undefined);
-      assert.deepStrictEqual(inspect(parser('((\\ a))')), undefined);
       assert.deepStrictEqual(inspect(parser('((\\\na))')), undefined);
-      assert.deepStrictEqual(inspect(parser('((<wbr>a))')), undefined);
       assert.deepStrictEqual(inspect(parser('((a\n))')), undefined);
       assert.deepStrictEqual(inspect(parser('((a\\\n))')), undefined);
       assert.deepStrictEqual(inspect(parser('((a\nb))')), undefined);
@@ -33,6 +31,8 @@ describe('Unit: parser/inline/annotation', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('(( a))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(( a ))')), [['<sup class="annotation">a</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((\\ a))')), [['<sup class="annotation">a</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<wbr>a))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((a ))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((a  ))')), [['<sup class="annotation">a</sup>'], '']);

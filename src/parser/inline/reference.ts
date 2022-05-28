@@ -1,15 +1,14 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
+import { union, subsequence, some, validate, focus, guard, context, creator, surround, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, isStartLoose, trimSpaceStart, trimNodeEnd, stringify } from '../util';
+import { regBlankInlineStart, trimBlankInline, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
-  startLoose(
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -23,17 +22,16 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   subsequence([
     abbr,
     focus(/^\^[^\S\n]*/, source => [['', source], '']),
-    trimSpaceStart(some(inline, ']', /^\\?\n/)),
-  ])))),
+    trimBlankInline(some(inline, ']', /^\\?\n/)),
+  ]))),
   ']]'),
-  ns => [html('sup', attributes(ns), trimNodeEnd(defrag(ns)))]))));
+  ns => [html('sup', attributes(ns), defrag(ns))]))));
 
-const abbr: ReferenceParser.AbbrParser = creator(fmap(verify(surround(
+const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),
-  (_, rest, context) => isStartLoose(rest, context)),
-  ([source]) => [html('abbr', source)]));
+  ([source], rest) => [[html('abbr', source)], rest.replace(regBlankInlineStart, '')]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
