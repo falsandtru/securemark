@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 export const insertion: InsertionParser = lazy(() => creator(surround(
   str('++'),
   some(union([
-    some(inline, blank(/\n/, '++')),
+    some(inline, blank('\n', '++')),
     open(/^\n/, some(inline, '+'), true),
   ])),
   str('++'), false,
