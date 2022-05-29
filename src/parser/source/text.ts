@@ -4,14 +4,14 @@ import { union, focus, creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const separator = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
+export const delimiter = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
 export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creator((source, context) => {
   if (source === '') return;
-  const i = source.search(separator);
+  const i = source.search(delimiter);
   switch (i) {
     case -1:
       return [[source], ''];

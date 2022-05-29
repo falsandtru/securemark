@@ -1,11 +1,11 @@
 import { UnescapableSourceParser } from '../source';
 import { creator } from '../../combinator';
-import { separator, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
+import { delimiter, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
 
 export const unescsource: UnescapableSourceParser = creator(source => {
   assert(source[0] !== '\x1B');
   if (source === '') return;
-  const i = source.search(separator);
+  const i = source.search(delimiter);
   switch (i) {
     case -1:
       return [[source], ''];
