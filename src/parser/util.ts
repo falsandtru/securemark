@@ -11,15 +11,15 @@ import { push } from 'spica/array';
 export const regBlankInlineStart = new RegExp(String.raw
   `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
-export function blank(suffix: string | RegExp): RegExp;
-export function blank(prefix: '' | '\n', suffix: string | RegExp): RegExp;
-export function blank(prefix: '' | '\n', suffix?: string | RegExp): RegExp {
-  if (suffix === undefined) return blank('', prefix);
+export function blank(delimiter: string | RegExp): RegExp;
+export function blank(starts: '' | '\n', delimiter: string | RegExp): RegExp;
+export function blank(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
+  if (delimiter === undefined) return blank('', starts);
   return new RegExp(String.raw
     `^(?:(?=${
-      prefix
-    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${prefix && '+'})?${
-      typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source
+      starts
+    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${starts && '+'})?${
+      typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source
     }`);
 }
 
