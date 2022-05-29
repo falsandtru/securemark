@@ -11,7 +11,10 @@ import { push } from 'spica/array';
 export const regBlankInlineStart = new RegExp(String.raw
   `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
-export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp {
+export function blank(suffix: string | RegExp): RegExp;
+export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp;
+export function blank(prefix: '' | RegExp, suffix?: string | RegExp): RegExp {
+  if (!suffix) return blank('', prefix);
   return new RegExp(String.raw
     `^(?:${
       prefix && prefix.source

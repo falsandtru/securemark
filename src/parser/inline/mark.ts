@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 export const mark: MarkParser = lazy(() => creator(surround(
   str('=='),
   startTight(some(union([
-    some(inline, blank('', '==')),
+    some(inline, blank('==')),
     open(some(inline, '='), inline),
   ]))),
   str('=='), false,

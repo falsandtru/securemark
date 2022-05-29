@@ -11,7 +11,7 @@ export const emphasis: EmphasisParser = lazy(() => creator(surround(
   str('*'),
   startTight(some(union([
     strong,
-    some(inline, blank('', '*')),
+    some(inline, blank('*')),
     open(some(inline, '*'), inline),
   ])), '*'),
   str('*'), false,
