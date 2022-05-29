@@ -64,50 +64,18 @@ __exportStar(__webpack_require__(256), exports);
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isArray = exports.ObjectValues = exports.ObjectSetPrototypeOf = exports.ObjectSeal = exports.ObjectPreventExtensions = exports.ObjectKeys = exports.isSealed = exports.isFrozen = exports.isExtensible = exports.ObjectIs = exports.ObjectGetPrototypeOf = exports.ObjectGetOwnPropertySymbols = exports.ObjectGetOwnPropertyNames = exports.ObjectGetOwnPropertyDescriptors = exports.ObjectGetOwnPropertyDescriptor = exports.ObjectFromEntries = exports.ObjectFreeze = exports.ObjectEntries = exports.ObjectDefineProperty = exports.ObjectDefineProperties = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.SymbolKeyFor = exports.SymbolFor = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
 exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign; //export const SymbolAsyncIterator: typeof Symbol.asyncIterator = Symbol.asyncIterator;
-
-exports.SymbolFor = Symbol.for; //export const SymbolHasInstance: typeof Symbol.hasInstance = Symbol.hasInstance;
-//export const SymbolIsConcatSpreadable: typeof Symbol.isConcatSpreadable = Symbol.isConcatSpreadable;
-//export const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
-
-exports.SymbolKeyFor = Symbol.keyFor; //export const SymbolMatch: typeof Symbol.match = Symbol.match;
-//export const SymbolReplace: typeof Symbol.replace = Symbol.replace;
-//export const SymbolSearch: typeof Symbol.search = Symbol.search;
-//export const SymbolSpecies: typeof Symbol.species = Symbol.species;
-//export const SymbolSplit: typeof Symbol.split = Symbol.split;
-//export const SymbolToPrimitive: typeof Symbol.toPrimitive = Symbol.toPrimitive;
-//export const SymbolToStringTag: typeof Symbol.toStringTag = Symbol.toStringTag;
-//export const SymbolUnscopables: typeof Symbol.unscopables = Symbol.unscopables;
-
+exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign;
+exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
 exports.isEnumerable = Object.prototype.propertyIsEnumerable.call.bind(Object.prototype.propertyIsEnumerable);
 exports.toString = Object.prototype.toString.call.bind(Object.prototype.toString);
 exports.ObjectAssign = Object.assign;
 exports.ObjectCreate = Object.create;
-exports.ObjectDefineProperties = Object.defineProperties;
-exports.ObjectDefineProperty = Object.defineProperty;
-exports.ObjectEntries = Object.entries;
-exports.ObjectFreeze = Object.freeze; // @ts-ignore
-
-exports.ObjectFromEntries = Object.fromEntries;
-exports.ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-exports.ObjectGetOwnPropertyDescriptors = Object.getOwnPropertyDescriptors;
-exports.ObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
-exports.ObjectGetOwnPropertySymbols = Object.getOwnPropertySymbols;
 exports.ObjectGetPrototypeOf = Object.getPrototypeOf;
-exports.ObjectIs = Object.is;
-exports.isExtensible = Object.isExtensible;
-exports.isFrozen = Object.isFrozen;
-exports.isSealed = Object.isSealed;
-exports.ObjectKeys = Object.keys;
-exports.ObjectPreventExtensions = Object.preventExtensions;
-exports.ObjectSeal = Object.seal;
 exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
-exports.ObjectValues = Object.values;
-exports.isArray = Array.isArray;
 
 /***/ }),
 
@@ -120,7 +88,7 @@ exports.isArray = Array.isArray;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.join = exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
+exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -217,18 +185,6 @@ function splice(as, index, count, ...inserts) {
 }
 
 exports.splice = splice;
-
-function join(as, sep = '') {
-  let acc = '';
-
-  for (let i = 0; i < as.length; ++i) {
-    acc += i === 0 ? as[i] : sep + as[i];
-  }
-
-  return acc;
-}
-
-exports.join = join;
 
 /***/ }),
 
@@ -368,7 +324,7 @@ function template(strategy) {
       const source = sources[i];
       if (source === target) continue;
       if ((0, type_1.isPrimitive)(source)) continue;
-      const keys = (0, alias_1.ObjectKeys)(source);
+      const keys = global_1.Object.keys(source);
 
       for (let i = 0; i < keys.length; ++i) {
         strategy(keys[i], target, source);
@@ -538,6 +494,8 @@ class Cache {
             LRU.head.value.node = LRU.head;
             LRU.head.value.overlap = OVL.unshift(LRU.head.value);
           }
+
+        // fallthrough
 
         default:
           target = LRU.last !== skip ? LRU.last : LRU.length >= 2 ? LRU.last.prev : LFU.last;
@@ -1470,7 +1428,6 @@ const global_1 = __webpack_require__(4128);
 
 const alias_1 = __webpack_require__(5406);
 
-const toString = Object.prototype.toString.call.bind(Object.prototype.toString);
 const ObjectPrototype = Object.prototype;
 const ArrayPrototype = Array.prototype;
 
@@ -1484,7 +1441,7 @@ function type(value) {
     const proto = (0, alias_1.ObjectGetPrototypeOf)(value);
     if (proto === ObjectPrototype) return 'Object';
     if (proto === ArrayPrototype) return 'Array';
-    return toString(value).slice(8, -1);
+    return (0, alias_1.toString)(value).slice(8, -1);
   }
 
   if (type === 'function') return 'Function';
@@ -5351,7 +5308,7 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('((', '))', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('((', (0, combinator_1.guard)(context => context.syntax?.inline?.annotation ?? true, (0, util_1.startLoose)((0, combinator_1.context)({
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('((', '))', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('((', (0, combinator_1.guard)(context => context.syntax?.inline?.annotation ?? true, (0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -5366,9 +5323,9 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, 
     }
   },
   delimiters: global_1.undefined
-}, (0, util_1.trimSpaceStart)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)]))))), '))'), ns => [(0, dom_1.html)('sup', {
+}, (0, util_1.trimBlankInline)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', /^\\?\n/)))), '))'), ns => [(0, dom_1.html)('sup', {
   class: 'annotation'
-}, (0, util_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]))));
+}, (0, dom_1.defrag)(ns))]))));
 
 /***/ }),
 
@@ -5720,7 +5677,7 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, new RegExp(String.raw`^\s+${fence}\]`))]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`)), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'comment'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
@@ -5751,7 +5708,7 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, '~~')), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -5770,6 +5727,8 @@ const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
 
+const emstrong_1 = __webpack_require__(6132);
+
 const strong_1 = __webpack_require__(8072);
 
 const source_1 = __webpack_require__(6743);
@@ -5780,7 +5739,7 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -5801,6 +5760,8 @@ const inline_1 = __webpack_require__(1160);
 
 const strong_1 = __webpack_require__(8072);
 
+const emphasis_1 = __webpack_require__(3867);
+
 const source_1 = __webpack_require__(6743);
 
 const util_1 = __webpack_require__(9437);
@@ -5809,9 +5770,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])));
-const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])));
-exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
+const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
+const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
+exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
   switch (cs[0]) {
     case '***':
       return [[(0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))])], rest];
@@ -6151,8 +6112,6 @@ exports.attributes = exports.attribute = exports.html = void 0;
 
 const global_1 = __webpack_require__(4128);
 
-const alias_1 = __webpack_require__(5406);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -6169,15 +6128,15 @@ const cache_1 = __webpack_require__(9210);
 
 const array_1 = __webpack_require__(8112);
 
-const tags = Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = global_1.Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
-    dir: Object.freeze(['ltr', 'rtl'])
+    dir: global_1.Object.freeze(['ltr', 'rtl'])
   }
 };
-Object.setPrototypeOf(attrspec, null);
-Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, `</${tag}>`)), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
+global_1.Object.setPrototypeOf(attrspec, null);
+global_1.Object.values(attrspec).forEach(o => global_1.Object.setPrototypeOf(o, null));
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)]), `</${tag}>`), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, (0, dom_1.defrag)(bs), cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
 
 function elem(tag, as, bs, cs) {
@@ -6195,7 +6154,7 @@ function invalid(type, message, as, bs, cs) {
   }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)));
 }
 
-const requiredAttributes = (0, memoize_1.memoize)(spec => (0, alias_1.ObjectEntries)(spec).flatMap(([k, v]) => v && (0, alias_1.isFrozen)(v) ? [k] : []), new WeakMap());
+const requiredAttributes = (0, memoize_1.memoize)(spec => global_1.Object.entries(spec).flatMap(([k, v]) => v && global_1.Object.isFrozen(v) ? [k] : []), new WeakMap());
 
 function attributes(syntax, classes, spec, params) {
   let invalid = false;
@@ -6285,7 +6244,7 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)(/\n/, '++')), (0, combinator_1.open)(/^\n/, (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6330,7 +6289,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, co
       link: false
     }
   }
-}, (0, combinator_1.dup)((0, combinator_1.union)([(0, combinator_1.surround)('[', inline_1.media, ']'), (0, combinator_1.surround)('[', inline_1.shortmedia, ']'), (0, combinator_1.surround)('[', (0, util_1.startLoose)((0, combinator_1.context)({
+}, (0, combinator_1.dup)((0, combinator_1.union)([(0, combinator_1.surround)('[', inline_1.media, ']'), (0, combinator_1.surround)('[', inline_1.shortmedia, ']'), (0, combinator_1.surround)('[', (0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -6343,10 +6302,10 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, co
       autolink: false
     }
   }
-}, (0, util_1.trimSpaceStart)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)))), ']', true)]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]))), ([params, content = []], rest, context) => {
+}, (0, util_1.trimBlankInline)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))), ']', true)]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]))), ([params, content = []], rest, context) => {
   if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))?.some(node => typeof node === 'object')) return;
   const INSECURE_URI = params.shift();
-  const el = elem(INSECURE_URI, (0, util_1.trimNodeEnd)((0, dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
+  const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   if (el.classList.contains('invalid')) return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }))));
@@ -6452,7 +6411,7 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), inline_1.inline)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6616,7 +6575,7 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[[', ']]', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => context.syntax?.inline?.reference ?? true, (0, util_1.startLoose)((0, combinator_1.context)({
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[[', ']]', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => context.syntax?.inline?.reference ?? true, (0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -6630,8 +6589,8 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, c
     }
   },
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [['', source], '']), (0, util_1.trimSpaceStart)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))])))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, util_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]))));
-const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), (_, rest, context) => (0, util_1.isStartLoose)(rest, context)), ([source]) => [(0, dom_1.html)('abbr', source)]));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [['', source], '']), (0, util_1.trimBlankInline)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
+const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankInlineStart, '')]));
 
 function attributes(ns) {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
@@ -6785,6 +6744,8 @@ const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
 
+const emstrong_1 = __webpack_require__(6132);
+
 const source_1 = __webpack_require__(6743);
 
 const util_1 = __webpack_require__(9437);
@@ -6793,7 +6754,7 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blank)('', '**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -7445,10 +7406,10 @@ const combinator_1 = __webpack_require__(2087);
 
 const text_1 = __webpack_require__(7763);
 
-const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
+const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 exports.escsource = (0, combinator_1.creator)(source => {
   if (source === '') return;
-  const i = source.search(separator);
+  const i = source.search(delimiter);
 
   switch (i) {
     case -1:
@@ -7465,7 +7426,7 @@ exports.escsource = (0, combinator_1.creator)(source => {
         default:
           const b = source[0] !== '\n' && source[0].trimStart() === '';
           const i = b ? source.search(text_1.nonWhitespace) : 1;
-          return [[source.slice(0, i)], source.slice(i)];
+          return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
 
     default:
@@ -7548,7 +7509,7 @@ exports.stropt = stropt;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.separator = void 0;
+exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.delimiter = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -7558,13 +7519,13 @@ const str_1 = __webpack_require__(2790);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.separator = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
+exports.delimiter = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
 exports.nonWhitespace = /[\S\n]|$/;
 exports.nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
 const repeat = (0, str_1.str)(/^(.)\1*/);
 exports.text = (0, combinator_1.creator)((source, context) => {
   if (source === '') return;
-  const i = source.search(exports.separator);
+  const i = source.search(exports.delimiter);
 
   switch (i) {
     case -1:
@@ -7623,7 +7584,7 @@ exports.text = (0, combinator_1.creator)((source, context) => {
         default:
           const b = source[0].trimStart() === '';
           const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) || 1 : 1;
-          return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [[], source.slice(i)] : [[source.slice(0, i)], source.slice(i)];
+          return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [[], source.slice(i)] : [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
 
     default:
@@ -7659,7 +7620,7 @@ const text_1 = __webpack_require__(7763);
 
 exports.unescsource = (0, combinator_1.creator)(source => {
   if (source === '') return;
-  const i = source.search(text_1.separator);
+  const i = source.search(text_1.delimiter);
 
   switch (i) {
     case -1:
@@ -7669,7 +7630,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
       {
         const b = source[0] !== '\n' && source[0].trimStart() === '';
         const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) || 1 : 1;
-        return [[source.slice(0, i)], source.slice(i)];
+        return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
 
     default:
@@ -7688,7 +7649,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.trimNodeEnd = exports.trimSpaceStart = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = exports.blank = void 0;
+exports.stringify = exports.trimNodeEnd = exports.trimBlankInline = exports.isStartTightNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankInlineStart = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -7706,11 +7667,14 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-function blank(prefix, suffix) {
-  return new RegExp(String.raw`^(?:${prefix && prefix.source}(?:\\\s|[^\S\n]|\n|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)*)?${typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source}`);
+exports.regBlankInlineStart = new RegExp(String.raw`^(?:\\?[^\S\n]|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
+
+function blankWith(starting, delimiter) {
+  if (delimiter === global_1.undefined) return blankWith('', starting);
+  return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
 }
 
-exports.blank = blank;
+exports.blankWith = blankWith;
 
 function visualize(parser) {
   const blankline = new RegExp(String.raw`^(?:\\$|\\?[^\S\n]|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)+$`, 'gm');
@@ -7741,12 +7705,12 @@ function hasVisible(nodes, {
 }
 
 function startLoose(parser, except) {
-  return (source, context) => (0, exports.isStartLoose)(source, context, except) ? parser(source, context) : global_1.undefined;
+  return (source, context) => isStartLoose(source, context, except) ? parser(source, context) : global_1.undefined;
 }
 
 exports.startLoose = startLoose;
-exports.isStartLoose = (0, memoize_1.reduce)((source, context, except) => {
-  return isStartTight(source.replace(/^[^\S\n]+/, ''), context, except);
+const isStartLoose = (0, memoize_1.reduce)((source, context, except) => {
+  return isStartTight(source.replace(exports.regBlankInlineStart, ''), context, except);
 }, (source, _, except = '') => `${source}\x1E${except}`);
 
 function startTight(parser, except) {
@@ -7831,11 +7795,15 @@ function isVisible(node, strpos) {
   }
 }
 
-function trimSpaceStart(parser) {
-  return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(/^[^\S\n]+/, '')), parser);
+function trimBlankInline(parser) {
+  return (0, combinator_1.fmap)(trimBlankInlineStart(parser), trimNodeEnd);
 }
 
-exports.trimSpaceStart = trimSpaceStart; //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+exports.trimBlankInline = trimBlankInline;
+
+function trimBlankInlineStart(parser) {
+  return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(exports.regBlankInlineStart, '')), parser);
+} //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
 //  return trimNodeStart(trimNodeEnd(nodes));
 //}
 //function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
@@ -7852,6 +7820,7 @@ exports.trimSpaceStart = trimSpaceStart; //export function trimNode(nodes: (HTML
 //  }
 //  return nodes;
 //}
+
 
 function trimNodeEnd(nodes) {
   const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
@@ -8142,18 +8111,18 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.image = void 0;
 
-const alias_1 = __webpack_require__(5406);
+const global_1 = __webpack_require__(4128);
 
 const dom_1 = __webpack_require__(3252);
 
 function image(source, url, cache) {
-  if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [attr.name, attr.value])));
+  if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), global_1.Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])));
   (0, dom_1.define)(source, {
     'data-type': 'image',
     src: source.getAttribute('data-src'),
     loading: 'lazy'
   });
-  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), (0, alias_1.ObjectFromEntries)([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
+  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), global_1.Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
   return source;
 }
 
@@ -8274,7 +8243,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.video = void 0;
 
-const alias_1 = __webpack_require__(5406);
+const global_1 = __webpack_require__(4128);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -8285,7 +8254,7 @@ function video(source, url) {
   return (0, dom_1.html)('video', {
     src: source.getAttribute('data-src'),
     'data-type': 'video',
-    ...(0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [attr.name, attr.value])),
+    ...global_1.Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])),
     muted: '',
     controls: ''
   });
@@ -8660,7 +8629,7 @@ function fix(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.295 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.297 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8678,50 +8647,18 @@ return /******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isArray = exports.ObjectValues = exports.ObjectSetPrototypeOf = exports.ObjectSeal = exports.ObjectPreventExtensions = exports.ObjectKeys = exports.isSealed = exports.isFrozen = exports.isExtensible = exports.ObjectIs = exports.ObjectGetPrototypeOf = exports.ObjectGetOwnPropertySymbols = exports.ObjectGetOwnPropertyNames = exports.ObjectGetOwnPropertyDescriptors = exports.ObjectGetOwnPropertyDescriptor = exports.ObjectFromEntries = exports.ObjectFreeze = exports.ObjectEntries = exports.ObjectDefineProperty = exports.ObjectDefineProperties = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.SymbolKeyFor = exports.SymbolFor = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
 exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign; //export const SymbolAsyncIterator: typeof Symbol.asyncIterator = Symbol.asyncIterator;
-
-exports.SymbolFor = Symbol.for; //export const SymbolHasInstance: typeof Symbol.hasInstance = Symbol.hasInstance;
-//export const SymbolIsConcatSpreadable: typeof Symbol.isConcatSpreadable = Symbol.isConcatSpreadable;
-//export const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
-
-exports.SymbolKeyFor = Symbol.keyFor; //export const SymbolMatch: typeof Symbol.match = Symbol.match;
-//export const SymbolReplace: typeof Symbol.replace = Symbol.replace;
-//export const SymbolSearch: typeof Symbol.search = Symbol.search;
-//export const SymbolSpecies: typeof Symbol.species = Symbol.species;
-//export const SymbolSplit: typeof Symbol.split = Symbol.split;
-//export const SymbolToPrimitive: typeof Symbol.toPrimitive = Symbol.toPrimitive;
-//export const SymbolToStringTag: typeof Symbol.toStringTag = Symbol.toStringTag;
-//export const SymbolUnscopables: typeof Symbol.unscopables = Symbol.unscopables;
-
+exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign;
+exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
 exports.isEnumerable = Object.prototype.propertyIsEnumerable.call.bind(Object.prototype.propertyIsEnumerable);
 exports.toString = Object.prototype.toString.call.bind(Object.prototype.toString);
 exports.ObjectAssign = Object.assign;
 exports.ObjectCreate = Object.create;
-exports.ObjectDefineProperties = Object.defineProperties;
-exports.ObjectDefineProperty = Object.defineProperty;
-exports.ObjectEntries = Object.entries;
-exports.ObjectFreeze = Object.freeze; // @ts-ignore
-
-exports.ObjectFromEntries = Object.fromEntries;
-exports.ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-exports.ObjectGetOwnPropertyDescriptors = Object.getOwnPropertyDescriptors;
-exports.ObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
-exports.ObjectGetOwnPropertySymbols = Object.getOwnPropertySymbols;
 exports.ObjectGetPrototypeOf = Object.getPrototypeOf;
-exports.ObjectIs = Object.is;
-exports.isExtensible = Object.isExtensible;
-exports.isFrozen = Object.isFrozen;
-exports.isSealed = Object.isSealed;
-exports.ObjectKeys = Object.keys;
-exports.ObjectPreventExtensions = Object.preventExtensions;
-exports.ObjectSeal = Object.seal;
 exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
-exports.ObjectValues = Object.values;
-exports.isArray = Array.isArray;
 
 /***/ }),
 
@@ -8744,11 +8681,11 @@ exports.equal = equal;
 /***/ }),
 
 /***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_4955__) => {
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_2590__) => {
 
 
 
-__nested_webpack_require_4955__(921);
+__nested_webpack_require_2590__(921);
 
 const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
@@ -8769,7 +8706,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /***/ }),
 
 /***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_5442__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3077__) => {
 
 
 
@@ -8778,11 +8715,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reduce = exports.memoize = void 0;
 
-const global_1 = __nested_webpack_require_5442__(128);
+const global_1 = __nested_webpack_require_3077__(128);
 
-const alias_1 = __nested_webpack_require_5442__(406);
+const alias_1 = __nested_webpack_require_3077__(406);
 
-const compare_1 = __nested_webpack_require_5442__(529);
+const compare_1 = __nested_webpack_require_3077__(529);
 
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, void 0, identify);
@@ -8840,7 +8777,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_6832__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4467__) => {
 
 
 
@@ -8849,11 +8786,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 
-const global_1 = __nested_webpack_require_6832__(128);
+const global_1 = __nested_webpack_require_4467__(128);
 
-const alias_1 = __nested_webpack_require_6832__(406);
+const alias_1 = __nested_webpack_require_4467__(406);
 
-const memoize_1 = __nested_webpack_require_6832__(808);
+const memoize_1 = __nested_webpack_require_4467__(808);
 
 var caches;
 
@@ -8881,10 +8818,10 @@ function frag(children) {
 
 exports.frag = frag;
 exports.html = element(global_1.document, "HTML"
-/* HTML */
+/* NS.HTML */
 );
 exports.svg = element(global_1.document, "SVG"
-/* SVG */
+/* NS.SVG */
 );
 
 function text(source) {
@@ -8908,17 +8845,17 @@ function elem(context, ns, tag) {
 
   switch (ns) {
     case "HTML"
-    /* HTML */
+    /* NS.HTML */
     :
       return context.createElement(tag);
 
     case "SVG"
-    /* SVG */
+    /* NS.SVG */
     :
       return context.createElementNS('http://www.w3.org/2000/svg', tag);
 
     case "MathML"
-    /* MathML */
+    /* NS.MathML */
     :
       return context.createElementNS('http://www.w3.org/1998/Math/MathML', tag);
   }
@@ -8954,7 +8891,7 @@ function defineAttrs(el, attrs) {
             case 'connect':
             case 'disconnect':
               const prop = `on${type}`;
-              el[prop] ?? (0, alias_1.ObjectDefineProperty)(el, prop, {
+              el[prop] ?? global_1.Object.defineProperty(el, prop, {
                 configurable: true,
                 enumerable: false,
                 writable: true,
@@ -8981,7 +8918,7 @@ function defineAttrs(el, attrs) {
             case 'connect':
             case 'disconnect':
               const prop = `on${type}`;
-              el[prop] ?? (0, alias_1.ObjectDefineProperty)(el, prop, {
+              el[prop] ?? global_1.Object.defineProperty(el, prop, {
                 configurable: true,
                 enumerable: false,
                 writable: true,
@@ -9089,7 +9026,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_13916__(moduleId) {
+/******/ 	function __nested_webpack_require_11560__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -9103,7 +9040,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_13916__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11560__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -9114,7 +9051,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_13916__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_11560__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -9126,7 +9063,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.295 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.297 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
