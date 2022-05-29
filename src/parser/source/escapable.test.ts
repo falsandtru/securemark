@@ -18,10 +18,11 @@ describe('Unit: parser/source/escsource', () => {
 
     it('space', () => {
       assert.deepStrictEqual(inspect(parser(' ')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('  ')), [['  '], '']);
-      assert.deepStrictEqual(inspect(parser('   ')), [['   '], '']);
+      assert.deepStrictEqual(inspect(parser('  ')), [[' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('   ')), [['  ', ' '], '']);
       assert.deepStrictEqual(inspect(parser(' \n')), [[' ', '\n'], '']);
-      assert.deepStrictEqual(inspect(parser('  \n')), [['  ', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser('  \n')), [[' ', ' ', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser('   \n')), [['  ', ' ', '\n'], '']);
     });
 
     it('linebreak', () => {

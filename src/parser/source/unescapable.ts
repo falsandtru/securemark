@@ -15,7 +15,7 @@ export const unescsource: UnescapableSourceParser = creator(source => {
         ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
         : 1;
       assert(i > 0);
-      return [[source.slice(0, i)], source.slice(i)];
+      return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
     }
     default:
       return [[source.slice(0, i)], source.slice(i)];

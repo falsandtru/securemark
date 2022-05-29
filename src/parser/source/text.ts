@@ -70,7 +70,7 @@ export const text: TextParser = creator((source, context) => {
               || b && source[i] === '\n'
               || b && source[i] === '\\' && source[i + 1] === '\n'
             ? [[], source.slice(i)]
-            : [[source.slice(0, i)], source.slice(i)];
+            : [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
     default:
       return [[source.slice(0, i)], source.slice(i)];

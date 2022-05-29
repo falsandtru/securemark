@@ -13,6 +13,7 @@ describe('Unit: parser/inline/mark', () => {
       assert.deepStrictEqual(inspect(parser('==a')), [['==', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('==a=')), [['==', 'a', '='], '']);
       assert.deepStrictEqual(inspect(parser('==a ==')), [['==', 'a'], ' ==']);
+      assert.deepStrictEqual(inspect(parser('==a  ==')), [['==', 'a', ' '], ' ==']);
       assert.deepStrictEqual(inspect(parser('==a\n==')), [['==', 'a'], '\n==']);
       assert.deepStrictEqual(inspect(parser('==a\\ ==')), [['==', 'a'], '\\ ==']);
       assert.deepStrictEqual(inspect(parser('==a\\\n==')), [['==', 'a'], '\\\n==']);
