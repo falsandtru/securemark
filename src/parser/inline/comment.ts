@@ -12,7 +12,7 @@ export const comment: CommentParser = lazy(() => creator(validate('[#', match(
   ([, fence]) =>
     surround(
       open(str(`[${fence}`), some(text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true),
-      union([some(inline, new RegExp(String.raw`^\s+${fence}\]`))]),
+      some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`)),
       close(some(text, /^\S/), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
         html('span', { class: 'comment' }, [
