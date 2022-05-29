@@ -16,9 +16,9 @@ export function blank(prefix: '' | RegExp, suffix: string | RegExp): RegExp;
 export function blank(prefix: '' | RegExp, suffix?: string | RegExp): RegExp {
   if (!suffix) return blank('', prefix);
   return new RegExp(String.raw
-    `^(?:${
+    `^(?:(?=${
       prefix && prefix.source
-    }(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*)?${
+    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${prefix && '+'})?${
       typeof suffix === 'string' ? suffix.replace(/[*+()\[\]]/g, '\\$&') : suffix.source
     }`);
 }
