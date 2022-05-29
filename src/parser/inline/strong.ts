@@ -1,6 +1,7 @@
 import { StrongParser } from '../inline';
 import { union, some, creator, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
+import { emstrong } from './emstrong';
 import { str } from '../source';
 import { startTight, blank } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -10,7 +11,10 @@ export const strong: StrongParser = lazy(() => creator(surround(
   str('**'),
   startTight(some(union([
     some(inline, blank('**')),
-    open(some(inline, '*'), inline),
+    open(some(inline, '*'), union([
+      emstrong,
+      strong,
+    ])),
   ])), '*'),
   str('**'), false,
   ([, bs], rest) => [[html('strong', defrag(bs))], rest],

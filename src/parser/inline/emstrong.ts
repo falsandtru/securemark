@@ -4,6 +4,7 @@ import { Result, IntermediateParser } from '../../combinator/data/parser';
 import { union, some, creator, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
+import { emphasis } from './emphasis';
 import { str } from '../source';
 import { startTight, blank } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -11,12 +12,19 @@ import { unshift } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
   some(inline, blank('**')),
-  open(some(inline, '*'), inline),
+  open(some(inline, '*'), union([
+    emstrong,
+    strong,
+  ])),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
   some(inline, blank('*')),
-  open(some(inline, '*'), inline),
+  open(some(inline, '*'), union([
+    emstrong,
+    strong,
+    emphasis,
+  ])),
 ])));
 
 export const emstrong: EmStrongParser = lazy(() => creator(surround(

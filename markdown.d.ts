@@ -994,7 +994,6 @@ export namespace MarkdownParser {
         Inline<'html/tag'>,
         Parser<HTMLElement | string, Context, [
           InlineParser,
-          InlineParser,
         ]> {
       }
       export namespace TagParser {
@@ -1027,7 +1026,7 @@ export namespace MarkdownParser {
       Inline<'mark'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
+        MarkParser,
       ]> {
     }
     export interface EmStrongParser extends
@@ -1043,7 +1042,10 @@ export namespace MarkdownParser {
       Inline<'strong'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
+        Parser<HTMLElement | string, Context, [
+          EmStrongParser,
+          StrongParser,
+        ]>,
       ]> {
     }
     export interface EmphasisParser extends
@@ -1052,7 +1054,11 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         StrongParser,
         InlineParser,
-        InlineParser,
+        Parser<HTMLElement | string, Context, [
+          EmStrongParser,
+          StrongParser,
+          EmphasisParser,
+        ]>,
       ]> {
     }
     export interface CodeParser extends

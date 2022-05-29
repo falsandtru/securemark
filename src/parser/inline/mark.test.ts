@@ -12,10 +12,10 @@ describe('Unit: parser/inline/mark', () => {
       assert.deepStrictEqual(inspect(parser('==')), undefined);
       assert.deepStrictEqual(inspect(parser('==a')), [['==', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('==a=')), [['==', 'a', '='], '']);
-      assert.deepStrictEqual(inspect(parser('==a ==')), [['==', 'a', ' ', '=='], '']);
-      assert.deepStrictEqual(inspect(parser('==a\n==')), [['==', 'a', '<br>', '=='], '']);
-      assert.deepStrictEqual(inspect(parser('==a\\ ==')), [['==', 'a', ' ', '=='], '']);
-      assert.deepStrictEqual(inspect(parser('==a\\\n==')), [['==', 'a', '<span class="linebreak"> </span>', '=='], '']);
+      assert.deepStrictEqual(inspect(parser('==a ==')), [['==', 'a'], ' ==']);
+      assert.deepStrictEqual(inspect(parser('==a\n==')), [['==', 'a'], '\n==']);
+      assert.deepStrictEqual(inspect(parser('==a\\ ==')), [['==', 'a'], '\\ ==']);
+      assert.deepStrictEqual(inspect(parser('==a\\\n==')), [['==', 'a'], '\\\n==']);
       assert.deepStrictEqual(inspect(parser('== ==')), undefined);
       assert.deepStrictEqual(inspect(parser('== a==')), undefined);
       assert.deepStrictEqual(inspect(parser('== a ==')), undefined);
