@@ -3,7 +3,7 @@ import { HTMLParser } from '../inline';
 import { union, some, validate, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, blank } from '../util';
+import { startLoose, blankWith } from '../util';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -35,7 +35,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
-          open(/^\n?/, some(inline, blank('\n', `</${tag}>`)), true),
+          open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
@@ -48,7 +48,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
-          open(/^\n?/, some(inline, blank('\n', `</${tag}>`)), true),
+          open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
         ]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>

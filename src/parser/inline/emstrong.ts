@@ -6,12 +6,12 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { startTight, blank } from '../util';
+import { startTight, blankWith } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
-  some(inline, blank('**')),
+  some(inline, blankWith('**')),
   open(some(inline, '*'), union([
     emstrong,
     strong,
@@ -19,7 +19,7 @@ const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
-  some(inline, blank('*')),
+  some(inline, blankWith('*')),
   open(some(inline, '*'), union([
     emstrong,
     strong,
@@ -30,7 +30,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),
   startTight(some(union([
-    some(inline, blank('*')),
+    some(inline, blankWith('*')),
     open(some(inline, '*'), inline),
   ]))),
   str(/^\*{1,3}/), false,

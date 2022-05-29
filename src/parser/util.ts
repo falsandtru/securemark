@@ -11,14 +11,14 @@ import { push } from 'spica/array';
 export const regBlankInlineStart = new RegExp(String.raw
   `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
-export function blank(delimiter: string | RegExp): RegExp;
-export function blank(starts: '' | '\n', delimiter: string | RegExp): RegExp;
-export function blank(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
-  if (delimiter === undefined) return blank('', starts);
+export function blankWith(delimiter: string | RegExp): RegExp;
+export function blankWith(starting: '' | '\n', delimiter: string | RegExp): RegExp;
+export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): RegExp {
+  if (delimiter === undefined) return blankWith('', starting);
   return new RegExp(String.raw
     `^(?:(?=${
-      starts
-    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${starts && '+'})?${
+      starting
+    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${
       typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source
     }`);
 }
