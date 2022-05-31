@@ -39,7 +39,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ])), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs)], rest]),
+          [[elem(tag, as, bs, cs)], rest]),
     ([, tag]) => tags.indexOf(tag), [])),
   match(
     /^(?=<([a-z]+)(?=[^\S\n]|>))/,
@@ -52,7 +52,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         ])), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          [[elem(tag, as, defrag(bs), cs)], rest]),
+          [[elem(tag, as, bs, cs)], rest]),
     ([, tag]) => tag,
     new Cache(10000))),
 ])))));
@@ -64,13 +64,12 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
-  assert(bs.length === defrag(bs).length);
   assert(cs.length === 1);
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>`, as, bs, cs);
   const attrs = attributes('html', [], attrspec[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs
     ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs)
-    : h(tag as 'span', attrs, bs);
+    : h(tag as 'span', attrs, defrag(bs));
 }
 function invalid(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
   return h('span', {
