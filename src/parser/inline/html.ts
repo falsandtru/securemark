@@ -36,7 +36,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
           open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
-        ]), `</${tag}>`), `</${tag}>`),
+        ])), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
           [[elem(tag, as, defrag(bs), cs)], rest]),
@@ -49,7 +49,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         str(`<${tag}`), some(attribute), str(/^\s*>/), true),
         startLoose(some(union([
           open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
-        ]), `</${tag}>`), `</${tag}>`),
+        ])), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
           [[elem(tag, as, defrag(bs), cs)], rest]),
