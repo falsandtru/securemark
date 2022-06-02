@@ -12,7 +12,7 @@ module.exports = function (config) {
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.js', watched: false, served: false, included: true, integrity: 'sha512-QaF+0tDlqVmwZaQSc0kImgYmw+Cd66TxA5D9X70I5V9BNSqk6yBTbyqw2VEUsVYV5OTbxw8HD9d45on1wvYv7g==' },
       { pattern: 'dist/**/*.{js,map}', watched: true, served: true, included: true },
     ],
-    reporters: ['dots', 'coverage'],
+    reporters: ['dots'],
     preprocessors: {
       'dist/**/*.js': ['coverage'],
     },
