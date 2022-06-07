@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.249.1
+
+- Update dependencies.
+
 ## 0.249.0
 
 - Change some parsers to trim leading blanks except linebreaks.
