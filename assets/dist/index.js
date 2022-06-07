@@ -360,6 +360,8 @@ const clock_1 = __webpack_require__(7681);
 
 const invlist_1 = __webpack_require__(7452);
 
+const heap_1 = __webpack_require__(818);
+
 const assign_1 = __webpack_require__(4401);
 
 const tuple_1 = __webpack_require__(5341);
@@ -370,26 +372,21 @@ class Cache {
       capacity: 0,
       space: global_1.Infinity,
       age: global_1.Infinity,
-      life: 10,
-      limit: 95,
+      earlyExpiring: false,
+      limit: 950,
       capture: {
         delete: true,
         clear: true
       }
     };
-    this.SIZE = 0; // 1041 days < 2 ** 53 / 100,000,000 / 3600 / 24.
-    // Hit counter only for LFU.
-
-    this.clock = global_1.Number.MIN_SAFE_INTEGER; // LRU access counter only for LRU.
-
-    this.clockR = global_1.Number.MIN_SAFE_INTEGER;
+    this.overlap = 0;
+    this.SIZE = 0;
     this.memory = new global_1.Map();
     this.indexes = {
       LRU: new invlist_1.List(),
-      LFU: new invlist_1.List(),
-      // expiryとLFUのclockを消すなら消せる
-      OVL: new invlist_1.List()
+      LFU: new invlist_1.List()
     };
+    this.expiries = new heap_1.Heap();
     this.stats = {
       LRU: (0, tuple_1.tuple)(0, 0),
       LFU: (0, tuple_1.tuple)(0, 0),
@@ -415,7 +412,7 @@ class Cache {
       }
 
     };
-    this.ratio = 50;
+    this.ratio = 500;
 
     if (typeof capacity === 'object') {
       opts = capacity;
@@ -428,8 +425,9 @@ class Cache {
     this.capacity = this.settings.capacity;
     if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
     this.space = this.settings.space;
-    this.life = this.capacity * this.settings.life;
     this.limit = this.settings.limit;
+    this.earlyExpiring = this.settings.earlyExpiring;
+    this.disposer = this.settings.disposer;
   }
 
   get length() {
@@ -443,41 +441,29 @@ class Cache {
 
   evict(node, record, callback) {
     const index = node.value;
-    callback &&= !!this.settings.disposer;
+    callback &&= !!this.disposer;
     record = callback ? record ?? this.memory.get(index.key) : record;
+    this.overlap -= +(index.region === 'LFU' && node.list === this.indexes.LRU);
     node.delete();
-    node.value.overlap?.delete();
     this.memory.delete(index.key);
     this.SIZE -= index.size;
-    callback && this.settings.disposer?.(record.value, index.key);
+    callback && this.disposer?.(record.value, index.key);
   }
 
   ensure(margin, skip) {
-    if (skip) {
-      // Prevent wrong disposal of `skip`.
-      skip.value.clock = this.clock;
-      skip.value.expiry = global_1.Infinity;
-    }
-
     let size = skip?.value.size ?? 0;
     if (margin - size <= 0) return;
     const {
       LRU,
-      LFU,
-      OVL
+      LFU
     } = this.indexes;
 
     while (this.length === this.capacity || this.size + margin - size > this.space) {
-      const lastNode = OVL.last ?? LFU.last;
-      const lastIndex = lastNode?.value;
       let target;
 
       switch (true) {
-        // NOTE: The following conditions must be ensured that they won't be true if `lastNode` is `skip`.
-        // LRUの下限を5%以上確保すればわずかな性能低下と引き換えにクロックを消せる
-        case lastIndex && lastIndex.clock < this.clock - this.life:
-        case lastIndex && lastIndex.expiry !== global_1.Infinity && lastIndex.expiry < (0, clock_1.now)():
-          target = lastNode.list === OVL ? lastNode.value.node : lastNode;
+        case (target = this.expiries.peek()) && target !== skip && target.value.expiry < (0, clock_1.now)():
+          target = this.expiries.extract();
           break;
 
         case LRU.length === 0:
@@ -485,14 +471,13 @@ class Cache {
           break;
         // @ts-expect-error
 
-        case LFU.length > this.capacity * this.ratio / 100:
+        case LFU.length > this.capacity * this.ratio / 1000:
           target = LFU.last !== skip ? LFU.last : LFU.length >= 2 ? LFU.last.prev : skip;
 
           if (target !== skip) {
-            if (this.ratio >= 50) break;
+            if (this.ratio > 500) break;
             LRU.unshiftNode(target);
-            LRU.head.value.node = LRU.head;
-            LRU.head.value.overlap = OVL.unshift(LRU.head.value);
+            ++this.overlap;
           }
 
         // fallthrough
@@ -507,12 +492,12 @@ class Cache {
     }
   }
 
-  put(key, value, size = 1, age = this.settings.age) {
-    if (size >= 1 === false) throw new Error(`Spica: Cache: Size must be 1 or more.`);
-    if (age >= 1 === false) throw new Error(`Spica: Cache: Age must be 1 or more.`);
-
+  put(key, value, {
+    size = 1,
+    age = this.settings.age
+  } = {}) {
     if (size > this.space || age <= 0) {
-      this.settings.disposer?.(value, key);
+      this.disposer?.(value, key);
       return false;
     }
 
@@ -520,16 +505,23 @@ class Cache {
     const record = this.memory.get(key);
 
     if (record) {
-      const node = record.index;
+      const node = record.inode;
       const val = record.value;
       const index = node.value;
       this.ensure(size, node);
-      index.clock = index.region === 'LRU' ? ++this.clockR : ++this.clock;
-      index.expiry = expiry;
       this.SIZE += size - index.size;
       index.size = size;
+      index.expiry = expiry;
+
+      if (this.earlyExpiring && expiry !== global_1.Infinity) {
+        index.enode ? this.expiries.update(index.enode, -expiry) : index.enode = this.expiries.insert(-expiry, node);
+      } else if (index.enode) {
+        this.expiries.delete(index.enode);
+        index.enode = void 0;
+      }
+
       record.value = value;
-      this.settings.disposer?.(val, key);
+      this.disposer?.(val, key);
       return true;
     }
 
@@ -538,28 +530,33 @@ class Cache {
       LRU
     } = this.indexes;
     this.SIZE += size;
+    const node = LRU.unshift({
+      key,
+      size,
+      expiry,
+      region: 'LRU'
+    });
     this.memory.set(key, {
-      index: LRU.unshift({
-        key,
-        size,
-        clock: ++this.clockR,
-        expiry,
-        region: 'LRU'
-      }),
+      inode: node,
       value
     });
+
+    if (this.earlyExpiring && expiry !== global_1.Infinity) {
+      node.value.enode = this.expiries.insert(-expiry, node);
+    }
+
     return false;
   }
 
-  set(key, value, size, age) {
-    this.put(key, value, size, age);
+  set(key, value, opts) {
+    this.put(key, value, opts);
     return this;
   }
 
   get(key) {
     const record = this.memory.get(key);
     if (!record) return;
-    const node = record.index;
+    const node = record.inode;
     const expiry = node.value.expiry;
 
     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
@@ -568,7 +565,7 @@ class Cache {
     } // Optimization for memoize.
 
 
-    if (this.capacity >= 10 && node === node.list.head) return record.value;
+    if (this.capacity > 3 && node === node.list.head) return record.value;
     this.access(node);
     this.slide();
     return record.value;
@@ -579,10 +576,10 @@ class Cache {
     //assert(this.memory.size === this.indexes.LFU.length + this.indexes.LRU.length);
     const record = this.memory.get(key);
     if (!record) return false;
-    const expiry = record.index.value.expiry;
+    const expiry = record.inode.value.expiry;
 
     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
-      this.evict(record.index, record, true);
+      this.evict(record.inode, record, true);
       return false;
     }
 
@@ -592,25 +589,26 @@ class Cache {
   delete(key) {
     const record = this.memory.get(key);
     if (!record) return false;
-    this.evict(record.index, record, this.settings.capture.delete === true);
+    this.evict(record.inode, record, this.settings.capture.delete === true);
     return true;
   }
 
   clear() {
+    this.overlap = 0;
     this.SIZE = 0;
-    this.ratio = 50;
+    this.ratio = 500;
     this.stats.clear();
     this.indexes.LRU.clear();
     this.indexes.LFU.clear();
-    this.indexes.OVL.clear();
-    if (!this.settings.disposer || !this.settings.capture.clear) return void this.memory.clear();
+    this.expiries.clear();
+    if (!this.disposer || !this.settings.capture.clear) return void this.memory.clear();
     const memory = this.memory;
     this.memory = new global_1.Map();
 
     for (const [key, {
       value
     }] of memory) {
-      this.settings.disposer(value, key);
+      this.disposer(value, key);
     }
   }
 
@@ -637,24 +635,24 @@ class Cache {
     } = this;
     const window = capacity;
     LRU[0] + LFU[0] === window && this.stats.slide();
-    if ((LRU[0] + LFU[0]) * 100 % capacity || LRU[1] + LFU[1] === 0) return;
+    if ((LRU[0] + LFU[0]) * 1000 % capacity || LRU[1] + LFU[1] === 0) return;
     const lenR = indexes.LRU.length;
     const lenF = indexes.LFU.length;
-    const lenV = indexes.OVL.length;
-    const r = (lenF + lenV) * 1000 / (lenR + lenF) | 0;
-    const rateR0 = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1], 0) * (1 + r);
-    const rateF0 = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1], 0) * (1001 - r);
-    const rateF1 = rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0], 5) * (1001 - r); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
+    const lenV = this.overlap;
+    const r = (lenF + lenV) * 1000 / (lenR + lenF || 1) | 0;
+    const rateR0 = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1], 0) * r;
+    const rateF0 = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1], 0) * (1000 - r);
+    const rateF1 = rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0], 5) * (1000 - r); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
     // LRUの下限設定ではLRU拡大の要否を迅速に判定できないためLFUのヒット率低下の検出で代替する
 
     if (ratio > 0 && (rateR0 > rateF0 || rateF0 < rateF1 * 0.95)) {
-      if (lenR >= capacity * (100 - ratio) / 100) {
-        //ratio % 10 || ratio === 100 || console.debug('-', ratio, LRU, LFU);
+      if (lenR >= capacity * (1000 - ratio) / 1000) {
+        //ratio % 100 || ratio === 1000 || console.debug('-', ratio, LRU, LFU);
         --this.ratio;
       }
     } else if (ratio < limit && rateF0 > rateR0) {
-      if (lenF >= capacity * ratio / 100) {
-        //ratio % 10 || ratio === 0 || console.debug('+', ratio, LRU, LFU);
+      if (lenF >= capacity * ratio / 1000) {
+        //ratio % 100 || ratio === 0 || console.debug('+', ratio, LRU, LFU);
         ++this.ratio;
       }
     }
@@ -666,33 +664,17 @@ class Cache {
 
   accessLRU(node) {
     const index = node.value;
-    const {
-      LRU,
-      LFU
-    } = this.indexes;
-    ++this.stats[index.region][0]; // Prevent LFU destruction.
-
-    if (!index.overlap && index.clock >= this.clockR - LRU.length / 3 && this.capacity > 3) {
-      index.clock = ++this.clockR;
-      node.moveToHead();
-      return true;
-    }
-
-    index.clock = ++this.clock;
+    ++this.stats[index.region][0];
+    this.overlap -= +(index.region === 'LFU');
     index.region = 'LFU';
-    index.overlap?.delete();
-    LFU.unshiftNode(node);
+    this.indexes.LFU.unshiftNode(node);
     return true;
   }
 
   accessLFU(node) {
+    if (node.list !== this.indexes.LFU) return false;
     const index = node.value;
-    const {
-      LFU
-    } = this.indexes;
-    if (node.list !== LFU) return false;
     ++this.stats[index.region][0];
-    index.clock = ++this.clock;
     node.moveToHead();
     return true;
   }
@@ -946,6 +928,151 @@ module.exports = global;
 var globalThis; // @ts-ignore
 
 var global = (/* unused pure expression or super */ null && (globalThis));
+
+/***/ }),
+
+/***/ 818:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Heap = void 0;
+
+const alias_1 = __webpack_require__(5406); // Max heap
+
+
+const undefined = void 0;
+
+class Heap {
+  constructor(stable = false) {
+    this.stable = stable;
+    this.array = [];
+    this.$length = 0;
+  }
+
+  get length() {
+    return this.$length;
+  }
+
+  insert(priority, value) {
+    const array = this.array;
+    const node = array[this.$length] = [priority, value, this.$length++];
+    upHeapify(array, this.$length);
+    return node;
+  }
+
+  replace(priority, value) {
+    const array = this.array;
+    if (this.$length === 0) return void this.insert(priority, value);
+    const replaced = array[0][1];
+    array[0] = [priority, value, 0];
+    downHeapify(array, 1, this.$length, this.stable);
+    return replaced;
+  }
+
+  extract() {
+    if (this.$length === 0) return;
+    const node = this.array[0];
+    this.delete(node);
+    return node[1];
+  }
+
+  delete(node) {
+    const array = this.array;
+    const index = node[2];
+    if (array[index] !== node) throw new Error('Invalid node');
+    swap(array, index, --this.$length); // @ts-expect-error
+
+    array[this.$length] = undefined;
+    index < this.$length && this.sort(array[index]);
+
+    if (array.length > 2 ** 16 && array.length > this.$length * 2) {
+      array.splice(array.length / 2, array.length);
+    }
+
+    return node[1];
+  }
+
+  update(node, priority, value = node[1]) {
+    const array = this.array;
+    if (array[node[2]] !== node) throw new Error('Invalid node');
+    node[1] = value;
+    if (node[0] === priority) return;
+    node[0] = priority;
+    this.sort(node);
+  }
+
+  sort(node) {
+    const array = this.array;
+    return upHeapify(array, node[2] + 1) || downHeapify(array, node[2] + 1, this.$length, this.stable);
+  }
+
+  peek() {
+    return this.array[0]?.[1];
+  }
+
+  clear() {
+    this.array = [];
+    this.$length = 0;
+  }
+
+}
+
+exports.Heap = Heap;
+
+function upHeapify(array, index) {
+  const priority = array[index - 1][0];
+  let changed = false;
+
+  while (index > 1) {
+    const parent = (0, alias_1.floor)(index / 2);
+    if (array[parent - 1][0] >= priority) break;
+    swap(array, index - 1, parent - 1);
+    index = parent;
+    changed ||= true;
+  }
+
+  return changed;
+}
+
+function downHeapify(array, index, length, stable) {
+  let changed = false;
+
+  while (index < length) {
+    const left = index * 2;
+    const right = index * 2 + 1;
+    let max = index;
+
+    if (left <= length && (stable ? array[left - 1][0] >= array[max - 1][0] : array[left - 1][0] > array[max - 1][0])) {
+      max = left;
+    }
+
+    if (right <= length && (stable ? array[right - 1][0] >= array[max - 1][0] : array[right - 1][0] > array[max - 1][0])) {
+      max = right;
+    }
+
+    if (max === index) break;
+    swap(array, index - 1, max - 1);
+    index = max;
+    changed ||= true;
+  }
+
+  return changed;
+}
+
+function swap(array, index1, index2) {
+  if (index1 === index2) return;
+  const node1 = array[index1];
+  const node2 = array[index2];
+  node1[2] = index2;
+  node2[2] = index1;
+  array[index1] = node2;
+  array[index2] = node1;
+}
 
 /***/ }),
 
@@ -8629,7 +8756,7 @@ function fix(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.297 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.298 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9063,7 +9190,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.297 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.298 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
