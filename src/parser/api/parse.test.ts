@@ -52,11 +52,11 @@ describe('Unit: parser/api/parse', () => {
         [...parse('<wbr>\na').children].map(el => el.outerHTML),
         ['<p>&lt;wbr&gt;<br>a</p>']);
       assert.deepStrictEqual(
-        [...parse('[#\n<wbr>\n#]').children].map(el => el.outerHTML),
-        ['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span></p>']);
+        [...parse('[%\n<wbr>\n%]').children].map(el => el.outerHTML),
+        ['<p><span class="comment"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>']);
       assert.deepStrictEqual(
-        [...parse('[#\n<wbr>\n#]\na').children].map(el => el.outerHTML),
-        ['<p><span class="comment"><input type="checkbox"><span>[#<br>&lt;wbr&gt;<br>#]</span></span><br>a</p>']);
+        [...parse('[%\n<wbr>\n%]\na').children].map(el => el.outerHTML),
+        ['<p><span class="comment"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>']);
     });
 
     it('linebreak', () => {
@@ -220,8 +220,8 @@ describe('Unit: parser/api/parse', () => {
 
     it('creation', () => {
       assert.deepStrictEqual(
-        [...parse('"[# '.repeat(100)).children].map(el => el.outerHTML),
-        [`<p>${'"[# '.repeat(100).trim()}</p>`]);
+        [...parse('"[% '.repeat(100)).children].map(el => el.outerHTML),
+        [`<p>${'"[% '.repeat(100).trim()}</p>`]);
     });
 
     it('recursion', () => {

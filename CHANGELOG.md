@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.250.0
+
+- Change comment syntax.
+
 ## 0.249.1
 
 - Update dependencies.
