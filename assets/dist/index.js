@@ -386,7 +386,7 @@ class Cache {
       LRU: new invlist_1.List(),
       LFU: new invlist_1.List()
     };
-    this.expiries = new heap_1.Heap();
+    this.expiries = new heap_1.Heap((a, b) => a.value.expiry - b.value.expiry);
     this.stats = {
       LRU: (0, tuple_1.tuple)(0, 0),
       LFU: (0, tuple_1.tuple)(0, 0),
@@ -439,15 +439,15 @@ class Cache {
     return this.SIZE;
   }
 
-  evict(node, record, callback) {
+  evict(node, callback) {
     const index = node.value;
     callback &&= !!this.disposer;
-    record = callback ? record ?? this.memory.get(index.key) : record;
     this.overlap -= +(index.region === 'LFU' && node.list === this.indexes.LRU);
+    index.enode && this.expiries.delete(index.enode);
     node.delete();
     this.memory.delete(index.key);
     this.SIZE -= index.size;
-    callback && this.disposer?.(record.value, index.key);
+    callback && this.disposer?.(node.value.value, index.key);
   }
 
   ensure(margin, skip) {
@@ -463,7 +463,6 @@ class Cache {
 
       switch (true) {
         case (target = this.expiries.peek()) && target !== skip && target.value.expiry < (0, clock_1.now)():
-          target = this.expiries.extract();
           break;
 
         case LRU.length === 0:
@@ -486,7 +485,7 @@ class Cache {
           target = LRU.last !== skip ? LRU.last : LRU.length >= 2 ? LRU.last.prev : LFU.last;
       }
 
-      this.evict(target, void 0, true);
+      this.evict(target, true);
       skip = skip?.list && skip;
       size = skip?.value.size ?? 0;
     }
@@ -502,11 +501,10 @@ class Cache {
     }
 
     const expiry = age === global_1.Infinity ? global_1.Infinity : (0, clock_1.now)() + age;
-    const record = this.memory.get(key);
+    const node = this.memory.get(key);
 
-    if (record) {
-      const node = record.inode;
-      const val = record.value;
+    if (node) {
+      const val = node.value.value;
       const index = node.value;
       this.ensure(size, node);
       this.SIZE += size - index.size;
@@ -514,13 +512,13 @@ class Cache {
       index.expiry = expiry;
 
       if (this.earlyExpiring && expiry !== global_1.Infinity) {
-        index.enode ? this.expiries.update(index.enode, -expiry) : index.enode = this.expiries.insert(-expiry, node);
+        index.enode ? this.expiries.update(index.enode) : index.enode = this.expiries.insert(node);
       } else if (index.enode) {
         this.expiries.delete(index.enode);
         index.enode = void 0;
       }
 
-      record.value = value;
+      node.value.value = value;
       this.disposer?.(val, key);
       return true;
     }
@@ -530,19 +528,16 @@ class Cache {
       LRU
     } = this.indexes;
     this.SIZE += size;
-    const node = LRU.unshift({
+    this.memory.set(key, LRU.unshift({
       key,
+      value,
       size,
       expiry,
       region: 'LRU'
-    });
-    this.memory.set(key, {
-      inode: node,
-      value
-    });
+    }));
 
     if (this.earlyExpiring && expiry !== global_1.Infinity) {
-      node.value.enode = this.expiries.insert(-expiry, node);
+      LRU.head.value.enode = this.expiries.insert(LRU.head);
     }
 
     return false;
@@ -554,32 +549,31 @@ class Cache {
   }
 
   get(key) {
-    const record = this.memory.get(key);
-    if (!record) return;
-    const node = record.inode;
+    const node = this.memory.get(key);
+    if (!node) return;
     const expiry = node.value.expiry;
 
     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
-      this.evict(node, record, true);
+      this.evict(node, true);
       return;
     } // Optimization for memoize.
 
 
-    if (this.capacity > 3 && node === node.list.head) return record.value;
+    if (this.capacity > 3 && node === node.list.head) return node.value.value;
     this.access(node);
     this.slide();
-    return record.value;
+    return node.value.value;
   }
 
   has(key) {
     //assert(this.memory.has(key) === (this.indexes.LFU.has(key) || this.indexes.LRU.has(key)));
     //assert(this.memory.size === this.indexes.LFU.length + this.indexes.LRU.length);
-    const record = this.memory.get(key);
-    if (!record) return false;
-    const expiry = record.inode.value.expiry;
+    const node = this.memory.get(key);
+    if (!node) return false;
+    const expiry = node.value.expiry;
 
     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
-      this.evict(record.inode, record, true);
+      this.evict(node, true);
       return false;
     }
 
@@ -587,9 +581,9 @@ class Cache {
   }
 
   delete(key) {
-    const record = this.memory.get(key);
-    if (!record) return false;
-    this.evict(record.inode, record, this.settings.capture.delete === true);
+    const node = this.memory.get(key);
+    if (!node) return false;
+    this.evict(node, this.settings.capture.delete === true);
     return true;
   }
 
@@ -606,7 +600,9 @@ class Cache {
     this.memory = new global_1.Map();
 
     for (const [key, {
-      value
+      value: {
+        value
+      }
     }] of memory) {
       this.disposer(value, key);
     }
@@ -614,7 +610,9 @@ class Cache {
 
   *[Symbol.iterator]() {
     for (const [key, {
-      value
+      value: {
+        value
+      }
     }] of this.memory) {
       yield [key, value];
     }
@@ -634,8 +632,9 @@ class Cache {
       indexes
     } = this;
     const window = capacity;
-    LRU[0] + LFU[0] === window && this.stats.slide();
-    if ((LRU[0] + LFU[0]) * 1000 % capacity || LRU[1] + LFU[1] === 0) return;
+    const total = LRU[0] + LFU[0];
+    total === window && this.stats.slide();
+    if (total * 1000 % capacity || !LRU[1] || !LFU[1]) return;
     const lenR = indexes.LRU.length;
     const lenF = indexes.LFU.length;
     const lenV = this.overlap;
@@ -942,13 +941,14 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.Heap = void 0;
 
-const alias_1 = __webpack_require__(5406); // Max heap
+const alias_1 = __webpack_require__(5406); // Min heap
 
 
 const undefined = void 0;
 
 class Heap {
-  constructor(stable = false) {
+  constructor(cmp = (a, b) => a > b ? 1 : a < b ? -1 : 0, stable = false) {
+    this.cmp = cmp;
     this.stable = stable;
     this.array = [];
     this.$length = 0;
@@ -958,19 +958,19 @@ class Heap {
     return this.$length;
   }
 
-  insert(priority, value) {
+  insert(value, order = value) {
     const array = this.array;
-    const node = array[this.$length] = [priority, value, this.$length++];
-    upHeapify(array, this.$length);
+    const node = array[this.$length] = [order, value, this.$length++];
+    upHeapify(array, this.cmp, this.$length);
     return node;
   }
 
-  replace(priority, value) {
+  replace(value, order = value) {
     const array = this.array;
-    if (this.$length === 0) return void this.insert(priority, value);
+    if (this.$length === 0) return void this.insert(value, order);
     const replaced = array[0][1];
-    array[0] = [priority, value, 0];
-    downHeapify(array, 1, this.$length, this.stable);
+    array[0] = [order, value, 0];
+    downHeapify(array, this.cmp, 1, this.$length, this.stable);
     return replaced;
   }
 
@@ -990,25 +990,24 @@ class Heap {
     array[this.$length] = undefined;
     index < this.$length && this.sort(array[index]);
 
-    if (array.length > 2 ** 16 && array.length > this.$length * 2) {
-      array.splice(array.length / 2, array.length);
+    if (array.length >= 2 ** 16 && array.length >= this.$length * 2) {
+      array.splice(array.length / 2, array.length / 2);
     }
 
     return node[1];
   }
 
-  update(node, priority, value = node[1]) {
+  update(node, order = node[1], value = node[1]) {
     const array = this.array;
     if (array[node[2]] !== node) throw new Error('Invalid node');
     node[1] = value;
-    if (node[0] === priority) return;
-    node[0] = priority;
+    if (this.cmp(node[0], node[0] = order) === 0) return;
     this.sort(node);
   }
 
   sort(node) {
     const array = this.array;
-    return upHeapify(array, node[2] + 1) || downHeapify(array, node[2] + 1, this.$length, this.stable);
+    return upHeapify(array, this.cmp, node[2] + 1) || downHeapify(array, this.cmp, node[2] + 1, this.$length, this.stable);
   }
 
   peek() {
@@ -1024,13 +1023,13 @@ class Heap {
 
 exports.Heap = Heap;
 
-function upHeapify(array, index) {
-  const priority = array[index - 1][0];
+function upHeapify(array, cmp, index) {
+  const order = array[index - 1][0];
   let changed = false;
 
   while (index > 1) {
     const parent = (0, alias_1.floor)(index / 2);
-    if (array[parent - 1][0] >= priority) break;
+    if (cmp(array[parent - 1][0], order) <= 0) break;
     swap(array, index - 1, parent - 1);
     index = parent;
     changed ||= true;
@@ -1039,25 +1038,25 @@ function upHeapify(array, index) {
   return changed;
 }
 
-function downHeapify(array, index, length, stable) {
+function downHeapify(array, cmp, index, length, stable) {
   let changed = false;
 
   while (index < length) {
     const left = index * 2;
     const right = index * 2 + 1;
-    let max = index;
+    let min = index;
 
-    if (left <= length && (stable ? array[left - 1][0] >= array[max - 1][0] : array[left - 1][0] > array[max - 1][0])) {
-      max = left;
+    if (left <= length && (stable ? cmp(array[left - 1][0], array[min - 1][0]) <= 0 : cmp(array[left - 1][0], array[min - 1][0]) < 0)) {
+      min = left;
     }
 
-    if (right <= length && (stable ? array[right - 1][0] >= array[max - 1][0] : array[right - 1][0] > array[max - 1][0])) {
-      max = right;
+    if (right <= length && (stable ? cmp(array[right - 1][0], array[min - 1][0]) <= 0 : cmp(array[right - 1][0], array[min - 1][0]) < 0)) {
+      min = right;
     }
 
-    if (max === index) break;
-    swap(array, index - 1, max - 1);
-    index = max;
+    if (min === index) break;
+    swap(array, index - 1, min - 1);
+    index = min;
     changed ||= true;
   }
 
@@ -3833,8 +3832,8 @@ exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_
     }
   }
 }, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))]))));
-const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
-const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
+const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
+const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
 
 function fillTrailingDescription(es) {
   return es.length > 0 && es[es.length - 1].tagName === 'DT' ? (0, array_1.push)(es, [(0, dom_1.html)('dd')]) : es;
@@ -4137,7 +4136,7 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
       media: false
     }
   }
-}, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', {
+}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', {
   class: 'figindex'
 })], (0, dom_1.defrag)(caption))), (0, dom_1.html)('div', [content])])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, overflow, closer, opener, delim], _, context) => [(0, dom_1.html)('pre', {
   class: 'invalid',
@@ -4671,13 +4670,13 @@ exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segm
       media: false
     }
   }
-}, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
+}, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
   syntax: {
     inline: {
       autolink: false
     }
   }
-}, (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
+}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
   class: 'invalid',
   'data-invalid-syntax': 'heading',
   'data-invalid-type': 'syntax',
@@ -4828,6 +4827,8 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
+const util_1 = __webpack_require__(9437);
+
 const dom_1 = __webpack_require__(3252);
 
 const memoize_1 = __webpack_require__(1808);
@@ -4847,7 +4848,7 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 }, exports.olist_))));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(new RegExp(`^(?=${openers['.'].source.replace('?:', '')})`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(new RegExp(`^(?=${openers['('].source.replace('?:', '')})`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
-const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.trim)((0, combinator_1.subsequence)([ulist_1.checkbox, (0, combinator_1.trimStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', {
+const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.trim)((0, combinator_1.subsequence)([ulist_1.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0]
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 
@@ -4970,7 +4971,7 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))])));
+exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))])));
 
 /***/ }),
 
@@ -5010,7 +5011,7 @@ const array_1 = __webpack_require__(8112);
 */
 
 
-exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
+exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
 
 /***/ }),
 
@@ -5227,11 +5228,13 @@ const ilist_1 = __webpack_require__(238);
 
 const inline_1 = __webpack_require__(1160);
 
+const source_1 = __webpack_require__(6743);
+
+const util_1 = __webpack_require__(9437);
+
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
-
-const source_1 = __webpack_require__(6743);
 
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({
   syntax: {
@@ -5240,7 +5243,7 @@ exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
     }
   }
 }, exports.ulist_))));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trimStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.subsequence)([exports.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[1].trimStart() ? '☑' : '☐')], '']);
@@ -5450,7 +5453,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, 
     }
   },
   delimiters: global_1.undefined
-}, (0, util_1.trimBlankInline)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', /^\\?\n/)))), '))'), ns => [(0, dom_1.html)('sup', {
+}, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', /^\\?\n/)))), '))'), ns => [(0, dom_1.html)('sup', {
   class: 'annotation'
 }, (0, dom_1.defrag)(ns))]))));
 
@@ -5804,7 +5807,7 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^(?=\[(#+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`)), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[%', (0, combinator_1.match)(/^(?=\[(%+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`)), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'comment'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
@@ -6429,7 +6432,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, co
       autolink: false
     }
   }
-}, (0, util_1.trimBlankInline)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))), ']', true)]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]))), ([params, content = []], rest, context) => {
+}, (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))), ']', true)]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]))), ([params, content = []], rest, context) => {
   if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))?.some(node => typeof node === 'object')) return;
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
@@ -6716,8 +6719,8 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, c
     }
   },
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [['', source], '']), (0, util_1.trimBlankInline)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
-const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankInlineStart, '')]));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [['', source], '']), (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
+const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankStart, '')]));
 
 function attributes(ns) {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
@@ -7776,7 +7779,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.trimNodeEnd = exports.trimBlankInline = exports.isStartTightNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankInlineStart = void 0;
+exports.stringify = exports.trimNodeEnd = exports.trimBlank = exports.isStartTightNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankStart = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -7794,7 +7797,7 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.regBlankInlineStart = new RegExp(String.raw`^(?:\\?[^\S\n]|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
+exports.regBlankStart = new RegExp(String.raw`^(?:\\?[^\S\n]|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
 function blankWith(starting, delimiter) {
   if (delimiter === global_1.undefined) return blankWith('', starting);
@@ -7837,7 +7840,7 @@ function startLoose(parser, except) {
 
 exports.startLoose = startLoose;
 const isStartLoose = (0, memoize_1.reduce)((source, context, except) => {
-  return isStartTight(source.replace(exports.regBlankInlineStart, ''), context, except);
+  return isStartTight(source.replace(exports.regBlankStart, ''), context, except);
 }, (source, _, except = '') => `${source}\x1E${except}`);
 
 function startTight(parser, except) {
@@ -7922,14 +7925,14 @@ function isVisible(node, strpos) {
   }
 }
 
-function trimBlankInline(parser) {
-  return (0, combinator_1.fmap)(trimBlankInlineStart(parser), trimNodeEnd);
+function trimBlank(parser) {
+  return (0, combinator_1.fmap)(trimBlankStart(parser), trimNodeEnd);
 }
 
-exports.trimBlankInline = trimBlankInline;
+exports.trimBlank = trimBlank;
 
-function trimBlankInlineStart(parser) {
-  return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(exports.regBlankInlineStart, '')), parser);
+function trimBlankStart(parser) {
+  return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(exports.regBlankStart, '')), parser);
 } //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
 //  return trimNodeStart(trimNodeEnd(nodes));
 //}
