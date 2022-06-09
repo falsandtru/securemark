@@ -6,5 +6,5 @@ import { visualize } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const paragraph: ParagraphParser = block(localize(fmap(
-  trimEnd(visualize(some(union([inline])))),
+  visualize(trimEnd(some(union([inline])))),
   ns => [html('p', defrag(ns))])));

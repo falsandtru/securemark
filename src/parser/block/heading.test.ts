@@ -40,6 +40,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a\\')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\\n')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# \\')), [['<h1 id="index:\\">\\</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# \\ a')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## \\')), [['<h2 id="index:\\">\\</h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# @a')), [['<h1 id="index:@a">@a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## @a')), [['<h2 id="index:@a"><a href="/@a" class="account">@a</a></h2>'], '']);

@@ -26,7 +26,7 @@ export const reply: ReplyParser = block(validate('>', localize(fmap(
       some(quote),
       fmap(rewrite(
         some(anyline, delimiter),
-        trimEnd(visualize(some(inline)))),
+        visualize(trimEnd(some(inline)))),
         ns => push(ns, [html('br')])),
     ])),
   ]),

@@ -1,9 +1,9 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, context, creator, open, trim, trimEnd, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, context, creator, open, trimEnd, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
-import { visualize } from '../util';
+import { visualize, trimBlankInline } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { push } from 'spica/array';
 
@@ -25,7 +25,7 @@ export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
 
 const term: DListParser.TermParser = creator(line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
-  trim(visualize(some(union([indexer, inline])))),
+  visualize(trimBlankInline(some(union([indexer, inline])))),
   true),
   ns => [html('dt', defrag(ns))]))));
 
@@ -33,7 +33,7 @@ const desc: DListParser.DescriptionParser = creator(block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    trimEnd(visualize(some(union([inline]))))),
+    visualize(trimEnd(some(union([inline]))))),
   true),
   ns => [html('dd', defrag(ns))]),
   false));

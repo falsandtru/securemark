@@ -33,6 +33,7 @@ describe('Unit: parser/block/dlist', () => {
     it('single', () => {
       assert.deepStrictEqual(inspect(parser('~ a')), [['<dl><dt id="index:a">a</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ \\')), [['<dl><dt id="index:\\">\\</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ \\ a')), [['<dl><dt id="index:a">a</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\nb')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\nb\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\nb\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
