@@ -1,5 +1,5 @@
 import { ReplyParser } from '../block';
-import { inits, subsequence, some, block, validate, rewrite, trim, fmap } from '../../combinator';
+import { inits, subsequence, some, block, validate, rewrite, trimEnd, fmap } from '../../combinator';
 import { cite } from './reply/cite';
 import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
@@ -26,7 +26,7 @@ export const reply: ReplyParser = block(validate('>', localize(fmap(
       some(quote),
       fmap(rewrite(
         some(anyline, delimiter),
-        trim(visualize(some(inline)))),
+        trimEnd(visualize(some(inline)))),
         ns => push(ns, [html('br')])),
     ])),
   ]),

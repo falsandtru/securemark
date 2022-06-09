@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, context, creator, open, trim, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, context, creator, open, trim, trimEnd, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
@@ -33,7 +33,7 @@ const desc: DListParser.DescriptionParser = creator(block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    trim(visualize(some(union([inline]))))),
+    trimEnd(visualize(some(union([inline]))))),
   true),
   ns => [html('dd', defrag(ns))]),
   false));
