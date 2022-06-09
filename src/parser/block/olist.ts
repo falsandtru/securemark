@@ -5,7 +5,7 @@ import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
-import { trimBlankInline } from '../util';
+import { trimBlank } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
@@ -36,7 +36,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creator(union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], trim(subsequence([checkbox, trimBlankInline(some(union([indexer, inline])))])), true)),
+        line(open(heads[form], trim(subsequence([checkbox, trimBlank(some(union([indexer, inline])))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),

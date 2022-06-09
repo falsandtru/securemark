@@ -3,7 +3,7 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, validate, focus, guard, context, creator, surround, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { regBlankInlineStart, trimBlankInline, stringify } from '../util';
+import { regBlankStart, trimBlank, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
@@ -22,7 +22,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   subsequence([
     abbr,
     focus(/^\^[^\S\n]*/, source => [['', source], '']),
-    trimBlankInline(some(inline, ']', /^\\?\n/)),
+    trimBlank(some(inline, ']', /^\\?\n/)),
   ]))),
   ']]'),
   ns => [html('sup', attributes(ns), defrag(ns))]))));
@@ -31,7 +31,7 @@ const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),
-  ([source], rest) => [[html('abbr', source)], rest.replace(regBlankInlineStart, '')]));
+  ([source], rest) => [[html('abbr', source)], rest.replace(regBlankStart, '')]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'

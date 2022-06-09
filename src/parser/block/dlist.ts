@@ -3,7 +3,7 @@ import { union, inits, some, block, line, validate, rewrite, context, creator, o
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
-import { visualize, trimBlankInline } from '../util';
+import { visualize, trimBlank } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { push } from 'spica/array';
 
@@ -25,7 +25,7 @@ export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
 
 const term: DListParser.TermParser = creator(line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
-  visualize(trimBlankInline(some(union([indexer, inline])))),
+  visualize(trimBlank(some(union([indexer, inline])))),
   true),
   ns => [html('dt', defrag(ns))]))));
 

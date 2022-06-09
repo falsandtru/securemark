@@ -8,7 +8,7 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
-export const regBlankInlineStart = new RegExp(String.raw
+export const regBlankStart = new RegExp(String.raw
   `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
 
 export function blankWith(delimiter: string | RegExp): RegExp;
@@ -60,7 +60,7 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
       : undefined;
 }
 const isStartLoose = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
-  return isStartTight(source.replace(regBlankInlineStart, ''), context, except);
+  return isStartTight(source.replace(regBlankStart, ''), context, except);
 }, (source, _, except = '') => `${source}\x1E${except}`);
 
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
@@ -137,16 +137,16 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
-export function trimBlankInline<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function trimBlankInline<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return fmap(
-    trimBlankInlineStart(parser),
+    trimBlankStart(parser),
     trimNodeEnd);
 }
-function trimBlankInlineStart<P extends Parser<unknown>>(parser: P): P;
-function trimBlankInlineStart<T>(parser: Parser<T>): Parser<T> {
+function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
+function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    reduce(source => source.replace(regBlankInlineStart, '')),
+    reduce(source => source.replace(regBlankStart, '')),
     parser);
 }
 //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {

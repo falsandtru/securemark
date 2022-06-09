@@ -15,7 +15,7 @@ import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
 import { localize } from '../../locale';
-import { visualize, trimBlankInline } from '../../util';
+import { visualize, trimBlank } from '../../util';
 import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift } from 'spica/array';
@@ -70,7 +70,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       emptyline,
       block(localize(
         context({ syntax: { inline: { media: false } } },
-        visualize(trimBlankInline(trimEnd(some(inline))))))),
+        visualize(trimBlank(trimEnd(some(inline))))))),
     ]),
   ])),
   ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [

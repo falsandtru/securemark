@@ -2,7 +2,7 @@ import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { str } from '../source';
-import { visualize, trimBlankInline } from '../util';
+import { visualize, trimBlank } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
@@ -21,13 +21,13 @@ export const heading: HeadingParser = block(rewrite(segment,
   line(indexee(fmap(union([
     open(
       str(/^##+/),
-      visualize(trimBlankInline(some(union([indexer, inline])))), true),
+      visualize(trimBlank(some(union([indexer, inline])))), true),
     open(
       str('#'),
       context({ syntax: { inline: {
         autolink: false,
       }}},
-      visualize(trimBlankInline(some(union([indexer, inline]))))), true),
+      visualize(trimBlank(some(union([indexer, inline]))))), true),
   ]),
   ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
     h.length <= 6

@@ -6,7 +6,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { trimBlankInline, stringify } from '../util';
+import { trimBlank, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
           media: false,
           autolink: false,
         }}},
-        trimBlankInline(some(inline, ']', /^\\?\n/))),
+        trimBlank(some(inline, ']', /^\\?\n/))),
         ']',
         true),
     ]))),
