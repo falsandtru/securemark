@@ -658,13 +658,6 @@ export namespace MarkdownParser {
   }
   export namespace InlineParser {
     interface Inline<T extends string> extends Markdown<`inline/${T}`> { }
-    export interface AnnotationParser extends
-      // ((abc))
-      Inline<'annotation'>,
-      Parser<HTMLElement, Context, [
-        InlineParser,
-      ]> {
-    }
     export interface EscapeParser extends
       // ****
       // +++
@@ -673,6 +666,13 @@ export namespace MarkdownParser {
       Inline<'escape'>,
       Parser<string, Context, [
         SourceParser.StrParser,
+      ]> {
+    }
+    export interface AnnotationParser extends
+      // ((abc))
+      Inline<'annotation'>,
+      Parser<HTMLElement, Context, [
+        InlineParser,
       ]> {
     }
     export interface ReferenceParser extends
