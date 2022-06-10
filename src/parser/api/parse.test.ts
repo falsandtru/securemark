@@ -80,6 +80,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<br>\\<br>b</p>']);
     });
 
+    it('indent', () => {
+      assert.deepStrictEqual(
+        [...parse('   a').children].map(el => el.outerHTML),
+        ['<p>   a</p>']);
+    });
+
     it('url', () => {
       assert.deepStrictEqual(
         [...parse([
