@@ -23,7 +23,7 @@ import { unshift } from 'spica/array';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})(?:figure[^\S\n]|(?=\[?\$))/,
+  /^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/,
   memoize(
   ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => close(
     sequence([
@@ -49,7 +49,7 @@ export const segment: FigureParser.SegmentParser = block(match(
   ([, fence]) => fence.length, [])));
 
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
-  convert(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
+  convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
     line(sequence([label, str(/^(?=\s).*\n/)])),
     inits([

@@ -7,7 +7,7 @@ import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 
 export const comment: CommentParser = lazy(() => creator(validate('[%', match(
-  /^(?=\[(%+)\s)/,
+  /^\[(%+)\s/,
   memoize(
   ([, fence]) =>
     surround(

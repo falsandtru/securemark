@@ -9,11 +9,10 @@ export function match<T>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     const param = source.match(pattern);
     if (!param) return;
     assert(source.startsWith(param[0]));
-    const rest = source.slice(param[0].length);
-    const result = f(param)(rest, context);
+    const result = f(param)(source, context);
     assert(check(source, result, false));
     if (!result) return;
-    return exec(result).length < source.length && exec(result).length <= rest.length
+    return exec(result).length < source.length && exec(result).length <= source.length
       ? result
       : undefined;
   };

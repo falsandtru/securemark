@@ -11,8 +11,8 @@ import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 
 const openers = {
-  '.': /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
-  '(': /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
+  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
+  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(
@@ -25,10 +25,10 @@ export const olist: OListParser = lazy(() => block(validate(
 
 export const olist_: OListParser = lazy(() => block(union([
   match(
-    new RegExp(`^(?=${openers['.'].source.replace('?:', '')})`),
+    openers['.'],
     memoize(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])),
   match(
-    new RegExp(`^(?=${openers['('].source.replace('?:', '')})`),
+    openers['('],
     memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, [])),
 ])));
 

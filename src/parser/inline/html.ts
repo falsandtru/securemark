@@ -20,7 +20,7 @@ Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
   match(
-    /^(?=<(wbr)(?=[^\S\n]|>))/,
+    /^<(wbr)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround(
@@ -29,7 +29,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           [[h(tag as 'span', attributes('html', [], attrspec[tag], bs))], rest]),
     ([, tag]) => tags.indexOf(tag), [])),
   match(
-    /^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/,
+    /^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
@@ -42,7 +42,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           [[elem(tag, as, bs, cs)], rest]),
     ([, tag]) => tags.indexOf(tag), [])),
   match(
-    /^(?=<([a-z]+)(?=[^\S\n]|>))/,
+    /^<([a-z]+)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
