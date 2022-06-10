@@ -17,20 +17,20 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
     opener,
     memoize(
     ([indent]) =>
-      some(line(open(indent, source => [[unline(source)], '']))),
+      some(line(open(indent, source => [[source], '']))),
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation),
-    (nodes, rest, context) => {
+    (lines, rest, context) => {
       assert(parser = parser as Parser<T>);
-      const result = parser(nodes.join('\n'), context);
+      const result = parser(trimBlockEnd(lines.join('')), context);
       return result && exec(result) === ''
         ? [eval(result), rest]
         : undefined;
     });
 }
 
-function unline(line: string): string {
-  return line === ''
-      || line[line.length - 1] !== '\n'
-    ? line
-    : line.slice(0, -1);
+function trimBlockEnd(block: string): string {
+  return block === ''
+      || block[block.length - 1] !== '\n'
+    ? block
+    : block.slice(0, -1);
 }
