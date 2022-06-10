@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, focus, guard, context, creator, surround, lazy, fmap, bind } from '../../combinator';
+import { union, subsequence, some, validate, guard, context, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
-import { str } from '../source';
+import { str, stropt } from '../source';
 import { regBlankStart, trimBlank, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -21,7 +21,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   }}, delimiters: undefined },
   subsequence([
     abbr,
-    focus(/^\^[^\S\n]*/, source => [['', source], '']),
+    open(stropt(/^(?=\^)/), some(inline, ']', /^\\?\n/)),
     trimBlank(some(inline, ']', /^\\?\n/)),
   ]))),
   ']]'),

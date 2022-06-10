@@ -30,13 +30,13 @@ export function stropt(pattern: string | RegExp): Parser<string, Context<StrPars
         if (source === '') return;
         return source.slice(0, pattern.length) === pattern
           ? [[pattern], source.slice(pattern.length)]
-          : [[], source];
+          : undefined;
       })
     : creator(source => {
         if (source === '') return;
         const m = source.match(pattern);
         return m
           ? [[m[0]], source.slice(m[0].length)]
-          : [[], source];
+          : undefined;
       });
 }

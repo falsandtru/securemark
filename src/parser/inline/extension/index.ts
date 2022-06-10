@@ -4,7 +4,7 @@ import { union, some, validate, guard, context, creator, surround, open, lazy, f
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
-import { startTight, trimNodeEnd } from '../../util';
+import { startTight, trimBlankEnd } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -22,13 +22,12 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
-  open(stropt('|'),
-  some(union([
+  open(stropt(/^\|?/), trimBlankEnd(some(union([
     signature,
     inline,
-  ]), ']', /^\\?\n/), true)))),
+  ]), ']', /^\\?\n/)), true)))),
   ']'),
-  ns => [html('a', trimNodeEnd(defrag(ns)))])),
+  ns => [html('a', defrag(ns))])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {

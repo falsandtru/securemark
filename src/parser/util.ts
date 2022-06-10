@@ -139,15 +139,19 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
 
 export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return fmap(
-    trimBlankStart(parser),
-    trimNodeEnd);
+  return trimBlankStart(trimBlankEnd(parser));
 }
-function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
-function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
+export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
+export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
     reduce(source => source.replace(regBlankStart, '')),
     parser);
+}
+export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  return fmap(
+    parser,
+    trimNodeEnd);
 }
 //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
 //  return trimNodeStart(trimNodeEnd(nodes));
@@ -166,7 +170,7 @@ function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
 //  }
 //  return nodes;
 //}
-export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
+function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&
     nodes[nodes.length - 1]['className'] === 'indexer'
