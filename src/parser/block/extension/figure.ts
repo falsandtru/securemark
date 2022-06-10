@@ -6,7 +6,6 @@ import { label, segment as seg_label } from '../../inline/extension/label';
 import { ulist } from '../ulist';
 import { olist } from '../olist';
 import { table as styled_table } from '../table';
-import { indentblock } from '../indentblock';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example } from './example';
@@ -57,7 +56,6 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         ulist,
         olist,
         styled_table,
-        indentblock,
         codeblock,
         mathblock,
         example,

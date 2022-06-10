@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.252.0
+
+- Remove indentblock syntax.
+
 ## 0.251.0
 
 - Change indentblock parser to require 4 spaces or 1 tab to support text indent.

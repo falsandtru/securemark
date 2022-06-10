@@ -77,7 +77,6 @@ export namespace MarkdownParser {
       BlockParser.IListParser,
       BlockParser.DListParser,
       BlockParser.TableParser,
-      BlockParser.IndentBlockParser,
       BlockParser.CodeBlockParser,
       BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
@@ -283,13 +282,6 @@ export namespace MarkdownParser {
         }
       }
     }
-    export interface IndentBlockParser extends
-      //   abc
-      Block<'indentblock'>,
-      Parser<HTMLPreElement, Context, [
-        CodeBlockParser,
-      ]> {
-    }
     export interface CodeBlockParser extends
       // ```js index.js
       // abc
@@ -358,7 +350,6 @@ export namespace MarkdownParser {
               UListParser,
               OListParser,
               BlockParser.TableParser,
-              IndentBlockParser,
               CodeBlockParser,
               MathBlockParser,
               ExampleParser,
@@ -503,7 +494,6 @@ export namespace MarkdownParser {
             BlockParser.OListParser,
             BlockParser.IListParser,
             BlockParser.TableParser,
-            BlockParser.IndentBlockParser,
             BlockParser.CodeBlockParser,
             BlockParser.MathBlockParser,
             BlockParser.SidefenceParser,
