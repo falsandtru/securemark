@@ -2339,16 +2339,16 @@ const memoize_1 = __webpack_require__(1808);
 
 function indent(opener, parser, separation = false) {
   if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
-  return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[unline(source)], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (nodes, rest, context) => {
-    const result = parser(nodes.join('\n'), context);
+  return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[source], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (lines, rest, context) => {
+    const result = parser(trimBlockEnd(lines.join('')), context);
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : global_1.undefined;
   });
 }
 
 exports.indent = indent;
 
-function unline(line) {
-  return line === '' || line[line.length - 1] !== '\n' ? line : line.slice(0, -1);
+function trimBlockEnd(block) {
+  return block === '' || block[block.length - 1] !== '\n' ? block : block.slice(0, -1);
 }
 
 /***/ }),
@@ -3632,8 +3632,6 @@ const dlist_1 = __webpack_require__(9373);
 
 const table_1 = __webpack_require__(8717);
 
-const indentblock_1 = __webpack_require__(3565);
-
 const codeblock_1 = __webpack_require__(1849);
 
 const mathblock_1 = __webpack_require__(3754);
@@ -3657,7 +3655,7 @@ exports.block = (0, combinator_1.creator)(error((0, combinator_1.reset)({
     budget: 100 * 1000,
     recursion: 200
   }
-}, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, indentblock_1.indentblock, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
+}, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
 
 function error(parser) {
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', source => {
@@ -4102,8 +4100,6 @@ const olist_1 = __webpack_require__(7471);
 
 const table_1 = __webpack_require__(8717);
 
-const indentblock_1 = __webpack_require__(3565);
-
 const codeblock_1 = __webpack_require__(1849);
 
 const mathblock_1 = __webpack_require__(3754);
@@ -4130,7 +4126,7 @@ const array_1 = __webpack_require__(8112);
 
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
-exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, indentblock_1.indentblock, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
+exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
   syntax: {
     inline: {
       media: false
@@ -4265,8 +4261,6 @@ const ilist_1 = __webpack_require__(238);
 
 const table_1 = __webpack_require__(8717);
 
-const indentblock_1 = __webpack_require__(3565);
-
 const codeblock_1 = __webpack_require__(1849);
 
 const mathblock_1 = __webpack_require__(3754);
@@ -4327,7 +4321,7 @@ function title(type) {
 } // Must not have indexed blocks.
 
 
-const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olist_1.olist, ilist_1.ilist, table_1.table, indentblock_1.indentblock, codeblock_1.codeblock, mathblock_1.mathblock, sidefence_1.sidefence, blockquote_1.blockquote, paragraph_1.paragraph]);
+const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olist_1.olist, ilist_1.ilist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, sidefence_1.sidefence, blockquote_1.blockquote, paragraph_1.paragraph]);
 
 /***/ }),
 
@@ -4740,29 +4734,6 @@ exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combin
   'data-invalid-type': 'syntax',
   'data-invalid-message': 'Use "-" instead of "+" or "*"'
 }, es)])));
-
-/***/ }),
-
-/***/ 3565:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.indentblock = void 0;
-
-const combinator_1 = __webpack_require__(2087);
-
-const codeblock_1 = __webpack_require__(1849); // 空行を含むインデントブロックはインデントの違いによるセグメント分割の境界が視認不能となるため採用しない
-
-
-exports.indentblock = (0, combinator_1.block)((0, combinator_1.indent)(/^( {4}|\t)\1*/, (0, combinator_1.convert)(source => {
-  const fence = (source.match(/^`{3,}(?=[^\S\n]*$)/mg) ?? []).reduce((max, fence) => fence > max ? fence : max, '``') + '`';
-  return `${fence}\n${source}\n${fence}`;
-}, (0, combinator_1.union)([codeblock_1.codeblock])), true));
 
 /***/ }),
 
@@ -6015,7 +5986,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combi
       autolink: false
     }
   }
-}, (0, combinator_1.open)((0, source_1.stropt)('|'), (0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', /^\\?\n/), true)))), ']'), ns => [(0, dom_1.html)('a', (0, util_1.trimNodeEnd)((0, dom_1.defrag)(ns)))])), ([el]) => [(0, dom_1.define)(el, {
+}, (0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, util_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', /^\\?\n/)), true)))), ']'), ns => [(0, dom_1.html)('a', (0, dom_1.defrag)(ns))])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : global_1.undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : global_1.undefined
@@ -6719,7 +6690,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, c
     }
   },
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.focus)(/^\^[^\S\n]*/, source => [['', source], '']), (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)), (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
 const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankStart, '')]));
 
 function attributes(ns) {
@@ -7618,11 +7589,11 @@ exports.str = str;
 function stropt(pattern) {
   return typeof pattern === 'string' ? (0, combinator_1.creator)(source => {
     if (source === '') return;
-    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : [[], source];
+    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : global_1.undefined;
   }) : (0, combinator_1.creator)(source => {
     if (source === '') return;
     const m = source.match(pattern);
-    return m ? [[m[0]], source.slice(m[0].length)] : [[], source];
+    return m ? [[m[0]], source.slice(m[0].length)] : global_1.undefined;
   });
 }
 
@@ -7779,7 +7750,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.trimNodeEnd = exports.trimBlank = exports.isStartTightNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankStart = void 0;
+exports.stringify = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankStart = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -7926,14 +7897,22 @@ function isVisible(node, strpos) {
 }
 
 function trimBlank(parser) {
-  return (0, combinator_1.fmap)(trimBlankStart(parser), trimNodeEnd);
+  return trimBlankStart(trimBlankEnd(parser));
 }
 
 exports.trimBlank = trimBlank;
 
 function trimBlankStart(parser) {
   return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(exports.regBlankStart, '')), parser);
-} //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+}
+
+exports.trimBlankStart = trimBlankStart;
+
+function trimBlankEnd(parser) {
+  return (0, combinator_1.fmap)(parser, trimNodeEnd);
+}
+
+exports.trimBlankEnd = trimBlankEnd; //export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
 //  return trimNodeStart(trimNodeEnd(nodes));
 //}
 //function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
@@ -7950,7 +7929,6 @@ function trimBlankStart(parser) {
 //  }
 //  return nodes;
 //}
-
 
 function trimNodeEnd(nodes) {
   const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
@@ -7970,8 +7948,6 @@ function trimNodeEnd(nodes) {
 
   return (0, array_1.push)(nodes, skip);
 }
-
-exports.trimNodeEnd = trimNodeEnd;
 
 function stringify(nodes) {
   let acc = '';
