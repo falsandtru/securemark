@@ -2337,8 +2337,9 @@ const surround_1 = __webpack_require__(7130);
 
 const memoize_1 = __webpack_require__(1808);
 
-function indent(parser, separation = false) {
-  return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(/^(?=(([ \t])\2*))/, (0, memoize_1.memoize)(([, indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[unline(source)], '']))), ([, indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (nodes, rest, context) => {
+function indent(opener, parser, separation = false) {
+  if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
+  return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[unline(source)], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (nodes, rest, context) => {
     const result = parser(nodes.join('\n'), context);
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : global_1.undefined;
   });
@@ -2392,10 +2393,9 @@ function match(pattern, f) {
     if (source === '') return;
     const param = source.match(pattern);
     if (!param) return;
-    const rest = source.slice(param[0].length);
-    const result = f(param)(rest, context);
+    const result = f(param)(source, context);
     if (!result) return;
-    return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= rest.length ? result : global_1.undefined;
+    return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= source.length ? result : global_1.undefined;
   };
 }
 
@@ -4128,9 +4128,9 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]|(?=\[?\$))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
+exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
-exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:figure[^\S\n]+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, indentblock_1.indentblock, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
+exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, indentblock_1.indentblock, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
   syntax: {
     inline: {
       media: false
@@ -4759,10 +4759,10 @@ const combinator_1 = __webpack_require__(2087);
 const codeblock_1 = __webpack_require__(1849); // 空行を含むインデントブロックはインデントの違いによるセグメント分割の境界が視認不能となるため採用しない
 
 
-exports.indentblock = (0, combinator_1.block)((0, combinator_1.validate)(/^(?:  |\t)/, (0, combinator_1.indent)((0, combinator_1.convert)(source => {
+exports.indentblock = (0, combinator_1.block)((0, combinator_1.indent)(/^( {4}|\t)\1*/, (0, combinator_1.convert)(source => {
   const fence = (source.match(/^`{3,}(?=[^\S\n]*$)/mg) ?? []).reduce((max, fence) => fence > max ? fence : max, '``') + '`';
   return `${fence}\n${source}\n${fence}`;
-}, (0, combinator_1.union)([codeblock_1.codeblock])), true)));
+}, (0, combinator_1.union)([codeblock_1.codeblock])), true));
 
 /***/ }),
 
@@ -4836,8 +4836,8 @@ const memoize_1 = __webpack_require__(1808);
 const array_1 = __webpack_require__(8112);
 
 const openers = {
-  '.': /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
-  '(': /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/
+  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
+  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/
 };
 exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/], (0, combinator_1.context)({
   syntax: {
@@ -4846,7 +4846,7 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
     }
   }
 }, exports.olist_))));
-exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(new RegExp(`^(?=${openers['.'].source.replace('?:', '')})`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(new RegExp(`^(?=${openers['('].source.replace('?:', '')})`), (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
+exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.trim)((0, combinator_1.subsequence)([ulist_1.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0]
@@ -5776,7 +5776,7 @@ const dom_1 = __webpack_require__(3252);
 
 exports.code = (0, combinator_1.creator)((0, combinator_1.validate)('`', (0, combinator_1.match)(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole,, body]) => rest => [[(0, dom_1.html)('code', {
   'data-src': whole
-}, format(body))], rest])));
+}, format(body))], rest.slice(whole.length)])));
 
 function format(text) {
   return `${text[0]}${text[text.length - 1]}` === '  ' && text.trimStart() ? text.slice(1, -1) : text;
@@ -5807,7 +5807,7 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[%', (0, combinator_1.match)(/^(?=\[(%+)\s)/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`)), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[%', (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`)), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'comment'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
@@ -6266,7 +6266,7 @@ const attrspec = {
 };
 global_1.Object.setPrototypeOf(attrspec, null);
 global_1.Object.values(attrspec).forEach(o => global_1.Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^(?=<(wbr)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^<(wbr)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
 
 function elem(tag, as, bs, cs) {
