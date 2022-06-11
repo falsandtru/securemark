@@ -14,7 +14,7 @@ export interface Ctx {
   delimiters?: Delimiters;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
-export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, any, infer D> ? D : never;
+export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
 export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C : never;
 export type SubTree<P extends Parser<unknown>> = ExtractSubTree<SubParsers<P>>;
 export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, Context<P>, SubParsers<P>>;
