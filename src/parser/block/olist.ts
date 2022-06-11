@@ -9,6 +9,7 @@ import { trimBlank } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
+import { tuple } from 'spica/tuple';
 
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
@@ -53,15 +54,17 @@ const heads = {
     source => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
 
-const invalid = rewrite(contentline, source => [[
-  '',
-  html('span', {
-    class: 'invalid',
-    'data-invalid-syntax': 'listitem',
-    'data-invalid-type': 'syntax',
-    'data-invalid-message': 'Fix the indent or the head of the list item',
-  }, source.replace('\n', ''))
-], '']);
+export const invalid = rewrite(
+  inits([contentline, indent((s: string) => [tuple(s), ''] as const)]),
+  source => [[
+    '',
+    html('span', {
+      class: 'invalid',
+      'data-invalid-syntax': 'listitem',
+      'data-invalid-type': 'syntax',
+      'data-invalid-message': 'Fix the indent or the head of the list item',
+    }, source.replace('\n', ''))
+  ], '']);
 
 function type(index: string): string {
   switch (index) {
