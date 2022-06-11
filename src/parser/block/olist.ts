@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, match, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
@@ -11,8 +11,8 @@ import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 
 const openers = {
-  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
-  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
+  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
+  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/,
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(
@@ -36,7 +36,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creator(union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], trim(subsequence([checkbox, trimBlank(some(union([indexer, inline])))])), true)),
+        line(open(heads[form], subsequence([checkbox, trimBlank(some(union([indexer, inline])))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
@@ -47,10 +47,10 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
+    source => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
   '(': focus(
     openers['('],
-    (source: string) => [[source.replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
+    source => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
 
 const invalid = rewrite(contentline, source => [[
