@@ -41,7 +41,8 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
-      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]), true),
+      (ns: [string, ...(HTMLElement | string)[]]) =>
+        [html('li', { 'data-marker': ns[0] || undefined }, defrag(fillFirstLine(shift(ns)[1])))]), true),
   ]))),
   es => [format(html('ol', es), type, form)]);
 
