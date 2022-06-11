@@ -4717,8 +4717,6 @@ const olist_1 = __webpack_require__(7471);
 
 const inline_1 = __webpack_require__(1160);
 
-const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
 
 exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({
@@ -4728,7 +4726,7 @@ exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
     }
   }
 }, exports.ilist_))));
-exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), (0, combinator_1.rewrite)(source_1.contentline, source => [[(0, dom_1.html)('span', source.replace('\n', ''))], ''])), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
+exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.some)(inline_1.inline), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
   'data-invalid-syntax': 'list',
   'data-invalid-type': 'syntax',
@@ -4784,7 +4782,7 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0,
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.olist_ = exports.olist = void 0;
+exports.invalid = exports.olist_ = exports.olist = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -4806,9 +4804,11 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
+const tuple_1 = __webpack_require__(5341);
+
 const openers = {
-  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
-  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/
+  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
+  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
 exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/], (0, combinator_1.context)({
   syntax: {
@@ -4819,15 +4819,15 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 }, exports.olist_))));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
-const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.trim)((0, combinator_1.subsequence)([ulist_1.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', {
-  'data-marker': ns[0]
+const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
+  'data-marker': ns[0] || global_1.undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 
 const heads = {
-  '.': (0, combinator_1.focus)(openers['.'], source => [[`${source.split('.', 1)[0]}.`], '']),
-  '(': (0, combinator_1.focus)(openers['('], source => [[source.replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], ''])
+  '.': (0, combinator_1.focus)(openers['.'], source => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
+  '(': (0, combinator_1.focus)(openers['('], source => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], ''])
 };
-const invalid = (0, combinator_1.rewrite)(source_1.contentline, source => [['', (0, dom_1.html)('span', {
+exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.contentline, (0, combinator_1.indent)(s => [(0, tuple_1.tuple)(s), ''])]), source => [['', (0, dom_1.html)('span', {
   class: 'invalid',
   'data-invalid-syntax': 'listitem',
   'data-invalid-type': 'syntax',
@@ -5199,8 +5199,6 @@ const ilist_1 = __webpack_require__(238);
 
 const inline_1 = __webpack_require__(1160);
 
-const source_1 = __webpack_require__(6743);
-
 const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
@@ -5214,16 +5212,10 @@ exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
     }
   }
 }, exports.ulist_))));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.subsequence)([exports.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))])), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[1].trimStart() ? '☑' : '☐')], '']);
-const invalid = (0, combinator_1.rewrite)(source_1.contentline, source => [[(0, dom_1.html)('span', {
-  class: 'invalid',
-  'data-invalid-syntax': 'listitem',
-  'data-invalid-type': 'syntax',
-  'data-invalid-message': 'Fix the indent or the head of the list item'
-}, source.replace('\n', ''))], '']);
 
 function fillFirstLine(ns) {
   return ns.length === 1 && typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName) ? (0, array_1.unshift)([(0, dom_1.html)('br')], ns) : ns;
