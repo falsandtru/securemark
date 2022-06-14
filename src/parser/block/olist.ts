@@ -17,10 +17,10 @@ const openers = {
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(
-  [
-    /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/,
-    /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/,
-  ],
+  new RegExp([
+    /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source,
+    /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source,
+  ].join('|')),
   context({ syntax: { inline: { media: false } } },
   olist_))));
 

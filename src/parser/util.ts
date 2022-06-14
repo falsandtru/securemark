@@ -8,8 +8,8 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
-export const regBlankStart = new RegExp(String.raw
-  `^(?:\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+`);
+export const regBlankStart = new RegExp(
+  /^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
 
 export function blankWith(delimiter: string | RegExp): RegExp;
 export function blankWith(starting: '' | '\n', delimiter: string | RegExp): RegExp;
@@ -25,8 +25,8 @@ export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): Reg
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  const blankline = new RegExp(String.raw
-    `^(?:\\$|\\?[^\S\n]|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)+$`,
+  const blankline = new RegExp(
+    /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr>)+$/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   return union([
     convert(

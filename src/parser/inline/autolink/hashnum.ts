@@ -6,7 +6,7 @@ import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => fmap(rewrite(
-  open('#', str(new RegExp(String.raw`^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|${emoji}|['_])`, 'u'))),
+  open('#', str(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, emoji), 'u'))),
   context({ syntax: { inline: {
     link: true,
     autolink: false,

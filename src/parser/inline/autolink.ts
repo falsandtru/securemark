@@ -23,11 +23,11 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched account-like strings.
     str(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
     // Escape invalid leading characters.
-    str(new RegExp(String.raw`^(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|['_])(?=#)`, 'u')),
+    str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', emoji), 'u')),
     hashtag,
     hashnum,
     // Escape unmatched hashtag-like strings.
-    str(new RegExp(String.raw`^#+(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|['_])*`, 'u')),
+    str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', emoji), 'u')),
     anchor,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

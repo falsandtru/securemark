@@ -17,11 +17,11 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         str(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//),
         ([source]) => source.length <= 253 + 1),
       verify(
-        str(new RegExp(['^',
-          String.raw`(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|${emoji}))`,
-          String.raw`(?:[^\p{C}\p{S}\p{P}\s]|${emoji}|_(?=[^\p{C}\p{S}\p{P}\s]|${emoji})){1,128}`,
-          String.raw`(?!_?(?:[^\p{C}\p{S}\p{P}\s]|${emoji})|')`,
-        ].join(''), 'u')),
+        str(new RegExp([
+          /^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source,
+          /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source,
+          /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source,
+        ].join('').replace(/emoji/g, emoji), 'u')),
         ([source]) => source.length <= 128),
     ])),
   context({ syntax: { inline: {
