@@ -137,6 +137,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
           '<p><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
           '<p><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
+          '<ol class="annotations"><li id="annotation:def:1" data-marker="*1">a<sup><a href="#annotation:ref:1">^1</a></sup></li></ol>',
         ]);
       assert.deepStrictEqual(
         [...parse([
@@ -197,7 +198,7 @@ describe('Unit: parser/api/parse', () => {
         [
           `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span>\n</span></details></aside>`,
           '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-message="Invalid syntax">---\nURL: https://example/y\n---\n</pre>',
-          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a href="https://example/y#" target="_blank">#</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
+          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a href="https://example/y#" target="_blank">#</a></p><ol class="references"></ol></section></aside>',
           '<p><a href="https://example/x#" target="_blank">#</a></p>',
         ]);
     });

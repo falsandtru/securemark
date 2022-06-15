@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.253.0
+
+- Change annotation processing.
+
 ## 0.252.0
 
 - Remove indentblock syntax.

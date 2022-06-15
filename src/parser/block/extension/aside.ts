@@ -18,12 +18,10 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
         overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
         'Invalid argument',
     }, `${opener}${body}${overflow || closer}`)];
-    const annotations = html('ol', { class: 'annotations' });
     const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
       id: '',
       footnotes: {
-        annotations,
         references,
       },
     }, context);
@@ -42,7 +40,6 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
     return [
       html('aside', { id: identity(text(heading)), class: 'aside' }, [
         document,
-        annotations,
         references,
       ]),
     ];

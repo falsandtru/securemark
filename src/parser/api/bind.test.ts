@@ -175,17 +175,17 @@ describe('Unit: parser/api/bind', () => {
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
         [
-          html('p', [html('sup', { class: "annotation" }, '1'),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, '2'),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, [html('span', '1')]),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, [html('span', '2')]),]).outerHTML,
         ]);
       inspect(iter, 1);
       el.appendChild(chunk);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
         [
-          html('p', [html('sup', { class: "annotation" }, '1'),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, '2'),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, '3'),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, [html('span', '1')]),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, [html('span', '2')]),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, [html('span', '3')]),]).outerHTML,
         ]);
       inspect(iter);
       assert.deepStrictEqual(
@@ -211,7 +211,7 @@ describe('Unit: parser/api/bind', () => {
           ]).outerHTML,
         ]);
       assert.deepStrictEqual(
-        cfgs.footnotes.annotations.outerHTML,
+        cfgs.footnotes.annotations?.outerHTML,
         html('ol', [
           html('li', { id: 'annotation:def:1' }, [
             '1',

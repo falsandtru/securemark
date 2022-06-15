@@ -637,29 +637,32 @@
   ol:empty {
     display: none;
   }
-  ol:is(#annotations, .annotations, #references, .references) {
+  ol:is(#annotations, .annotations) {
+    margin-inline: 0;
+    border-block-start: solid 1px #eee;
+    padding-block: .3em 0;
+    padding-inline: .3em;
+    width: 100%;
+    font-size: 90%;
+  }
+  ol:is(#references, .references) {
     position: relative;
     margin-block-start: 7em;
     width: 100%;
   }
-  ol:is(#annotations, .annotations, #references, .references)::before {
-    display: table-row;
+  ol:is(#references, .references)::before {
+    content: "References";
+    display: block;
     position: absolute;
     top: -2em;
     width: 100%;
     text-align: center;
     font-size: 2em;
   }
-  ol:is(#annotations, .annotations)::before {
-    content: "Annotations";
-  }
-  ol:is(#references, .references)::before {
-    content: "References";
-  }
-  blockquote > section > ol:is(#annotations, .annotations, #references, .references) {
+  blockquote > section > ol:is(#references, .references) {
     margin-block-start: 3em;
   }
-  blockquote > section > ol:is(#annotations, .annotations, #references, .references)::before {
+  blockquote > section > ol:is(#references, .references)::before {
     top: -1.5em;
   }
   @media print {
@@ -701,7 +704,7 @@
   <div class="h-100" translate="no"><textarea id="editor" spellcheck="false"></textarea></div>
 </div>
 <div id="secondary" class="col-6">
-  <div id="viewer"><ol id="annotations" class="footnotes"></ol><ol id="references" class="footnotes"></ol></div>
+  <div id="viewer"><ol id="references" class="footnotes"></ol></div>
 </div>
 </div>
 
@@ -1101,7 +1104,6 @@
   const { parse, nearest, index } = bind(viewer, {
     caches,
     footnotes: {
-      annotations: document.getElementById('annotations'),
       references: document.getElementById('references'),
     },
   });

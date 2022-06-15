@@ -25,7 +25,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     trimBlank(some(inline, ']', /^\\?\n/)),
   ]))),
   ']]'),
-  ns => [html('sup', attributes(ns), defrag(ns))]))));
+  ns => [html('sup', attributes(ns), [html('span', defrag(ns))])]))));
 
 const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
   '^',

@@ -21,4 +21,4 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
   }}, delimiters: undefined },
   trimBlank(some(union([inline]), ')', /^\\?\n/)))),
   '))'),
-  ns => [html('sup', { class: 'annotation' }, defrag(ns))]))));
+  ns => [html('sup', { class: 'annotation' }, [html('span', defrag(ns))])]))));

@@ -40,7 +40,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   for (const _ of figure(node, opts.footnotes, context));
   for (const _ of footnote(node, opts.footnotes, context));
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  assert(opts.id !== '' || !opts.footnotes?.annotations.querySelector('[id], .index[href], .label[href]'));
+  assert(opts.id !== '' || !opts.footnotes?.annotations?.querySelector('[id], .index[href], .label[href]'));
   assert(opts.id !== '' || !opts.footnotes?.references.querySelector('[id], .index[href], .label[href]'));
   return node;
 }

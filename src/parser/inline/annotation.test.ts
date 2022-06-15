@@ -29,27 +29,27 @@ describe('Unit: parser/inline/annotation', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('(( a))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(( a ))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((\\ a))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((<wbr>a))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a ))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a  ))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a &nbsp;))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a <wbr>))')), [['<sup class="annotation">a</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation">ab</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(( a))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(( a ))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((\\ a))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<wbr>a))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a ))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a  ))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a &nbsp;))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a <wbr>))')), [['<sup class="annotation"><span>a</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation"><span>ab</span></sup>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><code data-src="`a`">a</code></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((@a))')), [['<sup class="annotation"><a href="/@a" class="account">@a</a></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((http://host))')), [['<sup class="annotation"><a href="http://host" target="_blank">http://host</a></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((![]{a}))')), [['<sup class="annotation">!<a href="a">a</a></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><span class="paren">((a))</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(([[a]]))')), [['<sup class="annotation"><sup class="reference">a</sup></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><span><code data-src="`a`">a</code></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((@a))')), [['<sup class="annotation"><span><a href="/@a" class="account">@a</a></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((http://host))')), [['<sup class="annotation"><span><a href="http://host" target="_blank">http://host</a></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((![]{a}))')), [['<sup class="annotation"><span>!<a href="a">a</a></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation"><span>&lt;a&gt;</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation"><span>(a)</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><span><span class="paren">((a))</span></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(([[a]]))')), [['<sup class="annotation"><span><sup class="reference"><span>a</span></sup></span></sup>'], '']);
     });
 
   });
