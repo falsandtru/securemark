@@ -3703,20 +3703,16 @@ const unindent = source => source.replace(/(^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$
 
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)((0, combinator_1.some)(autolink_1.autolink), ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))])))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, markdown)), (0, combinator_1.creator)(99, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (source, context) => {
-  const annotations = (0, dom_1.html)('ol', {
-    class: 'annotations'
-  });
   const references = (0, dom_1.html)('ol', {
     class: 'references'
   });
   const document = (0, parse_1.parse)(source, {
     id: '',
     footnotes: {
-      annotations,
       references
     }
   }, context);
-  return [[(0, dom_1.html)('section', [document, annotations, references])], ''];
+  return [[(0, dom_1.html)('section', [document, references])], ''];
 })))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 
 /***/ }),
@@ -3901,16 +3897,12 @@ exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combi
     'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
-  const annotations = (0, dom_1.html)('ol', {
-    class: 'annotations'
-  });
   const references = (0, dom_1.html)('ol', {
     class: 'references'
   });
   const document = (0, parse_1.parse)(body.slice(0, -1), {
     id: '',
     footnotes: {
-      annotations,
       references
     }
   }, context);
@@ -3927,7 +3919,7 @@ exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combi
   return [(0, dom_1.html)('aside', {
     id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
     class: 'aside'
-  }, [document, annotations, references])];
+  }, [document, references])];
 }))));
 
 /***/ }),
@@ -3967,16 +3959,12 @@ exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, com
   switch (type) {
     case 'markdown':
       {
-        const annotations = (0, dom_1.html)('ol', {
-          class: 'annotations'
-        });
         const references = (0, dom_1.html)('ol', {
           class: 'references'
         });
         const document = (0, parse_1.parse)(body.slice(0, -1), {
           id: '',
           footnotes: {
-            annotations,
             references
           }
         }, context);
@@ -3985,7 +3973,7 @@ exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, com
           'data-type': 'markdown'
         }, [(0, dom_1.html)('pre', {
           translate: 'no'
-        }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, annotations, references])])];
+        }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, references])])];
       }
 
     case 'math':
@@ -5418,7 +5406,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, 
   delimiters: global_1.undefined
 }, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', /^\\?\n/)))), '))'), ns => [(0, dom_1.html)('sup', {
   class: 'annotation'
-}, (0, dom_1.defrag)(ns))]))));
+}, [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])]))));
 
 /***/ }),
 
@@ -6682,7 +6670,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, c
     }
   },
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)), (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), (0, dom_1.defrag)(ns))]))));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)), (0, util_1.trimBlank)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))]))), ']]'), ns => [(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])]))));
 const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankStart, '')]));
 
 function attributes(ns) {
@@ -7009,7 +6997,7 @@ const multimap_1 = __webpack_require__(940);
 const array_1 = __webpack_require__(8112);
 
 function* figure(target, footnotes, opts = {}) {
-  const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), footnotes?.annotations.querySelectorAll('a.label:not(.disabled)') ?? []), footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? []).map(el => [el.getAttribute('data-label'), el]));
+  const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), footnotes?.annotations?.querySelectorAll('a.label:not(.disabled)') ?? []), footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new global_1.Set();
   const numbers = new global_1.Map();
   let base = '0';
@@ -7201,37 +7189,54 @@ const dom_1 = __webpack_require__(3252);
 
 const multimap_1 = __webpack_require__(940);
 
-const memoize_1 = __webpack_require__(1808);
+const array_1 = __webpack_require__(8112);
 
 function* footnote(target, footnotes, opts = {}) {
-  yield* (0, exports.reference)(target, footnotes?.references, opts, footnotes?.annotations && [footnotes.annotations]);
-  yield* (0, exports.annotation)(target, footnotes?.annotations, opts, []);
+  yield* (0, exports.reference)(target, footnotes?.references, opts);
+  yield* (0, exports.annotation)(target, footnotes?.annotations, opts);
   return;
 }
 
 exports.footnote = footnote;
-exports.annotation = build('annotation', n => `*${n}`);
+exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
-function build(syntax, marker) {
+function build(syntax, marker, splitter) {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
-  const identify = (0, memoize_1.memoize)(ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.innerHTML}`, new global_1.WeakMap());
-  const contentify = (0, memoize_1.memoize)(ref => (0, dom_1.frag)(ref.cloneNode(true).childNodes), new global_1.WeakMap());
-  return function* (target, footnote, opts = {}, footnotes = []) {
+  return function* (target, footnote, opts = {}) {
+    //assert(syntax !== 'annotation' || !footnote);
     const defs = new global_1.Map();
     const buffer = new multimap_1.MultiMap();
-    const titles = new global_1.Map();
-    const check = footnotes.some(el => target.contains(el));
+    const titles = new global_1.Map(); // Bug: Firefox
+    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
+
+    const splitters = (0, array_1.push)([], target.querySelectorAll(splitter ?? '_')).filter(el => el.parentNode === target); // Bug: Firefox
+    //target.querySelectorAll(`:scope > .${syntax}s`).forEach(el => el.remove());
+
+    target.querySelectorAll(`.${syntax}s`).forEach(el => el.parentNode === target && el.remove());
+    let offset = 0;
     let style;
 
     for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
       yield;
       const ref = refs[i];
-      if (check && footnotes.some(el => el.contains(ref))) continue;
-      const identifier = identify(ref);
+
+      while (+splitters[0]?.compareDocumentPosition(ref) & global_1.Node.DOCUMENT_POSITION_FOLLOWING) {
+        if (defs.size > 0) {
+          offset += defs.size;
+          yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
+            class: `${syntax}s`
+          }), splitters[0] ?? null));
+        }
+
+        splitters.shift();
+      }
+
+      if (syntax === 'annotation' && ref.closest('#annotations, .annotations, #references, .references')) continue;
+      const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
-      const content = contentify(ref);
+      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
 
       if (style === 'count' ? abbr : !abbr) {
@@ -7241,12 +7246,17 @@ function build(syntax, marker) {
           'data-invalid-type': 'style',
           'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`
         });
+      } else if (ref.getAttribute('data-invalid-type') === 'style') {
+        (0, dom_1.define)(ref, {
+          class: void ref.classList.remove('invalid'),
+          'data-invalid-syntax': null,
+          'data-invalid-type': null,
+          'data-invalid-message': null
+        });
       }
 
-      if (ref.firstElementChild?.getAttribute('hidden') !== '') {
-        ref.replaceChildren((0, dom_1.html)('span', {
-          hidden: ''
-        }, ref.childNodes));
+      if (!ref.firstElementChild.hasAttribute('hidden')) {
+        ref.firstElementChild.setAttribute('hidden', '');
       } else {
         ref.lastChild?.remove();
       }
@@ -7257,7 +7267,8 @@ function build(syntax, marker) {
       const refIndex = i + 1;
       const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}` : global_1.undefined;
       const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}` : global_1.undefined
+        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + offset + 1}` : global_1.undefined,
+        'data-marker': !footnote ? marker(defs.size + offset + 1, abbr) : global_1.undefined
       }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
 
       if (title && !blank && def.childNodes.length === 1) {
@@ -7275,7 +7286,7 @@ function build(syntax, marker) {
         }
       }
 
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size;
+      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size + offset;
       const defId = def.id || global_1.undefined;
       (0, dom_1.define)(ref, {
         id: refId,
@@ -7298,7 +7309,16 @@ function build(syntax, marker) {
       }, `^${refIndex}`));
     }
 
-    if (!footnote) return;
+    if (defs.size > 0 || footnote) {
+      yield* proc(defs, footnote ?? target.insertBefore((0, dom_1.html)('ol', {
+        class: `${syntax}s`
+      }), splitters[0] ?? target.querySelector(':scope > :is(#annotations, #references)')));
+    }
+
+    return;
+  };
+
+  function* proc(defs, footnote) {
     const {
       children
     } = footnote;
@@ -7306,7 +7326,8 @@ function build(syntax, marker) {
     let count = 0;
     let length = children.length;
 
-    I: for (const def of defs.values()) {
+    I: for (const [key, def] of defs) {
+      defs.delete(key);
       ++count;
 
       while (length > size) {
@@ -7328,7 +7349,7 @@ function build(syntax, marker) {
     }
 
     return;
-  };
+  }
 }
 
 function equal(a, b) {
@@ -8469,13 +8490,13 @@ exports.info = void 0;
 
 const scope_1 = __webpack_require__(5202);
 
-const query_1 = __webpack_require__(6120);
+const array_1 = __webpack_require__(8112);
 
 function info(source) {
   const match = (0, scope_1.scope)(source, '.invalid');
   return {
-    url: find('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashnum):not(.anchor)').filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashnum):not(.anchor)').filter(el => ['tel:'].includes(el.protocol)),
+    url: find('a:not(:is(.email, .account, .channel, .hashtag, .hashnum, .anchor))').filter(el => ['http:', 'https:'].includes(el.protocol)),
+    tel: find('a:not(:is(.email, .account, .channel, .hashtag, .hashnum, .anchor))').filter(el => ['tel:'].includes(el.protocol)),
     email: find('a.email'),
     account: find('a.account'),
     channel: find('a.channel'),
@@ -8487,7 +8508,7 @@ function info(source) {
   };
 
   function find(selector) {
-    return (0, query_1.querySelectorAll)(source, selector).filter(match);
+    return (0, array_1.push)([], source.querySelectorAll(selector)).filter(match);
   }
 }
 
@@ -8660,29 +8681,21 @@ const array_1 = __webpack_require__(8112); // Bug: Firefox
 //const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
 
 
-const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join();
+const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 function toc(source) {
-  const es = source.querySelectorAll(selector);
-  const hs = (0, global_1.Array)(es.length);
-
-  for (let i = 0; i < hs.length; ++i) {
-    const el = es[i];
-
+  const hs = (0, array_1.push)([], source.querySelectorAll(selector)).map(el => {
     switch (el.tagName) {
       case 'ASIDE':
-        hs[i] = (0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
+        return (0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
           id: el.id,
           class: 'aside'
         }, el.firstElementChild.cloneNode(true).childNodes);
-        continue;
 
       default:
-        hs[i] = el;
-        continue;
+        return el;
     }
-  }
-
+  });
   return parse(cons(hs));
 }
 
