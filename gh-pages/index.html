@@ -145,11 +145,15 @@
     padding-inline-start: .5em;
   }
   ul {
-    margin-inline-start: 1.7em;
+    margin-inline-start: 0;
     padding: 0;
+    padding-inline-start: 1.2em;
+  }
+  ul > li::marker {
+    display: inline-block;
   }
   ol {
-    margin-inline-start: .5em;
+    margin-inline-start: 0;
     padding: 0;
   }
   ol[data-format="paren"] {
@@ -202,13 +206,16 @@
     content: attr(data-marker) " " !important;
     letter-spacing: normal;
   }
-  .checklist > li > :is(ul, ol) {
-    padding-inline-start: 2em;
-  }
   ul.checklist {
     list-style-type: none;
     margin-inline-start: 0;
     padding: 0;
+  }
+  .checklist > li > ul {
+    padding-inline-start: 3.2em;
+  }
+  .checklist > li > ol {
+    padding-inline-start: 2.0em;
   }
   li > .checkbox {
     display: inline-block;
