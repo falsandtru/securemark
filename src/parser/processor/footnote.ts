@@ -8,9 +8,10 @@ export function* footnote(
   target: ParentNode & Node,
   footnotes?: Readonly<{ annotations?: HTMLOListElement; references: HTMLOListElement; }>,
   opts: Readonly<{ id?: string; }> = {},
+  bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  yield* reference(target, footnotes?.references, opts);
-  yield* annotation(target, footnotes?.annotations, opts);
+  yield* reference(target, footnotes?.references, opts, bottom);
+  yield* annotation(target, footnotes?.annotations, opts, bottom);
   return;
 }
 
@@ -29,6 +30,7 @@ function build(
     target: ParentNode & Node,
     footnote?: HTMLOListElement,
     opts: Readonly<{ id?: string }> = {},
+    bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     //assert(syntax !== 'annotation' || !footnote);
     const defs = new Map<string, HTMLLIElement>();
@@ -148,7 +150,7 @@ function build(
           `^${refIndex}`));
     }
     if (defs.size > 0 || footnote) {
-      yield* proc(defs, footnote ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? target.querySelector(':scope > :is(#annotations, #references)')));
+      yield* proc(defs, footnote ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
     }
     return;
   }

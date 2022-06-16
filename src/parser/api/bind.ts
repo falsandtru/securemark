@@ -122,7 +122,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context)) {
+    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context, bottom)) {
       assert(rev === revision);
       el
         ? yield { type: 'footnote', value: el }
