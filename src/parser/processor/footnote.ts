@@ -32,7 +32,6 @@ function build(
     opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-    //assert(syntax !== 'annotation' || !footnote);
     const defs = new Map<string, HTMLLIElement>();
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
