@@ -147,7 +147,7 @@
   ul {
     margin-inline-start: 0;
     padding: 0;
-    padding-inline-start: 1.2em;
+    padding-inline-start: 1.7em;
   }
   ul > li::marker {
     display: inline-block;
@@ -155,9 +155,11 @@
   ol {
     margin-inline-start: 0;
     padding: 0;
+    padding-inline-start: .5em;
   }
   ol[data-format="paren"] {
     margin-inline-start: 0;
+    padding-inline-start: 0;
   }
   ol {
     counter-reset: counter;
@@ -212,9 +214,12 @@
     padding: 0;
   }
   .checklist > li > ul {
-    padding-inline-start: 3.2em;
+    padding-inline-start: 3.7em;
   }
   .checklist > li > ol {
+    padding-inline-start: 2.5em;
+  }
+  .checklist > li > ol[data-format="paren"] {
     padding-inline-start: 2.0em;
   }
   li > .checkbox {
