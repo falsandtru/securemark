@@ -758,7 +758,26 @@ function run() {
 
 /***/ }),
 
-/***/ 413:
+/***/ 5529:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.equal = void 0;
+
+function equal(a, b) {
+  return a === a ? a === b : b !== b;
+}
+
+exports.equal = equal;
+
+/***/ }),
+
+/***/ 5084:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -860,25 +879,6 @@ class MultiMap {
 }
 
 exports.MultiMap = MultiMap;
-
-/***/ }),
-
-/***/ 5529:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.equal = void 0;
-
-function equal(a, b) {
-  return a === a ? a === b : b !== b;
-}
-
-exports.equal = equal;
 
 /***/ }),
 
@@ -1417,7 +1417,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-__exportStar(__webpack_require__(413), exports);
+__exportStar(__webpack_require__(5084), exports);
 
 /***/ }),
 
@@ -3314,7 +3314,7 @@ function bind(target, settings) {
       };
     }
 
-    for (const el of (0, footnote_1.footnote)(next(0)?.parentNode ?? target, settings.footnotes, context)) {
+    for (const el of (0, footnote_1.footnote)(next(0)?.parentNode ?? target, settings.footnotes, context, bottom)) {
       el ? yield {
         type: 'footnote',
         value: el
@@ -6997,7 +6997,7 @@ const multimap_1 = __webpack_require__(940);
 const array_1 = __webpack_require__(8112);
 
 function* figure(target, footnotes, opts = {}) {
-  const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), footnotes?.annotations?.querySelectorAll('a.label:not(.disabled)') ?? []), footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? []).map(el => [el.getAttribute('data-label'), el]));
+  const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new global_1.Set();
   const numbers = new global_1.Map();
   let base = '0';
@@ -7191,9 +7191,9 @@ const multimap_1 = __webpack_require__(940);
 
 const array_1 = __webpack_require__(8112);
 
-function* footnote(target, footnotes, opts = {}) {
-  yield* (0, exports.reference)(target, footnotes?.references, opts);
-  yield* (0, exports.annotation)(target, footnotes?.annotations, opts);
+function* footnote(target, footnotes, opts = {}, bottom = null) {
+  yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
+  yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
   return;
 }
 
@@ -7204,8 +7204,7 @@ exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(syntax, marker, splitter) {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
-  return function* (target, footnote, opts = {}) {
-    //assert(syntax !== 'annotation' || !footnote);
+  return function* (target, footnote, opts = {}, bottom = null) {
     const defs = new global_1.Map();
     const buffer = new multimap_1.MultiMap();
     const titles = new global_1.Map(); // Bug: Firefox
@@ -7312,7 +7311,7 @@ function build(syntax, marker, splitter) {
     if (defs.size > 0 || footnote) {
       yield* proc(defs, footnote ?? target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
-      }), splitters[0] ?? target.querySelector(':scope > :is(#annotations, #references)')));
+      }), splitters[0] ?? bottom));
     }
 
     return;
@@ -8740,7 +8739,7 @@ function fix(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.298 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.299 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9174,7 +9173,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.298 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.299 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
