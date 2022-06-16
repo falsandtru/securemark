@@ -33,7 +33,6 @@ export interface ParserSettings {
   // For editing.
   readonly caches?: Partial<Caches>;
   readonly footnotes: {
-    readonly annotations?: HTMLOListElement;
     readonly references: HTMLOListElement;
   };
   readonly chunk?: boolean;

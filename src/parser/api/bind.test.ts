@@ -1,4 +1,4 @@
-import { ParserSettings, Progress } from '../../..';
+import { Progress } from '../../..';
 import { bind } from './bind';
 import { frag, html } from 'typed-dom/dom';
 
@@ -27,7 +27,7 @@ describe('Unit: parser/api/bind', () => {
       return acc;
     }
 
-    const cfgs: ParserSettings = { footnotes: { annotations: html('ol'), references: html('ol') } };
+    const cfgs = { footnotes: { annotations: html('ol'), references: html('ol') } };
 
     it('huge input', () => {
       const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2)}`);

@@ -6,8 +6,8 @@ import { push } from 'spica/array';
 
 export function* footnote(
   target: ParentNode & Node,
-  footnotes?: Readonly<{ annotations?: HTMLOListElement; references: HTMLOListElement; }>,
-  opts: Readonly<{ id?: string; }> = {},
+  footnotes?: { readonly annotations?: HTMLOListElement; readonly references: HTMLOListElement; },
+  opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   yield* reference(target, footnotes?.references, opts, bottom);
@@ -29,7 +29,7 @@ function build(
   return function* (
     target: ParentNode & Node,
     footnote?: HTMLOListElement,
-    opts: Readonly<{ id?: string }> = {},
+    opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     //assert(syntax !== 'annotation' || !footnote);
