@@ -46,8 +46,8 @@ export const message: MessageParser = block(validate('~~~', fmap(
         }, `${opener}${body}${closer}`)];
     }
     return [
-      html('div', { class: `message`, 'data-type': type }, unshift(
-        [html('h6', title(type))],
+      html('section', { class: `message`, 'data-type': type }, unshift(
+        [html('h1', title(type))],
         [...segment(body)].reduce((acc, seg) => push(acc, eval(content(seg, context), [])), []))),
     ];
   })));

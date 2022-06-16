@@ -15,13 +15,13 @@ describe('Unit: parser/block/extension/message', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n~~~')), [['<div class="message" data-type="note"><h6>Note</h6></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n\n~~~')), [['<div class="message" data-type="note"><h6>Note</h6></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n~~~')), [['<div class="message" data-type="note"><h6>Note</h6><p>a</p></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n\n- \n~~~')), [['<div class="message" data-type="note"><h6>Note</h6><p>a</p><ul><li></li></ul></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n# a\n~~~')), [['<div class="message" data-type="note"><h6>Note</h6><p># a</p></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/caution\n~~~')), [['<div class="message" data-type="caution"><h6>Caution!</h6></div>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/warning\n~~~')), [['<div class="message" data-type="warning"><h6>WARNING!!</h6></div>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note\n~~~')), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note\n\n~~~')), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n~~~')), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n\n- \n~~~')), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p><ul><li></li></ul></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note\n# a\n~~~')), [['<section class="message" data-type="note"><h1>Note</h1><p># a</p></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/caution\n~~~')), [['<section class="message" data-type="caution"><h1>Caution!</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/warning\n~~~')), [['<section class="message" data-type="warning"><h1>WARNING!!</h1></section>'], '']);
     });
 
   });
