@@ -1,7 +1,7 @@
 import Prism from 'prismjs';
-import { Collection } from 'spica/collection';
+import { Dict } from 'spica/dict';
 
-export function code(target: HTMLElement, cache?: Collection<string, HTMLElement>): void {
+export function code(target: HTMLElement, cache?: Dict<string, HTMLElement>): void {
   assert(target.children.length === 0);
   const source = target.textContent!;
   Prism.highlightElement(target, false, () =>

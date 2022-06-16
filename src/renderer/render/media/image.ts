@@ -1,8 +1,8 @@
 import { Object } from 'spica/global';
-import { Collection } from 'spica/collection';
+import { Dict } from 'spica/dict';
 import { define } from 'typed-dom/dom';
 
-export function image(source: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLImageElement {
+export function image(source: HTMLImageElement, url: URL, cache?: Dict<string, HTMLElement>): HTMLImageElement {
   if (cache?.has(url.href)) return define(
     cache.get(url.href)!.cloneNode(true) as HTMLImageElement,
     Object.fromEntries([...source.attributes]

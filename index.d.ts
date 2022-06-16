@@ -5,7 +5,7 @@
 * @author falsandtru https://github.com/falsandtru/securemark
 */
 
-import { Collection } from 'spica/collection';
+import { Dict } from 'spica/dict';
 
 export function parse(source: string, options?: ParserOptions): DocumentFragment;
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): {
@@ -47,23 +47,23 @@ export type Progress =
   | { type: 'cancel' };
 
 export interface RenderingOptions {
-  readonly code?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
-  readonly math?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
+  readonly code?: (target: HTMLElement, cache?: Dict<string, HTMLElement>) => void;
+  readonly math?: (target: HTMLElement, cache?: Dict<string, HTMLElement>) => void;
   readonly media?: {
     readonly twitter?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
     readonly youtube?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
     readonly pdf?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
     readonly video?: (source: HTMLImageElement, url: URL) => HTMLVideoElement | undefined;
     readonly audio?: (source: HTMLImageElement, url: URL) => HTMLAudioElement | undefined;
-    readonly image?: (source: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
+    readonly image?: (source: HTMLImageElement, url: URL, cache?: Dict<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: Partial<Caches>;
 }
 
 export interface Caches {
-  readonly code: Collection<string, HTMLElement>;
-  readonly math: Collection<string, HTMLElement>;
-  readonly media: Collection<string, HTMLElement>;
+  readonly code: Dict<string, HTMLElement>;
+  readonly math: Dict<string, HTMLElement>;
+  readonly media: Dict<string, HTMLElement>;
 }
 
 export interface Info {
