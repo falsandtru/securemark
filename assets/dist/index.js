@@ -4289,10 +4289,10 @@ exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
       }, `${opener}${body}${closer}`)];
   }
 
-  return [(0, dom_1.html)('div', {
+  return [(0, dom_1.html)('section', {
     class: `message`,
     'data-type': type
-  }, (0, array_1.unshift)([(0, dom_1.html)('h6', title(type))], [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, parser_1.eval)(content(seg, context), [])), [])))];
+  }, (0, array_1.unshift)([(0, dom_1.html)('h1', title(type))], [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, parser_1.eval)(content(seg, context), [])), [])))];
 })));
 
 function title(type) {
