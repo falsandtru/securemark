@@ -1,6 +1,6 @@
 import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
-import { union, some, validate, creator, surround, open, match, lazy } from '../../combinator';
+import { union, some, validate, focus, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startLoose, blankWith } from '../util';
@@ -9,7 +9,7 @@ import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice } from 'spica/array';
 
-const tags = Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = Object.freeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
     dir: Object.freeze(['ltr', 'rtl'] as const),
@@ -19,21 +19,19 @@ Object.setPrototypeOf(attrspec, null);
 Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
-  match(
-    /^<(wbr)(?=[^\S\n]|>)/,
-    memoize(
-    ([, tag]) =>
-      surround(
-        `<${tag}`, some(union([attribute])), /^\s*>/, true,
-        ([, bs = []], rest) =>
-          [[h(tag as 'span', attributes('html', [], attrspec[tag], bs))], rest]),
-    ([, tag]) => tags.indexOf(tag), [])),
+  focus(
+    '<wbr>',
+    () => [[h('wbr')], '']),
+  focus(
+    // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+    /^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/,
+    source => [[source], '']),
   match(
     /^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str(/^\s*>/), true),
+        str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         startLoose(some(union([
           open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
         ])), `</${tag}>`),
@@ -46,7 +44,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str(/^\s*>/), true),
+        str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         startLoose(some(union([
           open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
         ])), `</${tag}>`),

@@ -964,11 +964,12 @@ export namespace MarkdownParser {
       }
     }
     export interface HTMLParser extends
-      // Allow: sup, sub, small, bdo, bdi
+      // Allow: wbr, sup, sub, small, bdo, bdi
       // <small>abc</small>
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [
         HTMLParser.OpenTagParser,
+        SourceParser.StrParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
       ]> {
