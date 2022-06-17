@@ -220,7 +220,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     let hasDataCell = false;
     let lHeadCellIdx: bigint;
     let rHeadCellIdx: bigint;
-    for (let j = 0, jn = 0n; j < cells.length; jn = BigInt(++j)) {
+    for (let j = 0; j < cells.length; ++j) {
+      const jn = BigInt(j);
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual
         ? splice(cells, j, 0, undefined) && ranges[i][j]
@@ -248,12 +249,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       assert(colSpan > 0);
       if (colSpan > 1) {
         splice(cells, j + 1, 0, ...Array(colSpan - 1));
-        heads |= heads & 1n << jn
-          ? ~(~0n << BigInt(colSpan)) << jn
-          : 0n;
-        highlights |= highlights & 1n << jn
-          ? ~(~0n << BigInt(colSpan)) << jn
-          : 0n;
+        heads |= heads & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        highlights |= highlights & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         j += colSpan - 1;
       }
       if (target === thead) {
@@ -315,7 +312,7 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
             'v c',
             'v h',
             'v h c',
-          ][+!!(highlights & m) + +!!(lHighlight | rHighlight) * 2 + +!!(tHighlights & m) * 4]));
+          ][+!!(highlights & m) | +!!(lHighlight | rHighlight) << 1 | +!!(tHighlights & m) << 2]));
         }
         continue;
       case tfoot:
