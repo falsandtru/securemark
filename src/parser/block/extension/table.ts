@@ -248,8 +248,12 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       assert(colSpan > 0);
       if (colSpan > 1) {
         splice(cells, j + 1, 0, ...Array(colSpan - 1));
-        heads |= BigInt(+`0b${`${heads & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
-        highlights |= BigInt(+`0b${`${highlights & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
+        heads |= heads & 1n << jn
+          ? ~(~0n << BigInt(colSpan)) << jn
+          : 0n;
+        highlights |= highlights & 1n << jn
+          ? ~(~0n << BigInt(colSpan)) << jn
+          : 0n;
         j += colSpan - 1;
       }
       if (target === thead) {
