@@ -4545,8 +4545,8 @@ function format(rows) {
 
       if (colSpan > 1) {
         (0, array_1.splice)(cells, j + 1, 0, ...(0, global_1.Array)(colSpan - 1));
-        heads |= (0, global_1.BigInt)(+`0b${`${heads & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
-        highlights |= (0, global_1.BigInt)(+`0b${`${highlights & 1n << jn && 1}`.repeat(colSpan)}`) << jn;
+        heads |= heads & 1n << jn ? ~(~0n << (0, global_1.BigInt)(colSpan)) << jn : 0n;
+        highlights |= highlights & 1n << jn ? ~(~0n << (0, global_1.BigInt)(colSpan)) << jn : 0n;
         j += colSpan - 1;
       }
 
@@ -6209,7 +6209,7 @@ const cache_1 = __webpack_require__(9210);
 
 const array_1 = __webpack_require__(8112);
 
-const tags = global_1.Object.freeze(['wbr', 'sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = global_1.Object.freeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
     dir: global_1.Object.freeze(['ltr', 'rtl'])
@@ -6217,7 +6217,8 @@ const attrspec = {
 };
 global_1.Object.setPrototypeOf(attrspec, null);
 global_1.Object.values(attrspec).forEach(o => global_1.Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.match)(/^<(wbr)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)(`<${tag}`, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), /^\s*>/, true, ([, bs = []], rest) => [[(0, dom_1.html)(tag, attributes('html', [], attrspec[tag], bs))], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^\s*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(/^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tags.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]);
 
 function elem(tag, as, bs, cs) {
