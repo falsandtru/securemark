@@ -440,6 +440,7 @@
     border: solid 1px;
     border-radius: 5px;
     padding: 1rem;
+    padding-block-end: 1.5rem;
   }
   .message[data-type="note"] {
     background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
@@ -460,9 +461,12 @@
     color: #a94442;
   }
   .message > h1 {
-    margin-block-start: 0;
+    margin-block: 0 .5rem;
     font-size: 1rem;
     font-weight: bold;
+  }
+  .message > :last-child {
+    margin-block-end: 0;
   }
   .cite, .quote {
     white-space: pre-wrap;
@@ -769,7 +773,7 @@
     '',
     '## Heading',
     '',
-    'As level 2 headings(##) increment the chapter number of figure numbers, ==*second level headings such as chapters must be level 2 headings*==.',
+    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==*second level headings such as chapters must be level 2 headings*==.',
     '',
     '~~~',
     '# Example',
@@ -857,25 +861,31 @@
     '~~~$fig-name',
     '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
     '',
-    'Support Table, Pretext(Code), Math, Example, Blockquote, and Media.',
+    'Figure syntax can present a media (image, video, etc...), table, math, code, blockquote, ulist, olist, or example with a caption.',
     '~~~',
     '',
     '## Label',
+    '',
+    'Label syntax defines a figure or creates a link to it depending on the context. And label names are replaced with a generated index.',
     '',
     '$-name',
     '$fig-name',
     '',
     '## Annotation',
     '',
-    'Annotation syntax generates footnotes((*without manual numbering*.))((Another annotation.)).',
+    'Annotation syntax generates footnotes for each section((Or before asides or horizontal rules.))((*Without manual numbering*.)).',
     '',
     '## Reference',
     '',
-    'Reference syntax also generates footnotes[[^abbr]][[^abbr|A reference.]].',
+    'Reference syntax also generates footnotes[[^Abbr|A reference.]]((References are coordinated to the references section[[^Abbr]].)).',
     '',
     '## Comment',
     '',
-    'Comment syntax privides a communication method among authors and ***editors***. You must not use comment syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this][% Comments can collapse by clicking the red dagger mark. %].',
+    'Comment syntax privides a communication method among authors and ***editors***[% Comments can collapse by clicking the red dagger mark. %].',
+    '',
+    '~~~message/caution',
+    'You must not use comment syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this].',
+    '~~~',
     '',
     '## Link',
     '',
