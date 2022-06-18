@@ -10,13 +10,13 @@ import { Cache } from 'spica/cache';
 import { unshift, push, splice } from 'spica/array';
 
 const tags = Object.freeze(['sup', 'sub', 'bdo', 'bdi']);
-const attrspec = {
+const attrspecs = {
   bdo: {
-    dir: Object.freeze(['ltr', 'rtl'] as const),
+    dir: Object.freeze(['ltr', 'rtl']),
   },
 } as const;
-Object.setPrototypeOf(attrspec, null);
-Object.values(attrspec).forEach(o => Object.setPrototypeOf(o, null));
+Object.setPrototypeOf(attrspecs, null);
+Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
   focus(
@@ -206,11 +206,12 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
   assert(cs.length === 1);
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>`, as, bs, cs);
-  const attrs = attributes('html', [], attrspec[tag], as.slice(1, -1));
+  const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs
     ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs)
     : h(tag as 'span', attrs, defrag(bs));
 }
+
 function invalid(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
   return h('span', {
     class: 'invalid',
@@ -243,7 +244,7 @@ export function attributes(
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
     invalid ||= !spec || name in attrs;
-    if (spec && !spec[name] && name in spec) continue;
+    if (spec && name in spec && !spec[name]) continue;
     spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0
       ? attrs[name] = value ?? ''
       : invalid ||= !!spec;
