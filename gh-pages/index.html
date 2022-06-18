@@ -636,7 +636,7 @@
     font-weight: bold;
     color: hotpink;
   }
-  :is(sup, sub) :is(sup, sub)::before {
+  :is(sup:not(.annotation, .reference), sub) :is(sup, sub, ruby, .math, .media)::before {
     content: "Invalid nesting pattern of HTML tags";
     position: unset;
     font-style: italic;
