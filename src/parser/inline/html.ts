@@ -9,7 +9,7 @@ import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice } from 'spica/array';
 
-const tags = Object.freeze(['sup', 'sub', 'bdo', 'bdi']);
+const tags = Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
   bdo: {
     dir: Object.freeze(['ltr', 'rtl']),

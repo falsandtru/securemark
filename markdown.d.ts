@@ -964,7 +964,7 @@ export namespace MarkdownParser {
       }
     }
     export interface HTMLParser extends
-      // Allow: wbr, sup, sub, bdo, bdi
+      // Allow: wbr, bdo, bdi
       // <bdi>abc</bdi>
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [

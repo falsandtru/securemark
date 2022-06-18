@@ -2,7 +2,7 @@
 
 ## 0.254.0
 
-- Remove `small` HTML tag.
+- Remove `sup`, `sub`, and `small` HTML tags.
 
 ## 0.253.2
 
