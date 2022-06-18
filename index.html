@@ -380,8 +380,9 @@
     border-inline-start: solid 1px #eee;
     border-block-end: solid 1px #eee;
     border-end-start-radius: 3px;
+    padding-block: .1em;
     padding-inline: .3em .1em;
-    line-height: 1.2;
+    line-height: 1;
   }
   .language-css .token.string, .style .token.string, .token.entity, .token.operator, .token.url {
     background: none;
@@ -397,7 +398,7 @@
     overflow: auto;
     padding: 1rem;
     font-size: 90%;
-    line-height: 120%;
+    line-height: 1.2;
   }
   aside.example > pre {
     background-color: #fafafa;
@@ -411,8 +412,9 @@
     border-inline-start: solid 1px #ddd;
     border-block-end: solid 1px #ddd;
     border-end-start-radius: 3px;
-    padding-block: .1em 0;
-    padding-inline: .4em;
+    padding-block: .2em;
+    padding-inline: .5em .4em;
+    line-height: 1;
     font-family: initial;
     font-size: smaller;
     font-weight: bold;
@@ -632,15 +634,6 @@
     position: unset;
     font-style: italic;
     font-weight: bold;
-    color: hotpink;
-  }
-  :is(sup, sub) :is(sup, sub, small)::before,
-  small small::before {
-    content: "Invalid nesting pattern of HTML tags";
-    position: unset;
-    font-style: italic;
-    font-weight: bold;
-    font-size: initial;
     color: hotpink;
   }
   ol:empty {
