@@ -16,7 +16,7 @@ describe('Unit: parser/block/extension/aside', () => {
     it('valid', () => {
       assert.deepStrictEqual(inspect(parser('~~~aside\n# 0\n~~~')), [['<aside id="index:0" class="aside"><h1>0</h1><ol class="references"></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~aside\n## 0\n~~~')), [['<aside id="index:0" class="aside"><h2>0</h2><ol class="references"></ol></aside>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~aside\n# 0\n\n$-0.0\n\n## 1\n\n$test-a\n> \n~~~')), [['<aside id="index:0" class="aside"><h1>0</h1><figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure><h2>1</h2><figure data-type="quote" data-label="test-a" data-group="test" data-number="1.1"><figcaption><span class="figindex">Test 1.1. </span></figcaption><div><blockquote></blockquote></div></figure><ol class="references"></ol></aside>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~aside\n# 0\n\n$-0.0\n\n## 1\n\n$test-a\n> \n~~~')), [['<aside id="index:0" class="aside"><h1>0</h1><figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure><h2>1</h2><figure data-type="quote" data-label="test-a" data-group="test" data-number="1.1"><figcaption><span class="figindex">Test 1.1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><ol class="references"></ol></aside>'], '']);
     });
 
   });

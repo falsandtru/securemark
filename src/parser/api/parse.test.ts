@@ -124,7 +124,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="https://source/hashtags/a" target="_blank" class="hashtag">#a</a></p>',
           '<p><a href="https://domain/hashtags/a" target="_blank" class="hashtag">#domain/a</a></p>',
           '<p><a class="index" href="#index:a">a</a></p>',
-          '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
+          '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
           '<p><sup class="annotation" id="annotation:ref:1" title="a"><span hidden="">a</span><a href="#annotation:def:1">*1</a></sup></p>',
           '<p><a href="https://source/x/a" target="_blank">a</a></p>',
@@ -208,7 +208,7 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('$-a\n$$\n$$\n\n(($-a[[b]][[c*d*]]))', { footnotes }).children].map(el => el.outerHTML),
         [
-          '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
+          '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><sup class="annotation" id="annotation:ref:1" title="(1)[1][2]"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="cd"><span hidden="">c<em>d</em></span><a href="#reference:def:2">[2]</a></sup></span><a href="#annotation:def:1">*1</a></sup></p>',
         ]);
       assert.deepStrictEqual(

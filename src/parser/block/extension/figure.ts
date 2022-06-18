@@ -17,7 +17,6 @@ import { localize } from '../../locale';
 import { visualize, trimBlank } from '../../util';
 import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
-import { unshift } from 'spica/array';
 
 import FigureParser = ExtensionParser.FigureParser;
 
@@ -75,9 +74,10 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
     html('figure',
       attributes(label.getAttribute('data-label')!, param, content, caption),
       [
-        html('figcaption', unshift(
-          [html('span', { class: 'figindex' })],
-          defrag(caption))),
+        html('figcaption', [
+          html('span', { class: 'figindex' }),
+          html('span', { class: 'figtext' }, defrag(caption)),
+        ]),
         html('div', [content]),
       ])
   ])),
