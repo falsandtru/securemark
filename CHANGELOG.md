@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.254.0
+
+- Remove `small` HTML tag.
+
 ## 0.253.2
 
 - Refactoring.

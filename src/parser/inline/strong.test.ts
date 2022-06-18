@@ -43,7 +43,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**a*b*c**')), [['<strong>a<em>b</em>c</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a*b*c**d')), [['<strong>a<em>b</em>c</strong>'], 'd']);
       assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code data-src="`a`">a</code></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**<small>**')), [['<strong>&lt;small&gt;</strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**<bdi>**')), [['<strong>&lt;bdi&gt;</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**(*a*)**')), [['<strong><span class="paren">(<em>a</em>)</span></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**(**a**)**')), [['<strong><span class="paren">(<strong>a</strong>)</span></strong>'], '']);
     });

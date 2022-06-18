@@ -99,8 +99,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('*++ ++*')), [['<em><ins> </ins></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*++ a ++*')), [['<em><ins> a </ins></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*++  a  ++*')), [['<em><ins>  a  </ins></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<bdi>`a`</bdi>*')), [['<em><bdi><code data-src="`a`">a</code></bdi></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdi>*<bdi>a</bdi>*</bdi>')), [['<bdi><em><bdi>a</bdi></em></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>((<bdi>((a))</bdi>))</bdi>')), [['<bdi><sup class="annotation"><span><bdi><span class="paren">((a))</span></bdi></span></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>[[<bdi>[[a]]</bdi>]]</bdi>')), [['<bdi><sup class="reference"><span><bdi>[[a]]</bdi></span></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[', '*', ']'], '']);
@@ -155,9 +155,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a href="#"><span class="paren">(<span class="paren">([a]{#})</span>)</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '<sup class="reference"><span>""</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" target="_blank">http://host</a>', '>'], '']);
-      assert.deepStrictEqual(inspect(parser('<<small>a<</small>')), [['<', '<small>a&lt;</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<<bdi>a<</bdi>')), [['<', '<bdi>a&lt;</bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<sup><sub>a</sub>')), [['<', 'sup', '>', '<sub>a</sub>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<small>*`</small>`')), [['<em>&lt;small&gt;</em>', '<code data-src="`</small>`">&lt;/small&gt;</code>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<bdi>*`</bdi>`')), [['<em>&lt;bdi&gt;</em>', '<code data-src="`</bdi>`">&lt;/bdi&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('[~http://host')), [['[', '~', '<a href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a@b')), [['[', '~', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~~a~~]')), [['[', '<del>a</del>', ']'], '']);

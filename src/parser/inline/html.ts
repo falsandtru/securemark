@@ -9,7 +9,7 @@ import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice } from 'spica/array';
 
-const tags = Object.freeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
+const tags = Object.freeze(['sup', 'sub', 'bdo', 'bdi']);
 const attrspec = {
   bdo: {
     dir: Object.freeze(['ltr', 'rtl'] as const),
@@ -27,7 +27,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     /^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/,
     source => [[source], '']),
   match(
-    /^<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>)/,
+    /^<(sup|sub|bdo|bdi)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
