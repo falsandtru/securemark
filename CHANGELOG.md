@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.255.0
+
+- Change html parser not to use backtracking.
+
 ## 0.254.2
 
 - Refactoring.

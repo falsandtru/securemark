@@ -985,6 +985,7 @@ export namespace MarkdownParser {
         Inline<'html/tag'>,
         Parser<HTMLElement | string, Context, [
           InlineParser,
+          InlineParser,
         ]> {
       }
       export namespace TagParser {

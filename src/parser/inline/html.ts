@@ -1,9 +1,9 @@
 import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
-import { union, some, validate, focus, creator, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, validate, focus, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, blankWith } from '../util';
+import { isStartLooseNodes, blankWith } from '../util';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -32,25 +32,31 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-        startLoose(some(union([
-          open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
-        ])), `</${tag}>`),
-        str(`</${tag}>`), false,
-        ([as, bs, cs], rest) =>
-          [[elem(tag, as, bs, cs)], rest]),
+        subsequence([
+          focus(/^[^\S\n]*\n/, some(inline)),
+          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true)),
+        ]),
+        str(`</${tag}>`), true,
+        ([as, bs = [], cs], rest) =>
+          [[elem(tag, as, bs, cs)], rest],
+        ([as, bs = []], rest) =>
+          [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => TAGS.indexOf(tag), [])),
   match(
-    new RegExp(String.raw`^<(?!${TAGS.join('|')}\b)([a-z]+)(?=[^\S\n]|>)`),
+    /^<([a-z]+)(?=[^\S\n]|>)/,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-        startLoose(some(union([
-          open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true),
-        ])), `</${tag}>`),
-        str(`</${tag}>`), false,
-        ([as, bs, cs], rest) =>
-          [[elem(tag, as, bs, cs)], rest]),
+        subsequence([
+          focus(/^[^\S\n]*\n/, some(inline)),
+          some(inline, `</${tag}>`),
+        ]),
+        str(`</${tag}>`), true,
+        ([as, bs = [], cs], rest) =>
+          [[elem(tag, as, bs, cs)], rest],
+        ([as, bs = []], rest) =>
+          [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => tag,
     new Cache(10000))),
 ])))));
@@ -204,8 +210,10 @@ const TAGS = Object.freeze([
 function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
-  assert(cs.length === 1);
-  if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>`, as, bs, cs);
+  if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
+  if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
+  if (bs.length === 0) return invalid('content', `Missing the content`, as, bs, cs);
+  if (!isStartLooseNodes(bs)) return invalid('content', `Missing the visible content in the same line`, as, bs, cs);
   const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs
     ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs)

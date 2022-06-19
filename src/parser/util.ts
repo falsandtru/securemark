@@ -101,6 +101,19 @@ const isStartTight = reduce((source: string, context: MarkdownParser.Context, ex
       return source[0].trimStart() !== '';
   }
 }, (source, _, except = '') => `${source}\x1E${except}`);
+
+export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+  if (nodes.length === 0) return true;
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i];
+    if (isVisible(node)) return true;
+    if (typeof node === 'object') {
+      if (node.tagName === 'BR') break;
+      if (node.className === 'linebreak') break;
+    }
+  }
+  return false;
+}
 export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
