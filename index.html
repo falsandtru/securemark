@@ -110,12 +110,13 @@
   :is(h1, h2, h3, h4, h5, h6):not(:first-child) {
     margin-block-start: 1.5rem;
   }
-  figcaption {
-    font-size: .9em;
-  }
   .figindex {
     white-space: pre;
+    font-size: 91%;
     font-weight: 600;
+  }
+  .figtext {
+    font-size: 90%;
   }
   figure > div > pre {
     margin: 0;
@@ -439,6 +440,7 @@
     border: solid 1px;
     border-radius: 5px;
     padding: 1rem;
+    padding-block-end: 1.5rem;
   }
   .message[data-type="note"] {
     background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
@@ -459,9 +461,12 @@
     color: #a94442;
   }
   .message > h1 {
-    margin-block-start: 0;
+    margin-block: 0 .5rem;
     font-size: 1rem;
     font-weight: bold;
+  }
+  .message > :last-child {
+    margin-block-end: 0;
   }
   .cite, .quote {
     white-space: pre-wrap;
@@ -768,7 +773,7 @@
     '',
     '## Heading',
     '',
-    'As level 2 headings(##) increment the chapter number of figure numbers, ==*second level headings such as chapters must be level 2 headings*==.',
+    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==*second level headings such as chapters must be level 2 headings*==.',
     '',
     '~~~',
     '# Example',
@@ -779,14 +784,14 @@
     '',
     '$-a',
     '$$',
-    'ax^{2}+bx+c=0',
+    'ax^2+bx+c=0',
     '$$',
     '',
     '## Chapter 2',
     '',
     '$-b',
     '$$',
-    'x = \\frac{-b\\pm\\sqrt{b^{2}-4ac}}{2a}',
+    'x = \\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}',
     '$$',
     '~~~',
     '',
@@ -794,6 +799,10 @@
     '',
     '~ Term',
     'Description.',
+    '',
+    '## Index',
+    '',
+    '[#Title], [#Heading], [#Term]',
     '',
     '## List',
     '',
@@ -817,6 +826,14 @@
     '  (8) f',
     '  (9) g',
     '',
+    '## Blockquote',
+    '',
+    '>> **a',
+    'b**',
+    '',
+    '!>> **a',
+    'b**',
+    '',
     '## Code',
     '',
     '```main.hs',
@@ -839,13 +856,60 @@
     '\\prod_{k=1}^{\\infty} \\frac{4k^2}{4k^2 - 1}',
     '$$',
     '',
-    '## Blockquote',
+    '## Figure',
     '',
-    '>> **a',
-    'b**',
+    '~~~$fig-name',
+    '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
     '',
-    '!>> **a',
-    'b**',
+    'Figure syntax can present a media (image, video, etc...), table, math, code, blockquote, ulist, olist, or example with a caption.',
+    '~~~',
+    '',
+    '## Label',
+    '',
+    'Label syntax defines a figure or creates a link to it depending on the context. And label names are replaced with a generated index.',
+    '',
+    '$-name',
+    '$fig-name',
+    '',
+    '## Annotation',
+    '',
+    'Annotation syntax generates footnotes for each section((Or before asides or horizontal rules.))((*Without manual numbering*.)).',
+    '',
+    '## Reference',
+    '',
+    'Reference syntax also generates footnotes[[^Abbr|A reference.]]((References are coordinated to the references section[[^Abbr]].)).',
+    '',
+    '## Comment',
+    '',
+    'Comment syntax privides a communication method among authors and ***editors***[% Comments can collapse by clicking the red dagger mark. %].',
+    '',
+    '~~~message/caution',
+    'You must not use comment syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this].',
+    '~~~',
+    '',
+    '## Link',
+    '',
+    '[Google]{https://google.com}',
+    '{https://google.com}',
+    'https://google.com',
+    '',
+    '## Relative URL fixation',
+    '',
+    '*Relative links ({./...})* are based on the host URL or the **document URL** defined in the document **header**.',
+    '\tYou have to add the header and the document URL to make the relative links permanent before rendering the document under another URL, or reporting or distributing the document.',
+    '',
+    '## Subresource representation',
+    '',
+    '***Subresource links ({^/...})*** are always based on the **host URL**, displayed on the browser.',
+    '',
+    '\tOnly *subresource paths (`^/`)* can make relative links to the subdirectories as: {^/materials/image.png}',
+    '',
+    '## Media',
+    '',
+    '!https://youtu.be/xRF7WIZV4lA',
+    '!https://web.stanford.edu/~jsabol/certainty/readings/Descartes_DM1Fr.pdf',
+    '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
+    '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
     '',
     '## Table',
     '',
@@ -1035,59 +1099,6 @@
     '2,095',
     '0.7',
     '~~~',
-    '',
-    '## Figure',
-    '',
-    '~~~$fig-name',
-    '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
-    '',
-    'Support Table, Pretext(Code), Math, Example, Blockquote, and Media.',
-    '~~~',
-    '',
-    '## Label',
-    '',
-    '$-name',
-    '$fig-name',
-    '',
-    '## Index',
-    '',
-    '[#Title], [#Heading], [#Term]',
-    '',
-    '## Annotation',
-    '',
-    'Annotation syntax generates footnotes((*without manual numbering*.))((Another annotation.)).',
-    '',
-    '## Reference',
-    '',
-    'Reference syntax also generates footnotes[[^abbr]][[^abbr|A reference.]].',
-    '',
-    '## Comment',
-    '',
-    'Comment syntax privides a communication method among authors and ***editors***. You must not use comment syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this][% Comments can collapse by clicking the red dagger mark. %].',
-    '',
-    '## Link',
-    '',
-    '[Google]{https://google.com}',
-    '{https://google.com}',
-    'https://google.com',
-    '',
-    '## Relative URL fixation',
-    '',
-    '*Relative links ({./...})* are based on the host URL or the **document URL** defined in the document **header**.',
-    '\tYou have to add the header and the document URL to make the relative links permanent before rendering the document under another URL, or reporting or distributing the document.',
-    '',
-    '## Subresource representation',
-    '',
-    '***Subresource links ({^/...})*** are always based on the **host URL**, displayed on the browser.',
-    '',
-    '\tOnly *subresource paths (`^/`)* can make relative links to the subdirectories as: {^/materials/image.png}',
-    '',
-    '## Media',
-    '',
-    '!https://youtu.be/xRF7WIZV4lA',
-    '!https://web.stanford.edu/~jsabol/certainty/readings/Descartes_DM1Fr.pdf',
-    '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
-    '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
     '',
     ''
   ].join('\n');

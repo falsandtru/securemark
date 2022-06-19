@@ -4110,8 +4110,6 @@ const dom_1 = __webpack_require__(3252);
 
 const memoize_1 = __webpack_require__(1808);
 
-const array_1 = __webpack_require__(8112);
-
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
 exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
@@ -4120,9 +4118,11 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
       media: false
     }
   }
-}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', (0, array_1.unshift)([(0, dom_1.html)('span', {
+}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
   class: 'figindex'
-})], (0, dom_1.defrag)(caption))), (0, dom_1.html)('div', [content])])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, overflow, closer, opener, delim], _, context) => [(0, dom_1.html)('pre', {
+}), (0, dom_1.html)('span', {
+  class: 'figtext'
+}, (0, dom_1.defrag)(caption))]), (0, dom_1.html)('div', [content])])])), (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300), ([body, overflow, closer, opener, delim], _, context) => [(0, dom_1.html)('pre', {
   class: 'invalid',
   translate: 'no',
   'data-invalid-syntax': 'figure',
@@ -7197,6 +7197,9 @@ const multimap_1 = __webpack_require__(940);
 const array_1 = __webpack_require__(8112);
 
 function* footnote(target, footnotes, opts = {}, bottom = null) {
+  // Bug: Firefox
+  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
+  target.querySelectorAll(`.annotations`).forEach(el => el.parentNode === target && el.remove());
   yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
   return;
@@ -7215,11 +7218,9 @@ function build(syntax, marker, splitter) {
     const titles = new global_1.Map(); // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
 
-    const splitters = (0, array_1.push)([], target.querySelectorAll(splitter ?? '_')).filter(el => el.parentNode === target); // Bug: Firefox
-    //target.querySelectorAll(`:scope > .${syntax}s`).forEach(el => el.remove());
-
-    target.querySelectorAll(`.${syntax}s`).forEach(el => el.parentNode === target && el.remove());
-    let offset = 0;
+    const splitters = (0, array_1.push)([], target.querySelectorAll(splitter ?? '_')).filter(el => el.parentNode === target);
+    let count = 0;
+    let total = 0;
     let style;
 
     for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
@@ -7228,7 +7229,7 @@ function build(syntax, marker, splitter) {
 
       while (+splitters[0]?.compareDocumentPosition(ref) & global_1.Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
-          offset += defs.size;
+          total += defs.size;
           yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
             class: `${syntax}s`
           }), splitters[0] ?? null));
@@ -7237,7 +7238,6 @@ function build(syntax, marker, splitter) {
         splitters.shift();
       }
 
-      if (syntax === 'annotation' && ref.closest('#annotations, .annotations, #references, .references')) continue;
       const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
       const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
@@ -7268,11 +7268,11 @@ function build(syntax, marker, splitter) {
       const title = global_1.undefined || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || global_1.undefined;
       title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
       const blank = !!abbr && !content.firstChild;
-      const refIndex = i + 1;
+      const refIndex = ++count;
       const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}` : global_1.undefined;
       const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + offset + 1}` : global_1.undefined,
-        'data-marker': !footnote ? marker(defs.size + offset + 1, abbr) : global_1.undefined
+        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : global_1.undefined,
+        'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : global_1.undefined
       }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
 
       if (title && !blank && def.childNodes.length === 1) {
@@ -7290,7 +7290,7 @@ function build(syntax, marker, splitter) {
         }
       }
 
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size + offset;
+      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
       const defId = def.id || global_1.undefined;
       (0, dom_1.define)(ref, {
         id: refId,
