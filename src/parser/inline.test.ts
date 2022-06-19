@@ -155,8 +155,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a href="#"><span class="paren">(<span class="paren">([a]{#})</span>)</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '<sup class="reference"><span>""</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" target="_blank">http://host</a>', '>'], '']);
-      assert.deepStrictEqual(inspect(parser('<<bdi>a<</bdi>')), [['<', '<bdi>a&lt;</bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<bdi>*`</bdi>`')), [['<em>&lt;bdi&gt;</em>', '<code data-src="`</bdi>`">&lt;/bdi&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('[~http://host')), [['[', '~', '<a href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a@b')), [['[', '~', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~~a~~]')), [['[', '<del>a</del>', ']'], '']);
