@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.254.2
+
+- Refactoring.
+
 ## 0.254.1
 
 - Fix footnote processing.
