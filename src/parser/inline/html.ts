@@ -40,7 +40,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           [[elem(tag, as, bs, cs)], rest]),
     ([, tag]) => TAGS.indexOf(tag), [])),
   match(
-    /^<([a-z]+)(?=[^\S\n]|>)/,
+    new RegExp(String.raw`^<(?!${TAGS.join('|')}\b)([a-z]+)(?=[^\S\n]|>)`),
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
