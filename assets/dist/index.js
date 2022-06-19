@@ -6219,7 +6219,7 @@ const attrspecs = {
 global_1.Object.setPrototypeOf(attrspecs, null);
 global_1.Object.values(attrspecs).forEach(o => global_1.Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
+/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(new RegExp(String.raw`^<(?!${TAGS.join('|')}\b)([a-z]+)(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`)), true)])), `</${tag}>`), (0, source_1.str)(`</${tag}>`), false, ([as, bs, cs], rest) => [[elem(tag, as, bs, cs)], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
 
@@ -6588,6 +6588,12 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, c
   cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
   if (!sanitize(el, url, text)) return [[el], rest];
   (0, dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
+
+  // Awaiting the generic support for attr().
+  if (el.hasAttribute('aspect-ratio')) {
+    el.style.aspectRatio = el.getAttribute('aspect-ratio');
+  }
+
   if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
   return (0, combinator_1.fmap)(link_1.link, ([link]) => [(0, dom_1.define)(link, {
     target: '_blank'
@@ -7637,7 +7643,7 @@ const str_1 = __webpack_require__(2790);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.delimiter = /[\s\x00-\x7F]|\S#|[、。！？][^\S\n]*(?=\\\n)/;
+exports.delimiter = /[\s\x00-\x7F]|\S#|[（）、。！？][^\S\n]*(?=\\\n)/;
 exports.nonWhitespace = /[\S\n]|$/;
 exports.nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
 const repeat = (0, str_1.str)(/^(.)\1*/);
@@ -8378,6 +8384,7 @@ function video(source, url) {
     src: source.getAttribute('data-src'),
     'data-type': 'video',
     ...global_1.Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])),
+    style: source.hasAttribute('aspect-ratio') ? `aspect-ratio: ${source.getAttribute('aspect-ratio')};` : global_1.undefined,
     muted: '',
     controls: ''
   });
