@@ -1,4 +1,4 @@
-import { Object } from 'spica/global';
+import { undefined, Object } from 'spica/global';
 import { html } from 'typed-dom/dom';
 
 const extensions = [
@@ -13,6 +13,9 @@ export function video(source: HTMLImageElement, url: URL): HTMLVideoElement | un
     'data-type': 'video',
     ...Object.fromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])),
+    style: source.hasAttribute('aspect-ratio')
+      ? `aspect-ratio: ${source.getAttribute('aspect-ratio')};`
+      : undefined,
     muted: '',
     controls: '',
   });

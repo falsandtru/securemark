@@ -479,6 +479,8 @@
     max-width: 100%;
     min-width: 10%;
     min-height: 2rem;
+  }
+  .media:not([width]) {
     width: 100%;
   }
   .media[aspect-ratio] {
@@ -859,7 +861,7 @@
     '## Figure',
     '',
     '~~~$fig-name',
-    '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
+    '!{https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg 4:3}',
     '',
     'Figure syntax can present a media (image, video, etc...), table, math, code, blockquote, ulist, olist, or example with a caption.',
     '~~~',

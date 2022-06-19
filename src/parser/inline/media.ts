@@ -48,6 +48,10 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
     assert(!el.matches('.invalid'));
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
+    // Awaiting the generic support for attr().
+    if (el.hasAttribute('aspect-ratio')) {
+      el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
+    }
     if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
     return fmap(
       link as MediaParser,
