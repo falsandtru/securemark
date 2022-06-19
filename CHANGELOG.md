@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.254.1
+
+- Fix footnote processing.
+
 ## 0.254.0
 
 - Remove `sup`, `sub`, and `small` HTML tags.

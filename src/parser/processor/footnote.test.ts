@@ -1,4 +1,4 @@
-import { annotation, reference } from './footnote';
+import { footnote, annotation, reference } from './footnote';
 import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom/dom';
 
@@ -190,7 +190,7 @@ describe('Unit: parser/processor/footnote', () => {
     it('split', () => {
       const target = parse('((1))\n\n## a\n\n## b\n\n((2))((3))\n\n## c\n\n((4))');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target)];
+        [...footnote(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [

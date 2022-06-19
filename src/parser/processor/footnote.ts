@@ -10,6 +10,9 @@ export function* footnote(
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+  // Bug: Firefox
+  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
+  target.querySelectorAll(`.annotations`).forEach(el => el.parentNode === target && el.remove());
   yield* reference(target, footnotes?.references, opts, bottom);
   yield* annotation(target, footnotes?.annotations, opts, bottom);
   return;
@@ -39,10 +42,8 @@ function build(
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
     const splitters = push([], target.querySelectorAll(splitter ?? '_'))
       .filter(el => el.parentNode === target);
-    // Bug: Firefox
-    //target.querySelectorAll(`:scope > .${syntax}s`).forEach(el => el.remove());
-    target.querySelectorAll(`.${syntax}s`).forEach(el => el.parentNode === target && el.remove());
-    let offset = 0;
+    let count = 0;
+    let total = 0;
     let style: 'count' | 'abbr';
     for (
       let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
@@ -51,12 +52,11 @@ function build(
       const ref = refs[i];
       while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
-          offset += defs.size;
+          total += defs.size;
           yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? null));
         }
         splitters.shift();
       }
-      if (syntax === 'annotation' && ref.closest('#annotations, .annotations, #references, .references')) continue;
       const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild!.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
@@ -95,7 +95,7 @@ function build(
         : buffer.set(identifier, ref);
       assert(syntax !== 'annotation' || !buffer.has(identifier));
       const blank = !!abbr && !content.firstChild;
-      const refIndex = i + 1;
+      const refIndex = ++count;
       const refId = opts.id !== ''
         ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}`
         : undefined;
@@ -103,8 +103,8 @@ function build(
         || defs.get(identifier)
         || defs.set(identifier, html('li',
             {
-              id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + offset + 1}` : undefined,
-              'data-marker': !footnote ? marker(defs.size + offset + 1, abbr) : undefined,
+              id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : undefined,
+              'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined,
             },
             [content.cloneNode(true), html('sup')]))
             .get(identifier)!;
@@ -123,7 +123,7 @@ function build(
           });
         }
       }
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size + offset;
+      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
       const defId = def.id || undefined;
       define(ref, {
         id: refId,
