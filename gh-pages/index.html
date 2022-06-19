@@ -641,10 +641,7 @@
     font-weight: bold;
     color: hotpink;
   }
-  ol:empty {
-    display: none;
-  }
-  ol:is(#annotations, .annotations) {
+  .annotations {
     margin-inline: 0;
     border-block-start: solid 1px #ddd;
     padding-block: .3em 0;
@@ -652,12 +649,15 @@
     width: 100%;
     font-size: 90%;
   }
-  ol:is(#references, .references) {
+  .references {
     position: relative;
     margin-block-start: 7em;
     width: 100%;
   }
-  ol:is(#references, .references)::before {
+  .references:empty {
+    display: none;
+  }
+  .references::before {
     content: "References";
     display: block;
     position: absolute;
@@ -666,10 +666,10 @@
     text-align: center;
     font-size: 2em;
   }
-  blockquote > section > ol:is(#references, .references) {
+  blockquote > section > .references {
     margin-block-start: 3em;
   }
-  blockquote > section > ol:is(#references, .references)::before {
+  blockquote > section > .references::before {
     top: -1.5em;
   }
   @media print {
@@ -711,7 +711,7 @@
   <div class="h-100" translate="no"><textarea id="editor" spellcheck="false"></textarea></div>
 </div>
 <div id="secondary" class="col-6">
-  <div id="viewer"><ol id="references" class="footnotes"></ol></div>
+  <div id="viewer"><ol class="references"></ol></div>
 </div>
 </div>
 
@@ -1117,7 +1117,7 @@
   const { parse, nearest, index } = bind(viewer, {
     caches,
     footnotes: {
-      references: document.getElementById('references'),
+      references: document.querySelector('.references'),
     },
   });
   editor.setOption('vimMode', true);
