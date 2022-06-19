@@ -27,7 +27,7 @@ describe('Unit: parser/api/bind', () => {
       return acc;
     }
 
-    const cfgs = { footnotes: { annotations: html('ol'), references: html('ol') } };
+    const cfgs = { footnotes: { references: html('ol') } };
 
     it('huge input', () => {
       const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2)}`);
@@ -168,62 +168,62 @@ describe('Unit: parser/api/bind', () => {
       const el = html('div');
       const chunk = frag();
       const update = bind(chunk, { ...cfgs, chunk: true }).parse;
-      const iter = update([...Array(3)].map((_, i) => `((${i + 1}))`).join('\n\n'));
+      const iter = update([...Array(3)].map((_, i) => `[[${i + 1}]]`).join('\n\n'));
 
       inspect(iter, 2);
       el.appendChild(chunk);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
         [
-          html('p', [html('sup', { class: "annotation" }, [html('span', '1')]),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, [html('span', '2')]),]).outerHTML,
+          html('p', [html('sup', { class: "reference" }, [html('span', '1')]),]).outerHTML,
+          html('p', [html('sup', { class: "reference" }, [html('span', '2')]),]).outerHTML,
         ]);
       inspect(iter, 1);
       el.appendChild(chunk);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
         [
-          html('p', [html('sup', { class: "annotation" }, [html('span', '1')]),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, [html('span', '2')]),]).outerHTML,
-          html('p', [html('sup', { class: "annotation" }, [html('span', '3')]),]).outerHTML,
+          html('p', [html('sup', { class: "reference" }, [html('span', '1')]),]).outerHTML,
+          html('p', [html('sup', { class: "reference" }, [html('span', '2')]),]).outerHTML,
+          html('p', [html('sup', { class: "reference" }, [html('span', '3')]),]).outerHTML,
         ]);
       inspect(iter);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
         [
           html('p', [
-            html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
+            html('sup', { class: "reference", id: "reference:ref:1", title: "1" }, [
               html('span', { hidden: '' }, '1'),
-              html('a', { href: "#annotation:def:1" }, '*1')
+              html('a', { href: "#reference:def:1" }, '[1]'),
             ]),
           ]).outerHTML,
           html('p', [
-            html('sup', { class: "annotation", id: "annotation:ref:2", title: "2" }, [
+            html('sup', { class: "reference", id: "reference:ref:2", title: "2" }, [
               html('span', { hidden: '' }, '2'),
-              html('a', { href: "#annotation:def:2" }, '*2')
+              html('a', { href: "#reference:def:2" }, '[2]'),
             ]),
           ]).outerHTML,
           html('p', [
-            html('sup', { class: "annotation", id: "annotation:ref:3", title: "3" }, [
+            html('sup', { class: "reference", id: "reference:ref:3", title: "3" }, [
               html('span', { hidden: '' }, '3'),
-              html('a', { href: "#annotation:def:3" }, '*3')
+              html('a', { href: "#reference:def:3" }, '[3]'),
             ]),
           ]).outerHTML,
         ]);
       assert.deepStrictEqual(
-        cfgs.footnotes.annotations?.outerHTML,
+        cfgs.footnotes.references?.outerHTML,
         html('ol', [
-          html('li', { id: 'annotation:def:1' }, [
+          html('li', { id: 'reference:def:1' }, [
             '1',
-            html('sup', [html('a', { href: '#annotation:ref:1' }, '^1')])
+            html('sup', [html('a', { href: '#reference:ref:1' }, '^1')]),
           ]),
-          html('li', { id: 'annotation:def:2' }, [
+          html('li', { id: 'reference:def:2' }, [
             '2',
-            html('sup', [html('a', { href: '#annotation:ref:2' }, '^2')])
+            html('sup', [html('a', { href: '#reference:ref:2' }, '^2')]),
           ]),
-          html('li', { id: 'annotation:def:3' }, [
+          html('li', { id: 'reference:def:3' }, [
             '3',
-            html('sup', [html('a', { href: '#annotation:ref:3' }, '^3')])
+            html('sup', [html('a', { href: '#reference:ref:3' }, '^3')]),
           ]),
         ]).outerHTML);
       assert.throws(() => update('').next());
