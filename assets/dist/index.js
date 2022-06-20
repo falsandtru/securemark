@@ -2127,14 +2127,12 @@ function guard(f, parser) {
 exports.guard = guard;
 
 function reset(base, parser) {
-  if (isEmpty(base)) return parser;
   return (source, context) => parser(source, inherit((0, alias_1.ObjectCreate)(context), base));
 }
 
 exports.reset = reset;
 
 function context(base, parser) {
-  if (isEmpty(base)) return parser;
   const override = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
   return (source, context) => parser(source, override(context));
 }
@@ -2165,12 +2163,6 @@ const inherit = (0, assign_1.template)((prop, target, source) => {
       return target[prop] = source[prop];
   }
 });
-
-function isEmpty(context) {
-  for (const _ in context) return false;
-
-  return true;
-}
 
 /***/ }),
 
@@ -3550,12 +3542,13 @@ function parse(source, opts = {}, context) {
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
-    url: url ? new url_1.ReadonlyURL(url) : context?.url,
     host: opts.host ?? context?.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+    url: url ? new url_1.ReadonlyURL(url) : context?.url,
+    id: opts.id ?? context?.id,
     caches: context?.caches,
-    footnotes: global_1.undefined,
-    test: global_1.undefined,
-    ...opts
+    ...(context?.resources && {
+      resources: context.resources
+    })
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
@@ -3888,7 +3881,7 @@ const parse_1 = __webpack_require__(5013);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), // Bug: Type mismatch between outer and inner.
+exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -3920,7 +3913,7 @@ exports.aside = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combi
     id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
     class: 'aside'
   }, [document, references])];
-}))));
+})));
 
 /***/ }),
 
@@ -3946,7 +3939,7 @@ const mathblock_1 = __webpack_require__(3754);
 const dom_1 = __webpack_require__(3252);
 
 const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
-exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
+exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type = 'markdown', param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -3993,7 +3986,7 @@ exports.example = (0, combinator_1.creator)(100, (0, combinator_1.block)((0, com
         'data-invalid-message': 'Invalid example type'
       }, `${opener}${body}${closer}`)];
   }
-}))));
+})));
 
 /***/ }),
 
