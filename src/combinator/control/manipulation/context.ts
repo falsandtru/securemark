@@ -17,7 +17,6 @@ export function reset<P extends Parser<unknown>>(context: Context<P>, parser: P)
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
-  if (isEmpty(base)) return parser;
   return (source, context) =>
     parser(source, inherit(ObjectCreate(context), base));
 }
@@ -26,7 +25,6 @@ export function context<P extends Parser<unknown>>(context: Context<P>, parser: 
 export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
-  if (isEmpty(base)) return parser;
   const override = memoize<Ctx, Ctx>(context => inherit(ObjectCreate(context), base), new WeakMap());
   return (source, context) =>
     parser(source, override(context));
@@ -58,8 +56,3 @@ const inherit = template((prop, target, source) => {
       return target[prop] = source[prop];
   }
 });
-
-function isEmpty(context: Ctx): boolean {
-  for (const _ in context) return false;
-  return true;
-}
