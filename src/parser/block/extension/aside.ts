@@ -1,10 +1,10 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, fence, creator, fmap } from '../../../combinator';
+import { block, validate, fence, fmap } from '../../../combinator';
 import { identity, text } from '../../inline/extension/indexee';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
-export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~~~', fmap(
+export const aside: ExtensionParser.AsideParser = block(validate('~~~', fmap(
   fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
@@ -43,4 +43,4 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
         references,
       ]),
     ];
-  }))));
+  })));

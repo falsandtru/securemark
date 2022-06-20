@@ -1,13 +1,13 @@
 import { ExtensionParser } from '../../block';
 import { eval } from '../../../combinator/data/parser';
-import { block, validate, fence, creator, fmap } from '../../../combinator';
+import { block, validate, fence, fmap } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom/dom';
 
 const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 
-export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
+export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
@@ -58,4 +58,4 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
           }, `${opener}${body}${closer}`),
         ];
     }
-  }))));
+  })));
