@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.256.0
+
+- Decrease the buget size to 50,000.
+
 ## 0.255.1
 
 - Refactoring.
