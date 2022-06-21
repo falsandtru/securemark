@@ -183,7 +183,7 @@ export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>):
 //  }
 //  return nodes;
 //}
-function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
+export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&
     nodes[nodes.length - 1]['className'] === 'indexer'

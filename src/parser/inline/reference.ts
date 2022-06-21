@@ -3,7 +3,7 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, validate, guard, context, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str, stropt } from '../source';
-import { regBlankStart, trimBlank, stringify } from '../util';
+import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
@@ -22,10 +22,10 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
   subsequence([
     abbr,
     open(stropt(/^(?=\^)/), some(inline, ']', /^\\?\n/)),
-    trimBlank(some(inline, ']', /^\\?\n/)),
+    trimBlankStart(some(inline, ']', /^\\?\n/)),
   ]))),
   ']]'),
-  ns => [html('sup', attributes(ns), [html('span', defrag(ns))])]))));
+  ns => [html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])]))));
 
 const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
   '^',

@@ -6,7 +6,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { trimBlank, stringify } from '../util';
+import { trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
           media: false,
           autolink: false,
         }}},
-        trimBlank(some(inline, ']', /^\\?\n/))),
+        trimBlankStart(some(inline, ']', /^\\?\n/))),
         ']',
         true),
     ]))),
@@ -44,6 +44,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}',
   ]))),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
+    content = trimNodeEnd(content);
     if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;
