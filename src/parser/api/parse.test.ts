@@ -223,27 +223,46 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
-    it('creation', () => {
+    it('backtrack', () => {
       assert.deepStrictEqual(
-        [...parse('"[% '.repeat(100)).children].map(el => el.outerHTML),
-        [`<p>${'"[% '.repeat(100).trim()}</p>`]);
+        [...parse('"[% '.repeat(100) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [
+          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
+          `<pre class="error" translate="no">${'"[% '.repeat(100)}\n</pre>`,
+          '<p>a</p>',
+        ]);
+    });
+
+    it('recursion', () => {
+      assert.deepStrictEqual(
+        [...parse('['.repeat(20)).children].map(el => el.outerHTML),
+        [`<p>${'['.repeat(20)}</p>`]);
+      assert.deepStrictEqual(
+        [...parse('['.repeat(21)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [
+          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
+          `<pre class="error" translate="no">${'['.repeat(21)}</pre>`,
+        ]);
     });
 
     if (!navigator.userAgent.includes('Chrome')) return;
 
-    it('recursion', () => {
+    it('creation', function () {
+      this.timeout(5000);
+      // 実測500ms程度
       assert.deepStrictEqual(
-        [...parse('('.repeat(199)).children].map(el => el.outerHTML),
-        [`<p>${'('.repeat(199)}</p>`]);
+        [...parse('.'.repeat(50000)).children].map(el => el.outerHTML),
+        [`<p>${'.'.repeat(50000)}</p>`]);
     });
 
-    it('recursion error', () => {
+    it('creation error', function () {
+      this.timeout(5000);
+      // 実測500ms程度
       assert.deepStrictEqual(
-        [...parse('('.repeat(200) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse('.'.repeat(50001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
-          `<pre class="error" translate="no">${'('.repeat(200)}\n</pre>`,
-          '<p>a</p>',
+          '<h1 id="error:rnd" class="error">Error: Too many creations.</h1>',
+          `<pre class="error" translate="no">${'.'.repeat(1000).slice(0, 997)}...</pre>`,
         ]);
     });
 

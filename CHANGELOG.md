@@ -3,6 +3,7 @@
 ## 0.257.0
 
 - Introduce operator precedence.
+- Decrease the max recursion depth to 20.
 
 ## 0.256.0
 
