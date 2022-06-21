@@ -8,7 +8,7 @@ import { unshift, push } from 'spica/array';
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 
-export const bracket: BracketParser = lazy(() => creator(union([
+export const bracket: BracketParser = lazy(() => creator(0, union([
   surround(str('('), str(index), str(')')),
   surround(str('('), some(inline, ')'), str(')'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
