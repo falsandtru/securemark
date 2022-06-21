@@ -1,47 +1,52 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, validate, verify, focus, creator, surround, lazy, bind } from '../../combinator';
+import { sequence, validate, verify, focus, creator, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => creator(validate('[', bind(verify(
+export const ruby: RubyParser = lazy(() => creator(validate('[', fmap(verify(
   sequence([
     surround('[', focus(/^(?:\\[^\n]|[^\\\[\]\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\\\(\)\n])+(?=\))/, text), ')'),
   ]),
   ([texts]) => isStartTightNodes(texts)),
-  ([texts, rubies], rest) => {
+  ([texts, rubies]) => {
     const tail = typeof texts[texts.length - 1] === 'object'
       ? [texts.pop()!]
       : [];
     tail.length === 0 && texts[texts.length - 1] === '' && texts.pop();
     switch (true) {
       case rubies.length <= texts.length:
-        return [[html('ruby', attributes(texts, rubies), defrag(push(texts
-          .reduce((acc, _, i) =>
-            push(acc, unshift([texts[i]],
-              i < rubies.length && rubies[i]
-                ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')]))
-          , []), tail)))], rest];
+        return [
+          html('ruby', attributes(texts, rubies), defrag(push(texts
+            .reduce((acc, _, i) =>
+              push(acc, unshift([texts[i]],
+                i < rubies.length && rubies[i]
+                  ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
+                  : [html('rt')]))
+            , []), tail))),
+        ];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
-        return [[html('ruby', attributes(texts, rubies), defrag(push([...texts[0]]
-          .reduce((acc, _, i, texts) =>
-            push(acc, unshift([texts[i]],
-              i < rubies.length && rubies[i]
-                ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')]))
-          , []), tail)))], rest];
+        return [
+          html('ruby', attributes(texts, rubies), defrag(push([...texts[0]]
+            .reduce((acc, _, i, texts) =>
+              push(acc, unshift([texts[i]],
+                i < rubies.length && rubies[i]
+                  ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
+                  : [html('rt')]))
+            , []), tail))),
+        ];
       default:
         assert(rubies.length > 0);
-        return [[html('ruby', attributes(texts, rubies), defrag(push(unshift(
-          [texts.join(' ')],
-          [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]), tail)))
-        ], rest];
+        return [
+          html('ruby', attributes(texts, rubies), defrag(push(unshift(
+            [texts.join(' ')],
+            [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]), tail))),
+        ];
     }
   }))));
 
