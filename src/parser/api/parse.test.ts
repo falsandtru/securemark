@@ -229,10 +229,15 @@ describe('Unit: parser/api/parse', () => {
         [`<p>${'"[% '.repeat(100).trim()}</p>`]);
     });
 
+    if (!navigator.userAgent.includes('Chrome')) return;
+
     it('recursion', () => {
       assert.deepStrictEqual(
         [...parse('('.repeat(199)).children].map(el => el.outerHTML),
         [`<p>${'('.repeat(199)}</p>`]);
+    });
+
+    it('recursion error', () => {
       assert.deepStrictEqual(
         [...parse('('.repeat(200) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [

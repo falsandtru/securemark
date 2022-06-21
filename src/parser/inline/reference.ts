@@ -6,7 +6,7 @@ import { str, stropt } from '../source';
 import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
+export const reference: ReferenceParser = lazy(() => creator(validate('[[', fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   context({ syntax: { inline: {

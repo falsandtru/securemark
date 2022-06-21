@@ -5,7 +5,7 @@ import { inline } from '../inline';
 import { trimBlankStart, trimNodeEnd } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', fmap(surround(
+export const annotation: AnnotationParser = lazy(() => creator(validate('((', fmap(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
   context({ syntax: { inline: {

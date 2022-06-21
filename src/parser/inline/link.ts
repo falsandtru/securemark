@@ -15,7 +15,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], '}', '\n', bind(
+export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind(
   guard(context => context.syntax?.inline?.link ?? true,
   reverse(tails([
     context({ syntax: { inline: {

@@ -9,11 +9,9 @@ import { Parser, Ctx, Tree, Context, eval, exec, check } from '../../data/parser
 
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, parser: P): P;
-export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, end: string, parser: P): P;
-export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has: string | Parser<T>, end?: string | Parser<T>, parser?: Parser<T>): Parser<T> {
-  if (typeof has === 'function') return validate(patterns, '', '', has);
-  if (typeof end === 'function') return validate(patterns, has, '', end);
-  if (!isArray(patterns)) return validate([patterns], has, end!, parser!);
+export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has: string | Parser<T>, parser?: Parser<T>): Parser<T> {
+  if (typeof has === 'function') return validate(patterns, '', has);
+  if (!isArray(patterns)) return validate([patterns], has, parser!);
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^') : true));
   assert(parser);
@@ -26,17 +24,9 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
         ? `|| source.slice(0, ${pattern.length}) === '${pattern}'`
         : `|| /${pattern.source}/${pattern.flags}.test(source)`),
   ].join(''))();
-  const match2 = (source: string): boolean => {
-    if (!has) return true;
-    const i = end ? source.indexOf(end, 1) : -1;
-    return i !== -1
-      ? source.slice(0, i).indexOf(has, 1) !== -1
-      : source.indexOf(has, 1) !== -1;
-  };
   return (source, context) => {
     if (source === '') return;
     if (!match(source)) return;
-    if (!match2(source)) return;
     const result = parser!(source, context);
     assert(check(source, result));
     if (!result) return;
