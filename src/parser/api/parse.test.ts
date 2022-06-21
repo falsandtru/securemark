@@ -227,7 +227,7 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('"[% '.repeat(100) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
+          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
           `<pre class="error" translate="no">${'"[% '.repeat(100)}\n</pre>`,
           '<p>a</p>',
         ]);
@@ -240,7 +240,7 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('['.repeat(21)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion.</h1>',
+          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
           `<pre class="error" translate="no">${'['.repeat(21)}</pre>`,
         ]);
     });
@@ -261,7 +261,7 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('.'.repeat(50001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          '<h1 id="error:rnd" class="error">Error: Too many creations.</h1>',
+          '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">${'.'.repeat(1000).slice(0, 997)}...</pre>`,
         ]);
     });

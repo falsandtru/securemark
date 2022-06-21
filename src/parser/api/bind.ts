@@ -41,7 +41,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   };
 
   function* parse(source: string): Generator<Progress, undefined, undefined> {
-    if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
+    if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = normalize(validate(source, MAX_INPUT_SIZE) ? source : source.slice(0, MAX_INPUT_SIZE + 1));
     ObjectAssign<MarkdownParser.Context, MarkdownParser.Context>(

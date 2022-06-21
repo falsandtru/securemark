@@ -7,8 +7,8 @@ export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>
   assert(cost >= 0);
   return (source, context) => {
     const { resources = { budget: 1, recursion: 1 } } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations.');
-    if (resources.recursion <= 0) throw new Error('Too much recursion.');
+    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const result = parser!(source, context);
     ++resources.recursion;
