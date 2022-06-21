@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, creator, surround, lazy } from '../../../combinator';
+import { union, some, validate, precedence, creator, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight } from '../../util';
@@ -10,9 +10,9 @@ import { unshift } from 'spica/array';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(validate(['[:', '[^'], surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(precedence(3, validate(['[:', '[^'], surround(
   str(/^\[[:^]/),
-  startTight(some(union([inline]), ']', /^\\?\n/)),
+  startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 3]])),
   str(']'), false,
   ([as, bs], rest) => [[
     html('span', {
@@ -22,4 +22,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
       'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`,
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest]))));
+  ([as, bs], rest) => [unshift(as, bs), rest])))));

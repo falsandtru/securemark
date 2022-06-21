@@ -1,5 +1,3 @@
-import { undefined } from 'spica/global';
-
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (source: string, context: C) => Result<T, C, D>;
 export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
@@ -11,6 +9,7 @@ export interface Ctx {
     budget: number;
     recursion: number;
   };
+  precedence?: number;
   delimiters?: Delimiters;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
@@ -22,28 +21,44 @@ type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends i
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export class Delimiters {
-  private readonly matchers: ((source: string) => boolean | undefined)[] = [];
-  private readonly record: Record<string, boolean> = {};
-  public push(delimiter: { readonly signature: string; readonly matcher: (source: string) => boolean | undefined; readonly escape?: boolean; }): void {
-    const { signature, matcher, escape } = delimiter;
-    if (this.record[signature] === !escape) {
-      this.matchers.unshift(() => undefined);
-    }
-    else {
-      this.matchers.unshift(matcher);
-      this.record[signature] = !escape;
+  private readonly matchers: [number, string, number, (source: string) => boolean | undefined][] = [];
+  private readonly registry: Record<string, boolean> = {};
+  private length = 0;
+  public push(
+    ...delimiters: readonly {
+      readonly signature: string;
+      readonly matcher: (source: string) => boolean | undefined;
+      readonly precedence?: number;
+    }[]
+  ): void {
+    for (let i = 0; i < delimiters.length; ++i) {
+      const delimiter = delimiters[i];
+      assert(this.length >= this.matchers.length);
+      const { signature, matcher, precedence = 1 } = delimiter;
+      if (!this.registry[signature]) {
+        this.matchers.unshift([this.length, signature, precedence, matcher]);
+        this.registry[signature] = true;
+      }
+      ++this.length;
     }
   }
-  public pop(): void {
-    assert(this.matchers.length > 0);
-    this.matchers.shift();
+  public pop(count = 1): void {
+    assert(count > 0);
+    for (let i = 0; i < count; ++i) {
+      assert(this.matchers.length > 0);
+      assert(this.length >= this.matchers.length);
+      if (--this.length === this.matchers[0][0]) {
+        this.registry[this.matchers.shift()![1]] = false;
+      }
+    }
   }
-  public match(source: string): boolean {
+  public match(source: string, precedence = 1): boolean {
     const { matchers } = this;
     for (let i = 0; i < matchers.length; ++i) {
-      switch (matchers[i](source)) {
+      switch (matchers[i][3](source)) {
         case true:
-          return true;
+          if (precedence < matchers[i][2]) return true;
+          continue;
         case false:
           return false;
       }

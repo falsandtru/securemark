@@ -145,6 +145,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('(((a))')), [['(', '<sup class="annotation"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((((a))')), [['(', '(', '<sup class="annotation"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><span><span class="paren">((a))</span></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<bdi>))')), [['<sup class="annotation"><span><span class="invalid">&lt;bdi&gt;</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('"((""))')), [['"', '<sup class="annotation"><span>""</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]')), [['[', '<sup class="reference"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]')), [['[', '[', '<sup class="reference"><span>a</span></sup>'], '']);
@@ -153,6 +154,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[[]{a}]]')), [['<sup class="reference"><span><a href="a">a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]{b}]]')), [['<sup class="reference"><span><a href="b">a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a href="#"><span class="paren">(<span class="paren">([a]{#})</span>)</span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[<bdi>]]')), [['<sup class="reference"><span><span class="invalid">&lt;bdi&gt;</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '<sup class="reference"><span>""</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" target="_blank">http://host</a>', '>'], '']);
       assert.deepStrictEqual(inspect(parser('[~http://host')), [['[', '~', '<a href="http://host" target="_blank">http://host</a>'], '']);

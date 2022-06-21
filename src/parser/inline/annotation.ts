@@ -1,11 +1,11 @@
 import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
-import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
+import { union, some, validate, guard, context, precedence, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { trimBlankStart, trimNodeEnd } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => creator(validate('((', fmap(surround(
+export const annotation: AnnotationParser = lazy(() => creator(precedence(6, validate('((', fmap(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
   context({ syntax: { inline: {
@@ -19,6 +19,6 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', fm
     //link: true,
     //autolink: true,
   }}, delimiters: undefined },
-  trimBlankStart(some(union([inline]), ')', /^\\?\n/)))),
+  trimBlankStart(some(union([inline]), ')', [[/^\\?\n/, 9], ['))', 6]])))),
   '))'),
-  ns => [html('sup', { class: 'annotation' }, [html('span', trimNodeEnd(defrag(ns)))])]))));
+  ns => [html('sup', { class: 'annotation' }, [html('span', trimNodeEnd(defrag(ns)))])])))));

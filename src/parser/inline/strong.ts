@@ -1,5 +1,5 @@
 import { StrongParser } from '../inline';
-import { union, some, creator, surround, open, lazy } from '../../combinator';
+import { union, some, precedence, creator, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { str } from '../source';
@@ -7,7 +7,7 @@ import { startTight, blankWith } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-export const strong: StrongParser = lazy(() => creator(surround(
+export const strong: StrongParser = lazy(() => creator(precedence(1, surround(
   str('**'),
   startTight(some(union([
     some(inline, blankWith('**')),
@@ -18,4 +18,4 @@ export const strong: StrongParser = lazy(() => creator(surround(
   ])), '*'),
   str('**'), false,
   ([, bs], rest) => [[html('strong', defrag(bs))], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest]))));

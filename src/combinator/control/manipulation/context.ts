@@ -13,7 +13,7 @@ export function guard<T>(f: (context: Ctx) => boolean, parser: Parser<T>): Parse
       : undefined;
 }
 
-export function reset<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
+export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -21,7 +21,7 @@ export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
     parser(source, inherit(ObjectCreate(context), base));
 }
 
-export function context<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
+export function context<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
 export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -57,3 +57,14 @@ const inherit = template((prop, target, source) => {
       return target[prop] = source[prop];
   }
 });
+
+export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
+export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
+  return (source, context) => {
+    const p = context.precedence;
+    context.precedence = precedence;
+    const result = parser(source, context);
+    context.precedence = p;
+    return result;
+  };
+}

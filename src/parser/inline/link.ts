@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
-import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, precedence, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -15,7 +15,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind(
+export const link: LinkParser = lazy(() => creator(10, precedence(4, validate(['[', '{'], bind(
   guard(context => context.syntax?.inline?.link ?? true,
   reverse(tails([
     context({ syntax: { inline: {
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind
           media: false,
           autolink: false,
         }}},
-        trimBlankStart(some(inline, ']', /^\\?\n/))),
+        trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 6]]))),
         ']',
         true),
     ]))),
@@ -60,7 +60,7 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind
     if (el.classList.contains('invalid')) return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  }))));
+  })))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),

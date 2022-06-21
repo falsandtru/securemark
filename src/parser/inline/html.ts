@@ -1,6 +1,6 @@
 import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
-import { union, subsequence, some, validate, focus, creator, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, validate, focus, precedence, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isStartLooseNodes, blankWith } from '../util';
@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
+export const html: HTMLParser = lazy(() => creator(precedence(5, validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
   focus(
     '<wbr>',
     () => [[h('wbr')], '']),
@@ -34,7 +34,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         subsequence([
           focus(/^[^\S\n]*\n/, some(inline)),
-          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`)), true)),
+          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 5]]), true)),
         ]),
         str(`</${tag}>`), true,
         ([as, bs = [], cs], rest) =>
@@ -50,7 +50,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         subsequence([
           focus(/^[^\S\n]*\n/, some(inline)),
-          some(inline, `</${tag}>`),
+          some(inline, `</${tag}>`, [[`</${tag}>`, 5]]),
         ]),
         str(`</${tag}>`), true,
         ([as, bs = [], cs], rest) =>
@@ -59,7 +59,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-
           [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => tag,
     new Cache(10000))),
-])))));
+]))))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),

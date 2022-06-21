@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { BracketParser } from '../inline';
-import { union, some, creator, surround, lazy } from '../../combinator';
+import { union, some, precedence, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html, defrag } from 'typed-dom/dom';
@@ -8,23 +8,23 @@ import { unshift, push } from 'spica/array';
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 
-export const bracket: BracketParser = lazy(() => creator(0, union([
+export const bracket: BracketParser = lazy(() => creator(0, precedence(3, union([
   surround(str('('), str(index), str(')')),
-  surround(str('('), some(inline, ')'), str(')'), true,
+  surround(str('('), some(inline, ')', [[')', 3]]), str(')'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('（'), str(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
-  surround(str('（'), some(inline, '）'), str('）'), true,
+  surround(str('（'), some(inline, '）', [['）', 3]]), str('）'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(inline, ']'), str(']'), true,
+  surround(str('['), some(inline, ']', [[']', 3]]), str(']'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(inline, '}'), str('}'), true,
+  surround(str('{'), some(inline, '}', [['}', 3]]), str('}'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // Control media blinking in editing rather than control confusion of pairs of quote marks.
-  surround(str('"'), some(inline, '"', '"'), str('"'), true,
+  surround(str('"'), some(inline, '"', [['"', 7]]), str('"'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-])));
+]))));

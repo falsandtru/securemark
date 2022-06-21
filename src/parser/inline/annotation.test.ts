@@ -42,6 +42,7 @@ describe('Unit: parser/inline/annotation', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('((<bdi>))')), [['<sup class="annotation"><span><span class="invalid">&lt;bdi&gt;</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><span><code data-src="`a`">a</code></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((@a))')), [['<sup class="annotation"><span><a href="/@a" class="account">@a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((http://host))')), [['<sup class="annotation"><span><a href="http://host" target="_blank">http://host</a></span></sup>'], '']);

@@ -1,6 +1,22 @@
 import { Parser, Ctx } from './src/combinator/data/parser';
 import { Dict } from 'spica/dict';
 
+/*
+
+Operator precedence
+
+9: \n, \\\n
+8: `, $
+7: "
+6: (()), [[]]
+5: <tag></tag>
+4: [% %]
+3: (), [], {}
+2: ==, ++, ~~
+1: *, **
+
+*/
+
 declare abstract class Markdown<T> {
   private parser?: T;
 }

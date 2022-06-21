@@ -151,6 +151,7 @@ describe('Unit: parser/inline/link', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('[*]{/}')), [['<a href="/">*</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\[]{/}')), [['<a href="/">[</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\]]{/}')), [['<a href="/">]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[]{a}]{a}')), [['<a href="a">[]{a}</a>'], '']);

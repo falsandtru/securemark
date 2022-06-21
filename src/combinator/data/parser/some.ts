@@ -3,6 +3,8 @@ import { Parser, Delimiters, eval, exec, check } from '../parser';
 import { memoize, reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
+type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
+
 const signature = (pattern: string | RegExp | undefined): string => {
   switch (typeof pattern) {
     case 'undefined':
@@ -26,31 +28,29 @@ const matcher = memoize(
   },
   signature);
 
-export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp | number, deep?: string | RegExp, limit?: number): P;
-export function some<T>(parser: Parser<T>, until?: string | RegExp | number, deep?: string | RegExp, limit = -1): Parser<T> {
+export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp | number, deeps?: readonly DelimiterOption[], limit?: number): P;
+export function some<T>(parser: Parser<T>, until?: string | RegExp | number, deeps: readonly DelimiterOption[] = [], limit = -1): Parser<T> {
+  if (typeof until === 'number') return some(parser, undefined, deeps, until);
   assert(parser);
-  assert(until instanceof RegExp ? !until.flags.match(/[gmy]/) && until.source.startsWith('^') : true);
-  assert(deep instanceof RegExp ? !deep.flags.match(/[gmy]/) && deep.source.startsWith('^') : true);
-  if (typeof until === 'number') return some(parser, undefined, deep, until);
+  assert([until].concat(deeps.map(o => o[0])).every(d => d instanceof RegExp ? !d.flags.match(/[gmy]/) && d.source.startsWith('^') : true));
   const match = matcher(until);
-  const delimiter = {
-    signature: signature(deep),
-    matcher: matcher(deep),
-  } as const;
+  const delimiters = deeps.map(([delimiter, precedence]) => ({
+    signature: signature(delimiter),
+    matcher: matcher(delimiter),
+    precedence,
+  }));
   return (source, context) => {
     if (source === '') return;
     let rest = source;
     let nodes: T[] | undefined;
-    if (deep && context) {
-      // bracket > link > media | bracket
-      // bracket > index > bracket
+    if (delimiters.length > 0) {
       context.delimiters ??= new Delimiters();
-      context.delimiters.push(delimiter);
+      context.delimiters.push(...delimiters);
     }
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context.delimiters?.match(rest)) break;
+      if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parser(rest, context);
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;
@@ -60,34 +60,12 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp | number, dee
       rest = exec(result);
       if (limit >= 0 && source.length - rest.length > limit) break;
     }
-    if (deep && context.delimiters) {
-      context.delimiters.pop();
+    if (delimiters.length > 0) {
+      context.delimiters!.pop(delimiters.length);
     }
     assert(rest.length <= source.length);
     return nodes && rest.length < source.length
       ? [nodes, rest]
       : undefined;
-  };
-}
-
-export function escape<P extends Parser<unknown>>(parser: P, delim: string): P;
-export function escape<T>(parser: Parser<T>, delim: string): Parser<T> {
-  assert(parser);
-  const delimiter = {
-    signature: signature(delim),
-    matcher: (source: string) => source.slice(0, delim.length) !== delim && undefined,
-    escape: true,
-  } as const;
-  return (source, context) => {
-    if (source === '') return;
-    if (context) {
-      context.delimiters ??= new Delimiters();
-      context.delimiters.push(delimiter);
-    }
-    const result = parser(source, context);
-    if (context.delimiters) {
-      context.delimiters.pop();
-    }
-    return result;
   };
 }

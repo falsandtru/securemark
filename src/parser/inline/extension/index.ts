@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, validate, guard, context, precedence, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
@@ -9,7 +9,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => creator(validate('[#', fmap(indexee(fmap(surround(
+export const index: IndexParser = lazy(() => creator(precedence(3, validate('[#', fmap(indexee(fmap(surround(
   '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
@@ -25,7 +25,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', fmap(indexee
   open(stropt(/^\|?/), trimBlankEnd(some(union([
     signature,
     inline,
-  ]), ']', /^\\?\n/)), true)))),
+  ]), ']', [[/^\\?\n/, 9], [']', 3]])), true)))),
   ']'),
   ns => [html('a', defrag(ns))])),
   ([el]: [HTMLAnchorElement]) => [
@@ -36,7 +36,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', fmap(indexee
         href: el.id ? `#${el.id}` : undefined,
       },
       el.childNodes),
-  ]))));
+  ])))));
 
 const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   '|#',

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.257.0
+
+- Introduce operator precedence.
+
 ## 0.256.0
 
 - Decrease the buget size to 50,000.

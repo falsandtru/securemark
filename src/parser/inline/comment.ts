@@ -1,18 +1,18 @@
 import { CommentParser } from '../inline';
-import { union, some, validate, creator, surround, open, close, match, lazy } from '../../combinator';
+import { union, some, validate, precedence, creator, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 
-export const comment: CommentParser = lazy(() => creator(validate('[%', match(
+export const comment: CommentParser = lazy(() => creator(precedence(4, validate('[%', match(
   /^\[(%+)\s/,
   memoize(
   ([, fence]) =>
     surround(
       open(str(`[${fence}`), some(text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true),
-      some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`)),
+      some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]),
       close(some(text, /^\S/), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
         html('span', { class: 'comment' }, [
@@ -21,4 +21,4 @@ export const comment: CommentParser = lazy(() => creator(validate('[%', match(
         ]),
       ], rest],
       ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ([, fence]) => fence.length, [])))));
+  ([, fence]) => fence.length, []))))));
