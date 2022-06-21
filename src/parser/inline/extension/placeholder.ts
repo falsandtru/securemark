@@ -12,7 +12,7 @@ import { unshift } from 'spica/array';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(validate(['[:', '[^'], ']', '\n', surround(
   str(/^\[[:^]/),
-  startTight(some(union([inline]), ']')),
+  startTight(some(union([inline]), ']', /^\\?\n/)),
   str(']'), false,
   ([as, bs], rest) => [[
     html('span', {
