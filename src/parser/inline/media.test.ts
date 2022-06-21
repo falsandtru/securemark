@@ -45,8 +45,6 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![[]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a]{}')), undefined);
-      assert.deepStrictEqual(inspect(parser('![\\ a ]{b}')), undefined);
-      assert.deepStrictEqual(inspect(parser('![ \\ a ]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\nb]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\\\nb]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), [['<img class="media invalid" data-src="ttp://host" alt="">'], '']);
