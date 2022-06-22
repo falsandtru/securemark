@@ -772,8 +772,8 @@ export namespace MarkdownParser {
       export interface QuoteParser extends
         Inline<'math/quote'>,
         Parser<HTMLElement, Context, [
-          QuoteParser,
           BracketParser,
+          QuoteParser,
           SourceParser.StrParser,
         ]> {
       }

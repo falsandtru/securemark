@@ -1,9 +1,9 @@
 import { MathParser } from '../inline';
-import { union, some, validate, focus, rewrite, precedence, creator, surround, lazy } from '../../combinator';
+import { union, some, validate, rewrite, precedence, creator, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { html } from 'typed-dom/dom';
 
-const syntax = /^(?:[ "([](?!\$)|\\{(?!\$)|\\[\\}$]?|^`|`(?!`)|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
+const syntax = /^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => creator(precedence(7, validate('$', rewrite(
@@ -45,9 +45,9 @@ const bracket: MathParser.BracketParser = lazy(() => creator(surround(
 const quote: MathParser.QuoteParser = lazy(() => creator(surround(
   '``',
   some(union([
-    quote,
     bracket,
-    focus(/^(?:\\[\\{}$]|`(?!`)|[^`{}"$\n\P{ASCII}])*/u, str(syntax)),
+    quote,
+    str(syntax),
   ])),
-  /^"?/,
+  '"',
   true)));
