@@ -90,8 +90,8 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
     default:
       const target = new ReadonlyURL(uri, source.href);
       return target.origin === host.origin
-          ? target.href.slice(target.origin.length)
-          : target.href;
+        ? target.href.slice(target.origin.length)
+        : target.href;
   }
 }
 
