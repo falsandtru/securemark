@@ -4,6 +4,7 @@
 
 - Introduce operator precedence.
 - Decrease the max recursion depth to 20.
+- Fix math parser.
 
 ## 0.256.0
 

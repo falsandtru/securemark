@@ -13,7 +13,6 @@ export const math: MathParser = lazy(() => creator(precedence(7, validate('$', r
       /^\$(?![\s{}])/,
       some(union([
         bracket,
-        quote,
         str(syntax),
       ])),
       /^\$(?![0-9A-Za-z])/),
@@ -40,14 +39,4 @@ const bracket: MathParser.BracketParser = lazy(() => creator(surround(
     some(escsource, /^(?:[{}$]|\\?\n)/),
   ])),
   '}',
-  true)));
-
-const quote: MathParser.QuoteParser = lazy(() => creator(surround(
-  '``',
-  some(union([
-    bracket,
-    quote,
-    str(syntax),
-  ])),
-  '"',
   true)));

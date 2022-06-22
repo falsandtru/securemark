@@ -756,7 +756,6 @@ export namespace MarkdownParser {
         MathParser.BracketParser,
         Parser<string, Context, [
           MathParser.BracketParser,
-          MathParser.QuoteParser,
           SourceParser.StrParser,
         ]>,
       ]> {
@@ -767,14 +766,6 @@ export namespace MarkdownParser {
         Parser<HTMLElement, Context, [
           BracketParser,
           SourceParser.EscapableSourceParser,
-        ]> {
-      }
-      export interface QuoteParser extends
-        Inline<'math/quote'>,
-        Parser<HTMLElement, Context, [
-          BracketParser,
-          QuoteParser,
-          SourceParser.StrParser,
         ]> {
       }
     }
