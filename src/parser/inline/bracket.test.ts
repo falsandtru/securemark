@@ -7,9 +7,9 @@ describe('Unit: parser/inline/bracket', () => {
     const parser = (source: string) => some(bracket)(source, {});
 
     it('(', () => {
-      assert.deepStrictEqual(inspect(parser('(')), [['('], '']);
+      assert.deepStrictEqual(inspect(parser('(')), [['', '('], '']);
       assert.deepStrictEqual(inspect(parser('()')), [['<span class="paren">()</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('(a')), [['(', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('(a')), [['', '(', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('(0)')), [['(', '0', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(1)')), [['(', '1', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(10)')), [['(', '10', ')'], '']);
@@ -50,9 +50,9 @@ describe('Unit: parser/inline/bracket', () => {
     });
 
     it('[', () => {
-      assert.deepStrictEqual(inspect(parser('[')), [['['], '']);
+      assert.deepStrictEqual(inspect(parser('[')), [['', '['], '']);
       assert.deepStrictEqual(inspect(parser('[]')), [['[', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[a')), [['[', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('[a')), [['', '[', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('[a]')), [['[', 'a', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[==]')), [['[', '==', ']'], '']);
       assert.deepStrictEqual(inspect(parser(']')), undefined);
@@ -72,8 +72,8 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('""')), [['"', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"a')), [['"', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('"a"')), [['"', 'a', '"'], '']);
-      assert.deepStrictEqual(inspect(parser('"(")"')), [['"', '(', '"'], ')"']);
-      assert.deepStrictEqual(inspect(parser('"(("')), [['"', '(', '(', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"(")"')), [['"', '', '(', '"'], ')"']);
+      assert.deepStrictEqual(inspect(parser('"(("')), [['"', '((', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\\")"')), [['"', '<span class="paren">(")</span>', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\n)"')), [['"', '<span class="paren">(<br>)</span>', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\\\n)"')), [['"', '<span class="paren">(<span class="linebreak"> </span>)</span>', '"'], '']);

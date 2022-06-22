@@ -16,12 +16,12 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[% ')), [['[%'], '']);
       assert.deepStrictEqual(inspect(parser('[% \n a')), [['[%', '<br>', ' ', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('[%%]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[% [%')), [['[%', ' ', '[', '%'], '']);
+      assert.deepStrictEqual(inspect(parser('[% [%')), [['[%', ' ', '', '[', '%'], '']);
       assert.deepStrictEqual(inspect(parser('[% [% ')), [['[%', ' ', '[%'], '']);
       assert.deepStrictEqual(inspect(parser('[% [% a')), [['[%', ' ', '[%', ' ', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('[% [% a %]')), [['[%', ' ', '<span class="comment"><input type="checkbox"><span>[% a %]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[% a[%')), [['[%', ' ', 'a', '[', '%'], '']);
-      assert.deepStrictEqual(inspect(parser('[% a [%')), [['[%', ' ', 'a', ' ', '[', '%'], '']);
+      assert.deepStrictEqual(inspect(parser('[% a[%')), [['[%', ' ', 'a', '', '[', '%'], '']);
+      assert.deepStrictEqual(inspect(parser('[% a [%')), [['[%', ' ', 'a', ' ', '', '[', '%'], '']);
       assert.deepStrictEqual(inspect(parser('[% a [% ')), [['[%', ' ', 'a', ' ', '[%'], '']);
       assert.deepStrictEqual(inspect(parser('[% a [% b')), [['[%', ' ', 'a', ' ', '[%', ' ', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('[% a [%% b')), [['[%', ' ', 'a', ' ', '[%%', ' ', 'b'], '']);

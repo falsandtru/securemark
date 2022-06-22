@@ -4,8 +4,8 @@ import { querySelector, querySelectorAll } from 'typed-dom/query';
 
 export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
   return result && [
-    eval(result).map(node => {
-      assert(node);
+    eval(result).map((node, i, nodes) => {
+      assert(node || node === '' && '([{'.includes(nodes[i + 1] as string));
       if (typeof node === 'string') return node;
       node = node.cloneNode(true);
       assert(!querySelector(node, '.invalid[data-invalid-message$="."]'));
