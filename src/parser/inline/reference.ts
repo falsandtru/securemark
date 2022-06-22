@@ -9,7 +9,7 @@ import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-export const reference: ReferenceParser = lazy(() => creator(precedence(6, validate('[[', surround(
+export const reference: ReferenceParser = lazy(() => validate('[[', creator(precedence(6, surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   context({ syntax: { inline: {

@@ -6,7 +6,7 @@ import { html } from 'typed-dom/dom';
 const syntax = /^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
-export const math: MathParser = lazy(() => creator(precedence(7, validate('$', rewrite(
+export const math: MathParser = lazy(() => validate('$', creator(precedence(7, rewrite(
   union([
     surround('$', bracket, '$'),
     surround(

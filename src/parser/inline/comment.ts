@@ -6,7 +6,7 @@ import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 
-export const comment: CommentParser = lazy(() => creator(precedence(4, validate('[%', match(
+export const comment: CommentParser = lazy(() => validate('[%', creator(precedence(4, match(
   /^\[(%+)\s/,
   memoize(
   ([, fence]) =>

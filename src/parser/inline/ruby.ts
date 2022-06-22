@@ -8,7 +8,7 @@ import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => creator(validate('[', fmap(verify(
+export const ruby: RubyParser = lazy(() => validate('[', creator(fmap(verify(
   sequence([
     surround('[', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')'),

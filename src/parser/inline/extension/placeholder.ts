@@ -10,7 +10,7 @@ import { unshift } from 'spica/array';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(precedence(3, validate(['[:', '[^'], surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate(['[:', '[^'], creator(precedence(3, surround(
   str(/^\[[:^]/),
   startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 3]])),
   str(']'), false,

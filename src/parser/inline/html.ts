@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creator(precedence(5, validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, creator(precedence(5, union([
   focus(
     '<wbr>',
     () => [[h('wbr')], '']),
