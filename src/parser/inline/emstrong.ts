@@ -1,4 +1,3 @@
-import { MarkdownParser } from '../../../markdown';
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
 import { union, some, precedence, creator, surround, open, lazy, bind } from '../../combinator';
@@ -34,7 +33,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(precedence(1, surroun
     open(some(inline, '*'), inline),
   ]))),
   str(/^\*{1,3}/), false,
-  ([, bs, cs], rest, context): Result<HTMLElement | string, MarkdownParser.Context> => {
+  ([, bs, cs], rest, context): Result<HTMLElement | string, typeof context> => {
     assert(cs.length === 1);
     switch (cs[0]) {
       case '***':
