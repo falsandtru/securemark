@@ -17,11 +17,11 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[\n]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\na]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\\na]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[a\n]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[a\\\n]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[*a\nb*]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\n]]')), [['[', '[', 'a', '<br>', ']', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[[a\\\n]]')), [['[', '[', 'a', '<span class="linebreak"> </span>', ']', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), [['[', '[', 'a', '<br>', 'b', ']', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), [['[', '[', 'a', '<span class="linebreak"> </span>', 'b', ']', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[[*a\nb*]]')), [['[', '[', '<em>a<br>b</em>', ']', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[[\\]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a]b]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[[a]]')), undefined);

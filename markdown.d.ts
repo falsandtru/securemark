@@ -696,7 +696,7 @@ export namespace MarkdownParser {
       // [[^abbr]]
       // [[^abbr| abc]]
       Inline<'reference'>,
-      Parser<HTMLElement, Context, [
+      Parser<HTMLElement | string, Context, [
         ReferenceParser.AbbrParser,
         InlineParser,
         InlineParser,
