@@ -34,6 +34,7 @@ export import MathParser = InlineParser.MathParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import RubyParser = InlineParser.RubyParser;
 export import LinkParser = InlineParser.LinkParser;
+export import TextLinkParser = InlineParser.TextLinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;

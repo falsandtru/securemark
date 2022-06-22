@@ -869,8 +869,17 @@ export namespace MarkdownParser {
       // { uri }
       // [abc]{uri nofollow}
       Inline<'link'>,
-      Parser<HTMLAnchorElement, Context, [
+      Parser<HTMLElement | string, Context, [
         LinkParser.ContentParser,
+        LinkParser.ParameterParser,
+      ]> {
+    }
+    export interface TextLinkParser extends
+      // { uri }
+      // [abc]{uri nofollow}
+      Inline<'textlink'>,
+      Parser<HTMLAnchorElement, Context, [
+        LinkParser.TextParser,
         LinkParser.ParameterParser,
       ]> {
     }
@@ -881,6 +890,12 @@ export namespace MarkdownParser {
           MediaParser,
           ShortmediaParser,
           InlineParser,
+        ]> {
+      }
+      export interface TextParser extends
+        Inline<'link/text'>,
+        Parser<string[], Context, [
+          SourceParser.UnescapableSourceParser,
         ]> {
       }
       export interface ParameterParser extends
@@ -1107,7 +1122,7 @@ export namespace MarkdownParser {
         // https://host
         Inline<'url'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser,
+          TextLinkParser,
         ]> {
       }
       export namespace UrlParser {
@@ -1149,28 +1164,28 @@ export namespace MarkdownParser {
         // @user
         Inline<'account'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser,
+          TextLinkParser,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser,
+          TextLinkParser,
         ]> {
       }
       export interface HashnumParser extends
         // #1
         Inline<'hashnum'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser,
+          TextLinkParser,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser,
+          TextLinkParser,
         ]> {
       }
     }

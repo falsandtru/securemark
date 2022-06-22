@@ -72,6 +72,7 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser('http://host>')), [['<a href="http://host" target="_blank">http://host</a>'], '>']);
       assert.deepStrictEqual(inspect(parser('http://host（')), [['<a href="http://host" target="_blank">http://host</a>'], '（']);
       assert.deepStrictEqual(inspect(parser('http://host）')), [['<a href="http://host" target="_blank">http://host</a>'], '）']);
+      assert.deepStrictEqual(inspect(parser('http://host\\"')), [['<a href="http://host" target="_blank">http://host</a>'], '\\"']);
       assert.deepStrictEqual(inspect(parser('http://host!?**.*--++==~~^^')), [['<a href="http://host" target="_blank">http://host</a>'], '!?**.*--++==~~^^']);
     });
 

@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { Result } from '../../combinator/data/parser';
 import { union, subsequence, some, validate, guard, context, precedence, creator, recursion, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
+import { optimize } from './link';
 import { str, stropt } from '../source';
 import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -50,13 +50,4 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
           'data-invalid-message': 'Invalid abbr',
         }
       : { class: 'reference' };
-}
-
-export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string): Result<string> {
-  let count = 0;
-  for (let i = 0; i < ns.length - 1; i += 2) {
-    if (ns[i] !== '' || ns[i + 1] !== opener[0]) break;
-    ++count;
-  }
-  return [[opener[0].repeat(opener.length + count)], rest.slice(count)];
 }

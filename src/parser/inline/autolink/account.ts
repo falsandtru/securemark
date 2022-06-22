@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
-import { union, tails, verify, rewrite, context, open, convert, fmap, lazy } from '../../../combinator';
-import { link } from '../link';
+import { union, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { textlink } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
@@ -17,10 +17,6 @@ export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
         str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
         ([source]) => source.length <= 64),
     ])),
-  context({ syntax: { inline: {
-    link: true,
-    autolink: false,
-  }}},
   convert(
     source =>
       `[${source}]{ ${
@@ -28,5 +24,5 @@ export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
         ? `https://${source.slice(1).replace('/', '/@')}`
         : `/${source}`
       } }`,
-    union([link])))),
+    union([textlink]))),
   ([el]) => [define(el, { class: 'account' })]));

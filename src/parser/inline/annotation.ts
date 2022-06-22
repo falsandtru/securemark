@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, precedence, creator, recursion, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { optimize } from './reference';
+import { optimize } from './link';
 import { trimBlankStart, trimNodeEnd } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 

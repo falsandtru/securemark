@@ -1,11 +1,11 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
-import { LinkParser } from '../inline';
-import { eval } from '../../combinator/data/parser';
+import { LinkParser, TextLinkParser } from '../inline';
+import { Result, eval } from '../../combinator/data/parser';
 import { union, inits, tails, some, validate, guard, context, precedence, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
-import { str } from '../source';
+import { unescsource, str } from '../source';
 import { trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
@@ -58,6 +58,29 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
         context.host?.href || location.href),
       context.host?.origin || location.origin);
     if (el.classList.contains('invalid')) return [[el], rest];
+    assert(el.classList.length === 0);
+    return [[define(el, attributes('link', [], optspec, params))], rest];
+  })))));
+
+export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(3, bind(
+  reverse(tails([
+    dup(surround('[', some(union([unescsource]), ']'), ']')),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
+  ])),
+  ([params, content = []], rest, context) => {
+    assert(params.every(p => typeof p === 'string'));
+    content = trimNodeEnd(content);
+    const INSECURE_URI = params.shift()!;
+    assert(INSECURE_URI === INSECURE_URI.trim());
+    assert(!INSECURE_URI.match(/\s/));
+    const el = elem(
+      INSECURE_URI,
+      defrag(content),
+      new ReadonlyURL(
+        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
+        context.host?.href || location.href),
+      context.host?.origin || location.origin);
+    assert(!el.classList.contains('invalid'));
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
   })))));
@@ -162,4 +185,13 @@ function decode(uri: string): string {
   finally {
     return uri.replace(/\s+/g, encodeURI);
   }
+}
+
+export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string): Result<string> {
+  let count = 0;
+  for (let i = 0; i < ns.length - 1; i += 2) {
+    if (ns[i] !== '' || ns[i + 1] !== opener[0]) break;
+    ++count;
+  }
+  return [['', opener[0].repeat(opener.length + count)], rest.slice(count)];
 }
