@@ -1,14 +1,12 @@
 import { ExtensionParser } from '../../inline';
-import { union, verify, focus, creator, context, surround, fmap } from '../../../combinator';
+import { union, verify, focus, creator, surround, fmap } from '../../../combinator';
 import { index } from './index';
+import { clean } from '../../util';
 import { html } from 'typed-dom/dom';
 
 export const indexer: ExtensionParser.IndexerParser = creator(fmap(verify(surround(
   /^\s+(?=\[#\S)/,
-  context({ syntax: { inline: {
-    index: true,
-  }}},
-  union([
+  clean(union([
     focus('[#]', () => [[html('a', { href: '#' })], '']),
     index,
   ])),

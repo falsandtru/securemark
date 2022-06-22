@@ -5,8 +5,24 @@ import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
-import { reduce } from 'spica/memoize';
+import { memoize, reduce } from 'spica/memoize';
 import { push } from 'spica/array';
+
+export function clean<P extends Parser<unknown>>(parser: P): P;
+export function clean<T>(parser: Parser<T, MarkdownParser.Context>): Parser<T, MarkdownParser.Context> {
+  const clean = memoize<MarkdownParser.Context, MarkdownParser.Context>(context => ({
+    resources: context.resources,
+    precedence: context.precedence,
+    delimiters: context.delimiters,
+    host: context.host,
+    url: context.url,
+    id: context.id,
+    header: context.header,
+    cache: context.caches,
+  }), new WeakMap());
+  return (source, context) =>
+    parser(source, context.syntax ? clean(context) : context);
+}
 
 export const regBlankStart = new RegExp(
   /^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
