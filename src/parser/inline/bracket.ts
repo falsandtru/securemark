@@ -8,23 +8,23 @@ import { unshift, push } from 'spica/array';
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 
-export const bracket: BracketParser = lazy(() => creator(0, precedence(3, union([
-  surround(str('('), str(index), str(')')),
-  surround(str('('), some(inline, ')', [[')', 3]]), str(')'), true,
+export const bracket: BracketParser = lazy(() => creator(0, union([
+  surround(str('('), precedence(3, str(index)), str(')')),
+  surround(str('('), precedence(3, some(inline, ')', [[')', 3]])), str(')'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('（'), str(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), str('）')),
-  surround(str('（'), some(inline, '）', [['）', 3]]), str('）'), true,
+  surround(str('（'), precedence(3, str(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0))))), str('）')),
+  surround(str('（'), precedence(3, some(inline, '）', [['）', 3]])), str('）'), true,
     ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(inline, ']', [[']', 3]]), str(']'), true,
+  surround(str('['), precedence(3, some(inline, ']', [[']', 3]])), str(']'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(inline, '}', [['}', 3]]), str('}'), true,
+  surround(str('{'), precedence(3, some(inline, '}', [['}', 3]])), str('}'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // Control media blinking in editing rather than control confusion of pairs of quote marks.
-  surround(str('"'), some(inline, '"', [['"', 7]]), str('"'), true,
+  surround(str('"'), precedence(8, some(inline, '"', [['"', 8]])), str('"'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-]))));
+])));

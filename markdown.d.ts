@@ -6,8 +6,8 @@ import { Dict } from 'spica/dict';
 Operator precedence
 
 9: \n, \\\n
-8: `, $
-7: "
+8: `, "
+7: $
 6: (()), [[]]
 5: <tag></tag>
 4: [% %]
