@@ -1,12 +1,12 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, guard, context, precedence, creator, surround, open, lazy, fmap, bind } from '../../combinator';
+import { union, subsequence, some, validate, guard, context, precedence, creator, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str, stropt } from '../source';
 import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => creator(precedence(6, validate('[[', fmap(surround(
+export const reference: ReferenceParser = lazy(() => creator(precedence(6, validate('[[', surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   context({ syntax: { inline: {
@@ -24,8 +24,9 @@ export const reference: ReferenceParser = lazy(() => creator(precedence(6, valid
     open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']]', 6]])),
     trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']]', 6]])),
   ]))),
-  ']]'),
-  ns => [html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])])))));
+  ']]',
+  false,
+  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest])))));
 
 const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
   '^',
