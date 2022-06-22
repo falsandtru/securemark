@@ -24,8 +24,8 @@ export const reference: ReferenceParser = lazy(() => validate('[[', creator(prec
   }}, delimiters: undefined },
   subsequence([
     abbr,
-    open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']]', 6]])),
-    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']]', 6]])),
+    open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']', 3], [']]', 6]])),
+    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 3], [']]', 6]])),
   ]))),
   ']]',
   false,

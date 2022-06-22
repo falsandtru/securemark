@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
           media: false,
           autolink: false,
         }}},
-        trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 6]]))),
+        trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 3]]))),
         ']',
         true),
     ]))),
