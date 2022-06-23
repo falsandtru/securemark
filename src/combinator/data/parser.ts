@@ -1,3 +1,5 @@
+import { Delimiters } from './delimiter';
+
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (source: string, context: C) => Result<T, C, D>;
 export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
@@ -19,53 +21,6 @@ export type SubTree<P extends Parser<unknown>> = ExtractSubTree<SubParsers<P>>;
 export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, Context<P>, SubParsers<P>>;
 type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer T ? T extends Parser<infer U> ? U : never : never;
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
-
-export class Delimiters {
-  private readonly matchers: [number, string, number, (source: string) => boolean | undefined][] = [];
-  private readonly registry: Record<string, boolean> = {};
-  private length = 0;
-  public push(
-    ...delimiters: readonly {
-      readonly signature: string;
-      readonly matcher: (source: string) => boolean | undefined;
-      readonly precedence?: number;
-    }[]
-  ): void {
-    for (let i = 0; i < delimiters.length; ++i) {
-      const delimiter = delimiters[i];
-      assert(this.length >= this.matchers.length);
-      const { signature, matcher, precedence = 1 } = delimiter;
-      if (!this.registry[signature]) {
-        this.matchers.unshift([this.length, signature, precedence, matcher]);
-        this.registry[signature] = true;
-      }
-      ++this.length;
-    }
-  }
-  public pop(count = 1): void {
-    assert(count > 0);
-    for (let i = 0; i < count; ++i) {
-      assert(this.matchers.length > 0);
-      assert(this.length >= this.matchers.length);
-      if (--this.length === this.matchers[0][0]) {
-        this.registry[this.matchers.shift()![1]] = false;
-      }
-    }
-  }
-  public match(source: string, precedence = 1): boolean {
-    const { matchers } = this;
-    for (let i = 0; i < matchers.length; ++i) {
-      switch (matchers[i][3](source)) {
-        case true:
-          if (precedence < matchers[i][2]) return true;
-          continue;
-        case false:
-          return false;
-      }
-    }
-    return false;
-  }
-}
 
 export { eval_ as eval };
 function eval_<T>(result: NonNullable<Result<T>>, default_?: T[]): T[];
