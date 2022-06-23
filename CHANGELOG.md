@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.257.1
+
+- Refactoring.
+
 ## 0.257.0
 
 - Introduce operator precedence.
