@@ -7,7 +7,7 @@ import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
 import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
-import { unshift, push } from 'spica/array';
+import { unshift, shift, push } from 'spica/array';
 
 const optspec = {
   'width': [],
@@ -28,7 +28,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creator(10, 
       true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ]))),
-  ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
+  ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], shift(bs)[1]] : [[''], shift(as)[1]]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
     assert(text === text.trim());

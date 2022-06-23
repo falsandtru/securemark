@@ -1,12 +1,12 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser, TextLinkParser } from '../inline';
 import { Result, eval } from '../../combinator/data/parser';
-import { union, inits, tails, some, validate, guard, context, precedence, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, subsequence, some, validate, guard, context, precedence, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { unescsource, str } from '../source';
-import { trimBlankStart, trimNodeEnd, stringify } from '../util';
+import { trimNode, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -17,7 +17,7 @@ Object.setPrototypeOf(optspec, null);
 
 export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(3, bind(
   guard(context => context.syntax?.inline?.link ?? true,
-  reverse(tails([
+  fmap(subsequence([
     context({ syntax: { inline: {
       link: false,
     }}},
@@ -36,15 +36,22 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
           media: false,
           autolink: false,
         }}},
-        trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 3]]))),
+        some(inline, ']', [[/^\\?\n/, 9], [']', 3]])),
         ']',
-        true),
+        true,
+        undefined,
+        ([, ns = [], rest], next) => next[0] === ']' ? undefined : optimize('[', ns, rest)),
     ]))),
+    // 全体の失敗が確定した時も解析し予算を浪費している
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ]))),
-  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
+  ]),
+  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])),
+  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
+    if (params.length === 0) return;
+    assert(content[0] !== '' || params.length === 0);
+    if (content[0] === '') return [content, rest];
     assert(params.every(p => typeof p === 'string'));
-    content = trimNodeEnd(content);
+    if (content.length !== 0 && trimNode(content).length === 0) return;
     if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;
@@ -68,8 +75,10 @@ export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []], rest, context) => {
+    assert(params[0] === '\r');
+    params.shift();
     assert(params.every(p => typeof p === 'string'));
-    content = trimNodeEnd(content);
+    trimNode(content);
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
@@ -85,10 +94,10 @@ export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(
     return [[define(el, attributes('link', [], optspec, params))], rest];
   })))));
 
-export const uri: LinkParser.ParameterParser.UriParser = union([
+export const uri: LinkParser.ParameterParser.UriParser = fmap(union([
   open(/^[^\S\n]+/, str(/^\S+/)),
   str(/^[^\s{}]+/),
-]);
+]), ([uri]) => ['\r', uri]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]),

@@ -199,7 +199,7 @@ function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
   }
   return nodes;
 }
-export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
+function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&
     nodes[nodes.length - 1]['className'] === 'indexer'
