@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.257.3
+
+- Fix styled table parser.
+
 ## 0.257.2
 
 - Fix operator precedence.

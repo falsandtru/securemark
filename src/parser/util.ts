@@ -191,7 +191,7 @@ function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
     if (typeof node === 'string') {
       const pos = node.trimStart().length;
       if (pos > 0) {
-        nodes[0] = node.slice(pos) as T;
+        nodes[0] = node.slice(-pos) as T;
         break;
       }
     }
