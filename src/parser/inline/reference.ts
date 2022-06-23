@@ -4,12 +4,13 @@ import { union, subsequence, some, validate, guard, context, precedence, creator
 import { inline } from '../inline';
 import { optimize } from './link';
 import { str, stropt } from '../source';
-import { regBlankStart, trimBlankStart, trimNodeEnd, stringify } from '../util';
+import { regBlankStart, startLoose, trimNode, stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => validate('[[', creator(recursion(precedence(6, surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
+  startLoose(
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -23,11 +24,11 @@ export const reference: ReferenceParser = lazy(() => validate('[[', creator(recu
   subsequence([
     abbr,
     open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']', 3], [']]', 6]])),
-    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 3], [']]', 6]])),
-  ]))),
+    some(inline, ']', [[/^\\?\n/, 9], [']', 3], [']]', 6]]),
+  ])), ']')),
   ']]',
   false,
-  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest],
+  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest],
   ([, ns, rest], next) => next[0] === ']' ? undefined : optimize('[[', ns, rest)))))));
 
 const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
