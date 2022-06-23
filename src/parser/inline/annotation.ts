@@ -21,7 +21,7 @@ export const annotation: AnnotationParser = lazy(() => creator(recursion(precede
     //link: true,
     //autolink: true,
   }}, delimiters: undefined },
-  some(union([inline]), ')', [[/^\\?\n/, 9], [')', 3], ['))', 6]])), ')')),
+  some(union([inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')')),
   '))',
   false,
   ([, ns], rest) => [[html('sup', { class: 'annotation' }, [html('span', trimNode(defrag(ns)))])], rest],

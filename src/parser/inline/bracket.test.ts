@@ -39,6 +39,7 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('(ABBR, ABBR)')), [['(', 'ABBR, ABBR', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(\\a)')), [['<span class="paren">(a)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(==)')), [['<span class="paren">(==)</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('($)$')), [['', '(', '<span class="math" translate="no" data-src="$)$">$)$</span>'], '']);
       assert.deepStrictEqual(inspect(parser(')')), undefined);
       assert.deepStrictEqual(inspect(parser('（１，２）')), [['（', '１，２', '）'], '']);
       assert.deepStrictEqual(inspect(parser('（０－１）')), [['（', '０－１', '）'], '']);
@@ -55,6 +56,7 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('[a')), [['', '[', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('[a]')), [['[', 'a', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[==]')), [['[', '==', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[$]$')), [['', '[', '<span class="math" translate="no" data-src="$]$">$]$</span>'], '']);
       assert.deepStrictEqual(inspect(parser(']')), undefined);
     });
 

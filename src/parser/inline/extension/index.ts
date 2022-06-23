@@ -9,7 +9,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => validate('[#', creator(precedence(3, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => validate('[#', creator(precedence(2, fmap(indexee(surround(
   '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
@@ -25,7 +25,7 @@ export const index: IndexParser = lazy(() => validate('[#', creator(precedence(3
   open(stropt(/^\|?/), trimBlankEnd(some(union([
     signature,
     inline,
-  ]), ']', [[/^\\?\n/, 9], [']', 3]])), true)))),
+  ]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))),
   ']',
   false,
   ([, ns], rest) => [[html('a', defrag(ns))], rest])),

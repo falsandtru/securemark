@@ -57,6 +57,7 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[% &amp;copy; %]')), [['<span class="comment"><input type="checkbox"><span>[% &amp;copy; %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% [ %]')), [['<span class="comment"><input type="checkbox"><span>[% [ %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% \\ a %]')), [['<span class="comment"><input type="checkbox"><span>[%  a %]</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[% $-a %]$')), [['<span class="comment"><input type="checkbox"><span>[% <a class="label" data-label="$-a">$-a</a> %]</span></span>'], '$']);
     });
 
   });

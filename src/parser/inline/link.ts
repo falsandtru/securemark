@@ -15,7 +15,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(3, bind(
+export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(2, bind(
   guard(context => context.syntax?.inline?.link ?? true,
   fmap(subsequence([
     context({ syntax: { inline: {
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
           media: false,
           autolink: false,
         }}},
-        some(inline, ']', [[/^\\?\n/, 9], [']', 3]])),
+        some(inline, ']', [[/^\\?\n/, 9], [']', 2]])),
         ']',
         true,
         undefined,
@@ -69,7 +69,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
     return [[define(el, attributes('link', [], optspec, params))], rest];
   })))));
 
-export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(3, bind(
+export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(2, bind(
   reverse(tails([
     dup(surround('[', some(union([unescsource]), ']'), ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),

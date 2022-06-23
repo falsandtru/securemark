@@ -6,7 +6,7 @@ import { startTight, blankWith } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-export const mark: MarkParser = lazy(() => creator(precedence(2, surround(
+export const mark: MarkParser = lazy(() => creator(precedence(1, surround(
   str('=='),
   startTight(some(union([
     some(inline, blankWith('==')),

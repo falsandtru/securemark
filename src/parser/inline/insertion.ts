@@ -6,7 +6,7 @@ import { blankWith } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-export const insertion: InsertionParser = lazy(() => creator(precedence(2, surround(
+export const insertion: InsertionParser = lazy(() => creator(precedence(1, surround(
   str('++'),
   some(union([
     some(inline, blankWith('\n', '++')),

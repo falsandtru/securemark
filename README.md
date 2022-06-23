@@ -22,6 +22,15 @@ Secure markdown renderer working on browsers for user input data.
 - Cross reference generation for annotations and references.
 - Table of contents.
 
+## Media
+
+- Twitter
+- YouTube
+- PDF (.pdf)
+- Video (.webm, .ogv)
+- Audio (.oga, .ogg)
+- Images
+
 ## Demos
 
 https://falsandtru.github.io/securemark/
@@ -58,14 +67,18 @@ https://falsandtru.github.io/securemark/
 - Template ({{ template }})
 - Comment ([% comment %])
 
-## Media
+## Operator precedence
 
-- Twitter
-- YouTube
-- PDF (.pdf)
-- Video (.webm, .ogv)
-- Audio (.oga, .ogg)
-- Images
+|P| Operators         |
+|-|-------------------|
+|9| \n, \\\n          |
+|8| `, "              |
+|6| (()), [[]], ${}$  |
+|5| \<tag>\</tag>     |
+|4| [% %]             |
+|3| $                 |
+|2| (), [], {}        |
+|1| *, **, ==, ++, ~~ |
 
 ## Dependencies
 

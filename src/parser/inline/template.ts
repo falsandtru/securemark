@@ -5,7 +5,7 @@ import { escsource, str } from '../source';
 import { html } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-export const template: TemplateParser = lazy(() => creator(precedence(3, rewrite(
+export const template: TemplateParser = lazy(() => creator(precedence(2, rewrite(
   surround('{{', some(union([bracket, escsource]), '}'), '}}', true),
   source => [[html('span', { class: 'template' }, source.replace(/\x1B/g, ''))], '']))));
 

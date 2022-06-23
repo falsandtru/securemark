@@ -1,20 +1,20 @@
 import { MathParser } from '../inline';
-import { union, some, validate, rewrite, precedence, creator, surround, lazy } from '../../combinator';
-import { escsource, str } from '../source';
+import { union, some, validate, focus, rewrite, precedence, creator, surround, lazy } from '../../combinator';
+import { escsource, unescsource } from '../source';
 import { html } from 'typed-dom/dom';
 
 const syntax = /^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
-export const math: MathParser = lazy(() => validate('$', creator(precedence(7, rewrite(
+export const math: MathParser = lazy(() => validate('$', creator(rewrite(
   union([
-    surround('$', bracket, '$'),
+    surround('$', precedence(6, bracket), '$'),
     surround(
       /^\$(?![\s{}])/,
-      some(union([
+      precedence(3, some(union([
         bracket,
-        str(syntax),
-      ])),
+        focus(syntax, some(unescsource)),
+      ]))),
       /^\$(?![0-9A-Za-z])/),
   ]),
   (source, { caches: { math: cache } = {} }) => [[
@@ -30,7 +30,7 @@ export const math: MathParser = lazy(() => validate('$', creator(precedence(7, r
             'data-invalid-message': `"${source.match(forbiddenCommand)![0]}" command is forbidden`,
           },
       source)
-  ], ''])))));
+  ], '']))));
 
 const bracket: MathParser.BracketParser = lazy(() => creator(surround(
   '{',
