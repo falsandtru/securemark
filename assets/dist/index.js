@@ -2851,6 +2851,7 @@ function inits(parsers) {
 
     for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') break;
+      if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parsers[i](rest, context);
       if (!result) break;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
@@ -2890,6 +2891,7 @@ function sequence(parsers) {
 
     for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') return;
+      if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parsers[i](rest, context);
       if (!result) return;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
@@ -5146,13 +5148,15 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
+const util_1 = __webpack_require__(9437);
+
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
 exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\|[^\n]*(?:\n\|[^\n]*){2}/, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => [(0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift()]), (0, dom_1.html)('tbody', format(rows))])])));
 
-const row = (parser, optional) => (0, combinator_1.creator)((0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/^(?=\|)/, (0, combinator_1.some)((0, combinator_1.union)([parser])), /^\|?\s*$/, optional)), es => [(0, dom_1.html)('tr', es)]), (0, combinator_1.rewrite)(source_1.contentline, source => [[(0, dom_1.html)('tr', {
+const row = (parser, optional) => (0, combinator_1.creator)((0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/^(?=\|)/, (0, combinator_1.some)((0, combinator_1.union)([parser])), /^[|\\]?\s*$/, optional)), es => [(0, dom_1.html)('tr', es)]), (0, combinator_1.rewrite)(source_1.contentline, source => [[(0, dom_1.html)('tr', {
   class: 'invalid',
   'data-invalid-syntax': 'table-row',
   'data-invalid-type': 'syntax',
@@ -5160,9 +5164,9 @@ const row = (parser, optional) => (0, combinator_1.creator)((0, combinator_1.fal
 }, [(0, dom_1.html)('td', source.replace('\n', ''))])], ''])));
 
 const align = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:/, () => [['center'], '']), (0, combinator_1.focus)(/^:-+/, () => [['start'], '']), (0, combinator_1.focus)(/^-+:/, () => [['end'], '']), (0, combinator_1.focus)(/^-+/, () => [[''], ''])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
-const cell = (0, combinator_1.surround)(/^\|(?:\\?\s)*(?=\S)/, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, true);
-const head = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, dom_1.defrag)(ns))]));
-const data = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
+const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]), /^[^|]*/, true);
+const head = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))]));
+const data = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))]));
 
 function format(rows) {
   const aligns = rows[0].classList.contains('invalid') ? [] : (0, array_1.push)([], rows.shift().children).map(el => el.textContent);
@@ -7990,7 +7994,7 @@ function trimNodeStart(nodes) {
       const pos = node.trimStart().length;
 
       if (pos > 0) {
-        nodes[0] = node.slice(pos);
+        nodes[0] = node.slice(-pos);
         break;
       }
     }
