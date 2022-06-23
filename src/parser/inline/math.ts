@@ -3,7 +3,6 @@ import { union, some, validate, focus, rewrite, precedence, creator, surround, l
 import { escsource, unescsource } from '../source';
 import { html } from 'typed-dom/dom';
 
-const syntax = /^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/;
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => validate('$', creator(rewrite(
@@ -13,7 +12,7 @@ export const math: MathParser = lazy(() => validate('$', creator(rewrite(
       /^\$(?![\s{}])/,
       precedence(3, some(union([
         bracket,
-        focus(syntax, some(unescsource)),
+        focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
       ]))),
       /^\$(?![0-9A-Za-z])/),
   ]),
