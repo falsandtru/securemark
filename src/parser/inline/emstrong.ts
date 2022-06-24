@@ -5,7 +5,7 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { startTight, blankWith } from '../util';
+import { startTight, blankWith } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 

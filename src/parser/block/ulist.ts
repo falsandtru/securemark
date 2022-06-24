@@ -3,7 +3,7 @@ import { union, inits, subsequence, some, block, line, validate, indent, focus, 
 import { olist_, invalid } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
-import { trimBlank } from '../util';
+import { trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 

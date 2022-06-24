@@ -5,7 +5,7 @@ import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
-import { trimBlank } from '../util';
+import { trimBlank } from '../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { duffbk } from 'spica/duff';

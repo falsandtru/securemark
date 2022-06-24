@@ -3,7 +3,7 @@ import { union, some, precedence, creator, surround, open, lazy } from '../../co
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { str } from '../source';
-import { startTight, blankWith } from '../util';
+import { startTight, blankWith } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 

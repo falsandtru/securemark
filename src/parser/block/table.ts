@@ -2,7 +2,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, rewrite, creator, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { contentline } from '../source';
-import { trimNode } from '../util';
+import { trimNode } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { duffEach, duffReduce } from 'spica/duff';
 import { push } from 'spica/array';

@@ -4,7 +4,8 @@ import { union, subsequence, some, validate, guard, context, precedence, creator
 import { inline } from '../inline';
 import { optimize } from './link';
 import { str, stropt } from '../source';
-import { regBlankStart, startLoose, trimNode, stringify } from '../util';
+import { regBlankStart, startLoose, trimNode } from '../visibility';
+import { stringify } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => validate('[[', creator(recursion(precedence(6, surround(

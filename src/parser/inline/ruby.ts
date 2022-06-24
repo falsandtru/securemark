@@ -4,7 +4,7 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, validate, verify, focus, creator, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { isStartTightNodes } from '../util';
+import { isStartTightNodes } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 

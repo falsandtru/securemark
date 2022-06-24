@@ -3,7 +3,7 @@ import { union, inits, some, block, line, validate, rewrite, context, creator, o
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
-import { visualize, trimBlank } from '../util';
+import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { push } from 'spica/array';
 

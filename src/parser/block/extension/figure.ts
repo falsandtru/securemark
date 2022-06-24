@@ -14,7 +14,7 @@ import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
 import { localize } from '../../locale';
-import { visualize, trimBlank } from '../../util';
+import { visualize, trimBlank } from '../../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 

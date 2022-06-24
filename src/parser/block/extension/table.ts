@@ -6,7 +6,7 @@ import { union, subsequence, inits, some, block, line, validate, fence, rewrite,
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
-import { visualize } from '../../util';
+import { visualize } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 import { unshift, splice } from 'spica/array';
 

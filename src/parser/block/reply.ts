@@ -5,7 +5,7 @@ import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
-import { visualize } from '../util';
+import { visualize } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { push, pop } from 'spica/array';
 

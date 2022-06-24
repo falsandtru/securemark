@@ -2,7 +2,7 @@ import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { str } from '../source';
-import { visualize, trimBlank } from '../util';
+import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(

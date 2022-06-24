@@ -4,7 +4,7 @@ import { union, some, validate, guard, context, precedence, creator, surround, o
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
-import { startTight, trimBlankEnd } from '../../util';
+import { startTight, trimBlankEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;

@@ -3,7 +3,7 @@ import { HTMLParser } from '../inline';
 import { union, subsequence, some, validate, focus, precedence, creator, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { isStartLooseNodes, blankWith } from '../util';
+import { isStartLooseNodes, blankWith } from '../visibility';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
