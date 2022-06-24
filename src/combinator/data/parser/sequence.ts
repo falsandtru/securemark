@@ -11,7 +11,7 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D
     let nodes: T[] | undefined;
     for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') return;
-      if (context.delimiters?.match(rest, context.precedence)) break;
+      if (context.delimiters?.match(rest, context.precedence)) return;
       const result = parsers[i](rest, context);
       assert(check(rest, result));
       if (!result) return;
