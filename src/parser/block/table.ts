@@ -4,6 +4,7 @@ import { inline } from '../inline';
 import { contentline } from '../source';
 import { trimNode } from '../util';
 import { html, defrag } from 'typed-dom/dom';
+import { duffEach, duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;
@@ -62,16 +63,15 @@ const data: CellParser.DataParser = creator(fmap(
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
   const aligns = rows[0].classList.contains('invalid')
     ? []
-    : push([], rows.shift()!.children).map(el => el.textContent!);
-  for (let i = 0, len = rows.length; i < len; ++i) {
-    const cols = rows[i].children;
-    for (let i = 0, len = cols.length; i < len; ++i) {
+    : duffReduce(rows.shift()!.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);
+  for (let i = 0; i < rows.length; ++i) {
+    duffEach(rows[i].children, (col, i) => {
       if (i > 0 && !aligns[i]) {
         aligns[i] = aligns[i - 1];
       }
-      if (!aligns[i]) continue;
-      cols[i].setAttribute('align', aligns[i]);
-    }
+      if (!aligns[i]) return;
+      col.setAttribute('align', aligns[i]);
+    });
   }
   return rows;
 }

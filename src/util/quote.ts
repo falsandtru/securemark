@@ -2,32 +2,30 @@ import { Element } from 'spica/global';
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
 import { define } from 'typed-dom/dom';
+import { duffEach } from 'spica/duff';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite(`>>${anchor}`, {})) !== '') throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-  for (
-    let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'),
-        i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
+  duffEach(node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), el => {
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         define(el, el.getAttribute('data-src')!);
-        continue;
+        return;
       case el.matches('.media'):
         el.replaceWith(
           /[\s{}]/.test(el.getAttribute('data-src')!)
             ? `!{ ${el.getAttribute('data-src')} }`
             : `!{${el.getAttribute('data-src')}}`);
-        continue;
+        return;
       case el.matches('rt, rp'):
         el.remove();
-        continue;
+        return;
     }
-  }
+  });
   if (range.startOffset === 0 &&
       range.startContainer.parentElement?.matches('.cite, .quote') &&
       (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
@@ -37,26 +35,25 @@ export function quote(anchor: string, range: Range): string {
     node.prepend(`>>${anchor}\n> `);
     anchor = '';
   }
-  for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
+  duffEach(node.querySelectorAll('br'), el => {
     if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
-      continue;
+      return;
     }
     if (anchor && el.parentElement?.closest('.cite, .quote')) {
       el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
-      continue;
+      return;
     }
     if (anchor) {
       el.replaceWith(`\n>>${anchor}\n> `);
       anchor = '';
-      continue;
+      return;
     }
     else {
       el.replaceWith(`\n> `);
-      continue;
+      return;
     }
-  }
+  });
   anchor && node.append(`\n>>${anchor}`);
   return node.textContent!;
 }

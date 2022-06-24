@@ -1,5 +1,6 @@
 import { undefined } from 'spica/global';
 import { html } from 'typed-dom/dom';
+import { duffEach, duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 
 // Bug: Firefox
@@ -7,16 +8,15 @@ import { push } from 'spica/array';
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
-  const hs = push([], source.querySelectorAll(selector))
-    .map(el => {
-      assert(el.parentNode === source);
-      switch (el.tagName) {
-        case 'ASIDE':
-          return html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes);
-        default:
-          return el as HTMLHeadingElement;
-      }
-    });
+  const hs = duffReduce(source.querySelectorAll(selector), (acc, el) => {
+    assert(el.parentNode === source);
+    switch (el.tagName) {
+      case 'ASIDE':
+        return push(acc, [html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes)]);
+      default:
+        return push(acc, [el as HTMLHeadingElement]);
+    }
+  }, [] as HTMLHeadingElement[]);
   return parse(cons(hs));
 }
 
@@ -35,7 +35,7 @@ function parse(node: Tree, index: string = ''): HTMLUListElement {
         : `${index}.${i}`;
     return html('li',
       push(
-        [html('a', { href: `#${el.id}`, 'data-index': isHeading ? idx : undefined }, fix(el))],
+        [html('a', { href: `#${el.id}`, 'data-index': isHeading ? idx : undefined }, unlink(el.cloneNode(true)))],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
@@ -57,11 +57,8 @@ function level(h: HTMLHeadingElement): number {
   return +h.tagName[1];
 }
 
-function fix(h: HTMLHeadingElement): Iterable<Node> {
-  h = h.cloneNode(true);
-  for (let es = h.getElementsByTagName('a'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-    el.replaceWith(...el.childNodes);
-  }
+function unlink(h: HTMLHeadingElement): Iterable<Node> {
+  duffEach(h.getElementsByTagName('a'), el =>
+    void el.replaceWith(...el.childNodes));
   return h.childNodes;
 }

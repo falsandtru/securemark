@@ -2,6 +2,7 @@ import { Parser } from '../combinator/data/parser';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
 import { html } from 'typed-dom/dom';
+import { duffEach } from 'spica/duff';
 
 export function localize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLElement | string> {
@@ -10,13 +11,11 @@ export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLEleme
     const el = ns.length === 1 && typeof ns[0] === 'object'
       ? ns[0]
       : html('div', ns);
-    const es = el.querySelectorAll('.linebreak:not(:empty)');
-    for (let i = 0, len = es.length; i < len; ++i) {
-      const sb = es[i];
-      assert(sb.firstChild!.textContent === ' ');
-      if (!check(sb)) continue;
-      sb.firstChild!.remove();
-    }
+    duffEach(el.querySelectorAll('.linebreak:not(:empty)'), el => {
+      assert(el.firstChild!.textContent === ' ');
+      if (!check(el)) return;
+      el.firstChild!.remove();
+    });
     return ns;
   });
 }

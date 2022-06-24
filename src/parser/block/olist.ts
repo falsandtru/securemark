@@ -8,6 +8,7 @@ import { contentline } from '../source';
 import { trimBlank } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
+import { duffbk } from 'spica/duff';
 import { shift } from 'spica/array';
 import { tuple } from 'spica/tuple';
 
@@ -122,15 +123,16 @@ function format(el: HTMLOListElement, type: string, form: string): HTMLOListElem
     'data-type': style(type) || undefined,
   });
   const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
-  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
+  const es = el.children;
+  duffbk(es.length, i => {
     const el = es[i];
     switch (el.getAttribute('data-marker')) {
       case '':
       case marker:
         el.removeAttribute('data-marker');
-        continue;
+        return;
     }
-    break;
-  }
+    return false;
+  });
   return el;
 }

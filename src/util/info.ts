@@ -1,5 +1,6 @@
 import { Info } from '../..';
 import { scope } from './scope';
+import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
@@ -20,7 +21,8 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
   };
 
   function find<T extends HTMLElement>(selector: string): T[] {
-    return push([], source.querySelectorAll<T>(selector))
-      .filter(match);
+    return duffReduce(source.querySelectorAll<T>(selector), (acc, el) =>
+      match(el) ? push(acc, [el]) : acc
+    , [] as T[]);
   }
 }

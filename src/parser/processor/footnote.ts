@@ -2,6 +2,7 @@ import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
 import { frag, html, define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
+import { duffEach, duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 
 export function* footnote(
@@ -12,7 +13,7 @@ export function* footnote(
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   // Bug: Firefox
   //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
-  target.querySelectorAll(`.annotations`).forEach(el => el.parentNode === target && el.remove());
+  duffEach(target.querySelectorAll(`.annotations`), el => el.parentNode === target && el.remove());
   yield* reference(target, footnotes?.references, opts, bottom);
   yield* annotation(target, footnotes?.annotations, opts, bottom);
   return;
@@ -40,8 +41,9 @@ function build(
     const titles = new Map<string, string>();
     // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
-    const splitters = push([], target.querySelectorAll(splitter ?? '_'))
-      .filter(el => el.parentNode === target);
+    const splitters = duffReduce(target.querySelectorAll(splitter ?? '_'), (acc, el) =>
+      el.parentNode === target ? push(acc, [el]) : acc
+    , [] as Element[]);
     let count = 0;
     let total = 0;
     let style: 'count' | 'abbr';

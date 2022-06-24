@@ -56,6 +56,7 @@ module.exports = env => {
               loader: 'ts-loader',
               options: {
                 onlyCompileBundledFiles: true,
+                allowTsInNodeModules: true,
               },
             },
           ],
