@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, guard, context, precedence, creator, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, creator, precedence, guard, validate, context, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';

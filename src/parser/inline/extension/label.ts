@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, validate, guard, creator, surround, clear, fmap } from '../../../combinator';
+import { union, guard, creator, validate, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 

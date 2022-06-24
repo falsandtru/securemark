@@ -1,5 +1,5 @@
 import { ReplyParser } from '../../block';
-import { union, tails, line, validate, focus, creator, reverse, fmap } from '../../../combinator';
+import { union, tails, creator, line, validate, focus, reverse, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom/dom';

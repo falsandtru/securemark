@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { union, inits, some, block, line, validate, focus, rewrite, guard, clear, convert, lazy, fmap } from '../combinator';
+import { union, inits, some, guard, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
 import { segment } from './segment';
 import { str } from './source';
 import { normalize } from './api/normalize';

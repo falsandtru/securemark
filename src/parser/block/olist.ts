@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, block, line, validate, indent, focus, rewrite, context, creator, open, match, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, context, creator, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';

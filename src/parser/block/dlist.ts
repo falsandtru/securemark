@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, context, creator, open, trimEnd, lazy, fmap } from '../../combinator';
+import { union, inits, some, context, creator, block, line, validate, rewrite, open, trimEnd, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';

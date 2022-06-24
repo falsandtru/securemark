@@ -1,5 +1,5 @@
 import { MarkParser } from '../inline';
-import { union, some, precedence, creator, surround, open, lazy } from '../../combinator';
+import { union, some, creator, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, blankWith } from '../visibility';

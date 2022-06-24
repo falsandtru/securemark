@@ -1,5 +1,5 @@
 import { StrongParser } from '../inline';
-import { union, some, precedence, creator, surround, open, lazy } from '../../combinator';
+import { union, some, creator, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { str } from '../source';

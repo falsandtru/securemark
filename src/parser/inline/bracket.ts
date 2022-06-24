@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { BracketParser } from '../inline';
-import { union, some, precedence, creator, surround, lazy } from '../../combinator';
+import { union, some, creator, precedence, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html, defrag } from 'typed-dom/dom';

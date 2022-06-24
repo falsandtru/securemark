@@ -1,5 +1,5 @@
 import { MathParser } from '../inline';
-import { union, some, validate, focus, rewrite, precedence, creator, surround, lazy } from '../../combinator';
+import { union, some, creator, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource } from '../source';
 import { html } from 'typed-dom/dom';
 

@@ -2,7 +2,7 @@ import { undefined, BigInt, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, creator, block, line, validate, fence, rewrite, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';

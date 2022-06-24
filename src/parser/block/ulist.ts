@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, subsequence, some, block, line, validate, indent, focus, context, creator, open, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, context, creator, block, line, validate, indent, focus, open, fallback, lazy, fmap } from '../../combinator';
 import { olist_, invalid } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';

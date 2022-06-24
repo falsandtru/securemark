@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { verify, rewrite, creator } from '../../../combinator';
+import { creator, verify, rewrite } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 

@@ -1,5 +1,5 @@
 import { CodeParser } from '../inline';
-import { validate, creator, match } from '../../combinator';
+import { creator, validate, match } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = creator(validate('`', match(

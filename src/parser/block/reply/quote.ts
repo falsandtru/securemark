@@ -1,6 +1,6 @@
 import { ReplyParser } from '../../block';
 import { eval } from '../../../combinator/data/parser';
-import { union, some, block, line, validate, rewrite, creator, lazy, fmap } from '../../../combinator';
+import { union, some, creator, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { str, anyline } from '../../source';
 import { autolink } from '../../autolink';

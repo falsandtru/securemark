@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { TemplateParser } from '../inline';
-import { union, some, rewrite, precedence, creator, surround, lazy } from '../../combinator';
+import { union, some, creator, precedence, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { html } from 'typed-dom/dom';
 import { unshift } from 'spica/array';

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, guard, context, precedence, creator, recursion, surround, open, lazy, bind } from '../../combinator';
+import { union, subsequence, some, creator, precedence, guard, validate, context, recursion, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { optimize } from './link';
 import { str, stropt } from '../source';

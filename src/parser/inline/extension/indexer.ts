@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { union, verify, focus, creator, surround, fmap } from '../../../combinator';
+import { union, creator, verify, focus, surround, fmap } from '../../../combinator';
 import { index } from './index';
 import { clean } from '../../util';
 import { html } from 'typed-dom/dom';

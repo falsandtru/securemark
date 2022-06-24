@@ -2,7 +2,7 @@ import { Parser } from '../parser';
 import { subsequence } from './subsequence';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: combinator/subsequence', () => {
+describe('Unit: combinator/data/parser/subsequence', () => {
   describe('subsequence', () => {
     const a: Parser<string, never> = source => {
       return source && source[0] === 'a'

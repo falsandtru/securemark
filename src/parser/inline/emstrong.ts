@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, some, precedence, creator, surround, open, lazy, bind } from '../../combinator';
+import { union, creator, precedence, some, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';

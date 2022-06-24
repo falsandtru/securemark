@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, validate, focus, rewrite, creator, surround, open, fallback, lazy, fmap } from '../../combinator';
+import { union, sequence, some, creator, block, line, validate, focus, rewrite, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { contentline } from '../source';
 import { trimNode } from '../visibility';

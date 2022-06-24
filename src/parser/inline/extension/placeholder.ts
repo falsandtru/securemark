@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, precedence, creator, surround, lazy } from '../../../combinator';
+import { union, some, creator, precedence, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight } from '../../visibility';

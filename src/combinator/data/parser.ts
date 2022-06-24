@@ -1,4 +1,4 @@
-import { Delimiters } from './delimiter';
+import { Delimiters } from './parser/delimiter';
 
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (source: string, context: C) => Result<T, C, D>;

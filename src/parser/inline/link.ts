@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser, TextLinkParser } from '../inline';
 import { Result, eval } from '../../combinator/data/parser';
-import { union, inits, tails, subsequence, some, validate, guard, context, precedence, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, subsequence, some, creator, precedence, guard, validate, context, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';

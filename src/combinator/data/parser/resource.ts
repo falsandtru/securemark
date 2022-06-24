@@ -1,4 +1,4 @@
-import { Parser } from '../../data/parser';
+import { Parser } from '../parser';
 
 export function creator<P extends Parser<unknown>>(parser: P): P;
 export function creator<P extends Parser<unknown>>(cost: number, parser: P): P;

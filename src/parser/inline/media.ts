@@ -1,6 +1,6 @@
 import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, validate, verify, guard, precedence, creator, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creator, precedence, guard, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { textlink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';

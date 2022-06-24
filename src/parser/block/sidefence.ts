@@ -1,5 +1,5 @@
 import { SidefenceParser } from '../block';
-import { union, some, block, focus, rewrite, creator, convert, lazy, fmap } from '../../combinator';
+import { union, some, creator, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { html, define, defrag } from 'typed-dom/dom';

@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, validate, guard, fmap } from '../../combinator';
+import { union, some, guard, validate, fmap } from '../../combinator';
 import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';

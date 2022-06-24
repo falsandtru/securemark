@@ -2,7 +2,7 @@ import { Parser } from '../parser';
 import { union } from './union';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: combinator/union', () => {
+describe('Unit: combinator/data/parser/union', () => {
   describe('union', () => {
     const a: Parser<string, never> = source => {
       return source && source[0] === 'a'

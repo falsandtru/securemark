@@ -3,7 +3,7 @@ import { union } from './union';
 import { some } from './some';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: combinator/some', () => {
+describe('Unit: combinator/data/parser/some', () => {
   describe('some', () => {
     const a: Parser<string, never> = source => {
       return source && source[0] === 'a'

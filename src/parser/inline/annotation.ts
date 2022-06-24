@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
-import { union, some, validate, guard, context, precedence, creator, recursion, surround, lazy } from '../../combinator';
+import { union, some, creator, precedence, guard, validate, context, recursion, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { optimize } from './link';
 import { startLoose, trimNode } from '../visibility';

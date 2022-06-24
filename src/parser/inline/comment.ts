@@ -1,5 +1,5 @@
 import { CommentParser } from '../inline';
-import { union, some, validate, precedence, creator, surround, open, close, match, lazy } from '../../combinator';
+import { union, some, creator, precedence, validate, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { html, defrag } from 'typed-dom/dom';

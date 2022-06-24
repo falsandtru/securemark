@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, validate, verify, focus, creator, surround, lazy, fmap } from '../../combinator';
+import { sequence, creator, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isStartTightNodes } from '../visibility';

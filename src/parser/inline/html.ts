@@ -1,6 +1,6 @@
 import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
-import { union, subsequence, some, validate, focus, precedence, creator, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, creator, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isStartLooseNodes, blankWith } from '../visibility';
