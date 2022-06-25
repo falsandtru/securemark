@@ -22,6 +22,7 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]')), undefined);
       assert.deepStrictEqual(inspect(parser('!{}')), undefined);
+      assert.deepStrictEqual(inspect(parser('![{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ }')), undefined);

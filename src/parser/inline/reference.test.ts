@@ -18,11 +18,11 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[\n]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\na]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\\na]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[a\n]]')), [['', '[['], 'a\n]]']);
-      assert.deepStrictEqual(inspect(parser('[[a\\\n]]')), [['', '[['], 'a\\\n]]']);
-      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), [['', '[['], 'a\nb]]']);
-      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), [['', '[['], 'a\\\nb]]']);
-      assert.deepStrictEqual(inspect(parser('[[*a\nb*]]')), [['', '[['], '*a\nb*]]']);
+      assert.deepStrictEqual(inspect(parser('[[a\n]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\\\n]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[*a\nb*]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a]b]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[[a]]')), undefined);

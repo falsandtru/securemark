@@ -31,16 +31,15 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link
         ']',
         true,
         undefined,
-        ([, ns = [], rest], next) => next[0] === ']' ? undefined : optimize('[', ns, rest)),
+        ([, ns = [], rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? undefined : optimize('[', ns, rest)),
     ]))),
-    // 全体の失敗が確定した時も解析し予算を浪費している
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ]),
+  ], nodes => nodes[0][0] !== ''),
   ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
-    if (params.length === 0) return;
     assert(content[0] !== '' || params.length === 0);
     if (content[0] === '') return [content, rest];
+    if (params.length === 0) return;
     assert(params.every(p => typeof p === 'string'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;

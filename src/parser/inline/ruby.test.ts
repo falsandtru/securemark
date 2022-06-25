@@ -8,6 +8,7 @@ describe('Unit: parser/inline/ruby', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('[(b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[]()')), undefined);
       assert.deepStrictEqual(inspect(parser('[](b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[ ](b)')), undefined);
