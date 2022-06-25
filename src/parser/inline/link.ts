@@ -189,8 +189,11 @@ function decode(uri: string): string {
 export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string): Result<string> {
   let count = 0;
   for (let i = 0; i < ns.length - 1; i += 2) {
-    if (ns[i] !== '' || ns[i + 1] !== opener[0]) break;
-    ++count;
+    const fst = ns[i];
+    const snd = ns[i + 1] as string;
+    assert(typeof snd === 'string');
+    if (fst !== '' || snd[0] !== opener[0]) break;
+    count += snd.length;
   }
   return [['', opener[0].repeat(opener.length + count)], rest.slice(count)];
 }
