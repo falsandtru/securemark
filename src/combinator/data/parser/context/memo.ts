@@ -1,5 +1,3 @@
-import { splice } from 'spica/array';
-
 export class Memo {
   private memory: Record<string, readonly [any[], number]>[/* pos */] = [];
   public get length(): number {
@@ -12,6 +10,7 @@ export class Memo {
     syntax: number,
     state: number,
   ): readonly [any[], number] | undefined {
+    //console.log('get', position + this.offset, rule, syntax, state, this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`]);;
     return this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`];
   }
   public set(
@@ -23,9 +22,15 @@ export class Memo {
     offset: number,
   ): void {
     const record = this.memory[position + this.offset - 1] ??= {};
+    assert(!record[`${rule}:${syntax}:${state}`]);
     record[`${rule}:${syntax}:${state}`] = [nodes, offset];
+    //console.log('set', position + this.offset, rule, syntax, state);
   }
   public clear(position: number): void {
-    splice(this.memory, position + this.offset, this.memory.length - position + this.offset);
+    const memory = this.memory;
+    for (let i = position + this.offset, len = memory.length; i < len; ++i) {
+      memory.pop();
+    }
+    //console.log(position);
   }
 }
