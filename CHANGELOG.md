@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.258.0
+
+- Introduce memoization.
+
 ## 0.257.3
 
 - Fix styled table parser.

@@ -1,8 +1,9 @@
 import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
-import { union, subsequence, some, creator, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, syntax, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
+import { Rule } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
@@ -18,7 +19,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, creator(precedence(5, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, syntax(Rule.none, 5, union([
   focus(
     '<wbr>',
     () => [[h('wbr')], '']),
@@ -59,7 +60,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
           [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => tag,
     new Cache(10000))),
-]))))));
+])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),

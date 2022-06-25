@@ -1,12 +1,13 @@
 import { CommentParser } from '../inline';
-import { union, some, creator, precedence, validate, surround, open, close, match, lazy } from '../../combinator';
+import { union, some, syntax, validate, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
+import { Rule } from '../context';
 import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 
-export const comment: CommentParser = lazy(() => validate('[%', creator(precedence(4, match(
+export const comment: CommentParser = lazy(() => validate('[%', syntax(Rule.none, 4, match(
   /^\[(%+)\s/,
   memoize(
   ([, fence]) =>
@@ -21,4 +22,4 @@ export const comment: CommentParser = lazy(() => validate('[%', creator(preceden
         ]),
       ], rest],
       ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ([, fence]) => fence.length, []))))));
+  ([, fence]) => fence.length, [])))));

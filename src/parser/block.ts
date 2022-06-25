@@ -36,7 +36,7 @@ export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creator(error(
-  reset({ resources: { budget: 50 * 1000, recursion: 20 + 1 } },
+  reset({ resources: { budget: 50 * 1000, recursion: 20 } },
   union([
     emptyline,
     horizontalrule,

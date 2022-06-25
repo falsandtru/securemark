@@ -1,14 +1,15 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, creator, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
+import { sequence, syntax, creator, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
+import { Rule } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => validate('[', creator(fmap(verify(
+export const ruby: RubyParser = lazy(() => validate('[', syntax(Rule.none, 2, fmap(verify(
   sequence([
     surround('[', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')'),

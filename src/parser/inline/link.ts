@@ -1,11 +1,12 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser, TextLinkParser } from '../inline';
 import { Result, eval } from '../../combinator/data/parser';
-import { union, inits, tails, subsequence, some, creator, precedence, guard, validate, context, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, subsequence, some, guard, syntax, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { unescsource, str } from '../source';
+import { Rule, State } from '../context';
 import { trimNode } from '../visibility';
 import { stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -16,27 +17,16 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(2, bind(
-  guard(context => context.syntax?.inline?.link ?? true,
+export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link, 2, 10, bind(
+  guard(context => ~context.state! & State.link,
   fmap(subsequence([
-    context({ syntax: { inline: {
-      link: false,
-    }}},
+    state(State.link,
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
       surround(
         '[',
-        context({ syntax: { inline: {
-          annotation: false,
-          reference: false,
-          index: false,
-          label: false,
-          // Redundant
-          //link: false,
-          media: false,
-          autolink: false,
-        }}},
+        state(State.annotation | State.reference | State.index | State.label | State.media | State.autolink,
         some(inline, ']', [[/^\\?\n/, 9], [']', 2]])),
         ']',
         true,
@@ -68,9 +58,9 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], creator(10, prec
     if (el.classList.contains('invalid')) return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  })))));
+  }))));
 
-export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(10, precedence(2, bind(
+export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link, 2, 10, bind(
   reverse(tails([
     dup(surround('[', some(union([unescsource]), ']'), ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
@@ -93,7 +83,7 @@ export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], creator(
     assert(!el.classList.contains('invalid'));
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  })))));
+  }))));
 
 export const uri: LinkParser.ParameterParser.UriParser = fmap(union([
   open(/^[^\S\n]+/, str(/^\S+/)),

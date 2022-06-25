@@ -1,10 +1,11 @@
 import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, creator, precedence, guard, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creator, precedence, guard, syntax, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { textlink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
+import { Rule, State } from '../context';
 import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, shift, push } from 'spica/array';
@@ -17,9 +18,9 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => validate(['![', '!{'], creator(10, precedence(2, bind(verify(fmap(open(
+export const media: MediaParser = lazy(() => validate(['![', '!{'], syntax(Rule.media, 2, 10, bind(verify(fmap(open(
   '!',
-  guard(context => context.syntax?.inline?.media ?? true,
+  guard(context => ~context.state! & State.media,
   tails([
     dup(surround(
       '[',
@@ -52,12 +53,12 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creator(10, 
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
+    if (context.state! & State.link || cache && cache.tagName !== 'IMG') return [[el], rest];
     return fmap(
       textlink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
-  })))));
+  }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

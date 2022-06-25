@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, guard, validate, fmap } from '../../combinator';
+import { union, some, syntax, guard, validate, fmap } from '../../combinator';
 import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -8,11 +8,13 @@ import { hashtag, emoji } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
+import { Rule, State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
   validate(/^(?:[@#>0-9A-Za-z]|\S#)/,
-  guard(context => context.syntax?.inline?.autolink ?? true,
+  guard(context => ~context.state! & State.autolink,
+  syntax(Rule.autolink, 1,
   some(union([
     url,
     email,
@@ -29,5 +31,5 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched hashtag-like strings.
     str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', emoji), 'u')),
     anchor,
-  ])))),
+  ]))))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

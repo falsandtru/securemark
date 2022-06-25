@@ -4,6 +4,7 @@ import { Parser, eval } from '../combinator/data/parser';
 import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
+import { State } from './context';
 import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
@@ -22,7 +23,7 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Pa
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
-  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context = {},
+  { state = 0 }: MarkdownParser.Context = {},
 ): boolean {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
@@ -31,7 +32,8 @@ function hasVisible(
     }
     else {
       if (node.innerText.trimStart()) return true;
-      if (media && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
+      if (state & State.media ^ State.media &&
+          (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }
   }
   return false;

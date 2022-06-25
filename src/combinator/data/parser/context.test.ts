@@ -1,7 +1,7 @@
 import { Parser, Ctx } from '../parser';
 import { some } from './some';
 import { reset, context } from './context';
-import { creator } from './resource';
+import { creator } from './context';
 
 describe('Unit: combinator/data/parser/context', () => {
   interface Context extends Ctx {

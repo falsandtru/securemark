@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../parser';
-import { Delimiters } from './delimiter';
+import { Delimiters } from './context/delimiter';
 import { push } from 'spica/array';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];

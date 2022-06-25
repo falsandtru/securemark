@@ -17,17 +17,6 @@ export namespace MarkdownParser {
     readonly url?: URL;
     readonly id?: string;
     readonly header?: boolean;
-    readonly syntax?: {
-      readonly inline?: {
-        readonly annotation?: boolean;
-        readonly reference?: boolean;
-        readonly index?: boolean;
-        readonly label?: boolean;
-        readonly link?: boolean;
-        readonly media?: boolean;
-        readonly autolink?: boolean;
-      };
-    };
     readonly caches?: {
       readonly code?: Dict<string, HTMLElement>;
       readonly math?: Dict<string, HTMLElement>;

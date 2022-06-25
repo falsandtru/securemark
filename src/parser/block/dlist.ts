@@ -1,7 +1,8 @@
 import { DListParser } from '../block';
-import { union, inits, some, context, creator, block, line, validate, rewrite, open, trimEnd, lazy, fmap } from '../../combinator';
+import { union, inits, some, creator, state, block, line, validate, rewrite, open, trimEnd, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
+import { State } from '../context';
 import { localize } from '../locale';
 import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
@@ -10,14 +11,7 @@ import { push } from 'spica/array';
 export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   /^~[^\S\n]+(?=\S)/,
   some(inits([
-    context({ syntax: { inline: {
-      annotation: false,
-      reference: false,
-      index: false,
-      label: false,
-      link: false,
-      media: false,
-    }}},
+    state(State.annotation | State.reference | State.index | State.label | State.link | State.media,
     some(term)),
     some(desc),
   ]))),

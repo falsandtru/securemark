@@ -1,13 +1,14 @@
 import { IListParser } from '../block';
-import { union, inits, some, context, creator, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, some, creator, state, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_, invalid } from './olist';
 import { inline } from '../inline';
+import { State } from '../context';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
   /^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/,
-  context({ syntax: { inline: { media: false } } },
+  state(State.media,
   ilist_))));
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(

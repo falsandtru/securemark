@@ -1,10 +1,11 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, creator, precedence, some, surround, open, lazy, bind } from '../../combinator';
+import { union, syntax, some, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
+import { Rule } from '../context';
 import { startTight, blankWith } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
@@ -26,7 +27,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   ])),
 ])));
 
-export const emstrong: EmStrongParser = lazy(() => creator(precedence(1, surround(
+export const emstrong: EmStrongParser = lazy(() => syntax(Rule.none, 1, surround(
   str('***'),
   startTight(some(union([
     some(inline, blankWith('*')),
@@ -57,4 +58,4 @@ export const emstrong: EmStrongParser = lazy(() => creator(precedence(1, surroun
     }
     assert(false);
   },
-  ([as, bs], rest) => [unshift(as, bs), rest]))));
+  ([as, bs], rest) => [unshift(as, bs), rest])));

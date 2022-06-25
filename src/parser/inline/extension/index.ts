@@ -1,27 +1,20 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, creator, precedence, guard, validate, context, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, syntax, creator, precedence, guard, state, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
+import { Rule, State } from '../../context';
 import { startTight, trimBlankEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => validate('[#', creator(precedence(2, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => validate('[#', syntax(Rule.index, 2, fmap(indexee(surround(
   '[#',
-  guard(context => context.syntax?.inline?.index ?? true,
+  guard(context => ~context.state! & State.index,
+  state(State.annotation | State.reference | State.index | State.label | State.link | State.media | State.autolink,
   startTight(
-  context({ syntax: { inline: {
-    annotation: false,
-    reference: false,
-    index: false,
-    label: false,
-    link: false,
-    media: false,
-    autolink: false,
-  }}},
   open(stropt(/^\|?/), trimBlankEnd(some(union([
     signature,
     inline,
@@ -37,7 +30,7 @@ export const index: IndexParser = lazy(() => validate('[#', creator(precedence(2
         href: el.id ? `#${el.id}` : undefined,
       },
       el.childNodes),
-  ])))));
+  ]))));
 
 const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   '|#',

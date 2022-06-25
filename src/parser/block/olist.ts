@@ -1,10 +1,11 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, context, creator, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creator, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
+import { State } from '../context';
 import { trimBlank } from '../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
@@ -22,7 +23,7 @@ export const olist: OListParser = lazy(() => block(validate(
     /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source,
     /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source,
   ].join('|')),
-  context({ syntax: { inline: { media: false } } },
+  state(State.media,
   olist_))));
 
 export const olist_: OListParser = lazy(() => block(union([

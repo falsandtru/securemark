@@ -5,7 +5,6 @@ export * from './combinator/data/parser/sequence';
 export * from './combinator/data/parser/subsequence';
 export * from './combinator/data/parser/some';
 export * from './combinator/data/parser/context';
-export * from './combinator/data/parser/resource';
 export * from './combinator/control/constraint/block';
 export * from './combinator/control/constraint/line';
 export * from './combinator/control/constraint/contract';

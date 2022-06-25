@@ -2,6 +2,7 @@ import { Array } from 'spica/global';
 import { ExtensionParser } from '../../inline';
 import { union, guard, creator, validate, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
+import { State } from '../../context';
 import { html } from 'typed-dom/dom';
 
 const body = str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
@@ -12,7 +13,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate
 ])));
 
 export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creator(fmap(
-  guard(context => context.syntax?.inline?.label ?? true,
+  guard(context => ~context.state! & State.label,
   union([
     surround('[', body, ']'),
     body,

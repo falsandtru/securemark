@@ -2,9 +2,10 @@ import { undefined, location } from 'spica/global';
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
+import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
-import { segment, validate, MAX_INPUT_SIZE } from '../segment';
+import { backtrackable } from '../context';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
@@ -23,6 +24,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
+    backtrackable,
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);
