@@ -31,7 +31,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link
         ']',
         true,
         undefined,
-        ([, ns = [], rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? undefined : optimize('[', ns, rest)),
+        ([, ns = [], rest], next) => next[0] === ']' ? undefined : optimize('[', ns, rest, next)),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ], nodes => nodes[0][0] !== ''),
@@ -186,7 +186,8 @@ function decode(uri: string): string {
   }
 }
 
-export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string): Result<string> {
+export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string, next: string): Result<string> {
+  if (next[+(next[0] === '\\')] === '\n') return;
   let count = 0;
   for (let i = 0; i < ns.length - 1; i += 2) {
     const fst = ns[i];

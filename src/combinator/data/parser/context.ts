@@ -76,7 +76,7 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
-    const cache = syntax && context.memo?.get(pos, context.rule, syntax, context.state);
+    const cache = syntax && context.memo?.get(pos, syntax, context.state);
     const result: Result<T> = cache
       ? [cache[0], source.slice(cache[1])]
       : parser!(source, context);
@@ -89,8 +89,8 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
       if (syntax) {
         if (r & context.backtrackable) {
           context.memo ??= new Memo();
-          cache ?? context.memo.set(pos, context.rule, syntax, context.state, eval(result), source.length - exec(result).length);
-          assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, context.rule, syntax, context.state));
+          cache ?? context.memo.set(pos, syntax, context.state, eval(result), source.length - exec(result).length);
+          assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, context.state));
         }
         else if (context.memo?.length! >= pos) {
           assert(!(r & context.backtrackable));

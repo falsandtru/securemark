@@ -6,25 +6,23 @@ export class Memo {
   public offset = 0;
   public get(
     position: number,
-    rule: number,
     syntax: number,
     state: number,
   ): readonly [any[], number] | undefined {
-    //console.log('get', position + this.offset, rule, syntax, state, this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`]);;
-    return this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`];
+    //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
+    return this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
   }
   public set(
     position: number,
-    rule: number,
     syntax: number,
     state: number,
     nodes: any[],
     offset: number,
   ): void {
     const record = this.memory[position + this.offset - 1] ??= {};
-    assert(!record[`${rule}:${syntax}:${state}`]);
-    record[`${rule}:${syntax}:${state}`] = [nodes, offset];
-    //console.log('set', position + this.offset, rule, syntax, state);
+    assert(!record[`${syntax}:${state}`]);
+    record[`${syntax}:${state}`] = [nodes.slice(), offset];
+    //console.log('set', position + this.offset, syntax, state);
   }
   public clear(position: number): void {
     const memory = this.memory;
