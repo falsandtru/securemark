@@ -2073,8 +2073,6 @@ __exportStar(__webpack_require__(5418), exports);
 
 __exportStar(__webpack_require__(5684), exports);
 
-__exportStar(__webpack_require__(9435), exports);
-
 __exportStar(__webpack_require__(2804), exports);
 
 __exportStar(__webpack_require__(9315), exports);
@@ -2242,7 +2240,7 @@ exports.isEmpty = isEmpty;
 /***/ }),
 
 /***/ 7957:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -2252,11 +2250,18 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.convert = void 0;
 
+const global_1 = __webpack_require__(4128);
+
 function convert(conv, parser) {
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
     source = conv(source);
-    return source === '' ? [[], ''] : parser(source, context);
+    if (source === '') return [[], ''];
+    const memo = context.memo;
+    context.memo = global_1.undefined;
+    const result = parser(source, context);
+    context.memo = memo;
+    return result;
   };
 }
 
@@ -2533,11 +2538,14 @@ const parser_1 = __webpack_require__(6728);
 
 function focus(scope, parser) {
   const match = typeof scope === 'string' ? source => source.slice(0, scope.length) === scope ? scope : '' : source => source.match(scope)?.[0] ?? '';
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
     const src = match(source);
     if (src === '') return;
+    const memo = context.memo;
+    context.memo = global_1.undefined;
     const result = parser(src, context);
+    context.memo = memo;
     if (!result) return;
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : global_1.undefined;
   };
@@ -2546,12 +2554,17 @@ function focus(scope, parser) {
 exports.focus = focus;
 
 function rewrite(scope, parser) {
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
+    const memo = context.memo;
+    context.memo = global_1.undefined;
     const res1 = scope(source, context);
+    context.memo = memo;
     if (!res1 || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
+    context.memo = global_1.undefined;
     const res2 = parser(src, context);
+    context.memo = memo;
     if (!res2) return;
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : global_1.undefined;
   };
@@ -2770,61 +2783,141 @@ exports.check = check;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.precedence = exports.context = exports.reset = exports.guard = void 0;
+exports.state = exports.guard = exports.precedence = exports.creator = exports.syntax = exports.context = exports.reset = void 0;
 
 const global_1 = __webpack_require__(4128);
 
 const alias_1 = __webpack_require__(5406);
 
-const assign_1 = __webpack_require__(4401);
+const parser_1 = __webpack_require__(6728);
 
-const type_1 = __webpack_require__(5177);
-
-const memoize_1 = __webpack_require__(1808);
-
-function guard(f, parser) {
-  return (source, context) => f(context) ? parser(source, context) : global_1.undefined;
-}
-
-exports.guard = guard;
+const memo_1 = __webpack_require__(1090);
 
 function reset(base, parser) {
-  return (source, context) => parser(source, inherit((0, alias_1.ObjectCreate)(context), base));
+  const changes = global_1.Object.entries(base);
+  const values = (0, global_1.Array)(changes.length);
+  return (source, context) => apply(parser, source, (0, alias_1.ObjectCreate)(context), changes, values);
 }
 
 exports.reset = reset;
 
 function context(base, parser) {
-  const override = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
-  return (source, context) => parser(source, override(context));
+  const changes = global_1.Object.entries(base);
+  const values = (0, global_1.Array)(changes.length);
+  return (source, context) => apply(parser, source, context, changes, values);
 }
 
 exports.context = context;
-const inherit = (0, assign_1.template)((prop, target, source) => {
-  //assert(Object.freeze(source));
-  if (target[prop] === source[prop]) return;
 
-  switch (prop) {
-    case 'resources':
-      if (prop in target && !(0, alias_1.hasOwnProperty)(target, prop)) return;
-      return target[prop] = (0, alias_1.ObjectCreate)(source[prop]);
+function apply(parser, source, context, changes, values) {
+  if (context) for (let i = 0; i < changes.length; ++i) {
+    const change = changes[i];
+    const prop = change[0];
+
+    switch (prop) {
+      case 'resources':
+        if (prop in context && !(0, alias_1.hasOwnProperty)(context, prop)) break; // @ts-expect-error
+
+        context[prop] = (0, alias_1.ObjectCreate)(change[1]);
+        break;
+
+      default:
+        values[i] = context[prop];
+        context[prop] = change[1];
+    }
+  }
+  const result = parser(source, context);
+  if (context) for (let i = 0; i < changes.length; ++i) {
+    const change = changes[i];
+    const prop = change[0];
+
+    switch (prop) {
+      case 'resources':
+        break;
+
+      default:
+        context[prop] = values[i];
+        values[i] = global_1.undefined;
+    }
+  }
+  return result;
+}
+
+function syntax(syntax, precedence, cost, parser) {
+  if (typeof cost === 'function') {
+    parser = cost;
+    cost = 1;
   }
 
-  switch ((0, type_1.type)(source[prop])) {
-    case 'Object':
-      //assert(Object.freeze(source[prop]));
-      switch ((0, type_1.type)(target[prop])) {
-        case 'Object':
-          return target[prop] = inherit((0, alias_1.ObjectCreate)(target[prop]), source[prop]);
+  return (source, context) => {
+    if (source === '') return;
+    const r = context.rule ?? 0;
+    context.rule = r | syntax;
+    context.backtrackable ??= ~0;
+    context.state ??= 0;
+    const p = context.precedence;
+    context.precedence = precedence;
+    const {
+      resources = {
+        budget: 1,
+        recursion: 1
+      }
+    } = context;
+    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    --resources.recursion;
+    const pos = source.length;
+    const cache = context.memo?.get(pos, context.rule, syntax, context.state);
+    const result = cache ? [cache[0], source.slice(cache[1])] : parser(source, context);
+    ++resources.recursion;
 
-        default:
-          return target[prop] = source[prop];
+    if (result) {
+      if (!cache) {
+        resources.budget -= cost;
       }
 
-    default:
-      return target[prop] = source[prop];
-  }
-});
+      if (syntax) {
+        if (r & context.backtrackable) {
+          context.memo ??= new memo_1.Memo();
+          cache ?? context.memo.set(pos, context.rule, syntax, context.state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result).length);
+        } else if (context.memo?.length >= pos) {
+          context.memo.clear(pos);
+        }
+      }
+    }
+
+    context.precedence = p;
+    context.rule = r;
+    return result;
+  };
+}
+
+exports.syntax = syntax;
+
+function creator(cost, parser) {
+  if (typeof cost === 'function') return creator(1, cost);
+  return (source, context) => {
+    const {
+      resources = {
+        budget: 1,
+        recursion: 1
+      }
+    } = context;
+    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    --resources.recursion;
+    const result = parser(source, context);
+    ++resources.recursion;
+
+    if (result) {
+      resources.budget -= cost;
+    }
+
+    return result;
+  };
+}
+
+exports.creator = creator;
 
 function precedence(precedence, parser) {
   return (source, context) => {
@@ -2838,9 +2931,32 @@ function precedence(precedence, parser) {
 
 exports.precedence = precedence;
 
+function guard(f, parser) {
+  return (source, context) => f(context) ? parser(source, context) : global_1.undefined;
+}
+
+exports.guard = guard;
+
+function state(state, positive, parser) {
+  if (typeof positive === 'function') {
+    parser = positive;
+    positive = true;
+  }
+
+  return (source, context) => {
+    const s = context.state ?? 0;
+    context.state = positive ? s | state : s & ~state;
+    const result = parser(source, context);
+    context.state = s;
+    return result;
+  };
+}
+
+exports.state = state;
+
 /***/ }),
 
-/***/ 7603:
+/***/ 1435:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2939,6 +3055,47 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
 
 /***/ }),
 
+/***/ 1090:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Memo = void 0;
+
+const array_1 = __webpack_require__(8112);
+
+class Memo {
+  constructor() {
+    this.memory = [];
+  }
+
+  get length() {
+    return this.memory.length;
+  }
+
+  get(position, rule, syntax, state) {
+    return this.memory[position - 1]?.[`${rule}:${syntax}:${state}`];
+  }
+
+  set(position, rule, syntax, state, nodes, offset) {
+    const record = this.memory[position - 1] ??= {};
+    record[`${rule}:${syntax}:${state}`] = [nodes, offset];
+  }
+
+  clear(position) {
+    (0, array_1.splice)(this.memory, position, this.memory.length - position);
+  }
+
+}
+
+exports.Memo = Memo;
+
+/***/ }),
+
 /***/ 2491:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -2976,87 +3133,6 @@ function inits(parsers) {
 }
 
 exports.inits = inits;
-
-/***/ }),
-
-/***/ 9435:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.recursion = exports.uncreator = exports.creator = void 0;
-
-function creator(cost, parser) {
-  if (typeof cost === 'function') return creator(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        budget: 1,
-        recursion: 1
-      }
-    } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
-    const result = parser(source, context);
-    ++resources.recursion;
-
-    if (result) {
-      resources.budget -= cost;
-    }
-
-    return result;
-  };
-}
-
-exports.creator = creator;
-
-function uncreator(cost, parser) {
-  if (typeof cost === 'function') return uncreator(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        budget: 1,
-        recursion: 1
-      }
-    } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    ++resources.recursion;
-    const result = parser(source, context);
-    --resources.recursion;
-
-    if (result) {
-      resources.budget += cost;
-    }
-
-    return result;
-  };
-}
-
-exports.uncreator = uncreator;
-
-function recursion(cost, parser) {
-  if (typeof cost === 'function') return recursion(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        recursion: 1
-      }
-    } = context;
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
-    const result = parser(source, context);
-    ++resources.recursion;
-    return result;
-  };
-}
-
-exports.recursion = recursion;
 
 /***/ }),
 
@@ -3115,7 +3191,7 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
-const delimiter_1 = __webpack_require__(7603);
+const delimiter_1 = __webpack_require__(1435);
 
 const array_1 = __webpack_require__(8112);
 
@@ -3361,11 +3437,13 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const segment_1 = __webpack_require__(9002);
+
 const header_1 = __webpack_require__(5702);
 
 const block_1 = __webpack_require__(4032);
 
-const segment_1 = __webpack_require__(9002);
+const context_1 = __webpack_require__(6484);
 
 const normalize_1 = __webpack_require__(185);
 
@@ -3381,7 +3459,8 @@ const array_1 = __webpack_require__(8112);
 
 function bind(target, settings) {
   let context = { ...settings,
-    host: settings.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin)
+    host: settings.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+    backtrackable: context_1.backtrackable
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
@@ -3709,11 +3788,13 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const segment_1 = __webpack_require__(9002);
+
 const header_1 = __webpack_require__(5702);
 
 const block_1 = __webpack_require__(4032);
 
-const segment_1 = __webpack_require__(9002);
+const context_1 = __webpack_require__(6484);
 
 const normalize_1 = __webpack_require__(185);
 
@@ -3738,7 +3819,8 @@ function parse(source, opts = {}, context) {
     caches: context?.caches,
     ...(context?.resources && {
       resources: context.resources
-    })
+    }),
+    backtrackable: context_1.backtrackable
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
@@ -3836,7 +3918,7 @@ const random_1 = __webpack_require__(7325);
 exports.block = (0, combinator_1.creator)(error((0, combinator_1.reset)({
   resources: {
     budget: 50 * 1000,
-    recursion: 20 + 1
+    recursion: 20
   }
 }, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
 
@@ -3997,18 +4079,19 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      reference: false,
-      index: false,
-      label: false,
-      link: false,
-      media: false
-    }
-  }
-}, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))]))));
+exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 8
+/* State.label */
+| 4
+/* State.link */
+| 2
+/* State.media */
+, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))]))));
 const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
 const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
 
@@ -4295,13 +4378,9 @@ const memoize_1 = __webpack_require__(1808);
 
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
-exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.context)({
-  syntax: {
-    inline: {
-      media: false
-    }
-  }
-}, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
+exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.state)(2
+/* State.media */
+, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
   class: 'figindex'
 }), (0, dom_1.html)('span', {
   class: 'figtext'
@@ -4825,24 +4904,21 @@ const visibility_1 = __webpack_require__(7618);
 const dom_1 = __webpack_require__(3252);
 
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('#', (0, combinator_1.focus)(/^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/, (0, combinator_1.some)((0, combinator_1.line)(source => [[source], ''])))));
-exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      reference: false,
-      index: false,
-      label: false,
-      link: false,
-      media: false
-    }
-  }
-}, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      autolink: false
-    }
-  }
-}, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
+exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.state)(64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 8
+/* State.label */
+| 4
+/* State.link */
+| 2
+/* State.media */
+, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.state)(1
+/* State.autolink */
+, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
   class: 'invalid',
   'data-invalid-syntax': 'heading',
   'data-invalid-type': 'syntax',
@@ -4891,13 +4967,9 @@ const inline_1 = __webpack_require__(1160);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      media: false
-    }
-  }
-}, exports.ilist_))));
+exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(2
+/* State.media */
+, exports.ilist_))));
 exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.some)(inline_1.inline), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
   'data-invalid-syntax': 'list',
@@ -4984,13 +5056,9 @@ const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
-exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      media: false
-    }
-  }
-}, exports.olist_))));
+exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(2
+/* State.media */
+, exports.olist_))));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
@@ -5380,13 +5448,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      media: false
-    }
-  }
-}, exports.ulist_))));
+exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(2
+/* State.media */
+, exports.ulist_))));
 exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
   class: 'checkbox'
@@ -5405,6 +5469,30 @@ function format(el) {
 
   return el;
 }
+
+/***/ }),
+
+/***/ 6484:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.backtrackable = void 0;
+exports.backtrackable = 0 | 32
+/* Rule.annotation */
+| 4096
+/* Rule.reference */
+| 1024
+/* Rule.index */
+| 256
+/* Rule.link */
+| 64
+/* Rule.media */
+;
 
 /***/ }),
 
@@ -5578,24 +5666,19 @@ const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.validate)('((', (0, combinator_1.surround)('((', (0, combinator_1.guard)(context => context.syntax?.inline?.annotation ?? true, (0, visibility_1.startLoose)((0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      // Redundant
-      //reference: true,
-      media: false // Redundant
-      //index: true,
-      //label: true,
-      //link: true,
-      //autolink: true,
-
-    }
-  },
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('((', (0, combinator_1.syntax)(32
+/* Rule.annotation */
+, 6, (0, combinator_1.surround)('((', (0, combinator_1.guard)(context => ~context.state & 64
+/* State.annotation */
+, (0, combinator_1.state)(64
+/* State.annotation */
+| 2
+/* State.media */
+, (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: global_1.undefined
-}, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')')), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
+}, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))))));
+}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))));
 
 /***/ }),
 
@@ -5630,11 +5713,15 @@ const source_1 = __webpack_require__(6743);
 
 const util_1 = __webpack_require__(9437);
 
-exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S#)/, (0, combinator_1.guard)(context => context.syntax?.inline?.autolink ?? true, (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
+exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S#)/, (0, combinator_1.guard)(context => ~context.state & 1
+/* State.autolink */
+, (0, combinator_1.syntax)(2
+/* Rule.autolink */
+, 1, (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
 (0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
 (0, source_1.str)(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), // Escape invalid leading characters.
 (0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum, // Escape unmatched hashtag-like strings.
-(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')), anchor_1.anchor])))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
+(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')), anchor_1.anchor]))))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
 
 /***/ }),
 
@@ -5856,12 +5943,26 @@ const dom_1 = __webpack_require__(3252);
 const array_1 = __webpack_require__(8112);
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(0, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(2, (0, source_1.str)(index)), (0, source_1.str)(')')), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]])), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.syntax)(0
+/* Rule.none */
+, 2, (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')'))), (0, combinator_1.syntax)(128
+/* Rule.bracket */
+, 2, (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]]), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(2, (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0))))), (0, source_1.str)('）')), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]])), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest])), (0, combinator_1.syntax)(0
+/* Rule.none */
+, 2, (0, combinator_1.surround)((0, source_1.str)('（'), (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), (0, source_1.str)('）'))), (0, combinator_1.syntax)(128
+/* Rule.bracket */
+, 2, (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]]), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), // Control media blinking in editing rather than control confusion of pairs of quote marks.
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])])));
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])), (0, combinator_1.syntax)(128
+/* Rule.bracket */
+, 2, (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]]), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest])), (0, combinator_1.syntax)(128
+/* Rule.bracket */
+, 2, (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]]), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])), // Control media blinking in editing rather than control confusion of pairs of quote marks.
+(0, combinator_1.syntax)(1
+/* Rule.quote */
+, 8, (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]]), (0, source_1.str)('"'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]))]));
 
 /***/ }),
 
@@ -5913,11 +6014,13 @@ const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
 
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.creator)((0, combinator_1.precedence)(4, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0
+/* Rule.none */
+, 4, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'comment'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
-}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), ([, fence]) => fence.length, []))))));
+}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), ([, fence]) => fence.length, [])))));
 
 /***/ }),
 
@@ -5944,7 +6047,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -5975,7 +6080,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('*'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('*'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6008,7 +6115,9 @@ const array_1 = __webpack_require__(8112);
 
 const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
 const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
-exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('***'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
+exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('***'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
   switch (cs[0]) {
     case '***':
       return [[(0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))])], rest];
@@ -6019,7 +6128,7 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, co
     case '*':
       return (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' ? [[(0, dom_1.html)('strong', (0, array_1.unshift)([(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], (0, dom_1.defrag)(ds)))], rest.slice(2)] : [(0, array_1.unshift)(['**', (0, dom_1.html)('em', (0, dom_1.defrag)(bs))], ds), rest])(rest, context) ?? [['**', (0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest];
   }
-}, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+}, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6109,23 +6218,29 @@ const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => context.syntax?.inline?.index ?? true, (0, visibility_1.startTight)((0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      reference: false,
-      index: false,
-      label: false,
-      link: false,
-      media: false,
-      autolink: false
-    }
-  }
-}, (0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.syntax)(1024
+/* Rule.index */
+, 2, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => ~context.state & 16
+/* State.index */
+, (0, combinator_1.state)(64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 8
+/* State.label */
+| 4
+/* State.link */
+| 2
+/* State.media */
+| 1
+/* State.autolink */
+, (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : global_1.undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : global_1.undefined
-}, el.childNodes)])))));
+}, el.childNodes)]))));
 const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': (0, indexee_1.identity)(ns.join('')).slice(6)
@@ -6229,11 +6344,11 @@ const combinator_1 = __webpack_require__(2087);
 
 const index_1 = __webpack_require__(4479);
 
-const util_1 = __webpack_require__(9437);
-
 const dom_1 = __webpack_require__(3252);
 
-exports.indexer = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, util_1.clean)((0, combinator_1.union)([(0, combinator_1.focus)('[#]', () => [[(0, dom_1.html)('a', {
+exports.indexer = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, combinator_1.state)(16
+/* State.index */
+, false, (0, combinator_1.union)([(0, combinator_1.focus)('[#]', () => [[(0, dom_1.html)('a', {
   href: '#'
 })], '']), index_1.index])), /^\s*$/), // Indexer is invisible but invalids must be visible.
 ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, dom_1.html)('span', {
@@ -6264,7 +6379,9 @@ const dom_1 = __webpack_require__(3252);
 
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])));
-exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.guard)(context => context.syntax?.inline?.label ?? true, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
+exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.guard)(context => ~context.state & 8
+/* State.label */
+, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
   class: 'label',
   'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
 }, text)])));
@@ -6320,12 +6437,14 @@ const array_1 = __webpack_require__(8112); // Don't use the symbols already used
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 
-exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
+exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.syntax)(0
+/* Rule.none */
+, 2, (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
   class: 'invalid',
   'data-invalid-syntax': 'extension',
   'data-invalid-type': 'syntax',
   'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`
-}, (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])))));
+}, (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -6366,8 +6485,10 @@ const attrspecs = {
 };
 global_1.Object.setPrototypeOf(attrspecs, null);
 global_1.Object.values(attrspecs).forEach(o => global_1.Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.creator)((0, combinator_1.precedence)(5, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))]))))));
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.syntax)(0
+/* Rule.none */
+, 5, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
 
@@ -6481,7 +6602,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6522,26 +6645,25 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.creator)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.guard)(context => context.syntax?.inline?.link ?? true, (0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.context)({
-  syntax: {
-    inline: {
-      link: false
-    }
-  }
-}, (0, combinator_1.dup)((0, combinator_1.union)([(0, combinator_1.surround)('[', inline_1.media, ']'), (0, combinator_1.surround)('[', inline_1.shortmedia, ']'), (0, combinator_1.surround)('[', (0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      reference: false,
-      index: false,
-      label: false,
-      // Redundant
-      //link: false,
-      media: false,
-      autolink: false
-    }
-  }
-}, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' ? global_1.undefined : optimize('[', ns, rest))]))), // 全体の失敗が確定した時も解析し予算を浪費している
+exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.syntax)(256
+/* Rule.link */
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.guard)(context => ~context.state & 4
+/* State.link */
+, (0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.state)(4
+/* State.link */
+, (0, combinator_1.dup)((0, combinator_1.union)([(0, combinator_1.surround)('[', inline_1.media, ']'), (0, combinator_1.surround)('[', inline_1.shortmedia, ']'), (0, combinator_1.surround)('[', (0, combinator_1.state)(64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 8
+/* State.label */
+| 2
+/* State.media */
+| 1
+/* State.autolink */
+, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' ? global_1.undefined : optimize('[', ns, rest))]))), // 全体の失敗が確定した時も解析し予算を浪費している
 (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
   if (params.length === 0) return;
   if (content[0] === '') return [content, rest];
@@ -6551,14 +6673,16 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   if (el.classList.contains('invalid')) return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
-})))));
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.creator)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
+}))));
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.syntax)(256
+/* Rule.link */
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
   params.shift();
   (0, visibility_1.trimNode)(content);
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
-})))));
+}))));
 exports.uri = (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]), ([uri]) => ['\r', uri]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
 
@@ -6674,7 +6798,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('=='), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('=='), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -6751,7 +6877,11 @@ const optspec = {
   rel: global_1.undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.creator)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.guard)(context => context.syntax?.inline?.media ?? true, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]))), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], (0, array_1.shift)(bs)[1]] : [[''], (0, array_1.shift)(as)[1]]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.syntax)(64
+/* Rule.media */
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.guard)(context => ~context.state & 2
+/* State.media */
+, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]))), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], (0, array_1.shift)(bs)[1]] : [[''], (0, array_1.shift)(as)[1]]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
   let cache;
@@ -6769,11 +6899,13 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
     el.style.aspectRatio = el.getAttribute('aspect-ratio');
   }
 
-  if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
+  if (context.state & 4
+  /* State.link */
+  || cache && cache.tagName !== 'IMG') return [[el], rest];
   return (0, combinator_1.fmap)(link_1.textlink, ([link]) => [(0, dom_1.define)(link, {
     target: '_blank'
   }, [el])])(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
-})))));
+}))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
 
@@ -6846,21 +6978,19 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[[', (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => context.syntax?.inline?.reference ?? true, (0, visibility_1.startLoose)((0, combinator_1.context)({
-  syntax: {
-    inline: {
-      annotation: false,
-      reference: false,
-      media: false // Redundant
-      //index: true,
-      //label: true,
-      //link: true,
-      //autolink: true,
-
-    }
-  },
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[[', (0, combinator_1.syntax)(4096
+/* Rule.reference */
+, 6, (0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => ~context.state & 32
+/* State.reference */
+, (0, combinator_1.state)(64
+/* State.annotation */
+| 32
+/* State.reference */
+| 2
+/* State.media */
+, (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']')), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))))));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))));
 const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 
 function attributes(ns) {
@@ -6906,7 +7036,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'), (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')')]), ([texts]) => (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(0
+/* Rule.none */
+, 2, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'), (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')')]), ([texts]) => (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
   texts[texts.length - 1] === '' && texts.pop();
 
   switch (true) {
@@ -6995,7 +7127,9 @@ const url_1 = __webpack_require__(4318);
 
 const media_1 = __webpack_require__(1303);
 
-exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.guard)(context => context.syntax?.inline?.media ?? true, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
+exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.guard)(context => ~context.state & 2
+/* State.media */
+, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
 
 /***/ }),
 
@@ -7024,7 +7158,9 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('**'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 1, (0, combinator_1.surround)((0, source_1.str)('**'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
@@ -7051,9 +7187,11 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(2, (0, combinator_1.surround)('{{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
+exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
+/* Rule.none */
+, 2, (0, combinator_1.surround)('{{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
-}, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest], ([, ns = [], rest], next) => next[0] === '}' ? global_1.undefined : (0, link_1.optimize)('{{', ns, rest))))));
+}, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest], ([, ns = [], rest], next) => next[0] === '}' ? global_1.undefined : (0, link_1.optimize)('{{', ns, rest))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
 
 /***/ }),
@@ -7945,7 +8083,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 /***/ }),
 
 /***/ 9437:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -7953,25 +8091,7 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.clean = void 0;
-
-const memoize_1 = __webpack_require__(1808);
-
-function clean(parser) {
-  const clean = (0, memoize_1.memoize)(context => ({
-    resources: context.resources,
-    precedence: context.precedence,
-    delimiters: context.delimiters,
-    host: context.host,
-    url: context.url,
-    id: context.id,
-    header: context.header,
-    cache: context.caches
-  }), new WeakMap());
-  return (source, context) => parser(source, context.syntax ? clean(context) : context);
-}
-
-exports.clean = clean;
+exports.stringify = void 0;
 
 function stringify(nodes) {
   let acc = '';
@@ -8029,11 +8149,7 @@ function visualize(parser) {
 exports.visualize = visualize;
 
 function hasVisible(nodes, {
-  syntax: {
-    inline: {
-      media = true
-    } = {}
-  } = {}
+  state = 0
 } = {}) {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
@@ -8042,7 +8158,11 @@ function hasVisible(nodes, {
       if (node && node.trimStart()) return true;
     } else {
       if (node.innerText.trimStart()) return true;
-      if (media && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
+      if (state & 2
+      /* State.media */
+      ^ 2
+      /* State.media */
+      && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }
   }
 
