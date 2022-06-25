@@ -2543,9 +2543,9 @@ function focus(scope, parser) {
     const src = match(source);
     if (src === '') return;
     const memo = context.memo;
-    context.memo = global_1.undefined;
+    memo && (memo.offset = source.length - src.length);
     const result = parser(src, context);
-    context.memo = memo;
+    memo && (memo.offset = source.length + src.length);
     if (!result) return;
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : global_1.undefined;
   };
@@ -2562,9 +2562,9 @@ function rewrite(scope, parser) {
     context.memo = memo;
     if (!res1 || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
-    context.memo = global_1.undefined;
+    memo && (memo.offset = source.length - src.length);
     const res2 = parser(src, context);
-    context.memo = memo;
+    memo && (memo.offset = source.length + src.length);
     if (!res2) return;
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : global_1.undefined;
   };
@@ -2867,7 +2867,7 @@ function syntax(syntax, precedence, cost, parser) {
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
-    const cache = context.memo?.get(pos, context.rule, syntax, context.state);
+    const cache = syntax && context.memo?.get(pos, context.rule, syntax, context.state);
     const result = cache ? [cache[0], source.slice(cache[1])] : parser(source, context);
     ++resources.recursion;
 
@@ -3056,7 +3056,7 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
 /***/ }),
 
 /***/ 1090:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -3066,11 +3066,10 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.Memo = void 0;
 
-const array_1 = __webpack_require__(8112);
-
 class Memo {
   constructor() {
     this.memory = [];
+    this.offset = 0;
   }
 
   get length() {
@@ -3078,16 +3077,22 @@ class Memo {
   }
 
   get(position, rule, syntax, state) {
-    return this.memory[position - 1]?.[`${rule}:${syntax}:${state}`];
+    //console.log('get', position + this.offset, rule, syntax, state, this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`]);;
+    return this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`];
   }
 
   set(position, rule, syntax, state, nodes, offset) {
-    const record = this.memory[position - 1] ??= {};
-    record[`${rule}:${syntax}:${state}`] = [nodes, offset];
+    const record = this.memory[position + this.offset - 1] ??= {};
+    record[`${rule}:${syntax}:${state}`] = [nodes, offset]; //console.log('set', position + this.offset, rule, syntax, state);
   }
 
   clear(position) {
-    (0, array_1.splice)(this.memory, position, this.memory.length - position);
+    const memory = this.memory;
+
+    for (let i = position + this.offset, len = memory.length; i < len; ++i) {
+      memory.pop();
+    } //console.log(position);
+
   }
 
 }
@@ -3113,7 +3118,7 @@ const parser_1 = __webpack_require__(6728);
 
 const array_1 = __webpack_require__(8112);
 
-function inits(parsers) {
+function inits(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return (source, context) => {
     let rest = source;
@@ -3126,6 +3131,7 @@ function inits(parsers) {
       if (!result) break;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
       rest = (0, parser_1.exec)(result);
+      if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) break;
     }
 
     return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
@@ -3153,7 +3159,7 @@ const parser_1 = __webpack_require__(6728);
 
 const array_1 = __webpack_require__(8112);
 
-function sequence(parsers) {
+function sequence(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return (source, context) => {
     let rest = source;
@@ -3166,6 +3172,7 @@ function sequence(parsers) {
       if (!result) return;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
       rest = (0, parser_1.exec)(result);
+      if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) return;
     }
 
     return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
@@ -3251,8 +3258,8 @@ const union_1 = __webpack_require__(6366);
 
 const inits_1 = __webpack_require__(2491);
 
-function subsequence(parsers) {
-  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1))]) : parsers[i]));
+function subsequence(parsers, resume) {
+  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1), resume)], resume) : parsers[i]));
 }
 
 exports.subsequence = subsequence;
@@ -3274,8 +3281,8 @@ const union_1 = __webpack_require__(6366);
 
 const sequence_1 = __webpack_require__(2287);
 
-function tails(parsers) {
-  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i))));
+function tails(parsers, resume) {
+  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i), resume)));
 }
 
 exports.tails = tails;
@@ -5678,7 +5685,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('((
   delimiters: global_1.undefined
 }, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))));
+}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))));
 
 /***/ }),
 
@@ -6663,10 +6670,9 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 /* State.media */
 | 1
 /* State.autolink */
-, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' ? global_1.undefined : optimize('[', ns, rest))]))), // 全体の失敗が確定した時も解析し予算を浪費している
-(0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
-  if (params.length === 0) return;
+, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : optimize('[', ns, rest))]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))], nodes => nodes[0][0] !== ''), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
   if (content[0] === '') return [content, rest];
+  if (params.length === 0) return;
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
   if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))?.some(node => typeof node === 'object')) return;
   const INSECURE_URI = params.shift();
@@ -6990,7 +6996,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[['
 /* State.media */
 , (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))));
 const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 
 function attributes(ns) {
