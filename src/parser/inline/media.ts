@@ -59,12 +59,12 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creator(10, 
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
   })))));
 
-const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
+const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), precedence(8, some(union([unsafehtmlentity, txt]), '"')), str('"'), true),
-]));
+])));
 
 const option: MediaParser.ParameterParser.OptionParser = union([
   fmap(str(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),

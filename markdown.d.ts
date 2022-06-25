@@ -700,7 +700,7 @@ export namespace MarkdownParser {
     export interface TemplateParser extends
       // {{abc}}
       Inline<'template'>,
-      Parser<HTMLSpanElement, Context, [
+      Parser<HTMLSpanElement | string, Context, [
         TemplateParser.BracketParser,
         SourceParser.EscapableSourceParser,
       ]> {
