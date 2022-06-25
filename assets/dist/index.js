@@ -882,6 +882,157 @@ exports.MultiMap = MultiMap;
 
 /***/ }),
 
+/***/ 8099:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
+
+function duff(count, proc) {
+  if (count > 0) {
+    let i = 0,
+        m = count % 8,
+        d = (count - m) / 8;
+
+    while (m--) {
+      proc(i++);
+    }
+
+    while (d--) {
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+    }
+  } else {
+    let i = -count,
+        m = i % 8,
+        d = (i - m) / 8;
+
+    while (m--) {
+      proc(--i);
+    }
+
+    while (d--) {
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+    }
+  }
+}
+
+exports.duff = duff;
+
+function duffbk(count, proc) {
+  if (count > 0) {
+    let i = 0,
+        m = count % 8,
+        d = (count - m) / 8;
+
+    while (m--) {
+      if (proc(i++) === false) return;
+    }
+
+    while (d--) {
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+    }
+  } else {
+    let i = -count,
+        m = i % 8,
+        d = (i - m) / 8;
+
+    while (m--) {
+      if (proc(--i) === false) return;
+    }
+
+    while (d--) {
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+    }
+  }
+}
+
+exports.duffbk = duffbk;
+
+function duffEach(array, proc) {
+  let count = array.length;
+  let i = 0,
+      m = count % 8,
+      d = (count - m) / 8;
+
+  while (m--) {
+    proc(array[i], i++, array);
+  }
+
+  while (d--) {
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+  }
+}
+
+exports.duffEach = duffEach;
+
+function duffReduce(array, proc, initial) {
+  let count = array.length;
+  let i = 0,
+      m = count % 8,
+      d = (count - m) / 8;
+
+  while (m--) {
+    initial = proc(initial, array[i], i++, array);
+  }
+
+  while (d--) {
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+  }
+
+  return initial;
+}
+
+exports.duffReduce = duffReduce;
+
+/***/ }),
+
 /***/ 7822:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1920,6 +2071,10 @@ __exportStar(__webpack_require__(7005), exports);
 
 __exportStar(__webpack_require__(5418), exports);
 
+__exportStar(__webpack_require__(5684), exports);
+
+__exportStar(__webpack_require__(9435), exports);
+
 __exportStar(__webpack_require__(2804), exports);
 
 __exportStar(__webpack_require__(9315), exports);
@@ -1931,10 +2086,6 @@ __exportStar(__webpack_require__(729), exports);
 __exportStar(__webpack_require__(9758), exports);
 
 __exportStar(__webpack_require__(1411), exports);
-
-__exportStar(__webpack_require__(8059), exports);
-
-__exportStar(__webpack_require__(1325), exports);
 
 __exportStar(__webpack_require__(7130), exports);
 
@@ -2087,85 +2238,6 @@ function isEmpty(line) {
 }
 
 exports.isEmpty = isEmpty;
-
-/***/ }),
-
-/***/ 8059:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.precedence = exports.context = exports.reset = exports.guard = void 0;
-
-const global_1 = __webpack_require__(4128);
-
-const alias_1 = __webpack_require__(5406);
-
-const assign_1 = __webpack_require__(4401);
-
-const type_1 = __webpack_require__(5177);
-
-const memoize_1 = __webpack_require__(1808);
-
-function guard(f, parser) {
-  return (source, context) => f(context) ? parser(source, context) : global_1.undefined;
-}
-
-exports.guard = guard;
-
-function reset(base, parser) {
-  return (source, context) => parser(source, inherit((0, alias_1.ObjectCreate)(context), base));
-}
-
-exports.reset = reset;
-
-function context(base, parser) {
-  const override = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
-  return (source, context) => parser(source, override(context));
-}
-
-exports.context = context;
-const inherit = (0, assign_1.template)((prop, target, source) => {
-  //assert(Object.freeze(source));
-  if (target[prop] === source[prop]) return;
-
-  switch (prop) {
-    case 'resources':
-      if (prop in target && !(0, alias_1.hasOwnProperty)(target, prop)) return;
-      return target[prop] = (0, alias_1.ObjectCreate)(source[prop]);
-  }
-
-  switch ((0, type_1.type)(source[prop])) {
-    case 'Object':
-      //assert(Object.freeze(source[prop]));
-      switch ((0, type_1.type)(target[prop])) {
-        case 'Object':
-          return target[prop] = inherit((0, alias_1.ObjectCreate)(target[prop]), source[prop]);
-
-        default:
-          return target[prop] = source[prop];
-      }
-
-    default:
-      return target[prop] = source[prop];
-  }
-});
-
-function precedence(precedence, parser) {
-  return (source, context) => {
-    const p = context.precedence;
-    context.precedence = precedence;
-    const result = parser(source, context);
-    context.precedence = p;
-    return result;
-  };
-}
-
-exports.precedence = precedence;
 
 /***/ }),
 
@@ -2423,87 +2495,6 @@ exports.recover = recover;
 
 /***/ }),
 
-/***/ 1325:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.recursion = exports.uncreator = exports.creator = void 0;
-
-function creator(cost, parser) {
-  if (typeof cost === 'function') return creator(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        budget: 1,
-        recursion: 1
-      }
-    } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
-    const result = parser(source, context);
-    ++resources.recursion;
-
-    if (result) {
-      resources.budget -= cost;
-    }
-
-    return result;
-  };
-}
-
-exports.creator = creator;
-
-function uncreator(cost, parser) {
-  if (typeof cost === 'function') return uncreator(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        budget: 1,
-        recursion: 1
-      }
-    } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    ++resources.recursion;
-    const result = parser(source, context);
-    --resources.recursion;
-
-    if (result) {
-      resources.budget += cost;
-    }
-
-    return result;
-  };
-}
-
-exports.uncreator = uncreator;
-
-function recursion(cost, parser) {
-  if (typeof cost === 'function') return recursion(1, cost);
-  return (source, context) => {
-    const {
-      resources = {
-        recursion: 1
-      }
-    } = context;
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
-    const result = parser(source, context);
-    ++resources.recursion;
-    return result;
-  };
-}
-
-exports.recursion = recursion;
-
-/***/ }),
-
 /***/ 1109:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -2748,13 +2739,140 @@ exports.fmap = fmap;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.check = exports.exec = exports.eval = exports.Delimiters = void 0;
+exports.check = exports.exec = exports.eval = void 0;
+
+function eval_(result, default_) {
+  return result ? result[0] : default_;
+}
+
+exports.eval = eval_;
+
+function exec(result, default_) {
+  return result ? result[1] : default_;
+}
+
+exports.exec = exec;
+
+function check(source, result, mustConsume = true) {
+  return true;
+}
+
+exports.check = check;
+
+/***/ }),
+
+/***/ 5684:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.precedence = exports.context = exports.reset = exports.guard = void 0;
+
+const global_1 = __webpack_require__(4128);
+
+const alias_1 = __webpack_require__(5406);
+
+const assign_1 = __webpack_require__(4401);
+
+const type_1 = __webpack_require__(5177);
+
+const memoize_1 = __webpack_require__(1808);
+
+function guard(f, parser) {
+  return (source, context) => f(context) ? parser(source, context) : global_1.undefined;
+}
+
+exports.guard = guard;
+
+function reset(base, parser) {
+  return (source, context) => parser(source, inherit((0, alias_1.ObjectCreate)(context), base));
+}
+
+exports.reset = reset;
+
+function context(base, parser) {
+  const override = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
+  return (source, context) => parser(source, override(context));
+}
+
+exports.context = context;
+const inherit = (0, assign_1.template)((prop, target, source) => {
+  //assert(Object.freeze(source));
+  if (target[prop] === source[prop]) return;
+
+  switch (prop) {
+    case 'resources':
+      if (prop in target && !(0, alias_1.hasOwnProperty)(target, prop)) return;
+      return target[prop] = (0, alias_1.ObjectCreate)(source[prop]);
+  }
+
+  switch ((0, type_1.type)(source[prop])) {
+    case 'Object':
+      //assert(Object.freeze(source[prop]));
+      switch ((0, type_1.type)(target[prop])) {
+        case 'Object':
+          return target[prop] = inherit((0, alias_1.ObjectCreate)(target[prop]), source[prop]);
+
+        default:
+          return target[prop] = source[prop];
+      }
+
+    default:
+      return target[prop] = source[prop];
+  }
+});
+
+function precedence(precedence, parser) {
+  return (source, context) => {
+    const p = context.precedence;
+    context.precedence = precedence;
+    const result = parser(source, context);
+    context.precedence = p;
+    return result;
+  };
+}
+
+exports.precedence = precedence;
+
+/***/ }),
+
+/***/ 7603:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _a;
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Delimiters = void 0;
+
+const memoize_1 = __webpack_require__(1808);
 
 class Delimiters {
   constructor() {
     this.matchers = [];
     this.registry = {};
     this.length = 0;
+  }
+
+  static signature(pattern) {
+    switch (typeof pattern) {
+      case 'undefined':
+        return `undefined`;
+
+      case 'string':
+        return `s:${pattern}`;
+
+      case 'object':
+        return `r/${pattern.source}/${pattern.flags}`;
+    }
   }
 
   push(...delimiters) {
@@ -2805,24 +2923,19 @@ class Delimiters {
 }
 
 exports.Delimiters = Delimiters;
+_a = Delimiters;
+Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
+  switch (typeof pattern) {
+    case 'undefined':
+      return () => undefined;
 
-function eval_(result, default_) {
-  return result ? result[0] : default_;
-}
+    case 'string':
+      return source => source.slice(0, pattern.length) === pattern || undefined;
 
-exports.eval = eval_;
-
-function exec(result, default_) {
-  return result ? result[1] : default_;
-}
-
-exports.exec = exec;
-
-function check(source, result, mustConsume = true) {
-  return true;
-}
-
-exports.check = check;
+    case 'object':
+      return (0, memoize_1.reduce)(source => pattern.test(source) || undefined);
+  }
+}, _a.signature);
 
 /***/ }),
 
@@ -2866,6 +2979,87 @@ exports.inits = inits;
 
 /***/ }),
 
+/***/ 9435:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.recursion = exports.uncreator = exports.creator = void 0;
+
+function creator(cost, parser) {
+  if (typeof cost === 'function') return creator(1, cost);
+  return (source, context) => {
+    const {
+      resources = {
+        budget: 1,
+        recursion: 1
+      }
+    } = context;
+    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    --resources.recursion;
+    const result = parser(source, context);
+    ++resources.recursion;
+
+    if (result) {
+      resources.budget -= cost;
+    }
+
+    return result;
+  };
+}
+
+exports.creator = creator;
+
+function uncreator(cost, parser) {
+  if (typeof cost === 'function') return uncreator(1, cost);
+  return (source, context) => {
+    const {
+      resources = {
+        budget: 1,
+        recursion: 1
+      }
+    } = context;
+    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    ++resources.recursion;
+    const result = parser(source, context);
+    --resources.recursion;
+
+    if (result) {
+      resources.budget += cost;
+    }
+
+    return result;
+  };
+}
+
+exports.uncreator = uncreator;
+
+function recursion(cost, parser) {
+  if (typeof cost === 'function') return recursion(1, cost);
+  return (source, context) => {
+    const {
+      resources = {
+        recursion: 1
+      }
+    } = context;
+    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    --resources.recursion;
+    const result = parser(source, context);
+    ++resources.recursion;
+    return result;
+  };
+}
+
+exports.recursion = recursion;
+
+/***/ }),
+
 /***/ 2287:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -2891,7 +3085,7 @@ function sequence(parsers) {
 
     for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') return;
-      if (context.delimiters?.match(rest, context.precedence)) break;
+      if (context.delimiters?.match(rest, context.precedence)) return;
       const result = parsers[i](rest, context);
       if (!result) return;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
@@ -2921,42 +3115,16 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
-const memoize_1 = __webpack_require__(1808);
+const delimiter_1 = __webpack_require__(7603);
 
 const array_1 = __webpack_require__(8112);
 
-const signature = pattern => {
-  switch (typeof pattern) {
-    case 'undefined':
-      return signature('');
-
-    case 'string':
-      return `s:${pattern}`;
-
-    case 'object':
-      return `r/${pattern.source}/${pattern.flags}`;
-  }
-};
-
-const matcher = (0, memoize_1.memoize)(pattern => {
-  switch (typeof pattern) {
-    case 'undefined':
-      return () => global_1.undefined;
-
-    case 'string':
-      return source => source.slice(0, pattern.length) === pattern || global_1.undefined;
-
-    case 'object':
-      return (0, memoize_1.reduce)(source => pattern.test(source) || global_1.undefined);
-  }
-}, signature);
-
-function some(parser, until, deeps = [], limit = -1) {
-  if (typeof until === 'number') return some(parser, global_1.undefined, deeps, until);
-  const match = matcher(until);
-  const delimiters = deeps.map(([delimiter, precedence]) => ({
-    signature: signature(delimiter),
-    matcher: matcher(delimiter),
+function some(parser, end, delimiters = [], limit = -1) {
+  if (typeof end === 'number') return some(parser, global_1.undefined, delimiters, end);
+  const match = delimiter_1.Delimiters.matcher(end);
+  const delims = delimiters.map(([delimiter, precedence]) => ({
+    signature: delimiter_1.Delimiters.signature(delimiter),
+    matcher: delimiter_1.Delimiters.matcher(delimiter),
     precedence
   }));
   return (source, context) => {
@@ -2964,9 +3132,9 @@ function some(parser, until, deeps = [], limit = -1) {
     let rest = source;
     let nodes;
 
-    if (delimiters.length > 0) {
-      context.delimiters ??= new parser_1.Delimiters();
-      context.delimiters.push(...delimiters);
+    if (delims.length > 0) {
+      context.delimiters ??= new delimiter_1.Delimiters();
+      context.delimiters.push(...delims);
     }
 
     while (true) {
@@ -2980,8 +3148,8 @@ function some(parser, until, deeps = [], limit = -1) {
       if (limit >= 0 && source.length - rest.length > limit) break;
     }
 
-    if (delimiters.length > 0) {
-      context.delimiters.pop(delimiters.length);
+    if (delims.length > 0) {
+      context.delimiters.pop(delims.length);
     }
 
     return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
@@ -3355,9 +3523,8 @@ function bind(target, settings) {
 
   function nearest(index) {
     let el;
-    let len = 0;
 
-    for (let i = 0; i < blocks.length; ++i) {
+    for (let i = 0, len = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
       el = block[1][0] ?? el;
@@ -3368,9 +3535,7 @@ function bind(target, settings) {
   }
 
   function index(source) {
-    let len = 0;
-
-    for (let i = 0; i < blocks.length; ++i) {
+    for (let i = 0, len = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       if (block[1].includes(source)) return len;
       len += block[0].length;
@@ -3826,7 +3991,7 @@ const source_1 = __webpack_require__(6743);
 
 const locale_1 = __webpack_require__(5485);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -3844,8 +4009,8 @@ exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_
     }
   }
 }, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))]))));
-const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
-const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
+const term = (0, combinator_1.creator)((0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
+const desc = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
 
 function fillTrailingDescription(es) {
   return es.length > 0 && es[es.length - 1].tagName === 'DT' ? (0, array_1.push)(es, [(0, dom_1.html)('dd')]) : es;
@@ -4122,7 +4287,7 @@ const inline_1 = __webpack_require__(1160);
 
 const locale_1 = __webpack_require__(5485);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -4136,7 +4301,7 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
       media: false
     }
   }
-}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
+}, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
   class: 'figindex'
 }), (0, dom_1.html)('span', {
   class: 'figtext'
@@ -4382,7 +4547,7 @@ const source_1 = __webpack_require__(6743);
 
 const locale_1 = __webpack_require__(5485);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -4423,8 +4588,8 @@ const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/;
-const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
-const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, util_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
+const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
+const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
 const dataline = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
 
 function attributes(source) {
@@ -4655,7 +4820,7 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -4671,13 +4836,13 @@ exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segm
       media: false
     }
   }
-}, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
+}, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
   syntax: {
     inline: {
       autolink: false
     }
   }
-}, (0, util_1.visualize)((0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
+}, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
   class: 'invalid',
   'data-invalid-syntax': 'heading',
   'data-invalid-type': 'syntax',
@@ -4803,11 +4968,13 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const memoize_1 = __webpack_require__(1808);
+
+const duff_1 = __webpack_require__(8099);
 
 const array_1 = __webpack_require__(8112);
 
@@ -4826,7 +4993,7 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 }, exports.olist_))));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
-const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
+const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0] || global_1.undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 
@@ -4909,20 +5076,19 @@ function format(el, type, form) {
     'data-type': style(type) || global_1.undefined
   });
   const marker = el.firstElementChild?.getAttribute('data-marker').match(initial(type))?.[0] ?? '';
-
-  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
+  const es = el.children;
+  (0, duff_1.duffbk)(es.length, i => {
     const el = es[i];
 
     switch (el.getAttribute('data-marker')) {
       case '':
       case marker:
         el.removeAttribute('data-marker');
-        continue;
+        return;
     }
 
-    break;
-  }
-
+    return false;
+  });
   return el;
 }
 
@@ -4945,11 +5111,11 @@ const inline_1 = __webpack_require__(1160);
 
 const locale_1 = __webpack_require__(5485);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))])));
+exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))])));
 
 /***/ }),
 
@@ -4976,7 +5142,7 @@ const source_1 = __webpack_require__(6743);
 
 const locale_1 = __webpack_require__(5485);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -4989,7 +5155,7 @@ const array_1 = __webpack_require__(8112);
 */
 
 
-exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
+exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
 
 /***/ }),
 
@@ -5148,9 +5314,11 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
+
+const duff_1 = __webpack_require__(8099);
 
 const array_1 = __webpack_require__(8112);
 
@@ -5165,23 +5333,21 @@ const row = (parser, optional) => (0, combinator_1.creator)((0, combinator_1.fal
 
 const align = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:/, () => [['center'], '']), (0, combinator_1.focus)(/^:-+/, () => [['start'], '']), (0, combinator_1.focus)(/^-+:/, () => [['end'], '']), (0, combinator_1.focus)(/^-+/, () => [[''], ''])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
 const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]), /^[^|]*/, true);
-const head = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))]));
-const data = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))]));
+const head = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
+const data = (0, combinator_1.creator)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
 
 function format(rows) {
-  const aligns = rows[0].classList.contains('invalid') ? [] : (0, array_1.push)([], rows.shift().children).map(el => el.textContent);
+  const aligns = rows[0].classList.contains('invalid') ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
 
-  for (let i = 0, len = rows.length; i < len; ++i) {
-    const cols = rows[i].children;
-
-    for (let i = 0, len = cols.length; i < len; ++i) {
+  for (let i = 0; i < rows.length; ++i) {
+    (0, duff_1.duffEach)(rows[i].children, (col, i) => {
       if (i > 0 && !aligns[i]) {
         aligns[i] = aligns[i - 1];
       }
 
-      if (!aligns[i]) continue;
-      cols[i].setAttribute('align', aligns[i]);
-    }
+      if (!aligns[i]) return;
+      col.setAttribute('align', aligns[i]);
+    });
   }
 
   return rows;
@@ -5208,7 +5374,7 @@ const ilist_1 = __webpack_require__(238);
 
 const inline_1 = __webpack_require__(1160);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -5221,7 +5387,7 @@ exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
     }
   }
 }, exports.ulist_))));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, util_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[1].trimStart() ? '☑' : '☐')], '']);
@@ -5408,11 +5574,11 @@ const inline_1 = __webpack_require__(1160);
 
 const link_1 = __webpack_require__(9628);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.validate)('((', (0, combinator_1.surround)('((', (0, combinator_1.guard)(context => context.syntax?.inline?.annotation ?? true, (0, util_1.startLoose)((0, combinator_1.context)({
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.validate)('((', (0, combinator_1.surround)('((', (0, combinator_1.guard)(context => context.syntax?.inline?.annotation ?? true, (0, visibility_1.startLoose)((0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -5429,7 +5595,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, 
   delimiters: global_1.undefined
 }, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')')), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))))));
+}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))))));
 
 /***/ }),
 
@@ -5772,13 +5938,13 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -5803,13 +5969,13 @@ const strong_1 = __webpack_require__(8072);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('*'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])), '*'), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -5834,15 +6000,15 @@ const emphasis_1 = __webpack_require__(3867);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
-const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
-exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
+const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
+const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
+exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('***'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
   switch (cs[0]) {
     case '***':
       return [[(0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))])], rest];
@@ -5939,11 +6105,11 @@ const indexee_1 = __webpack_require__(1269);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => context.syntax?.inline?.index ?? true, (0, util_1.startTight)((0, combinator_1.context)({
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => context.syntax?.inline?.index ?? true, (0, visibility_1.startTight)((0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -5955,12 +6121,12 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0
       autolink: false
     }
   }
-}, (0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, util_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
+}, (0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : global_1.undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : global_1.undefined
 }, el.childNodes)])))));
-const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
+const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': (0, indexee_1.identity)(ns.join('')).slice(6)
 })])));
@@ -5985,6 +6151,8 @@ const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
 
+const duff_1 = __webpack_require__(8099);
+
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
@@ -6008,40 +6176,36 @@ function text(source, optional = false) {
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   const target = source.cloneNode(true);
-
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-
+  (0, duff_1.duffEach)(target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), el => {
     switch (el.tagName) {
       case 'CODE':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        continue;
+        return;
 
       case 'RT':
       case 'RP':
       case 'UL':
       case 'OL':
         el.remove();
-        continue;
+        return;
     }
 
     switch (el.className) {
       case 'math':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        continue;
+        return;
 
       case 'comment':
       case 'checkbox':
         el.remove();
-        continue;
+        return;
 
       case 'reference':
         el.firstChild.remove();
-        continue;
+        return;
     }
-  } // Better:
+  }); // Better:
   //return target.innerText;
-
 
   return target.textContent;
 }
@@ -6148,7 +6312,7 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -6156,7 +6320,7 @@ const array_1 = __webpack_require__(8112); // Don't use the symbols already used
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 
-exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
+exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
   class: 'invalid',
   'data-invalid-syntax': 'extension',
   'data-invalid-type': 'syntax',
@@ -6184,7 +6348,7 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -6203,7 +6367,7 @@ const attrspecs = {
 global_1.Object.setPrototypeOf(attrspecs, null);
 global_1.Object.values(attrspecs).forEach(o => global_1.Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.creator)((0, combinator_1.precedence)(5, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', `</${tag}>`), [[(0, util_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))]))))));
+/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))]))))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
 
@@ -6213,7 +6377,7 @@ function elem(tag, as, bs, cs) {
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
   if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
   if (bs.length === 0) return invalid('content', `Missing the content`, as, bs, cs);
-  if (!(0, util_1.isStartLooseNodes)(bs)) return invalid('content', `Missing the visible content in the same line`, as, bs, cs);
+  if (!(0, visibility_1.isStartLooseNodes)(bs)) return invalid('content', `Missing the visible content in the same line`, as, bs, cs);
   const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs) : (0, dom_1.html)(tag, attrs, (0, dom_1.defrag)(bs));
 }
@@ -6311,13 +6475,13 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -6345,6 +6509,8 @@ const html_1 = __webpack_require__(5994);
 const autolink_1 = __webpack_require__(6578);
 
 const source_1 = __webpack_require__(6743);
+
+const visibility_1 = __webpack_require__(7618);
 
 const util_1 = __webpack_require__(9437);
 
@@ -6379,7 +6545,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))]), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
   if (params.length === 0) return;
   if (content[0] === '') return [content, rest];
-  if (content.length !== 0 && (0, util_1.trimNode)(content).length === 0) return;
+  if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
   if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))?.some(node => typeof node === 'object')) return;
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
@@ -6388,7 +6554,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 })))));
 exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.creator)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
   params.shift();
-  (0, util_1.trimNode)(content);
+  (0, visibility_1.trimNode)(content);
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
@@ -6502,13 +6668,13 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('=='), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)]))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -6608,7 +6774,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
     target: '_blank'
   }, [el])])(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
 })))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
 
 function sanitize(target, uri, alt) {
@@ -6674,11 +6840,13 @@ const link_1 = __webpack_require__(9628);
 
 const source_1 = __webpack_require__(6743);
 
+const visibility_1 = __webpack_require__(7618);
+
 const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[[', (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => context.syntax?.inline?.reference ?? true, (0, util_1.startLoose)((0, combinator_1.context)({
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[[', (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(6, (0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => context.syntax?.inline?.reference ?? true, (0, visibility_1.startLoose)((0, combinator_1.context)({
   syntax: {
     inline: {
       annotation: false,
@@ -6692,8 +6860,8 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[['
     }
   },
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']')), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, util_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))))));
-const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(util_1.regBlankStart, '')]));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']')), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))))));
+const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 
 function attributes(ns) {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
@@ -6732,13 +6900,13 @@ const htmlentity_1 = __webpack_require__(1562);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'), (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')')]), ([texts]) => (0, util_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'), (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')')]), ([texts]) => (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
   texts[texts.length - 1] === '' && texts.pop();
 
   switch (true) {
@@ -6850,13 +7018,13 @@ const emstrong_1 = __webpack_require__(6132);
 
 const source_1 = __webpack_require__(6743);
 
-const util_1 = __webpack_require__(9437);
+const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('**'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, util_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(1, (0, combinator_1.surround)((0, source_1.str)('**'), (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])), '*'), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]))));
 
 /***/ }),
 
@@ -6875,16 +7043,18 @@ const global_1 = __webpack_require__(4128);
 
 const combinator_1 = __webpack_require__(2087);
 
+const link_1 = __webpack_require__(9628);
+
 const source_1 = __webpack_require__(6743);
 
 const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.precedence)(2, (0, combinator_1.rewrite)((0, combinator_1.surround)('{{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), '}}', true), source => [[(0, dom_1.html)('span', {
+exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.recursion)((0, combinator_1.precedence)(2, (0, combinator_1.surround)('{{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
-}, source.replace(/\x1B/g, ''))], '']))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)]));
+}, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest], ([, ns = [], rest], next) => next[0] === '}' ? global_1.undefined : (0, link_1.optimize)('{{', ns, rest))))));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
 
 /***/ }),
 
@@ -6905,18 +7075,16 @@ const ja_1 = __webpack_require__(1499);
 
 const dom_1 = __webpack_require__(3252);
 
+const duff_1 = __webpack_require__(8099);
+
 function localize(parser) {
   return (0, combinator_1.fmap)(parser, ns => {
     if (ns.length === 0) return ns;
     const el = ns.length === 1 && typeof ns[0] === 'object' ? ns[0] : (0, dom_1.html)('div', ns);
-    const es = el.querySelectorAll('.linebreak:not(:empty)');
-
-    for (let i = 0, len = es.length; i < len; ++i) {
-      const sb = es[i];
-      if (!check(sb)) continue;
-      sb.firstChild.remove();
-    }
-
+    (0, duff_1.duffEach)(el.querySelectorAll('.linebreak:not(:empty)'), el => {
+      if (!check(el)) return;
+      el.firstChild.remove();
+    });
     return ns;
   });
 }
@@ -7210,12 +7378,14 @@ const dom_1 = __webpack_require__(3252);
 
 const multimap_1 = __webpack_require__(940);
 
+const duff_1 = __webpack_require__(8099);
+
 const array_1 = __webpack_require__(8112);
 
 function* footnote(target, footnotes, opts = {}, bottom = null) {
   // Bug: Firefox
   //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
-  target.querySelectorAll(`.annotations`).forEach(el => el.parentNode === target && el.remove());
+  (0, duff_1.duffEach)(target.querySelectorAll(`.annotations`), el => el.parentNode === target && el.remove());
   yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
   return;
@@ -7234,7 +7404,7 @@ function build(syntax, marker, splitter) {
     const titles = new global_1.Map(); // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
 
-    const splitters = (0, array_1.push)([], target.querySelectorAll(splitter ?? '_')).filter(el => el.parentNode === target);
+    const splitters = (0, duff_1.duffReduce)(target.querySelectorAll(splitter ?? '_'), (acc, el) => el.parentNode === target ? (0, array_1.push)(acc, [el]) : acc, []);
     let count = 0;
     let total = 0;
     let style;
@@ -7783,23 +7953,9 @@ exports.unescsource = (0, combinator_1.creator)(source => {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.trimNode = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.startLoose = exports.visualize = exports.blankWith = exports.regBlankStart = exports.clean = void 0;
-
-const global_1 = __webpack_require__(4128);
-
-const parser_1 = __webpack_require__(6728);
-
-const combinator_1 = __webpack_require__(2087);
-
-const htmlentity_1 = __webpack_require__(1562);
-
-const source_1 = __webpack_require__(6743);
-
-const normalize_1 = __webpack_require__(185);
+exports.stringify = exports.clean = void 0;
 
 const memoize_1 = __webpack_require__(1808);
-
-const array_1 = __webpack_require__(8112);
 
 function clean(parser) {
   const clean = (0, memoize_1.memoize)(context => ({
@@ -7816,14 +7972,54 @@ function clean(parser) {
 }
 
 exports.clean = clean;
-exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
 
-function blankWith(starting, delimiter) {
-  if (delimiter === global_1.undefined) return blankWith('', starting);
-  return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
+function stringify(nodes) {
+  let acc = '';
+
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i];
+
+    if (typeof node === 'string') {
+      acc += node;
+    } else {
+      // NOTE: Doesn't reflect line breaks.
+      acc += node.innerText;
+    }
+  }
+
+  return acc;
 }
 
-exports.blankWith = blankWith;
+exports.stringify = stringify;
+
+/***/ }),
+
+/***/ 7618:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.trimNode = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.startLoose = exports.blankWith = exports.regBlankStart = exports.visualize = void 0;
+
+const global_1 = __webpack_require__(4128);
+
+const parser_1 = __webpack_require__(6728);
+
+const combinator_1 = __webpack_require__(2087);
+
+const htmlentity_1 = __webpack_require__(1562);
+
+const source_1 = __webpack_require__(6743);
+
+const normalize_1 = __webpack_require__(185);
+
+const memoize_1 = __webpack_require__(1808);
+
+const array_1 = __webpack_require__(8112);
 
 function visualize(parser) {
   const blankline = new RegExp(/^(?:\\$|\\?[^\S\n]|&IHN;|<wbr>)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
@@ -7852,6 +8048,15 @@ function hasVisible(nodes, {
 
   return false;
 }
+
+exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
+
+function blankWith(starting, delimiter) {
+  if (delimiter === global_1.undefined) return blankWith('', starting);
+  return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
+}
+
+exports.blankWith = blankWith;
 
 function startLoose(parser, except) {
   return (source, context) => isStartLoose(source, context, except) ? parser(source, context) : global_1.undefined;
@@ -8023,25 +8228,6 @@ function trimNodeEnd(nodes) {
 
   return (0, array_1.push)(nodes, skip);
 }
-
-function stringify(nodes) {
-  let acc = '';
-
-  for (let i = 0; i < nodes.length; ++i) {
-    const node = nodes[i];
-
-    if (typeof node === 'string') {
-      acc += node;
-    } else {
-      // NOTE: Doesn't reflect line breaks.
-      acc += node.innerText;
-    }
-  }
-
-  return acc;
-}
-
-exports.stringify = stringify;
 
 /***/ }),
 
@@ -8553,6 +8739,8 @@ exports.info = void 0;
 
 const scope_1 = __webpack_require__(5202);
 
+const duff_1 = __webpack_require__(8099);
+
 const array_1 = __webpack_require__(8112);
 
 function info(source) {
@@ -8571,7 +8759,7 @@ function info(source) {
   };
 
   function find(selector) {
-    return (0, array_1.push)([], source.querySelectorAll(selector)).filter(match);
+    return (0, duff_1.duffReduce)(source.querySelectorAll(selector), (acc, el) => match(el) ? (0, array_1.push)(acc, [el]) : acc, []);
   }
 }
 
@@ -8598,30 +8786,29 @@ const cite_1 = __webpack_require__(6315);
 
 const dom_1 = __webpack_require__(3252);
 
+const duff_1 = __webpack_require__(8099);
+
 function quote(anchor, range) {
   if ((0, parser_1.exec)((0, cite_1.cite)(`>>${anchor}`, {})) !== '') throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-
-  for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-
+  (0, duff_1.duffEach)(node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), el => {
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        continue;
+        return;
 
       case el.matches('.media'):
         el.replaceWith(/[\s{}]/.test(el.getAttribute('data-src')) ? `!{ ${el.getAttribute('data-src')} }` : `!{${el.getAttribute('data-src')}}`);
-        continue;
+        return;
 
       case el.matches('rt, rp'):
         el.remove();
-        continue;
+        return;
     }
-  }
+  });
 
   if (range.startOffset === 0 && range.startContainer.parentElement?.matches('.cite, .quote') && (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
     node.prepend(`>${range.startContainer.parentElement.matches('.quote.invalid') ? ' ' : ''}`);
@@ -8630,29 +8817,26 @@ function quote(anchor, range) {
     anchor = '';
   }
 
-  for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-
+  (0, duff_1.duffEach)(node.querySelectorAll('br'), el => {
     if (anchor && el.nextSibling instanceof global_1.Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
-      continue;
+      return;
     }
 
     if (anchor && el.parentElement?.closest('.cite, .quote')) {
       el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
-      continue;
+      return;
     }
 
     if (anchor) {
       el.replaceWith(`\n>>${anchor}\n> `);
       anchor = '';
-      continue;
+      return;
     } else {
       el.replaceWith(`\n> `);
-      continue;
+      return;
     }
-  }
-
+  });
   anchor && node.append(`\n>>${anchor}`);
   return node.textContent;
 }
@@ -8740,6 +8924,8 @@ const global_1 = __webpack_require__(4128);
 
 const dom_1 = __webpack_require__(3252);
 
+const duff_1 = __webpack_require__(8099);
+
 const array_1 = __webpack_require__(8112); // Bug: Firefox
 //const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
 
@@ -8747,18 +8933,18 @@ const array_1 = __webpack_require__(8112); // Bug: Firefox
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 function toc(source) {
-  const hs = (0, array_1.push)([], source.querySelectorAll(selector)).map(el => {
+  const hs = (0, duff_1.duffReduce)(source.querySelectorAll(selector), (acc, el) => {
     switch (el.tagName) {
       case 'ASIDE':
-        return (0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
+        return (0, array_1.push)(acc, [(0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
           id: el.id,
           class: 'aside'
-        }, el.firstElementChild.cloneNode(true).childNodes);
+        }, el.firstElementChild.cloneNode(true).childNodes)]);
 
       default:
-        return el;
+        return (0, array_1.push)(acc, [el]);
     }
-  });
+  }, []);
   return parse(cons(hs));
 }
 
@@ -8772,7 +8958,7 @@ function parse(node, index = '') {
     return (0, dom_1.html)('li', (0, array_1.push)([(0, dom_1.html)('a', {
       href: `#${el.id}`,
       'data-index': isHeading ? idx : global_1.undefined
-    }, fix(el))], cs.length > 0 ? [parse(cs, idx)] : []));
+    }, unlink(el.cloneNode(true)))], cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
 
@@ -8787,14 +8973,8 @@ function level(h) {
   return +h.tagName[1];
 }
 
-function fix(h) {
-  h = h.cloneNode(true);
-
-  for (let es = h.getElementsByTagName('a'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-    el.replaceWith(...el.childNodes);
-  }
-
+function unlink(h) {
+  (0, duff_1.duffEach)(h.getElementsByTagName('a'), el => void el.replaceWith(...el.childNodes));
   return h.childNodes;
 }
 
@@ -8803,7 +8983,7 @@ function fix(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.299 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.301 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9237,7 +9417,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.299 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.301 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9245,8 +9425,320 @@ exports.defrag = defrag;
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 112:
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_645__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
+
+const global_1 = __nested_webpack_require_645__(128);
+
+function indexOf(as, a) {
+  if (as.length === 0) return -1;
+  return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
+}
+
+exports.indexOf = indexOf;
+
+function unshift(as, bs) {
+  if ('length' in as) {
+    for (let i = as.length - 1; i >= 0; --i) {
+      bs.unshift(as[i]);
+    }
+  } else {
+    bs.unshift(...as);
+  }
+
+  return bs;
+}
+
+exports.unshift = unshift;
+
+function shift(as, count) {
+  if (count < 0) throw new Error('Unexpected negative number');
+  return count === void 0 ? [as.shift(), as] : [splice(as, 0, count), as];
+}
+
+exports.shift = shift;
+
+function push(as, bs) {
+  if ('length' in bs) {
+    for (let i = 0, len = bs.length; i < len; ++i) {
+      as.push(bs[i]);
+    }
+  } else {
+    for (const b of bs) {
+      as.push(b);
+    }
+  }
+
+  return as;
+}
+
+exports.push = push;
+
+function pop(as, count) {
+  if (count < 0) throw new Error('Unexpected negative number');
+  return count === void 0 ? [as, as.pop()] : [as, splice(as, as.length - count, count)];
+}
+
+exports.pop = pop;
+
+function splice(as, index, count, ...inserts) {
+  if (count === 0 && inserts.length === 0) return [];
+  count = count > as.length ? as.length : count;
+
+  switch (index) {
+    case 0:
+      switch (count) {
+        case 0:
+          return [[], unshift(inserts, as)][0];
+
+        case 1:
+          return as.length === 0 ? [[], unshift(inserts, as)][0] : [[as.shift()], unshift(inserts, as)][0];
+
+        case void 0:
+          if (as.length > 1 || arguments.length > 2) break;
+          return as.length === 0 ? [] : splice(as, index, 1);
+      }
+
+      break;
+
+    case -1:
+    case as.length - 1:
+      switch (count) {
+        case 1:
+          return as.length === 0 ? [[], push(as, inserts)][0] : [[as.pop()], push(as, inserts)][0];
+
+        case void 0:
+          if (as.length > 1 || arguments.length > 2) break;
+          return as.length === 0 ? [] : splice(as, index, 1);
+      }
+
+      break;
+
+    case as.length:
+    case global_1.Infinity:
+      return [[], push(as, inserts)][0];
+  }
+
+  return arguments.length > 2 ? as.splice(index, count, ...inserts) : as.splice(index);
+}
+
+exports.splice = splice;
+
+/***/ }),
+
+/***/ 99:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
+
+function duff(count, proc) {
+  if (count > 0) {
+    let i = 0,
+        m = count % 8,
+        d = (count - m) / 8;
+
+    while (m--) {
+      proc(i++);
+    }
+
+    while (d--) {
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+      proc(i++);
+    }
+  } else {
+    let i = -count,
+        m = i % 8,
+        d = (i - m) / 8;
+
+    while (m--) {
+      proc(--i);
+    }
+
+    while (d--) {
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+      proc(--i);
+    }
+  }
+}
+
+exports.duff = duff;
+
+function duffbk(count, proc) {
+  if (count > 0) {
+    let i = 0,
+        m = count % 8,
+        d = (count - m) / 8;
+
+    while (m--) {
+      if (proc(i++) === false) return;
+    }
+
+    while (d--) {
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+      if (proc(i++) === false) return;
+    }
+  } else {
+    let i = -count,
+        m = i % 8,
+        d = (i - m) / 8;
+
+    while (m--) {
+      if (proc(--i) === false) return;
+    }
+
+    while (d--) {
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+      if (proc(--i) === false) return;
+    }
+  }
+}
+
+exports.duffbk = duffbk;
+
+function duffEach(array, proc) {
+  let count = array.length;
+  let i = 0,
+      m = count % 8,
+      d = (count - m) / 8;
+
+  while (m--) {
+    proc(array[i], i++, array);
+  }
+
+  while (d--) {
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+    proc(array[i], i++, array);
+  }
+}
+
+exports.duffEach = duffEach;
+
+function duffReduce(array, proc, initial) {
+  let count = array.length;
+  let i = 0,
+      m = count % 8,
+      d = (count - m) / 8;
+
+  while (m--) {
+    initial = proc(initial, array[i], i++, array);
+  }
+
+  while (d--) {
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+    initial = proc(initial, array[i], i++, array);
+  }
+
+  return initial;
+}
+
+exports.duffReduce = duffReduce;
+
+/***/ }),
+
+/***/ 128:
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_6113__) => {
+
+
+
+__nested_webpack_require_6113__(921);
+
+const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
+|| typeof self !== 'undefined' && self || Function('return this')();
+global.global = global;
+module.exports = global;
+
+/***/ }),
+
+/***/ 921:
+/***/ (() => {
+
+ // @ts-ignore
+
+var globalThis; // @ts-ignore
+
+var global = (/* unused pure expression or super */ null && (0));
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nested_webpack_require_6765__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_6765__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it uses a non-standard name for the exports (exports).
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
 
@@ -9255,6 +9747,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.querySelectorAll = exports.querySelector = void 0;
+
+const duff_1 = __nested_webpack_require_6765__(99);
+
+const array_1 = __nested_webpack_require_6765__(112);
 
 function querySelector(node, selector) {
   return 'matches' in node && node.matches(selector) ? node : node.querySelector(selector);
@@ -9269,13 +9765,7 @@ function querySelectorAll(node, selector) {
     acc.push(node);
   }
 
-  const nodes = node.querySelectorAll(selector);
-
-  for (let i = 0, len = nodes.length; i < len; ++i) {
-    acc.push(nodes[i]);
-  }
-
-  return acc;
+  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, node) => (0, array_1.push)(acc, [node]), acc);
 }
 
 exports.querySelectorAll = querySelectorAll;

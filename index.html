@@ -1233,7 +1233,9 @@
   }
   function share() {
     document.getElementById('chars').textContent = editor.getValue().length;
-    if (editor.getValue().length > 10000) return;
+    // GAにReDoS脆弱性があり長いURLを使用できない
+    // /(.*?)(^|&)_gl=([^&]*)&?(.*)/.test('g' + '_'.repeat(54773))
+    if (editor.getValue().length > 50000) return;
     document.getElementById('share').href = '#' + encodeURIComponent(editor.getValue());
     document.getElementById('share').textContent = document.getElementById('share').href;
   }
