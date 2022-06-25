@@ -65,10 +65,8 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
   }
   return (source, context) => {
     if (source === '') return;
-    const r = context.rule ?? 0;
-    context.rule = r | syntax;
     context.backtrackable ??= ~0;
-    context.state ??= 0;
+    const state = context.state ??= 0;
     const p = context.precedence;
     context.precedence = precedence;
     const { resources = { budget: 1, recursion: 1 } } = context;
@@ -76,7 +74,7 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
-    const cache = syntax && context.memo?.get(pos, syntax, context.state);
+    const cache = syntax && context.memo?.get(pos, syntax, state);
     const result: Result<T> = cache
       ? [cache[0], source.slice(cache[1])]
       : parser!(source, context);
@@ -87,19 +85,18 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
         resources.budget -= cost;
       }
       if (syntax) {
-        if (r & context.backtrackable) {
+        if (state & context.backtrackable) {
           context.memo ??= new Memo();
-          cache ?? context.memo.set(pos, syntax, context.state, eval(result), source.length - exec(result).length);
-          assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, context.state));
+          cache ?? context.memo.set(pos, syntax, state, eval(result), source.length - exec(result).length);
+          assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, state));
         }
         else if (context.memo?.length! >= pos) {
-          assert(!(r & context.backtrackable));
+          assert(!(state & context.backtrackable));
           context.memo!.clear(pos);
         }
       }
     }
     context.precedence = p;
-    context.rule = r;
     return result;
   };
 }

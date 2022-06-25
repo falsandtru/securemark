@@ -15,7 +15,6 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
-  rule?: number;
   backtrackable?: number;
   memo?: Memo;
 }

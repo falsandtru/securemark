@@ -14,12 +14,6 @@ export const enum Rule {
   quote = 1 << 0,
   none = 0,
 }
-export const backtrackable = 0
-  | Rule.annotation
-  | Rule.reference
-  | Rule.index
-  | Rule.link
-  | Rule.media;
 
 export const enum State {
   annotation = 1 << 6,
@@ -30,3 +24,9 @@ export const enum State {
   media = 1 << 1,
   autolink = 1 << 0,
 }
+export const backtrackable = 0
+  | State.annotation
+  | State.reference
+  | State.index
+  | State.link
+  | State.media;
