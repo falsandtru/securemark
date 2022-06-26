@@ -2851,10 +2851,8 @@ function syntax(syntax, precedence, cost, parser) {
 
   return (source, context) => {
     if (source === '') return;
-    const r = context.rule ?? 0;
-    context.rule = r | syntax;
     context.backtrackable ??= ~0;
-    context.state ??= 0;
+    const state = context.state ??= 0;
     const p = context.precedence;
     context.precedence = precedence;
     const {
@@ -2867,7 +2865,7 @@ function syntax(syntax, precedence, cost, parser) {
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
-    const cache = syntax && context.memo?.get(pos, context.rule, syntax, context.state);
+    const cache = syntax && context.memo?.get(pos, syntax, state);
     const result = cache ? [cache[0], source.slice(cache[1])] : parser(source, context);
     ++resources.recursion;
 
@@ -2877,9 +2875,9 @@ function syntax(syntax, precedence, cost, parser) {
       }
 
       if (syntax) {
-        if (r & context.backtrackable) {
+        if (state & context.backtrackable) {
           context.memo ??= new memo_1.Memo();
-          cache ?? context.memo.set(pos, context.rule, syntax, context.state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result).length);
+          cache ?? context.memo.set(pos, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result).length);
         } else if (context.memo?.length >= pos) {
           context.memo.clear(pos);
         }
@@ -2887,7 +2885,6 @@ function syntax(syntax, precedence, cost, parser) {
     }
 
     context.precedence = p;
-    context.rule = r;
     return result;
   };
 }
@@ -3076,14 +3073,14 @@ class Memo {
     return this.memory.length;
   }
 
-  get(position, rule, syntax, state) {
-    //console.log('get', position + this.offset, rule, syntax, state, this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`]);;
-    return this.memory[position + this.offset - 1]?.[`${rule}:${syntax}:${state}`];
+  get(position, syntax, state) {
+    //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
+    return this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
   }
 
-  set(position, rule, syntax, state, nodes, offset) {
+  set(position, syntax, state, nodes, offset) {
     const record = this.memory[position + this.offset - 1] ??= {};
-    record[`${rule}:${syntax}:${state}`] = [nodes, offset]; //console.log('set', position + this.offset, rule, syntax, state);
+    record[`${syntax}:${state}`] = [nodes.slice(), offset]; //console.log('set', position + this.offset, syntax, state);
   }
 
   clear(position) {
@@ -5489,16 +5486,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.backtrackable = void 0;
-exports.backtrackable = 0 | 32
-/* Rule.annotation */
-| 4096
-/* Rule.reference */
-| 1024
-/* Rule.index */
-| 256
-/* Rule.link */
-| 64
-/* Rule.media */
+exports.backtrackable = 0 | 64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 4
+/* State.link */
+| 2
+/* State.media */
 ;
 
 /***/ }),
@@ -5685,7 +5682,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('((
   delimiters: global_1.undefined
 }, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest)))));
+}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ')' ? global_1.undefined : (0, link_1.optimize)('((', ns, rest, next)))));
 
 /***/ }),
 
@@ -6670,7 +6667,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 /* State.media */
 | 1
 /* State.autolink */
-, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : optimize('[', ns, rest))]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))], nodes => nodes[0][0] !== ''), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
+, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]])), ']', true, global_1.undefined, ([, ns = [], rest], next) => next[0] === ']' ? global_1.undefined : optimize('[', ns, rest, next))]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))], nodes => nodes[0][0] !== ''), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])), ([content, params], rest, context) => {
   if (content[0] === '') return [content, rest];
   if (params.length === 0) return;
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
@@ -6766,12 +6763,15 @@ function decode(uri) {
   }
 }
 
-function optimize(opener, ns, rest) {
+function optimize(opener, ns, rest, next) {
+  if (next[+(next[0] === '\\')] === '\n') return;
   let count = 0;
 
   for (let i = 0; i < ns.length - 1; i += 2) {
-    if (ns[i] !== '' || ns[i + 1] !== opener[0]) break;
-    ++count;
+    const fst = ns[i];
+    const snd = ns[i + 1];
+    if (fst !== '' || snd[0] !== opener[0]) break;
+    count += snd.length;
   }
 
   return [['', opener[0].repeat(opener.length + count)], rest.slice(count)];
@@ -6996,7 +6996,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[['
 /* State.media */
 , (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: global_1.undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' || next[0] === '\n' || next.slice(0, 2) === '\\\n' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest)))));
+}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest], ([, ns, rest], next) => next[0] === ']' ? global_1.undefined : (0, link_1.optimize)('[[', ns, rest, next)))));
 const abbr = (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 
 function attributes(ns) {
@@ -7197,7 +7197,7 @@ exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.syntax)(0
 /* Rule.none */
 , 2, (0, combinator_1.surround)('{{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
-}, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest], ([, ns = [], rest], next) => next[0] === '}' ? global_1.undefined : (0, link_1.optimize)('{{', ns, rest))));
+}, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest], ([, ns = [], rest], next) => next[0] === '}' ? global_1.undefined : (0, link_1.optimize)('{{', ns, rest, next))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
 
 /***/ }),
