@@ -1,5 +1,5 @@
 export class Memo {
-  private memory: Record<string, readonly [any[], number]>[/* pos */] = [];
+  private memory: Record<string, readonly [any[], number] | readonly []>[/* pos */] = [];
   public get length(): number {
     return this.memory.length;
   }
@@ -8,7 +8,7 @@ export class Memo {
     position: number,
     syntax: number,
     state: number,
-  ): readonly [any[], number] | undefined {
+  ): readonly [any[], number] | readonly [] | undefined {
     //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
     return this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
   }
@@ -16,12 +16,14 @@ export class Memo {
     position: number,
     syntax: number,
     state: number,
-    nodes: any[],
+    nodes: any[] | undefined,
     offset: number,
   ): void {
     const record = this.memory[position + this.offset - 1] ??= {};
     assert(!record[`${syntax}:${state}`]);
-    record[`${syntax}:${state}`] = [nodes.slice(), offset];
+    record[`${syntax}:${state}`] = nodes
+      ? [nodes.slice(), offset]
+      : [];
     //console.log('set', position + this.offset, syntax, state);
   }
   public clear(position: number): void {
@@ -29,6 +31,6 @@ export class Memo {
     for (let i = position + this.offset, len = memory.length; i < len; ++i) {
       memory.pop();
     }
-    //console.log(position);
+    //console.log('clear', position);
   }
 }

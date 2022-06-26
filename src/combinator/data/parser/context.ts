@@ -76,24 +76,24 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
     const pos = source.length;
     const cache = syntax && context.memo?.get(pos, syntax, state);
     const result: Result<T> = cache
-      ? [cache[0], source.slice(cache[1])]
+      ? cache.length === 0
+        ? undefined
+        : [cache[0], source.slice(cache[1])]
       : parser!(source, context);
     ++resources.recursion;
-    if (result) {
-      if (!cache) {
-        assert(cost = cost as number);
-        resources.budget -= cost;
+    if (result && !cache) {
+      assert(cost = cost as number);
+      resources.budget -= cost;
+    }
+    if (syntax) {
+      if (state & context.backtrackable) {
+        context.memo ??= new Memo();
+        cache ?? context.memo.set(pos, syntax, state, eval(result), source.length - exec(result, '').length);
+        assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, state));
       }
-      if (syntax) {
-        if (state & context.backtrackable) {
-          context.memo ??= new Memo();
-          cache ?? context.memo.set(pos, syntax, state, eval(result), source.length - exec(result).length);
-          assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, state));
-        }
-        else if (context.memo?.length! >= pos) {
-          assert(!(state & context.backtrackable));
-          context.memo!.clear(pos);
-        }
+      else if (result && context.memo?.length! >= pos) {
+        assert(!(state & context.backtrackable));
+        context.memo!.clear(pos);
       }
     }
     context.precedence = p;
