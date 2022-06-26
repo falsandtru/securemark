@@ -4,21 +4,22 @@ import { union, some, syntax, creator, precedence, guard, state, validate, surro
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
-import { Rule, State } from '../../context';
+import { Syntax, State } from '../../context';
 import { startTight, trimBlankEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => validate('[#', syntax(Rule.index, 2, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surround(
   '[#',
   guard(context => ~context.state! & State.index,
+  syntax(Syntax.index, 2, 1,
   state(State.annotation | State.reference | State.index | State.label | State.link | State.media | State.autolink,
   startTight(
   open(stropt(/^\|?/), trimBlankEnd(some(union([
     signature,
     inline,
-  ]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))),
+  ]), ']', [[/^\\?\n/, 9], [']', 2]])), true))))),
   ']',
   false,
   ([, ns], rest) => [[html('a', defrag(ns))], rest])),
@@ -30,7 +31,7 @@ export const index: IndexParser = lazy(() => validate('[#', syntax(Rule.index, 2
         href: el.id ? `#${el.id}` : undefined,
       },
       el.childNodes),
-  ]))));
+  ])));
 
 const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   '|#',

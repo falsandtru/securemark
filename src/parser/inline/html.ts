@@ -3,7 +3,7 @@ import { HTMLParser } from '../inline';
 import { union, subsequence, some, syntax, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { Rule } from '../context';
+import { Syntax } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
 import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
@@ -19,7 +19,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, syntax(Rule.none, 5, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, syntax(Syntax.none, 5, 1, union([
   focus(
     '<wbr>',
     () => [[h('wbr')], '']),

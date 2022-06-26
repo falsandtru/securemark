@@ -8,13 +8,13 @@ import { hashtag, emoji } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
-import { Rule, State } from '../context';
+import { Syntax, State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
   validate(/^(?:[@#>0-9A-Za-z]|\S#)/,
   guard(context => ~context.state! & State.autolink,
-  syntax(Rule.autolink, 1,
+  syntax(Syntax.autolink, 1, 1,
   some(union([
     url,
     email,

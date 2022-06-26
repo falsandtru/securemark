@@ -1,4 +1,4 @@
-export const enum Rule {
+export const enum Syntax {
   reference = 1 << 12,
   comment = 1 << 11,
   index = 1 << 10,

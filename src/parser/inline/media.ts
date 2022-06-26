@@ -5,7 +5,7 @@ import { textlink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { Rule, State } from '../context';
+import { Syntax, State } from '../context';
 import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, shift, push } from 'spica/array';
@@ -18,9 +18,10 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => validate(['![', '!{'], syntax(Rule.media, 2, 10, bind(verify(fmap(open(
+export const media: MediaParser = lazy(() => validate(['![', '!{'], bind(verify(fmap(open(
   '!',
   guard(context => ~context.state! & State.media,
+  syntax(Syntax.media, 2, 10,
   tails([
     dup(surround(
       '[',
@@ -28,7 +29,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], syntax(Rule.
       ']',
       true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ]))),
+  ])))),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], shift(bs)[1]] : [[''], shift(as)[1]]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
@@ -58,7 +59,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], syntax(Rule.
       textlink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
-  }))));
+  })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

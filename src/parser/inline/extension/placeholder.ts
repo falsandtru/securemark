@@ -2,7 +2,7 @@ import { ExtensionParser } from '../../inline';
 import { union, some, syntax, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { Rule } from '../../context';
+import { Syntax } from '../../context';
 import { startTight } from '../../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
@@ -11,9 +11,10 @@ import { unshift } from 'spica/array';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate(['[:', '[^'], syntax(Rule.none, 2, surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate(['[:', '[^'], surround(
   str(/^\[[:^]/),
-  startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
+  syntax(Syntax.none, 2, 1,
+  startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]]))),
   str(']'), false,
   ([as, bs], rest) => [[
     html('span', {
@@ -23,4 +24,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validat
       'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`,
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest]))));
+  ([as, bs], rest) => [unshift(as, bs), rest])));

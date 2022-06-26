@@ -5,7 +5,7 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { Rule } from '../context';
+import { Syntax } from '../context';
 import { startTight, blankWith } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
@@ -27,12 +27,13 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   ])),
 ])));
 
-export const emstrong: EmStrongParser = lazy(() => syntax(Rule.none, 1, surround(
+export const emstrong: EmStrongParser = lazy(() => surround(
   str('***'),
+  syntax(Syntax.none, 1, 1,
   startTight(some(union([
     some(inline, blankWith('*')),
     open(some(inline, '*'), inline),
-  ]))),
+  ])))),
   str(/^\*{1,3}/), false,
   ([, bs, cs], rest, context): Result<HTMLElement | string, typeof context> => {
     assert(cs.length === 1);
@@ -58,4 +59,4 @@ export const emstrong: EmStrongParser = lazy(() => syntax(Rule.none, 1, surround
     }
     assert(false);
   },
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest]));

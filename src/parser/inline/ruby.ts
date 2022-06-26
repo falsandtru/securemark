@@ -4,12 +4,12 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, syntax, creator, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { Rule } from '../context';
+import { Syntax } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => validate('[', syntax(Rule.none, 2, fmap(verify(
+export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 1, fmap(verify(
   sequence([
     surround('[', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')'),

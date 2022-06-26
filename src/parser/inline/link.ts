@@ -1,12 +1,12 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser, TextLinkParser } from '../inline';
 import { Result, eval, exec } from '../../combinator/data/parser';
-import { union, inits, tails, subsequence, some, guard, syntax, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, subsequence, some, guard, syntax, creator, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { unescsource, str } from '../source';
-import { Rule, State } from '../context';
+import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
 import { stringify } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -17,8 +17,9 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link, 2, 10, bind(
+export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
   guard(context => ~context.state! & State.link,
+  syntax(Syntax.link, 2, 10,
   fmap(subsequence([
     state(State.link,
     dup(union([
@@ -35,7 +36,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ], nodes => nodes[0][0] !== ''),
-  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []])),
+  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]))),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
     assert(content[0] !== '' || params.length === 0);
     if (content[0] === '') return [content, rest];
@@ -61,13 +62,14 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link
     if (el.classList.contains('invalid')) return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  }))));
+  })));
 
-export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link, 2, 10, bind(
+export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], bind(
+  creator(10, precedence(2,
   reverse(tails([
     dup(surround('[', some(union([unescsource]), ']'), ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ])),
+  ])))),
   ([params, content = []], rest, context) => {
     assert(params[0] === '\r');
     params.shift();
@@ -86,7 +88,7 @@ export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], syntax(R
     assert(!el.classList.contains('invalid'));
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  }))));
+  })));
 
 export const uri: LinkParser.ParameterParser.UriParser = fmap(union([
   open(/^[^\S\n]+/, str(/^\S+/)),

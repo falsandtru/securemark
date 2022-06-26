@@ -56,17 +56,11 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
   return result;
 }
 
-export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, parser: P): P;
 export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, parser: P): P;
-export function syntax<T>(syntax: number, precedence: number, cost: number | Parser<T>, parser?: Parser<T>): Parser<T> {
-  if (typeof cost === 'function') {
-    parser = cost;
-    cost = 1;
-  }
+export function syntax<T>(syntax: number, precedence: number, cost: number, parser?: Parser<T>): Parser<T> {
   return (source, context) => {
     if (source === '') return;
-    context.backtrackable ??= ~0;
-    const state = context.state ??= 0;
+    context.memo ??= new Memo();
     const p = context.precedence;
     context.precedence = precedence;
     const { resources = { budget: 1, recursion: 1 } } = context;
@@ -74,7 +68,8 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
-    const cache = syntax && context.memo?.get(pos, syntax, state);
+    const state = context.state ?? 0;
+    const cache = syntax && context.memo.get(pos, syntax, state);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
@@ -82,18 +77,16 @@ export function syntax<T>(syntax: number, precedence: number, cost: number | Par
       : parser!(source, context);
     ++resources.recursion;
     if (result && !cache) {
-      assert(cost = cost as number);
       resources.budget -= cost;
     }
     if (syntax) {
-      if (state & context.backtrackable) {
-        context.memo ??= new Memo();
+      if (state & context.backtrackable!) {
         cache ?? context.memo.set(pos, syntax, state, eval(result), source.length - exec(result, '').length);
         assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, state));
       }
-      else if (result && context.memo?.length! >= pos) {
-        assert(!(state & context.backtrackable));
-        context.memo!.clear(pos);
+      else if (result && context.memo.length! >= pos) {
+        assert(!(state & context.backtrackable!));
+        context.memo.clear(pos);
       }
     }
     context.precedence = p;

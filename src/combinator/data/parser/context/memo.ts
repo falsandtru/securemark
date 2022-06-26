@@ -1,5 +1,5 @@
 export class Memo {
-  private memory: Record<string, readonly [any[], number] | readonly []>[/* pos */] = [];
+  private readonly memory: Record<string, readonly [any[], number] | readonly []>[/* pos */] = [];
   public get length(): number {
     return this.memory.length;
   }
