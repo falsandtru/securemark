@@ -1,6 +1,6 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser, TextLinkParser } from '../inline';
-import { Result, eval } from '../../combinator/data/parser';
+import { Result, eval, exec } from '../../combinator/data/parser';
 import { union, inits, tails, subsequence, some, guard, syntax, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
@@ -42,7 +42,11 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], syntax(Rule.link
     if (params.length === 0) return;
     assert(params.every(p => typeof p === 'string'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
-    if (eval(some(autolink)(stringify(content), context))?.some(node => typeof node === 'object')) return;
+    for (let source = stringify(content); source;) {
+      const result = autolink(source, context);
+      if (typeof eval(result!)[0] === 'object') return;
+      source = exec(result!);
+    }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
