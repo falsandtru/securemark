@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.258.1
+
+- Refactoring.
+
 ## 0.258.0
 
 - Introduce memoization.
