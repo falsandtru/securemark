@@ -2250,17 +2250,17 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.convert = void 0;
 
-const global_1 = __webpack_require__(4128);
+const parser_1 = __webpack_require__(6728);
 
 function convert(conv, parser) {
   return (source, context = {}) => {
     if (source === '') return;
-    source = conv(source);
-    if (source === '') return [[], ''];
+    const src = conv(source);
+    if (src === '') return [[], ''];
     const memo = context.memo;
-    context.memo = global_1.undefined;
-    const result = parser(source, context);
-    context.memo = memo;
+    memo && (memo.offset += source.length - src.length);
+    const result = parser(src, context);
+    memo && (memo.offset -= source.length - src.length);
     return result;
   };
 }
@@ -2543,9 +2543,9 @@ function focus(scope, parser) {
     const src = match(source);
     if (src === '') return;
     const memo = context.memo;
-    memo && (memo.offset = source.length - src.length);
+    memo && (memo.offset += source.length - src.length);
     const result = parser(src, context);
-    memo && (memo.offset = source.length + src.length);
+    memo && (memo.offset -= source.length - src.length);
     if (!result) return;
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : global_1.undefined;
   };
@@ -2562,9 +2562,9 @@ function rewrite(scope, parser) {
     context.memo = memo;
     if (!res1 || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
-    memo && (memo.offset = source.length - src.length);
+    memo && (memo.offset += source.length - src.length);
     const res2 = parser(src, context);
-    memo && (memo.offset = source.length + src.length);
+    memo && (memo.offset -= source.length - src.length);
     if (!res2) return;
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : global_1.undefined;
   };
@@ -2866,21 +2866,19 @@ function syntax(syntax, precedence, cost, parser) {
     --resources.recursion;
     const pos = source.length;
     const cache = syntax && context.memo?.get(pos, syntax, state);
-    const result = cache ? [cache[0], source.slice(cache[1])] : parser(source, context);
+    const result = cache ? cache.length === 0 ? global_1.undefined : [cache[0], source.slice(cache[1])] : parser(source, context);
     ++resources.recursion;
 
-    if (result) {
-      if (!cache) {
-        resources.budget -= cost;
-      }
+    if (result && !cache) {
+      resources.budget -= cost;
+    }
 
-      if (syntax) {
-        if (state & context.backtrackable) {
-          context.memo ??= new memo_1.Memo();
-          cache ?? context.memo.set(pos, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result).length);
-        } else if (context.memo?.length >= pos) {
-          context.memo.clear(pos);
-        }
+    if (syntax) {
+      if (state & context.backtrackable) {
+        context.memo ??= new memo_1.Memo();
+        cache ?? context.memo.set(pos, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
+      } else if (result && context.memo?.length >= pos) {
+        context.memo.clear(pos);
       }
     }
 
@@ -3080,7 +3078,7 @@ class Memo {
 
   set(position, syntax, state, nodes, offset) {
     const record = this.memory[position + this.offset - 1] ??= {};
-    record[`${syntax}:${state}`] = [nodes.slice(), offset]; //console.log('set', position + this.offset, syntax, state);
+    record[`${syntax}:${state}`] = nodes ? [nodes.slice(), offset] : []; //console.log('set', position + this.offset, syntax, state);
   }
 
   clear(position) {
@@ -3088,7 +3086,7 @@ class Memo {
 
     for (let i = position + this.offset, len = memory.length; i < len; ++i) {
       memory.pop();
-    } //console.log(position);
+    } //console.log('clear', position);
 
   }
 
@@ -5947,26 +5945,26 @@ const dom_1 = __webpack_require__(3252);
 const array_1 = __webpack_require__(8112);
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.syntax)(0
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(0
 /* Rule.none */
-, 2, (0, combinator_1.surround)((0, source_1.str)('('), (0, source_1.str)(index), (0, source_1.str)(')'))), (0, combinator_1.syntax)(128
+, 2, (0, source_1.str)(index)), (0, source_1.str)(')')), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(128
 /* Rule.bracket */
-, 2, (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]]), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+, 2, (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]])), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest])), (0, combinator_1.syntax)(0
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(0
 /* Rule.none */
-, 2, (0, combinator_1.surround)((0, source_1.str)('（'), (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0)))), (0, source_1.str)('）'))), (0, combinator_1.syntax)(128
+, 2, (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0))))), (0, source_1.str)('）')), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(128
 /* Rule.bracket */
-, 2, (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]]), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+, 2, (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]])), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])), (0, combinator_1.syntax)(128
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.syntax)(128
 /* Rule.bracket */
-, 2, (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]]), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest])), (0, combinator_1.syntax)(128
+, 2, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(128
 /* Rule.bracket */
-, 2, (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]]), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])), // Control media blinking in editing rather than control confusion of pairs of quote marks.
-(0, combinator_1.syntax)(1
+, 2, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), // Control media blinking in editing rather than control confusion of pairs of quote marks.
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(1
 /* Rule.quote */
-, 8, (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]]), (0, source_1.str)('"'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]))]));
+, 8, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
 
 /***/ }),
 
@@ -6671,7 +6669,13 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
   if (content[0] === '') return [content, rest];
   if (params.length === 0) return;
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
-  if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context))?.some(node => typeof node === 'object')) return;
+
+  for (let source = (0, util_1.stringify)(content); source;) {
+    const result = (0, autolink_1.autolink)(source, context);
+    if (typeof (0, parser_1.eval)(result)[0] === 'object') return;
+    source = (0, parser_1.exec)(result);
+  }
+
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   if (el.classList.contains('invalid')) return [[el], rest];
