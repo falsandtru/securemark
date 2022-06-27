@@ -10,7 +10,10 @@ export class Memo {
     state: number,
   ): readonly [any[], number] | readonly [] | undefined {
     //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
-    return this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
+    const cache = this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
+    return cache?.length === 2
+      ? [cache[0].slice(), cache[1]]
+      : cache;
   }
   public set(
     position: number,
@@ -24,7 +27,7 @@ export class Memo {
     record[`${syntax}:${state}`] = nodes
       ? [nodes.slice(), offset]
       : [];
-    //console.log('set', position + this.offset, syntax, state);
+    //console.log('set', position + this.offset, syntax, state, record[`${syntax}:${state}`]);
   }
   public clear(position: number): void {
     const memory = this.memory;

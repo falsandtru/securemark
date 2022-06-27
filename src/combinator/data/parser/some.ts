@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../parser';
 import { Delimiters } from './context/delimiter';
-import { push } from 'spica/array';
+import { unshift, push } from 'spica/array';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
 
@@ -32,7 +32,9 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;
       nodes = nodes
-        ? push(nodes, eval(result))
+        ? nodes.length < eval(result).length
+          ? unshift(nodes, eval(result))
+          : push(nodes, eval(result))
         : eval(result);
       rest = exec(result);
       if (limit >= 0 && source.length - rest.length > limit) break;

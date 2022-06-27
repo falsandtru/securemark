@@ -60,7 +60,8 @@ export function syntax<P extends Parser<unknown>>(syntax: number, precedence: nu
 export function syntax<T>(syntax: number, precedence: number, cost: number, parser?: Parser<T>): Parser<T> {
   return (source, context) => {
     if (source === '') return;
-    context.memo ??= new Memo();
+    const memo = context.memo ??= new Memo();
+    context.memorable ??= ~0;
     const p = context.precedence;
     context.precedence = precedence;
     const { resources = { budget: 1, recursion: 1 } } = context;
@@ -69,7 +70,7 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
     --resources.recursion;
     const pos = source.length;
     const state = context.state ?? 0;
-    const cache = syntax && context.memo.get(pos, syntax, state);
+    const cache = syntax && memo.get(pos, syntax, state);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
@@ -80,13 +81,13 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
       resources.budget -= cost;
     }
     if (syntax) {
-      if (state & context.backtrackable!) {
-        cache ?? context.memo.set(pos, syntax, state, eval(result), source.length - exec(result, '').length);
-        assert.deepStrictEqual(cache && cache, cache && context.memo.get(pos, syntax, state));
+      if (state & context.memorable!) {
+        cache ?? memo.set(pos, syntax, state, eval(result), source.length - exec(result, '').length);
+        assert.deepStrictEqual(cache && cache, cache && memo.get(pos, syntax, state));
       }
-      else if (result && context.memo.length! >= pos) {
-        assert(!(state & context.backtrackable!));
-        context.memo.clear(pos);
+      else if (result && memo.length! >= pos) {
+        assert(!(state & context.memorable!));
+        memo.clear(pos);
       }
     }
     context.precedence = p;
