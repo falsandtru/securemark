@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
-import { union, some, guard, context, syntax, state, surround, lazy } from '../../combinator';
+import { union, some, context, syntax, constraint, state, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { optimize } from './link';
 import { Syntax, State } from '../context';
@@ -9,7 +9,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => surround(
   '((',
-  guard(context => ~context.state! & State.annotation,
+  constraint(State.annotation, false,
   syntax(Syntax.annotation, 6, 1,
   state(State.annotation | State.media,
   startLoose(

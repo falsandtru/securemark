@@ -1,6 +1,6 @@
 import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, creation, precedence, guard, syntax, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { textlink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -20,7 +20,7 @@ Object.setPrototypeOf(optspec, null);
 
 export const media: MediaParser = lazy(() => validate(['![', '!{'], bind(verify(fmap(open(
   '!',
-  guard(context => ~context.state! & State.media,
+  constraint(State.media, false,
   syntax(Syntax.media, 2, 10,
   tails([
     dup(surround(

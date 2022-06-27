@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, syntax, guard, validate, fmap } from '../../combinator';
+import { union, some, syntax, constraint, validate, fmap } from '../../combinator';
 import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -13,7 +13,7 @@ import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
   validate(/^(?:[@#>0-9A-Za-z]|\S#)/,
-  guard(context => ~context.state! & State.autolink,
+  constraint(State.autolink, false,
   syntax(Syntax.autolink, 1, 1,
   some(union([
     url,

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, syntax, creation, precedence, guard, state, validate, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, syntax, creation, precedence, constraint, state, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
@@ -12,7 +12,7 @@ import IndexParser = ExtensionParser.IndexParser;
 
 export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surround(
   '[#',
-  guard(context => ~context.state! & State.index,
+  constraint(State.index, false,
   syntax(Syntax.index, 2, 1,
   state(State.annotation | State.reference | State.index | State.label | State.link | State.media | State.autolink,
   startTight(

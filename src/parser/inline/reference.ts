@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, context, creation, guard, syntax, state, surround, open, lazy, bind } from '../../combinator';
+import { union, subsequence, some, context, syntax, creation, constraint, state, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { optimize } from './link';
 import { str, stropt } from '../source';
@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => surround(
   '[[',
-  guard(context => ~context.state! & State.reference,
+  constraint(State.reference, false,
   syntax(Syntax.reference, 6, 1,
   state(State.annotation | State.reference | State.media,
   startLoose(
