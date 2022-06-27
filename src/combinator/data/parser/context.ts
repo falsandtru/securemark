@@ -64,8 +64,8 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
     context.memorable ??= ~0;
     const p = context.precedence;
     context.precedence = precedence;
-    const { resources = { budget: 1, recursion: 1 } } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
+    const { resources = { clock: 1, recursion: 1 } } = context;
+    if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const pos = source.length;
@@ -78,7 +78,7 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
       : parser!(source, context);
     ++resources.recursion;
     if (result && !cache) {
-      resources.budget -= cost;
+      resources.clock -= cost;
     }
     if (syntax) {
       if (state & context.memorable!) {
@@ -101,14 +101,14 @@ export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown
   if (typeof cost === 'function') return creation(1, cost);
   assert(cost >= 0);
   return (source, context) => {
-    const { resources = { budget: 1, recursion: 1 } } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
+    const { resources = { clock: 1, recursion: 1 } } = context;
+    if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const result = parser!(source, context);
     ++resources.recursion;
     if (result) {
-      resources.budget -= cost;
+      resources.clock -= cost;
     }
     return result;
   };

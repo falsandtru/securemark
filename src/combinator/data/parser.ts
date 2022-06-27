@@ -9,7 +9,7 @@ export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   | undefined;
 export interface Ctx {
   readonly resources?: {
-    budget: number;
+    clock: number;
     recursion: number;
   };
   precedence?: number;
