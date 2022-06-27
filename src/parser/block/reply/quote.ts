@@ -1,6 +1,6 @@
 import { ReplyParser } from '../../block';
 import { eval } from '../../../combinator/data/parser';
-import { union, some, creator, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
+import { union, some, creation, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { str, anyline } from '../../source';
 import { autolink } from '../../autolink';
@@ -8,7 +8,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 
-export const quote: ReplyParser.QuoteParser = lazy(() => creator(block(fmap(validate(
+export const quote: ReplyParser.QuoteParser = lazy(() => creation(block(fmap(validate(
   '>',
   union([
     rewrite(

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, creator, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
@@ -36,7 +36,7 @@ export const olist_: OListParser = lazy(() => block(union([
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  some(creator(union([
+  some(creation(union([
     indexee(fmap(fallback(
       inits([
         line(open(heads[form], subsequence([checkbox, trimBlank(some(union([indexer, inline])))]), true)),

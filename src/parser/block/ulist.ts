@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, subsequence, some, creator, state, block, line, validate, indent, focus, open, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, open, fallback, lazy, fmap } from '../../combinator';
 import { olist_, invalid } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
@@ -15,7 +15,7 @@ export const ulist: UListParser = lazy(() => block(validate(
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /^-(?=$|\s)/,
-  some(creator(union([
+  some(creation(union([
     indexee(fmap(fallback(
       inits([
         line(open(/^-(?:$|\s)/, subsequence([checkbox, trimBlank(some(union([indexer, inline])))]), true)),

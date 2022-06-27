@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, guard, creator, validate, surround, clear, fmap } from '../../../combinator';
+import { union, guard, creation, validate, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { State } from '../../context';
 import { html } from 'typed-dom/dom';
@@ -12,7 +12,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate
   body,
 ])));
 
-export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creator(fmap(
+export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creation(fmap(
   guard(context => ~context.state! & State.label,
   union([
     surround('[', body, ']'),

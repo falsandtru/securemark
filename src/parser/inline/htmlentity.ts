@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
-import { union, creator, validate, focus, fmap } from '../../combinator';
+import { union, creation, validate, focus, fmap } from '../../combinator';
 import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = creator(validate('&', focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(validate('&', focus(
   /^&[0-9A-Za-z]+;/,
   entity => [[parse(entity) ?? `\x1B${entity}`], ''])));
 

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { union, creator, focus } from '../../combinator';
+import { union, creation, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
@@ -9,7 +9,7 @@ export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = creator((source, context) => {
+export const text: TextParser = creation((source, context) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {

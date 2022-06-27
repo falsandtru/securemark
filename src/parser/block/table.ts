@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, creator, block, line, validate, focus, rewrite, surround, open, fallback, lazy, fmap } from '../../combinator';
+import { union, sequence, some, creation, block, line, validate, focus, rewrite, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { contentline } from '../source';
 import { trimNode } from '../visibility';
@@ -25,7 +25,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     ]),
   ])));
 
-const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fallback(fmap(
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creation(fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
   es => [html('tr', es)]),
   rewrite(contentline, source => [[
@@ -37,7 +37,7 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
     }, [html('td', source.replace('\n', ''))])
   ], ''])));
 
-const align: AlignParser = creator(fmap(open(
+const align: AlignParser = creation(fmap(open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),
@@ -52,11 +52,11 @@ const cell: CellParser = surround(
   some(union([inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]),
   /^[^|]*/, true);
 
-const head: CellParser.HeadParser = creator(fmap(
+const head: CellParser.HeadParser = creation(fmap(
   cell,
   ns => [html('th', trimNode(defrag(ns)))]));
 
-const data: CellParser.DataParser = creator(fmap(
+const data: CellParser.DataParser = creation(fmap(
   cell,
   ns => [html('td', trimNode(defrag(ns)))]));
 

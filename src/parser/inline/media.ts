@@ -1,6 +1,6 @@
 import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, creator, precedence, guard, syntax, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creation, precedence, guard, syntax, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { textlink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -61,7 +61,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], bind(verify(
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
   })));
 
-const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
+const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

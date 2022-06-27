@@ -1,10 +1,10 @@
 import { EscapableSourceParser } from '../source';
-import { creator } from '../../combinator';
+import { creation } from '../../combinator';
 import { nonWhitespace } from './text';
 
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
-export const escsource: EscapableSourceParser = creator(source => {
+export const escsource: EscapableSourceParser = creation(source => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {

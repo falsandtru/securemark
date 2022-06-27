@@ -1,5 +1,5 @@
 import { IListParser } from '../block';
-import { union, inits, some, creator, state, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, some, creation, state, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_, invalid } from './olist';
 import { inline } from '../inline';
@@ -13,7 +13,7 @@ export const ilist: IListParser = lazy(() => block(validate(
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
   /^[-+*](?:$|\s)/,
-  some(creator(union([
+  some(creation(union([
     fmap(fallback(
       inits([
         line(open(/^[-+*](?:$|\s)/, some(inline), true)),

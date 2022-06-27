@@ -1,5 +1,5 @@
 import { BlockquoteParser } from '../block';
-import { union, some, creator, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
+import { union, some, creation, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { parse } from '../api/parse';
@@ -19,7 +19,7 @@ const indent = block(open(opener, some(contentline, /^>(?:$|\s)/)), false);
 const unindent = (source: string) => source.replace(/(^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$/g, '$1');
 
 const source: BlockquoteParser.SourceParser = lazy(() => fmap(
-  some(creator(union([
+  some(creation(union([
     rewrite(
       indent,
       convert(unindent, source)),
@@ -30,11 +30,11 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   ns => [html('blockquote', ns)]));
 
 const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
-  some(creator(union([
+  some(creation(union([
     rewrite(
       indent,
       convert(unindent, markdown)),
-    creator(99,
+    creation(99,
     rewrite(
       some(contentline, opener),
       convert(unindent, (source, context) => {

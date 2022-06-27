@@ -2,7 +2,7 @@ import { undefined, BigInt, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, creator, block, line, validate, fence, rewrite, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
@@ -79,7 +79,7 @@ const align: AlignParser = line(fmap(
 
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/;
 
-const head: CellParser.HeadParser = creator(block(fmap(open(
+const head: CellParser.HeadParser = creation(block(fmap(open(
   str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
   rewrite(
     inits([
@@ -91,7 +91,7 @@ const head: CellParser.HeadParser = creator(block(fmap(open(
   ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
   false));
 
-const data: CellParser.DataParser = creator(block(fmap(open(
+const data: CellParser.DataParser = creation(block(fmap(open(
   str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
   rewrite(
     inits([
@@ -103,7 +103,7 @@ const data: CellParser.DataParser = creator(block(fmap(open(
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
   false));
 
-const dataline: CellParser.DatalineParser = creator(line(
+const dataline: CellParser.DatalineParser = creation(line(
   rewrite(
     contentline,
     union([

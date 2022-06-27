@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, creator, precedence, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
+import { union, some, creation, precedence, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { textlink } from '../link';
 import { unescsource } from '../../source';
 
@@ -13,7 +13,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     url => `{ ${url} }`,
     union([textlink])))));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(precedence(2, union([
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(precedence(2, union([
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),
   surround('[', some(union([bracket, unescsource]), ']'), ']', true),
   surround('{', some(union([bracket, unescsource]), '}'), '}', true),

@@ -1,10 +1,10 @@
 import { ReplyParser } from '../../block';
-import { union, tails, creator, line, validate, focus, reverse, fmap } from '../../../combinator';
+import { union, tails, creation, line, validate, focus, reverse, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const cite: ReplyParser.CiteParser = creator(line(fmap(validate(
+export const cite: ReplyParser.CiteParser = creation(line(fmap(validate(
   '>>',
   reverse(tails([
     str(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),

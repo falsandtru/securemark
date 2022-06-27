@@ -1,5 +1,5 @@
 import { SidefenceParser } from '../block';
-import { union, some, creator, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
+import { union, some, creation, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -20,7 +20,7 @@ const opener = /^(?=\|\|+(?:$|\s))/;
 const unindent = (source: string) => source.replace(/(^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '$1');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
-  some(creator(union([
+  some(creation(union([
     focus(
       /^(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/,
       convert(unindent, source)),

@@ -1,7 +1,7 @@
 import { Parser, Ctx } from '../parser';
 import { some } from './some';
 import { reset, context } from './context';
-import { creator } from './context';
+import { creation } from './context';
 
 describe('Unit: combinator/data/parser/context', () => {
   interface Context extends Ctx {
@@ -9,7 +9,7 @@ describe('Unit: combinator/data/parser/context', () => {
   }
 
   describe('reset', () => {
-    const parser: Parser<number> = some(creator(
+    const parser: Parser<number> = some(creation(
       (s, context) => [[context.resources?.budget ?? NaN], s.slice(1)]));
 
     it('root', () => {
@@ -36,7 +36,7 @@ describe('Unit: combinator/data/parser/context', () => {
   });
 
   describe('context', () => {
-    const parser: Parser<boolean, Context> = some(creator(
+    const parser: Parser<boolean, Context> = some(creation(
       (s, context) => [[context.status!], s.slice(1)]));
 
     it('', () => {

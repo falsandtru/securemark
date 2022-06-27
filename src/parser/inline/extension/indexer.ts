@@ -1,10 +1,10 @@
 import { ExtensionParser } from '../../inline';
-import { union, creator, state, verify, focus, surround, fmap } from '../../../combinator';
+import { union, creation, state, verify, focus, surround, fmap } from '../../../combinator';
 import { index } from './index';
 import { State } from '../../context';
 import { html } from 'typed-dom/dom';
 
-export const indexer: ExtensionParser.IndexerParser = creator(fmap(verify(surround(
+export const indexer: ExtensionParser.IndexerParser = creation(fmap(verify(surround(
   /^\s+(?=\[#\S)/,
   state(State.index, false,
   union([

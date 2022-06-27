@@ -1,11 +1,11 @@
 import { MathParser } from '../inline';
-import { union, some, creator, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
+import { union, some, creation, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource } from '../source';
 import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
-export const math: MathParser = lazy(() => validate('$', creator(rewrite(
+export const math: MathParser = lazy(() => validate('$', creation(rewrite(
   union([
     surround('$', precedence(6, bracket), '$'),
     surround(
@@ -31,7 +31,7 @@ export const math: MathParser = lazy(() => validate('$', creator(rewrite(
       source)
   ], '']))));
 
-const bracket: MathParser.BracketParser = lazy(() => creator(surround(
+const bracket: MathParser.BracketParser = lazy(() => creation(surround(
   '{',
   some(union([
     bracket,

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, context, creator, guard, syntax, state, surround, open, lazy, bind } from '../../combinator';
+import { union, subsequence, some, context, creation, guard, syntax, state, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { optimize } from './link';
 import { str, stropt } from '../source';
@@ -26,7 +26,7 @@ export const reference: ReferenceParser = lazy(() => surround(
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest],
   ([, ns, rest], next) => next[0] === ']' ? undefined : optimize('[[', ns, rest, next)));
 
-const abbr: ReferenceParser.AbbrParser = creator(bind(surround(
+const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),

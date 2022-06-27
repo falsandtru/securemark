@@ -95,10 +95,10 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
   };
 }
 
-export function creator<P extends Parser<unknown>>(parser: P): P;
-export function creator<P extends Parser<unknown>>(cost: number, parser: P): P;
-export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
-  if (typeof cost === 'function') return creator(1, cost);
+export function creation<P extends Parser<unknown>>(parser: P): P;
+export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
+export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
+  if (typeof cost === 'function') return creation(1, cost);
   assert(cost >= 0);
   return (source, context) => {
     const { resources = { budget: 1, recursion: 1 } } = context;

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, syntax, creator, precedence, guard, state, validate, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, syntax, creation, precedence, guard, state, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
@@ -33,14 +33,14 @@ export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surroun
       el.childNodes),
   ])));
 
-const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
+const signature: IndexParser.SignatureParser = lazy(() => creation(fmap(open(
   '|#',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity(ns.join('')).slice(6) }),
   ])));
 
-const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creator(union([
+const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true),
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),

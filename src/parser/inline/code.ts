@@ -1,8 +1,8 @@
 import { CodeParser } from '../inline';
-import { creator, validate, match } from '../../combinator';
+import { creation, validate, match } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const code: CodeParser = creator(validate('`', match(
+export const code: CodeParser = creation(validate('`', match(
   /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
   ([whole, , body]) => rest =>
     [[html('code', { 'data-src': whole }, format(body))], rest.slice(whole.length)])));

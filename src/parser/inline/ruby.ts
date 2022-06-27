@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, syntax, creator, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
+import { sequence, syntax, creation, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { Syntax } from '../context';
@@ -48,7 +48,7 @@ export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 
     }
   }))));
 
-const text: RubyParser.TextParser = creator((source, context) => {
+const text: RubyParser.TextParser = creation((source, context) => {
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');
