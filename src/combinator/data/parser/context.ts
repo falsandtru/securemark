@@ -58,16 +58,12 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
 
 export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, parser: P): P;
 export function syntax<T>(syntax: number, precedence: number, cost: number, parser?: Parser<T>): Parser<T> {
-  return (source, context) => {
+  return creation(cost, (source, context) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
     context.memorable ??= ~0;
     const p = context.precedence;
     context.precedence = precedence;
-    const { resources = { clock: 1, recursion: 1 } } = context;
-    if (resources.clock <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
     const position = source.length;
     const state = context.state ?? 0;
     const cache = syntax && memo.get(position, syntax, state);
@@ -76,23 +72,17 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
         ? undefined
         : [cache[0], source.slice(cache[1])]
       : parser!(source, context);
-    ++resources.recursion;
-    if (result && !cache) {
-      resources.clock -= cost;
+    if (syntax && state & context.memorable!) {
+      cache ?? memo.set(position, syntax, state, eval(result), source.length - exec(result, '').length);
+      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, state));
     }
-    if (syntax) {
-      if (state & context.memorable!) {
-        cache ?? memo.set(position, syntax, state, eval(result), source.length - exec(result, '').length);
-        assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, state));
-      }
-      else if (result && memo.length! >= position) {
-        assert(!(state & context.memorable!));
-        memo.clear(position);
-      }
+    if (result && !state && memo.length! >= position) {
+      assert(!(state & context.memorable!));
+      memo.clear(position);
     }
     context.precedence = p;
     return result;
-  };
+  });
 }
 
 export function creation<P extends Parser<unknown>>(parser: P): P;
