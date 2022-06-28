@@ -2856,42 +2856,28 @@ function apply(parser, source, context, changes, values) {
 }
 
 function syntax(syntax, precedence, cost, parser) {
-  return (source, context) => {
+  return creation(cost, (source, context) => {
     if (source === '') return;
     const memo = context.memo ??= new memo_1.Memo();
     context.memorable ??= ~0;
     const p = context.precedence;
     context.precedence = precedence;
-    const {
-      resources = {
-        clock: 1,
-        recursion: 1
-      }
-    } = context;
-    if (resources.clock <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
     const position = source.length;
     const state = context.state ?? 0;
     const cache = syntax && memo.get(position, syntax, state);
     const result = cache ? cache.length === 0 ? global_1.undefined : [cache[0], source.slice(cache[1])] : parser(source, context);
-    ++resources.recursion;
 
-    if (result && !cache) {
-      resources.clock -= cost;
+    if (syntax && state & context.memorable) {
+      cache ?? memo.set(position, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
     }
 
-    if (syntax) {
-      if (state & context.memorable) {
-        cache ?? memo.set(position, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
-      } else if (result && memo.length >= position) {
-        memo.clear(position);
-      }
+    if (result && !state && memo.length >= position) {
+      memo.clear(position);
     }
 
     context.precedence = p;
     return result;
-  };
+  });
 }
 
 exports.syntax = syntax;
@@ -3108,7 +3094,7 @@ class Memo {
 
     for (let i = position + this.offset, len = memory.length; i < len; ++i) {
       memory.pop();
-    } //console.log('clear', position);
+    } //console.log('clear', position + 1);
 
   }
 
@@ -8014,7 +8000,9 @@ exports.delimiter = /[\s\x00-\x7F]|\S[#>]|[（）、。！？][^\S\n]*(?=\\\n)/;
 exports.nonWhitespace = /[\S\n]|$/;
 exports.nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
 const repeat = (0, str_1.str)(/^(.)\1*/);
-exports.text = (0, combinator_1.creation)((source, context) => {
+exports.text = (0, combinator_1.syntax)(0
+/* Syntax.none */
+, 1, 1, (source, context) => {
   if (source === '') return;
   const i = source.search(exports.delimiter);
 
