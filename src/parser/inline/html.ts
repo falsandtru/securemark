@@ -21,7 +21,7 @@ Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, syntax(Syntax.none, 5, 1, union([
   focus(
-    '<wbr>',
+    /^<wbr[^\S\n]*>/,
     () => [[h('wbr')], '']),
   focus(
     // https://html.spec.whatwg.org/multipage/syntax.html#void-elements

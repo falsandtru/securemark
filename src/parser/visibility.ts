@@ -12,7 +12,7 @@ import { push } from 'spica/array';
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   const blankline = new RegExp(
-    /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr>)+$/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
+    /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   return union([
     convert(
@@ -40,7 +40,7 @@ function hasVisible(
 }
 
 export const regBlankStart = new RegExp(
-  /^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
+  /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
 
 export function blankWith(delimiter: string | RegExp): RegExp;
 export function blankWith(starting: '' | '\n', delimiter: string | RegExp): RegExp;
@@ -49,7 +49,7 @@ export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): Reg
   return new RegExp(String.raw
     `^(?:(?=${
       starting
-    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${
+    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${
       typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source
     }`);
 }
@@ -94,8 +94,8 @@ const isStartTight = reduce((source: string, context: MarkdownParser.Context, ex
     case '<':
       switch (true) {
         case source.length >= 5
-          && source[1] === 'w'
-          && source.slice(0, 5) === '<wbr>':
+          && source.slice(0, 4) === '<wbr'
+          && (source[5] === '>' || /^<wbr[^\S\n]*>/.test(source)):
           return false;
       }
       return true;

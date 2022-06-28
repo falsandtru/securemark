@@ -122,7 +122,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl"  >a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo  dir="rtl">a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr\n>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<wbr >')), [['<wbr'], ' >']);
+      assert.deepStrictEqual(inspect(parser('<wbr >')), [['<wbr>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr constructor>')), [['<wbr'], ' constructor>']);
       assert.deepStrictEqual(inspect(parser('<wbr X>')), [['<wbr'], ' X>']);
       assert.deepStrictEqual(inspect(parser('<wbr x>')), [['<wbr'], ' x>']);
