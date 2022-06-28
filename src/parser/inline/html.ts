@@ -62,7 +62,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
     new Cache(10000))),
 ])))));
 
-export const attribute: HTMLParser.TagParser.AttributeParser = union([
+export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),
 ]);
 

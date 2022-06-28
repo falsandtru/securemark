@@ -964,7 +964,7 @@ export namespace MarkdownParser {
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [
         HTMLParser.OpenTagParser,
-        SourceParser.StrParser,
+        HTMLParser.OpenTagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
       ]> {
@@ -972,8 +972,8 @@ export namespace MarkdownParser {
     export namespace HTMLParser {
       export interface OpenTagParser extends
         Inline<'html/opentag'>,
-        Parser<HTMLElement, Context, [
-          TagParser.AttributeParser,
+        Parser<HTMLElement | string, Context, [
+          AttributeParser,
         ]> {
       }
       export interface TagParser extends
@@ -983,13 +983,11 @@ export namespace MarkdownParser {
           InlineParser,
         ]> {
       }
-      export namespace TagParser {
-        export interface AttributeParser extends
-          Inline<'html/tag/attribute'>,
-          Parser<string, Context, [
-            SourceParser.StrParser,
-          ]> {
-        }
+      export interface AttributeParser extends
+        Inline<'html/attribute'>,
+        Parser<string, Context, [
+          SourceParser.StrParser,
+        ]> {
       }
     }
     export interface InsertionParser extends
