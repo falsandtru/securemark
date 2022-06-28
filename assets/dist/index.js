@@ -2124,11 +2124,14 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const memo_1 = __webpack_require__(1090);
+
 const line_1 = __webpack_require__(9315);
 
 function block(parser, separation = true) {
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
+    context.memo ??= new memo_1.Memo();
     const result = parser(source, context);
     if (!result) return;
     const rest = (0, parser_1.exec)(result);
@@ -2202,11 +2205,17 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const memo_1 = __webpack_require__(1090);
+
 function line(parser) {
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
+    context.memo ??= new memo_1.Memo();
     const line = firstline(source);
+    const memo = context.memo;
+    memo.offset += source.length - line.length;
     const result = parser(line, context);
+    memo.offset -= source.length - line.length;
     if (!result) return;
     return isEmpty((0, parser_1.exec)(result)) ? [(0, parser_1.eval)(result), source.slice(line.length)] : global_1.undefined;
   };
@@ -2412,7 +2421,10 @@ const memoize_1 = __webpack_require__(1808);
 function indent(opener, parser, separation = false) {
   if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [[source], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation), (lines, rest, context) => {
+    const memo = context.memo;
+    memo && (memo.offset += rest.length);
     const result = parser(trimBlockEnd(lines.join('')), context);
+    memo && (memo.offset -= rest.length);
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : global_1.undefined;
   });
 }
@@ -2783,7 +2795,7 @@ exports.check = check;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.state = exports.guard = exports.precedence = exports.creation = exports.syntax = exports.context = exports.reset = void 0;
+exports.state = exports.constraint = exports.guard = exports.precedence = exports.creation = exports.syntax = exports.context = exports.reset = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -2852,28 +2864,28 @@ function syntax(syntax, precedence, cost, parser) {
     context.precedence = precedence;
     const {
       resources = {
-        budget: 1,
+        clock: 1,
         recursion: 1
       }
     } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
-    const pos = source.length;
+    const position = source.length;
     const state = context.state ?? 0;
-    const cache = syntax && memo.get(pos, syntax, state);
+    const cache = syntax && memo.get(position, syntax, state);
     const result = cache ? cache.length === 0 ? global_1.undefined : [cache[0], source.slice(cache[1])] : parser(source, context);
     ++resources.recursion;
 
     if (result && !cache) {
-      resources.budget -= cost;
+      resources.clock -= cost;
     }
 
     if (syntax) {
       if (state & context.memorable) {
-        cache ?? memo.set(pos, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
-      } else if (result && memo.length >= pos) {
-        memo.clear(pos);
+        cache ?? memo.set(position, syntax, state, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
+      } else if (result && memo.length >= position) {
+        memo.clear(position);
       }
     }
 
@@ -2889,18 +2901,18 @@ function creation(cost, parser) {
   return (source, context) => {
     const {
       resources = {
-        budget: 1,
+        clock: 1,
         recursion: 1
       }
     } = context;
-    if (resources.budget <= 0) throw new Error('Too many creations');
+    if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
     const result = parser(source, context);
     ++resources.recursion;
 
     if (result) {
-      resources.budget -= cost;
+      resources.clock -= cost;
     }
 
     return result;
@@ -2926,6 +2938,20 @@ function guard(f, parser) {
 }
 
 exports.guard = guard;
+
+function constraint(state, positive, parser) {
+  if (typeof positive === 'function') {
+    parser = positive;
+    positive = true;
+  }
+
+  return (source, context) => {
+    const s = positive ? state & context.state : state & ~context.state;
+    return s === state ? parser(source, context) : global_1.undefined;
+  };
+}
+
+exports.constraint = constraint;
 
 function state(state, positive, parser) {
   if (typeof positive === 'function') {
@@ -3860,7 +3886,26 @@ const autolink_1 = __webpack_require__(6051);
 
 const source_1 = __webpack_require__(6743);
 
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource]));
+const delimiter = /[@#>0-9A-Za-z\n]|\S[#>]/;
+
+const autolink = (source, context) => {
+  if (source === '') return;
+  const i = source.search(delimiter);
+
+  switch (i) {
+    case -1:
+      return [[source], ''];
+
+    case 0:
+      return parser(source, context);
+
+    default:
+      return [[source.slice(0, i)], source.slice(i)];
+  }
+};
+
+exports.autolink = autolink;
+const parser = (0, combinator_1.lazy)(() => (0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource]));
 
 /***/ }),
 
@@ -3915,7 +3960,7 @@ const random_1 = __webpack_require__(7325);
 
 exports.block = (0, combinator_1.creation)(error((0, combinator_1.reset)({
   resources: {
-    budget: 50 * 1000,
+    clock: 50 * 1000,
     recursion: 20
   }
 }, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
@@ -5315,7 +5360,7 @@ const qblock = (source, context) => {
     }
 
     if (child.classList.contains('cite') || child.classList.contains('quote')) {
-      context.resources && (context.resources.budget -= child.childNodes.length);
+      context.resources && (context.resources.clock -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes);
       --i;
       continue;
@@ -5450,9 +5495,9 @@ exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 /* State.media */
 , exports.ulist_))));
 exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)((0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
-exports.checkbox = (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
+exports.checkbox = (0, combinator_1.creation)((0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, source => [[(0, dom_1.html)('span', {
   class: 'checkbox'
-}, source[1].trimStart() ? '☑' : '☐')], '']);
+}, source[1].trimStart() ? '☑' : '☐')], '']));
 
 function fillFirstLine(ns) {
   return ns.length === 1 && typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName) ? (0, array_1.unshift)([(0, dom_1.html)('br')], ns) : ns;
@@ -5664,9 +5709,9 @@ const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.guard)(context => ~context.state & 64
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(64
 /* State.annotation */
-, (0, combinator_1.syntax)(32
+, false, (0, combinator_1.syntax)(32
 /* Syntax.annotation */
 , 6, 1, (0, combinator_1.state)(64
 /* State.annotation */
@@ -5711,12 +5756,12 @@ const source_1 = __webpack_require__(6743);
 
 const util_1 = __webpack_require__(9437);
 
-exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S#)/, (0, combinator_1.guard)(context => ~context.state & 1
+exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S[#>])/, (0, combinator_1.constraint)(1
 /* State.autolink */
-, (0, combinator_1.syntax)(2
+, false, (0, combinator_1.syntax)(2
 /* Syntax.autolink */
 , 1, 1, (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
-(0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
+(0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)*/), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
 (0, source_1.str)(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), // Escape invalid leading characters.
 (0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum, // Escape unmatched hashtag-like strings.
 (0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')), anchor_1.anchor]))))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
@@ -6216,9 +6261,9 @@ const visibility_1 = __webpack_require__(7618);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => ~context.state & 16
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(16
 /* State.index */
-, (0, combinator_1.syntax)(1024
+, false, (0, combinator_1.syntax)(1024
 /* Syntax.index */
 , 2, 1, (0, combinator_1.state)(64
 /* State.annotation */
@@ -6377,9 +6422,9 @@ const dom_1 = __webpack_require__(3252);
 
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])));
-exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.guard)(context => ~context.state & 8
+exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.constraint)(8
 /* State.label */
-, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
+, false, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
   class: 'label',
   'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
 }, text)])));
@@ -6485,7 +6530,7 @@ global_1.Object.setPrototypeOf(attrspecs, null);
 global_1.Object.values(attrspecs).forEach(o => global_1.Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/, (0, combinator_1.syntax)(0
 /* Syntax.none */
-, 5, 1, (0, combinator_1.union)([(0, combinator_1.focus)('<wbr>', () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+, 5, 1, (0, combinator_1.union)([(0, combinator_1.focus)(/^<wbr[^\S\n]*>/, () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.focus)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
 /^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/, source => [[source], '']), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
@@ -6643,9 +6688,9 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.guard)(context => ~context.state & 4
+exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.constraint)(4
 /* State.link */
-, (0, combinator_1.syntax)(256
+, false, (0, combinator_1.syntax)(256
 /* Syntax.link */
 , 2, 10, (0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.state)(4
 /* State.link */
@@ -6881,9 +6926,9 @@ const optspec = {
   rel: global_1.undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.guard)(context => ~context.state & 2
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.constraint)(2
 /* State.media */
-, (0, combinator_1.syntax)(64
+, false, (0, combinator_1.syntax)(64
 /* Syntax.media */
 , 2, 10, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))])))), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], (0, array_1.shift)(bs)[1]] : [[''], (0, array_1.shift)(as)[1]]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
@@ -6982,9 +7027,9 @@ const util_1 = __webpack_require__(9437);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => ~context.state & 32
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(32
 /* State.reference */
-, (0, combinator_1.syntax)(4096
+, false, (0, combinator_1.syntax)(4096
 /* Syntax.reference */
 , 6, 1, (0, combinator_1.state)(64
 /* State.annotation */
@@ -7131,9 +7176,9 @@ const url_1 = __webpack_require__(4318);
 
 const media_1 = __webpack_require__(1303);
 
-exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.guard)(context => ~context.state & 2
+exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.constraint)(2
 /* State.media */
-, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
+, false, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
 
 /***/ }),
 
@@ -7965,9 +8010,9 @@ const str_1 = __webpack_require__(2790);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.delimiter = /[\s\x00-\x7F]|\S#|[（）、。！？][^\S\n]*(?=\\\n)/;
+exports.delimiter = /[\s\x00-\x7F]|\S[#>]|[（）、。！？][^\S\n]*(?=\\\n)/;
 exports.nonWhitespace = /[\S\n]|$/;
-exports.nonAlphanumeric = /[^0-9A-Za-z]|\S#|$/;
+exports.nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
 const repeat = (0, str_1.str)(/^(.)\1*/);
 exports.text = (0, combinator_1.creation)((source, context) => {
   if (source === '') return;
@@ -8146,7 +8191,7 @@ const memoize_1 = __webpack_require__(1808);
 const array_1 = __webpack_require__(8112);
 
 function visualize(parser) {
-  const blankline = new RegExp(/^(?:\\$|\\?[^\S\n]|&IHN;|<wbr>)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
+  const blankline = new RegExp(/^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
   return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
 }
 
@@ -8173,11 +8218,11 @@ function hasVisible(nodes, {
   return false;
 }
 
-exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
+exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
 
 function blankWith(starting, delimiter) {
   if (delimiter === global_1.undefined) return blankWith('', starting);
-  return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
+  return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
 }
 
 exports.blankWith = blankWith;
@@ -8220,7 +8265,7 @@ const isStartTight = (0, memoize_1.reduce)((source, context, except) => {
 
     case '<':
       switch (true) {
-        case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
+        case source.length >= 5 && source.slice(0, 4) === '<wbr' && (source[5] === '>' || /^<wbr[^\S\n]*>/.test(source)):
           return false;
       }
 
