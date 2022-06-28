@@ -12,14 +12,14 @@ import { Syntax, State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^(?:[@#>0-9A-Za-z]|\S#)/,
+  validate(/^(?:[@#>0-9A-Za-z]|\S[#>])/,
   constraint(State.autolink, false,
   syntax(Syntax.autolink, 1, 1,
   some(union([
     url,
     email,
     // Escape unmatched email-like strings.
-    str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
+    str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)*/),
     channel,
     account,
     // Escape unmatched account-like strings.

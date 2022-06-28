@@ -45,13 +45,15 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p><a href="?at=11" class="anchor">&gt;&gt;11</a> a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>>11 a')), [['<p>&gt;<a href="?at=11" class="anchor">&gt;&gt;11</a> a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>> a\n>>1')), [['<p>&gt;&gt; a<br><a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a>>1')), [['<p>a<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a>>1')), [['<p>a&gt;&gt;1</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('ab>>1')), [['<p>ab&gt;&gt;1</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >>1')), [['<p>a <a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>>1')), [['<p>a<br><a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>>1\nb')), [['<p>a<br><a href="?at=1" class="anchor">&gt;&gt;1</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>> b\nc')), [['<p>a<br>&gt;&gt; b<br>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\t>>1')), [['<p>\t<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('\t>>>1')), [['<p>\t&gt;<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('あ>>1')), [['<p>あ<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
     });
 
     it('comment', () => {

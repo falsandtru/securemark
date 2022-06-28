@@ -8,12 +8,12 @@ describe('Unit: parser/inline/autolink/url', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('http')), undefined);
-      assert.deepStrictEqual(inspect(parser('ttp')), undefined);
-      assert.deepStrictEqual(inspect(parser('http://')), undefined);
-      assert.deepStrictEqual(inspect(parser('http://[')), undefined);
-      assert.deepStrictEqual(inspect(parser('http://]')), undefined);
-      assert.deepStrictEqual(inspect(parser('Http://host')), undefined);
+      assert.deepStrictEqual(inspect(parser('http')), [['http'], '']);
+      assert.deepStrictEqual(inspect(parser('ttp')), [['ttp'], '']);
+      assert.deepStrictEqual(inspect(parser('http://')), [['http'], '://']);
+      assert.deepStrictEqual(inspect(parser('http://[')), [['http'], '://[']);
+      assert.deepStrictEqual(inspect(parser('http://]')), [['http'], '://]']);
+      assert.deepStrictEqual(inspect(parser('Http://host')), [['Http'], '://host']);
       //assert.deepStrictEqual(inspect(parser('http://[::ffff:0:0%1]')), [['<a class="invalid">http://[::ffff:0:0%1]</a>'], '']);
       //assert.deepStrictEqual(inspect(parser('http://[::ffff:0:0/96]')), [['<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' http://a')), undefined);

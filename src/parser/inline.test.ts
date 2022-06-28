@@ -110,7 +110,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[@a]')), [['[', '<a href="/@a" class="account">@a</a>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[#1][#2]')), [['<a class="index" href="#index:1">1</a>', '<a class="index" href="#index:2">2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[$1]')), [['[', '$', '1', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[$1-2]')), [['[', '$', '1', '-', '2', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[$1-2]')), [['[', '$', '1-2', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[$-1][$-2]')), [['<a class="label" data-label="$-1">$-1</a>', '<a class="label" data-label="$-2">$-2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('$-1, $-2')), [['<a class="label" data-label="$-1">$-1</a>', ',', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('$-1 and $-2')), [['<a class="label" data-label="$-1">$-1</a>', ' ', 'and', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
@@ -225,10 +225,10 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]')), [['<a href="/hashtags/a" class="hashtag">#a</a>', '<br>', 'b', '<br>', '<a href="/hashtags/c" class="hashtag">#c</a>', '<br>', '<a class="index" href="#index:d">d</a>'], '']);
       assert.deepStrictEqual(inspect(parser('##a')), [['##a'], '']);
       assert.deepStrictEqual(inspect(parser('a#b')), [['a#b'], '']);
-      assert.deepStrictEqual(inspect(parser('0a#b')), [['0', 'a#b'], '']);
+      assert.deepStrictEqual(inspect(parser('0a#b')), [['0a#b'], '']);
       assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#b'], '']);
       assert.deepStrictEqual(inspect(parser('あい#b')), [['あ', 'い#b'], '']);
-      assert.deepStrictEqual(inspect(parser('0aあ#b')), [['0a', 'あ#b'], '']);
+      assert.deepStrictEqual(inspect(parser('0aあ#b')), [['0aあ#b'], '']);
       assert.deepStrictEqual(inspect(parser('0aあい#b')), [['0a', 'あ', 'い#b'], '']);
       assert.deepStrictEqual(inspect(parser('「#あ」')), [['「', '<a href="/hashtags/あ" class="hashtag">#あ</a>', '」'], '']);
       assert.deepStrictEqual(inspect(parser('a\n#b')), [['a', '<br>', '<a href="/hashtags/b" class="hashtag">#b</a>'], '']);

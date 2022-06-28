@@ -68,9 +68,9 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
     if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
-    const pos = source.length;
+    const position = source.length;
     const state = context.state ?? 0;
-    const cache = syntax && memo.get(pos, syntax, state);
+    const cache = syntax && memo.get(position, syntax, state);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
@@ -82,12 +82,12 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
     }
     if (syntax) {
       if (state & context.memorable!) {
-        cache ?? memo.set(pos, syntax, state, eval(result), source.length - exec(result, '').length);
-        assert.deepStrictEqual(cache && cache, cache && memo.get(pos, syntax, state));
+        cache ?? memo.set(position, syntax, state, eval(result), source.length - exec(result, '').length);
+        assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, state));
       }
-      else if (result && memo.length! >= pos) {
+      else if (result && memo.length! >= position) {
         assert(!(state & context.memorable!));
-        memo.clear(pos);
+        memo.clear(position);
       }
     }
     context.precedence = p;

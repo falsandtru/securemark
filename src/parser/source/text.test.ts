@@ -82,7 +82,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('0@0')), [['0', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser('a@0')), [['a', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser('A@0')), [['A', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('0aA@0')), [['0aA', '@', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA@0')), [['aA', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser(' @0')), [[' ', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser('@@0')), [['@', '@', '0'], '']);
     });
@@ -96,8 +96,23 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('0#0')), [['0', '#', '0'], '']);
       assert.deepStrictEqual(inspect(parser('a#0')), [['a', '#', '0'], '']);
       assert.deepStrictEqual(inspect(parser('A#0')), [['A', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA#0')), [['a', 'A', '#', '0'], '']);
       assert.deepStrictEqual(inspect(parser(' #0')), [[' ', '#', '0'], '']);
       assert.deepStrictEqual(inspect(parser('##0')), [['#', '#', '0'], '']);
+    });
+
+    it('anchor', () => {
+      assert.deepStrictEqual(inspect(parser('>>0')), [['>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('_>>0')), [['_', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('$>>0')), [['$', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('+>>0')), [['+', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('->>0')), [['-', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('0>>0')), [['0', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('a>>0')), [['a', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('A>>0')), [['A', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA>>0')), [['a', 'A', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser(' >>0')), [[' ', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('>>>>0')), [['>', '>', '>', '>', '0'], '']);
     });
 
     it('localize', () => {

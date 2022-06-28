@@ -1,12 +1,14 @@
 import { undefined } from 'spica/global';
 import { Parser, exec } from '../../data/parser';
+import { Memo } from '../../data/parser/context/memo';
 import { firstline, isEmpty } from './line';
 
 export function block<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
 export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
   assert(parser);
-  return (source, context) => {
+  return (source, context = {}) => {
     if (source === '') return;
+    context.memo ??= new Memo();
     const result = parser(source, context);
     if (!result) return;
     const rest = exec(result);
