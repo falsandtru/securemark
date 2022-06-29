@@ -18,4 +18,4 @@ export const annotation: AnnotationParser = lazy(() => surround(
   '))',
   false,
   ([, ns], rest) => [[html('sup', { class: 'annotation' }, [html('span', trimNode(defrag(ns)))])], rest],
-  ([, ns, rest], next) => next[0] === ')' ? undefined : optimize('((', ns, rest, next)));
+  ([, ns, rest], next, context) => next[0] === ')' ? undefined : optimize('((', ns, rest, next, context)));

@@ -10,7 +10,7 @@ import { unshift } from 'spica/array';
 export const template: TemplateParser = lazy(() => surround(
   '{{', syntax(Syntax.none, 2, 1, some(union([bracket, escsource]), '}')), '}}', true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest],
-  ([, ns = [], rest], next) => next[0] === '}' ? undefined : optimize('{{', ns, rest, next)));
+  ([, ns = [], rest], next, context) => next[0] === '}' ? undefined : optimize('{{', ns, rest, next, context)));
 
 const bracket: TemplateParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

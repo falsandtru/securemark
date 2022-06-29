@@ -24,7 +24,7 @@ export const reference: ReferenceParser = lazy(() => surround(
   ']]',
   false,
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest],
-  ([, ns, rest], next) => next[0] === ']' ? undefined : optimize('[[', ns, rest, next)));
+  ([, ns, rest], next, context) => next[0] === ']' ? undefined : optimize('[[', ns, rest, next, context)));
 
 const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
   '^',
