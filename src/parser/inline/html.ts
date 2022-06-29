@@ -23,10 +23,11 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
   focus(
     /^<wbr[^\S\n]*>/,
     () => [[h('wbr')], '']),
-  focus(
+  surround(
     // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-    /^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/,
-    source => [[source], '']),
+    str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/), some(union([attribute])), str(/^[^\S\n]*>/), true,
+    ([as, bs = [], cs], rest) =>
+      [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
   match(
     new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
     memoize(

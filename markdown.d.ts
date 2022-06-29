@@ -963,15 +963,15 @@ export namespace MarkdownParser {
       // <bdi>abc</bdi>
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [
-        HTMLParser.OpenTagParser,
-        HTMLParser.OpenTagParser,
+        HTMLParser.VoidTagParser,
+        HTMLParser.VoidTagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
       ]> {
     }
     export namespace HTMLParser {
-      export interface OpenTagParser extends
-        Inline<'html/opentag'>,
+      export interface VoidTagParser extends
+        Inline<'html/voidtag'>,
         Parser<HTMLElement | string, Context, [
           AttributeParser,
         ]> {
