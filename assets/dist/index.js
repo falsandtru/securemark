@@ -4816,7 +4816,7 @@ function format(rows) {
       const cell = isVirtual ? (0, array_1.splice)(cells, j, 0, global_1.undefined) && ranges[i][j] : cells[j];
       const isHeadCell = cell.tagName === 'TH';
       heads |= (0, global_1.BigInt)(isHeadCell) << jn;
-      highlights |= (0, global_1.BigInt)(cell.classList.contains('highlight')) << jn;
+      highlights |= (0, global_1.BigInt)(cell.className === 'highlight') << jn;
       hasDataCell ||= !isHeadCell;
 
       if (isHeadCell && !hasDataCell) {
@@ -5168,7 +5168,7 @@ function initial(type) {
 }
 
 function format(el, type, form) {
-  if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
     el.setAttribute('class', 'checklist');
   }
 
@@ -5350,7 +5350,7 @@ const qblock = (source, context) => {
       continue;
     }
 
-    if (child.classList.contains('cite') || child.classList.contains('quote')) {
+    if (child.className === 'cite' || child.classList.contains('quote')) {
       context.resources && (context.resources.clock -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes);
       --i;
@@ -5439,7 +5439,7 @@ const head = (0, combinator_1.creation)((0, combinator_1.fmap)(cell, ns => [(0, 
 const data = (0, combinator_1.creation)((0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
 
 function format(rows) {
-  const aligns = rows[0].classList.contains('invalid') ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
+  const aligns = rows[0].className === 'invalid' ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
 
   for (let i = 0; i < rows.length; ++i) {
     (0, duff_1.duffEach)(rows[i].children, (col, i) => {
@@ -5497,7 +5497,7 @@ function fillFirstLine(ns) {
 exports.fillFirstLine = fillFirstLine;
 
 function format(el) {
-  if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
     el.setAttribute('class', 'checklist');
   }
 
@@ -6712,7 +6712,7 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
-  if (el.classList.contains('invalid')) return [[el], rest];
+  if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 })));
 exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])))), ([params, content = []], rest, context) => {
