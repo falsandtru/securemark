@@ -115,7 +115,7 @@ function initial(type: string): RegExp {
 }
 
 function format(el: HTMLOListElement, type: string, form: string): HTMLOListElement {
-  if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
     el.setAttribute('class', 'checklist');
   }
   define(el, {

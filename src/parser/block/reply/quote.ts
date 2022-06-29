@@ -57,7 +57,7 @@ const qblock: ReplyParser.QuoteParser.BlockParser = (source, context) => {
       ++i;
       continue;
     }
-    if (child.classList.contains('cite') || child.classList.contains('quote')) {
+    if (child.className === 'cite' || child.classList.contains('quote')) {
       context.resources && (context.resources.clock -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       --i;

@@ -61,7 +61,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
         resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
         context.host?.href || location.href),
       context.host?.origin || location.origin);
-    if (el.classList.contains('invalid')) return [[el], rest];
+    if (el.className === 'invalid') return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
   })));
@@ -87,7 +87,7 @@ export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], bind(
         resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
         context.host?.href || location.href),
       context.host?.origin || location.origin);
-    assert(!el.classList.contains('invalid'));
+    assert(el.className !== 'invalid');
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
   })));

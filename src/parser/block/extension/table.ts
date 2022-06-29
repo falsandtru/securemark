@@ -228,7 +228,7 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
         : cells[j];
       const isHeadCell = cell.tagName === 'TH';
       heads |= BigInt(isHeadCell) << jn;
-      highlights |= BigInt(cell.classList.contains('highlight')) << jn;
+      highlights |= BigInt(cell.className === 'highlight') << jn;
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
         lHeadCellIdx = jn;

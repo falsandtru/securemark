@@ -61,7 +61,7 @@ const data: CellParser.DataParser = creation(fmap(
   ns => [html('td', trimNode(defrag(ns)))]));
 
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
-  const aligns = rows[0].classList.contains('invalid')
+  const aligns = rows[0].className === 'invalid'
     ? []
     : duffReduce(rows.shift()!.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);
   for (let i = 0; i < rows.length; ++i) {
