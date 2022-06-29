@@ -57,12 +57,15 @@ export class Delimiters {
   public match(source: string, precedence = 1): boolean {
     const { matchers } = this;
     for (let i = 0; i < matchers.length; ++i) {
-      switch (matchers[i][3](source)) {
+      const matcher = matchers[i];
+      if (precedence >= matcher[2]) continue;
+      switch (matcher[3](source)) {
         case true:
-          if (precedence < matchers[i][2]) return true;
-          continue;
+          return true;
         case false:
           return false;
+        default:
+          continue;
       }
     }
     return false;
