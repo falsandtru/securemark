@@ -19,13 +19,13 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/, syntax(Syntax.none, 5, 1, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, syntax(Syntax.none, 5, 1, union([
   focus(
-    /^<wbr[^\S\n]*>/,
+    /^<wbr[^\S\n]*>/i,
     () => [[h('wbr')], '']),
   surround(
     // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-    str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/), some(union([attribute])), str(/^[^\S\n]*>/), true,
+    str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), some(union([attribute])), str(/^[^\S\n]*>/), true,
     ([as, bs = [], cs], rest) =>
       [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
   match(
@@ -45,7 +45,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
           [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => TAGS.indexOf(tag), [])),
   match(
-    /^<([a-z]+)(?=[^\S\n]|>)/,
+    /^<([a-z]+)(?=[^\S\n]|>)/i,
     memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
@@ -64,7 +64,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
 ])))));
 
 export const attribute: HTMLParser.AttributeParser = union([
-  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/),
+  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/i),
 ]);
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
