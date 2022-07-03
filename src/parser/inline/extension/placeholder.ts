@@ -7,7 +7,7 @@ import { startTight } from '../../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
-// Don't use the symbols already used: !#$@&*+~=
+// Don't use the symbols already used: !#$%@&*+~=
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
