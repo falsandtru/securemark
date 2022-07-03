@@ -34,7 +34,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
         ']',
         true,
         undefined,
-        ([, ns = [], rest], next, context) => next[0] === ']' ? undefined : optimize('[', ns, rest, next, context)),
+        ([, ns = [], rest], next, context) => optimize('[', ns, rest, next, context)),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ], nodes => nodes[0][0] !== ''),
@@ -196,14 +196,13 @@ function decode(uri: string): string {
 
 export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string, next: string, context: MarkdownParser.Context): Result<string> {
   if (next[+(next[0] === '\\')] === '\n') {
-    if (rest[0] !== opener[0]) return;
     const delimiters = context.delimiters;
     delimiters?.push({
-      signature: '!\n',
+      signature: '!/^\\?\n/',
       matcher: source => !/^\\?\n/.test(source) && undefined,
       precedence: 9,
     });
-    const paired = eval(state(~0, bracket)(rest[0] + rest.slice(rest.search(`[^${rest[0]}]|$`)), context), [])[0] !== '';
+    const paired = eval(state(~0, bracket)(rest.slice(rest.search(`[^${opener[0]}]|$`) - 1), context), [])[0] !== '';
     delimiters?.pop();
     if (paired) return;
   }
