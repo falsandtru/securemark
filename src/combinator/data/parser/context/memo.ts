@@ -34,6 +34,6 @@ export class Memo {
     for (let i = position + this.offset, len = memory.length; i < len; ++i) {
       memory.pop();
     }
-    //console.log('clear', position + 1);
+    //console.log('clear', position + this.offset + 1);
   }
 }
