@@ -202,7 +202,7 @@ export function optimize(opener: string, ns: readonly (string | HTMLElement)[], 
       matcher: source => !/^\\?\n/.test(source) && undefined,
       precedence: 9,
     });
-    const paired = eval(state(~0, bracket)(rest.slice(rest.search(`[^${opener[0]}]|$`) - 1), context), [])[0] !== '';
+    const paired = eval(state(~State.link, bracket)(rest.slice(rest.search(`[^${opener[0]}]|$`) - 1), context), [])[0] !== '';
     delimiters?.pop();
     if (paired) return;
   }
