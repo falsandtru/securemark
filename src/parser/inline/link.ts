@@ -1,12 +1,10 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
-import { MarkdownParser } from '../../../markdown';
 import { LinkParser, TextLinkParser } from '../inline';
-import { Result, eval, exec } from '../../combinator/data/parser';
+import { eval, exec } from '../../combinator/data/parser';
 import { union, inits, tails, subsequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
-import { bracket } from './bracket';
 import { unescsource, str } from '../source';
 import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
@@ -32,9 +30,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
         state(State.annotation | State.reference | State.index | State.label | State.media | State.autolink,
         some(inline, ']', [[/^\\?\n/, 9], [']', 2]])),
         ']',
-        true,
-        undefined,
-        ([, ns = [], rest], next, context) => optimize('[', ns, rest, next, context)),
+        true),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ], nodes => nodes[0][0] !== ''),
@@ -192,27 +188,4 @@ function decode(uri: string): string {
   finally {
     return uri.replace(/\s+/g, encodeURI);
   }
-}
-
-export function optimize(opener: string, ns: readonly (string | HTMLElement)[], rest: string, next: string, context: MarkdownParser.Context): Result<string> {
-  if (next[+(next[0] === '\\')] === '\n') {
-    const delimiters = context.delimiters;
-    delimiters?.push({
-      signature: '!/^\\?\n/',
-      matcher: source => !/^\\?\n/.test(source) && undefined,
-      precedence: 9,
-    });
-    const paired = eval(state(~State.link, bracket)(rest.slice(rest.search(`[^${opener[0]}]|$`) - 1), context), [])[0] !== '';
-    delimiters?.pop();
-    if (paired) return;
-  }
-  let count = 0;
-  for (let i = 0; i < ns.length - 1; i += 2) {
-    const fst = ns[i];
-    const snd = ns[i + 1] as string;
-    assert(typeof snd === 'string');
-    if (fst !== '' || snd[0] !== opener[0]) break;
-    count += snd.length;
-  }
-  return [['', opener[0].repeat(opener.length + count)], rest.slice(count)];
 }

@@ -75,7 +75,7 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('"a')), [['"', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('"a"')), [['"', 'a', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(")"')), [['"', '', '(', '"'], ')"']);
-      assert.deepStrictEqual(inspect(parser('"(("')), [['"', '', '((', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"(("')), [['"', '', '(', '', '(', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\\")"')), [['"', '<span class="paren">(")</span>', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\n)"')), [['"', '<span class="paren">(<br>)</span>', '"'], '']);
       assert.deepStrictEqual(inspect(parser('"(\\\n)"')), [['"', '<span class="paren">(<span class="linebreak"> </span>)</span>', '"'], '']);
