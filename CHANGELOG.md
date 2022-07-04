@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.258.7
+
+- Refactoring.
+
 ## 0.258.6
 
 - Refactoring.
