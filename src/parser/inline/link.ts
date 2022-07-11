@@ -27,7 +27,7 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
   constraint(State.link, false,
   state(State.link | State.media | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
-  bind(fmap(tails([
+  bind(reverse(tails([
     dup(union([
       surround(
         '[',
@@ -36,9 +36,8 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
         true),
     ])),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ]),
-  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]),
-  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
+  ])),
+  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.length > 0);
     assert(params.every(p => typeof p === 'string'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
@@ -55,15 +54,14 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
   constraint(State.link | State.media, false,
   state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
-  bind(fmap(sequence([
+  bind(reverse(sequence([
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
     ])),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ]),
-  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]),
-  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
+  ])),
+  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.length > 0);
     assert(params.every(p => typeof p === 'string'));
     assert(content.length === 1);
@@ -77,16 +75,14 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[',
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])))),
   ([params, content = []], rest, context) => {
-    assert(params[0] === '\r');
-    params.shift();
     assert(params.every(p => typeof p === 'string'));
     return parse(params, content, rest, context);
   })));
 
-export const uri: LinkParser.ParameterParser.UriParser = fmap(union([
+export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),
   str(/^[^\s{}]+/),
-]), ([uri]) => ['\r', uri]);
+]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]),
