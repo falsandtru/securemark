@@ -89,6 +89,7 @@ export function creation<P extends Parser<unknown>>(parser: P): P;
 export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
 export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
   if (typeof cost === 'function') return creation(1, cost);
+  if (cost === 0) return parser!;
   assert(cost >= 0);
   return (source, context) => {
     const { resources = { clock: 1, recursion: 1 } } = context;

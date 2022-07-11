@@ -19,7 +19,7 @@ Object.setPrototypeOf(optspec, null);
 
 export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
   constraint(State.link, false,
-  syntax(Syntax.link, 2, 10,
+  creation(10,
   fmap(subsequence([
     state(State.link,
     dup(union([
@@ -28,7 +28,8 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
       surround(
         '[',
         state(State.annotation | State.reference | State.index | State.label | State.media | State.autolink,
-        some(inline, ']', [[/^\\?\n/, 9], [']', 2]])),
+        syntax(Syntax.link, 2, 0,
+        some(inline, ']', [[/^\\?\n/, 9], [']', 2]]))),
         ']',
         true),
     ]))),

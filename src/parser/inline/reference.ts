@@ -11,8 +11,8 @@ import { html, defrag } from 'typed-dom/dom';
 export const reference: ReferenceParser = lazy(() => surround(
   '[[',
   constraint(State.reference, false,
-  syntax(Syntax.reference, 6, 1,
   state(State.annotation | State.reference | State.media,
+  syntax(Syntax.reference, 6, 1,
   startLoose(
   context({ delimiters: undefined },
   subsequence([
