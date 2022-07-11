@@ -843,11 +843,30 @@ export namespace MarkdownParser {
       // [abc]{uri nofollow}
       Inline<'link'>,
       Parser<HTMLElement, Context, [
-        LinkParser.ContentParser,
-        LinkParser.ParameterParser,
+        LinkParser.MediaLinkParser,
+        LinkParser.TextLinkParser,
       ]> {
     }
     export namespace LinkParser {
+      export interface TextLinkParser extends
+        Inline<'link/textlink'>,
+        Parser<HTMLElement, Context, [
+          Parser<(HTMLElement | string)[], Context, [
+            InlineParser,
+          ]>,
+          LinkParser.ParameterParser,
+        ]> {
+      }
+      export interface MediaLinkParser extends
+        Inline<'link/medialink'>,
+        Parser<HTMLElement, Context, [
+          Parser<HTMLElement[], Context, [
+            MediaParser,
+            ShortmediaParser,
+          ]>,
+          LinkParser.ParameterParser,
+        ]> {
+      }
       export interface UnsafeLinkParser extends
         Inline<'link/unsafelink'>,
         Parser<HTMLAnchorElement, Context, [

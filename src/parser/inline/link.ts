@@ -1,7 +1,8 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
+import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { eval, exec } from '../../combinator/data/parser';
-import { union, inits, tails, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { Result, eval, exec } from '../../combinator/data/parser';
+import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -17,19 +18,20 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'],
+export const link: LinkParser = lazy(() => validate(['[', '{'], union([
+  medialink,
+  textlink,
+])));
+
+const textlink: LinkParser.TextLinkParser = lazy(() =>
   constraint(State.link, false,
-  state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
+  state(State.link | State.media | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
   bind(fmap(tails([
     dup(union([
-      surround('[', media, ']'),
-      surround('[', shortmedia, ']'),
       surround(
         '[',
-        state(State.media,
-        syntax(Syntax.linkin, 2, 0,
-        some(inline, ']', [[/^\\?\n/, 9], [']', 2]]))),
+        some(inline, ']', [[/^\\?\n/, 9], [']', 2]]),
         ']',
         true),
     ])),
@@ -45,21 +47,28 @@ export const link: LinkParser = lazy(() => validate(['[', '{'],
       if (typeof eval(result!)[0] === 'object') return;
       source = exec(result!);
     }
-    assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const INSECURE_URI = params.shift()!;
-    assert(INSECURE_URI === INSECURE_URI.trim());
-    assert(!INSECURE_URI.match(/\s/));
-    const el = elem(
-      INSECURE_URI,
-      defrag(content),
-      new ReadonlyURL(
-        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-        context.host?.href || location.href),
-      context.host?.origin || location.origin);
-    if (el.className === 'invalid') return [[el], rest];
-    assert(el.classList.length === 0);
-    return [[define(el, attributes('link', [], optspec, params))], rest];
-  }))))));
+    assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
+    return parse(params, content, rest, context);
+  })))));
+
+const medialink: LinkParser.MediaLinkParser = lazy(() =>
+  constraint(State.link | State.media, false,
+  state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
+  syntax(Syntax.link, 2, 10,
+  bind(fmap(sequence([
+    dup(union([
+      surround('[', media, ']'),
+      surround('[', shortmedia, ']'),
+    ])),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
+  ]),
+  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]),
+  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
+    assert(params.length > 0);
+    assert(params.every(p => typeof p === 'string'));
+    assert(content.length === 1);
+    return parse(params, content, rest, context);
+  })))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
   creation(10, precedence(2,
@@ -71,20 +80,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[',
     assert(params[0] === '\r');
     params.shift();
     assert(params.every(p => typeof p === 'string'));
-    trimNode(content);
-    const INSECURE_URI = params.shift()!;
-    assert(INSECURE_URI === INSECURE_URI.trim());
-    assert(!INSECURE_URI.match(/\s/));
-    const el = elem(
-      INSECURE_URI,
-      defrag(content),
-      new ReadonlyURL(
-        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-        context.host?.href || location.href),
-      context.host?.origin || location.origin);
-    assert(el.className !== 'invalid');
-    assert(el.classList.length === 0);
-    return [[define(el, attributes('link', [], optspec, params))], rest];
+    return parse(params, content, rest, context);
   })));
 
 export const uri: LinkParser.ParameterParser.UriParser = fmap(union([
@@ -97,6 +93,27 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/),
   fmap(str(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
+
+function parse(
+  params: string[],
+  content: (string | HTMLElement)[],
+  rest: string,
+  context: MarkdownParser.Context,
+): Result<HTMLAnchorElement, MarkdownParser.Context> {
+  const INSECURE_URI = params.shift()!;
+  assert(INSECURE_URI === INSECURE_URI.trim());
+  assert(!INSECURE_URI.match(/\s/));
+  const el = elem(
+    INSECURE_URI,
+    defrag(content),
+    new ReadonlyURL(
+      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
+      context.host?.href || location.href),
+    context.host?.origin || location.origin);
+  if (el.className === 'invalid') return [[el], rest];
+  assert(el.classList.length === 0);
+  return [[define(el, attributes('link', [], optspec, params))], rest];
+}
 
 export function resolve(uri: string, host: URL | Location, source: URL | Location): string {
   assert(uri);
