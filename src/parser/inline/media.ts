@@ -54,7 +54,8 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state! & State.link || cache && cache.tagName !== 'IMG') return [[el], rest];
+    if (context.state! & State.link) return [[el], rest];
+    if (cache && cache.tagName !== 'IMG') return creation(10, (..._) => [[el!], rest])('!', context);
     return fmap(
       unsafelink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
