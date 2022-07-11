@@ -28,13 +28,11 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
   state(State.link | State.media | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
   bind(reverse(tails([
-    dup(union([
-      surround(
-        '[',
-        some(inline, ']', [[/^\\?\n/, 9], [']', 2]]),
-        ']',
-        true),
-    ])),
+    dup(surround(
+      '[',
+      some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]]),
+      ']',
+      true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
@@ -55,10 +53,10 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
   state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
   bind(reverse(sequence([
-    dup(union([
-      surround('[', media, ']'),
-      surround('[', shortmedia, ']'),
-    ])),
+    dup(surround(
+      '[',
+      union([media, shortmedia]),
+      ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
@@ -71,7 +69,10 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
   creation(10, precedence(2,
   reverse(tails([
-    dup(surround('[', some(union([unescsource]), ']'), ']')),
+    dup(surround(
+      '[',
+      some(union([unescsource]), ']'),
+      ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])))),
   ([params, content = []], rest, context) => {
