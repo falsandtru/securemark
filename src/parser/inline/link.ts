@@ -45,7 +45,7 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
       source = exec(result!);
     }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
-    return parse(params, content, rest, context);
+    return parse(content, params, rest, context);
   })))));
 
 const medialink: LinkParser.MediaLinkParser = lazy(() =>
@@ -63,7 +63,7 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
     assert(params.length > 0);
     assert(params.every(p => typeof p === 'string'));
     assert(content.length === 1);
-    return parse(params, content, rest, context);
+    return parse(content, params, rest, context);
   })))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
@@ -77,7 +77,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[',
   ])))),
   ([params, content = []], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
-    return parse(params, content, rest, context);
+    return parse(content, params, rest, context);
   })));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
@@ -92,8 +92,8 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 ]);
 
 function parse(
-  params: string[],
   content: (string | HTMLElement)[],
+  params: string[],
   rest: string,
   context: MarkdownParser.Context,
 ): Result<HTMLAnchorElement, MarkdownParser.Context> {
