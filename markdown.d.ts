@@ -660,7 +660,7 @@ export namespace MarkdownParser {
     export interface AnnotationParser extends
       // ((abc))
       Inline<'annotation'>,
-      Parser<HTMLElement | string, Context, [
+      Parser<HTMLElement, Context, [
         InlineParser,
       ]> {
     }
@@ -669,7 +669,7 @@ export namespace MarkdownParser {
       // [[^abbr]]
       // [[^abbr| abc]]
       Inline<'reference'>,
-      Parser<HTMLElement | string, Context, [
+      Parser<HTMLElement, Context, [
         ReferenceParser.AbbrParser,
         InlineParser,
         InlineParser,
@@ -689,7 +689,7 @@ export namespace MarkdownParser {
     export interface TemplateParser extends
       // {{abc}}
       Inline<'template'>,
-      Parser<HTMLSpanElement | string, Context, [
+      Parser<HTMLSpanElement, Context, [
         TemplateParser.BracketParser,
         SourceParser.EscapableSourceParser,
       ]> {
@@ -842,7 +842,7 @@ export namespace MarkdownParser {
       // { uri }
       // [abc]{uri nofollow}
       Inline<'link'>,
-      Parser<HTMLElement | string, Context, [
+      Parser<HTMLElement, Context, [
         LinkParser.ContentParser,
         LinkParser.ParameterParser,
       ]> {

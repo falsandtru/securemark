@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { LinkParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { union, inits, tails, subsequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -21,7 +21,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'],
   constraint(State.link, false,
   state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
   syntax(Syntax.link, 2, 10,
-  bind(fmap(subsequence([
+  bind(fmap(tails([
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
@@ -34,12 +34,10 @@ export const link: LinkParser = lazy(() => validate(['[', '{'],
         true),
     ])),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ], nodes => nodes[0][0] !== ''),
+  ]),
   ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
-    assert(content[0] !== '' || params.length === 0);
-    if (content[0] === '') return [content, rest];
-    if (params.length === 0) return;
+    assert(params.length > 0);
     assert(params.every(p => typeof p === 'string'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     for (let source = stringify(content); source;) {
