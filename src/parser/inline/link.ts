@@ -17,25 +17,25 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
+export const link: LinkParser = lazy(() => validate(['[', '{'],
   constraint(State.link, false,
-  creation(10,
-  fmap(subsequence([
-    state(State.link,
+  state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
+  syntax(Syntax.link, 2, 10,
+  bind(fmap(subsequence([
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
       surround(
         '[',
-        state(State.annotation | State.reference | State.index | State.label | State.media | State.autolink,
-        syntax(Syntax.link, 2, 0,
+        state(State.media,
+        syntax(Syntax.linkin, 2, 0,
         some(inline, ']', [[/^\\?\n/, 9], [']', 2]]))),
         ']',
         true),
-    ]))),
+    ])),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ], nodes => nodes[0][0] !== ''),
-  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]))),
+  ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
     assert(content[0] !== '' || params.length === 0);
     if (content[0] === '') return [content, rest];
@@ -43,7 +43,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
     assert(params.every(p => typeof p === 'string'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     for (let source = stringify(content); source;) {
-      const result = autolink(source, context);
+      const result = state(State.autolink, false, autolink)(source, context);
       if (typeof eval(result!)[0] === 'object') return;
       source = exec(result!);
     }
@@ -61,7 +61,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], bind(
     if (el.className === 'invalid') return [[el], rest];
     assert(el.classList.length === 0);
     return [[define(el, attributes('link', [], optspec, params))], rest];
-  })));
+  }))))));
 
 export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], bind(
   creation(10, precedence(2,

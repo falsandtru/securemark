@@ -18,18 +18,18 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => validate(['![', '!{'], bind(verify(fmap(open(
+export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
   '!',
   constraint(State.media, false,
   syntax(Syntax.media, 2, 10,
-  tails([
+  bind(verify(fmap(tails([
     dup(surround(
       '[',
       some(union([unsafehtmlentity, bracket, txt]), ']', [[/^\\?\n/, 9]]),
       ']',
       true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ])))),
+  ]),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], shift(bs)[1]] : [[''], shift(as)[1]]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
@@ -59,7 +59,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], bind(verify(
       textlink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
-  })));
+  }))))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
