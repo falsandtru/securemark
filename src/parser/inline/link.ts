@@ -1,5 +1,5 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
-import { LinkParser, TextLinkParser } from '../inline';
+import { LinkParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
 import { union, inits, tails, subsequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
@@ -63,7 +63,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'],
     return [[define(el, attributes('link', [], optspec, params))], rest];
   }))))));
 
-export const textlink: TextLinkParser = lazy(() => validate(['[', '{'], bind(
+export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
   creation(10, precedence(2,
   reverse(tails([
     dup(surround('[', some(union([unescsource]), ']'), ']')),

@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { union, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
-import { textlink } from '../link';
+import { unsafelink } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
@@ -31,5 +31,5 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         ? `https://${source.slice(1).replace('/', '/hashtags/')}`
         : `/hashtags/${source.slice(1)}`
       } }`,
-    union([textlink]))),
+    union([unsafelink]))),
   ([el]) => [define(el, { class: 'hashtag' }, el.innerText)]));

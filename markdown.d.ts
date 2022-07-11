@@ -847,16 +847,14 @@ export namespace MarkdownParser {
         LinkParser.ParameterParser,
       ]> {
     }
-    export interface TextLinkParser extends
-      // { uri }
-      // [abc]{uri nofollow}
-      Inline<'textlink'>,
-      Parser<HTMLAnchorElement, Context, [
-        LinkParser.TextParser,
-        LinkParser.ParameterParser,
-      ]> {
-    }
     export namespace LinkParser {
+      export interface UnsafeLinkParser extends
+        Inline<'link/unsafelink'>,
+        Parser<HTMLAnchorElement, Context, [
+          LinkParser.TextParser,
+          LinkParser.ParameterParser,
+        ]> {
+      }
       export interface ContentParser extends
         Inline<'link/content'>,
         Parser<(HTMLElement | string)[], Context, [
@@ -1093,7 +1091,7 @@ export namespace MarkdownParser {
         // https://host
         Inline<'url'>,
         Parser<HTMLAnchorElement, Context, [
-          TextLinkParser,
+          LinkParser.UnsafeLinkParser,
         ]> {
       }
       export namespace UrlParser {
@@ -1135,28 +1133,28 @@ export namespace MarkdownParser {
         // @user
         Inline<'account'>,
         Parser<HTMLAnchorElement, Context, [
-          TextLinkParser,
+          LinkParser.UnsafeLinkParser,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, Context, [
-          TextLinkParser,
+          LinkParser.UnsafeLinkParser,
         ]> {
       }
       export interface HashnumParser extends
         // #1
         Inline<'hashnum'>,
         Parser<HTMLAnchorElement, Context, [
-          TextLinkParser,
+          LinkParser.UnsafeLinkParser,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
         Parser<HTMLAnchorElement, Context, [
-          TextLinkParser,
+          LinkParser.UnsafeLinkParser,
         ]> {
       }
     }

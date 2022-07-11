@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { union, validate, focus, convert, fmap, lazy } from '../../../combinator';
-import { textlink } from '../link';
+import { unsafelink } from '../link';
 import { define } from 'typed-dom/dom';
 
 // Timeline(pseudonym): user/tid
@@ -21,5 +21,5 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fma
         ? `/@${source.slice(2).replace('/', '/timeline/')}`
         : `?at=${source.slice(2)}`
       } }`,
-    union([textlink]))),
+    union([unsafelink]))),
   ([el]) => [define(el, { class: 'anchor' })])));

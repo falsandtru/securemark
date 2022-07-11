@@ -1,7 +1,7 @@
 import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
-import { textlink, uri, option as linkoption, resolve } from './link';
+import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
@@ -56,7 +56,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
     }
     if (context.state! & State.link || cache && cache.tagName !== 'IMG') return [[el], rest];
     return fmap(
-      textlink as MediaParser,
+      unsafelink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
   }))))));
