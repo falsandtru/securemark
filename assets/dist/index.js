@@ -5778,7 +5778,7 @@ const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252); // https://example/@user must be a user page or a redirect page going there.
 
 
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)])), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.textlink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)])), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]));
 
@@ -5807,7 +5807,7 @@ const dom_1 = __webpack_require__(3252); // Timeline(pseudonym): user/tid
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
 
 
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*\/)?[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.textlink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*\/)?[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'anchor'
 })])));
 
@@ -5894,7 +5894,7 @@ const source_1 = __webpack_require__(6743);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, hashtag_1.emoji), 'u'))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.textlink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, hashtag_1.emoji), 'u'))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashnum',
   href: null
 })]));
@@ -5923,7 +5923,7 @@ const dom_1 = __webpack_require__(3252); // https://example/hashtags/a must be a
 
 
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)])), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.textlink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)])), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
 }, el.innerText)]));
 
@@ -5947,7 +5947,7 @@ const link_1 = __webpack_require__(9628);
 const source_1 = __webpack_require__(6743);
 
 const closer = /^[-+*=~^,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.textlink])))));
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink])))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.precedence)(2, (0, combinator_1.union)([(0, combinator_1.surround)('(', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')'), ')', true), (0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']'), ']', true), (0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}'), '}', true), (0, combinator_1.surround)('"', (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.unescsource, '"')), '"', true)]))));
 
 /***/ }),
@@ -6650,7 +6650,7 @@ exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, 
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.resolve = exports.option = exports.uri = exports.textlink = exports.link = void 0;
+exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.link = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -6678,11 +6678,14 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.constraint)(4
+exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.union)([medialink, textlink])));
+const textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4
 /* State.link */
-, false, (0, combinator_1.creation)(10, (0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.state)(4
+, false, (0, combinator_1.state)(4
 /* State.link */
-, (0, combinator_1.dup)((0, combinator_1.union)([(0, combinator_1.surround)('[', inline_1.media, ']'), (0, combinator_1.surround)('[', inline_1.shortmedia, ']'), (0, combinator_1.surround)('[', (0, combinator_1.state)(64
+| 2
+/* State.media */
+| 64
 /* State.annotation */
 | 32
 /* State.reference */
@@ -6690,37 +6693,56 @@ exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'
 /* State.index */
 | 8
 /* State.label */
-| 2
-/* State.media */
 | 1
 /* State.autolink */
 , (0, combinator_1.syntax)(256
 /* Syntax.link */
-, 2, 0, (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2]]))), ']', true)]))), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))], nodes => nodes[0][0] !== ''), ([as, bs = []]) => bs[0] === '\r' && bs.shift() ? [as, bs] : as[0] === '\r' && as.shift() ? [[], as] : [as, []]))), ([content, params], rest, context) => {
-  if (content[0] === '') return [content, rest];
-  if (params.length === 0) return;
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
 
   for (let source = (0, util_1.stringify)(content); source;) {
-    const result = (0, autolink_1.autolink)(source, context);
+    const result = (0, combinator_1.state)(1
+    /* State.autolink */
+    , false, autolink_1.autolink)(source, context);
     if (typeof (0, parser_1.eval)(result)[0] === 'object') return;
     source = (0, parser_1.exec)(result);
   }
 
+  return parse(content, params, rest, context);
+})))));
+const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4
+/* State.link */
+| 2
+/* State.media */
+, false, (0, combinator_1.state)(4
+/* State.link */
+| 64
+/* State.annotation */
+| 32
+/* State.reference */
+| 16
+/* State.index */
+| 8
+/* State.label */
+| 1
+/* State.autolink */
+, (0, combinator_1.syntax)(256
+/* Syntax.link */
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
+  return parse(content, params, rest, context);
+})))));
+exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])))), ([params, content = []], rest, context) => {
+  return parse(content, params, rest, context);
+})));
+exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
+exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
+
+function parse(content, params, rest, context) {
   const INSECURE_URI = params.shift();
   const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
-})));
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])))), ([params, content = []], rest, context) => {
-  params.shift();
-  (0, visibility_1.trimNode)(content);
-  const INSECURE_URI = params.shift();
-  const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
-  return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
-})));
-exports.uri = (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]), ([uri]) => ['\r', uri]);
-exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
+}
 
 function resolve(uri, host, source) {
   switch (true) {
@@ -6900,11 +6922,11 @@ const optspec = {
   rel: global_1.undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.constraint)(2
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.open)('!', (0, combinator_1.constraint)(2
 /* State.media */
 , false, (0, combinator_1.syntax)(64
 /* Syntax.media */
-, 2, 10, (0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))])))), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], (0, array_1.shift)(bs)[1]] : [[''], (0, array_1.shift)(as)[1]]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
   let cache;
@@ -6924,11 +6946,12 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
 
   if (context.state & 4
   /* State.link */
-  || cache && cache.tagName !== 'IMG') return [[el], rest];
-  return (0, combinator_1.fmap)(link_1.textlink, ([link]) => [(0, dom_1.define)(link, {
+  ) return [[el], rest];
+  if (cache && cache.tagName !== 'IMG') return (0, combinator_1.creation)(10, (..._) => [[el], rest])('!', context);
+  return (0, combinator_1.fmap)(link_1.unsafelink, ([link]) => [(0, dom_1.define)(link, {
     target: '_blank'
   }, [el])])(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
-})));
+}))))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
 
