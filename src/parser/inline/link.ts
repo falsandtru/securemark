@@ -36,15 +36,13 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
-    assert(params.length > 0);
-    assert(params.every(p => typeof p === 'string'));
+    assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     for (let source = stringify(content); source;) {
       const result = state(State.autolink, false, autolink)(source, context);
       if (typeof eval(result!)[0] === 'object') return;
       source = exec(result!);
     }
-    assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     return parse(content, params, rest, context);
   })))));
 
@@ -59,12 +57,8 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
       ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
-  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
-    assert(params.length > 0);
-    assert(params.every(p => typeof p === 'string'));
-    assert(content.length === 1);
-    return parse(content, params, rest, context);
-  })))));
+  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
+    parse(content, params, rest, context))))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
   creation(10, precedence(2,
@@ -75,10 +69,8 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[',
       ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])))),
-  ([params, content = []], rest, context) => {
-    assert(params.every(p => typeof p === 'string'));
-    return parse(content, params, rest, context);
-  })));
+  ([params, content = []], rest, context) =>
+    parse(content, params, rest, context))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),
@@ -97,6 +89,8 @@ function parse(
   rest: string,
   context: MarkdownParser.Context,
 ): Result<HTMLAnchorElement, MarkdownParser.Context> {
+  assert(params.length > 0);
+  assert(params.every(p => typeof p === 'string'));
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
