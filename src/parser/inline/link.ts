@@ -60,17 +60,17 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
     parse(content, params, rest, context))))));
 
-export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() => validate(['[', '{'], bind(
+export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10, precedence(2,
-  reverse(tails([
+  bind(reverse(tails([
     dup(surround(
       '[',
       some(union([unescsource]), ']'),
       ']')),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
-  ])))),
+  ])),
   ([params, content = []], rest, context) =>
-    parse(content, params, rest, context))));
+    parse(content, params, rest, context)))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),
