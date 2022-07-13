@@ -5287,6 +5287,10 @@ exports.cite = (0, combinator_1.creation)((0, combinator_1.line)((0, combinator_
   class: 'anchor'
 }, '>>.')], '']), (0, combinator_1.focus)(/^>>#\S*[^\S\n]*(?:$|\n)/, source => [[(0, dom_1.html)('a', {
   class: 'anchor'
+}, source)], '']), (0, combinator_1.focus)(/^>>https?:\/\/\w\S*[^\S\n]*(?:$|\n)/, source => [[(0, dom_1.html)('a', {
+  class: 'anchor',
+  href: source.slice(2).trimEnd(),
+  target: '_blank'
 }, source)], ''])])]))), ([el, quotes = '']) => [(0, dom_1.html)('span', {
   class: 'cite'
 }, (0, dom_1.defrag)([`${quotes}>`, (0, dom_1.define)(el, {
@@ -6728,12 +6732,8 @@ const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4
 /* State.autolink */
 , (0, combinator_1.syntax)(256
 /* Syntax.link */
-, 2, 10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
-  return parse(content, params, rest, context);
-})))));
-exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.bind)((0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])))), ([params, content = []], rest, context) => {
-  return parse(content, params, rest, context);
-})));
+, 2, 10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context))))));
+exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
 
