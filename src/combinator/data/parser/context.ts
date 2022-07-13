@@ -57,13 +57,11 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
 }
 
 export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, parser: P): P;
-export function syntax<T>(syntax: number, precedence: number, cost: number, parser?: Parser<T>): Parser<T> {
-  return creation(cost, (source, context) => {
+export function syntax<T>(syntax: number, prec: number, cost: number, parser?: Parser<T>): Parser<T> {
+  return creation(cost, precedence(prec, (source, context) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
     context.memorable ??= ~0;
-    const p = context.precedence;
-    context.precedence = precedence;
     const position = source.length;
     const state = context.state ?? 0;
     const cache = syntax && memo.get(position, syntax, state);
@@ -80,17 +78,15 @@ export function syntax<T>(syntax: number, precedence: number, cost: number, pars
       assert(!(state & context.memorable!));
       memo.clear(position);
     }
-    context.precedence = p;
     return result;
-  });
+  }));
 }
 
 export function creation<P extends Parser<unknown>>(parser: P): P;
 export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
 export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
   if (typeof cost === 'function') return creation(1, cost);
-  if (cost === 0) return parser!;
-  assert(cost >= 0);
+  assert(cost > 0);
   return (source, context) => {
     const { resources = { clock: 1, recursion: 1 } } = context;
     if (resources.clock <= 0) throw new Error('Too many creations');
@@ -107,6 +103,7 @@ export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown
 
 export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
 export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
+  assert(precedence > 0);
   return (source, context) => {
     const p = context.precedence;
     context.precedence = precedence;
