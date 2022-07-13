@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.259.0
+
+- Extend cite syntax to accept URL.
+
 ## 0.258.9
 
 - Refactoring.

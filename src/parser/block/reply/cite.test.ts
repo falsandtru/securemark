@@ -18,7 +18,7 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>>\\')), undefined);
       assert.deepStrictEqual(inspect(parser('>>01#')), undefined);
       assert.deepStrictEqual(inspect(parser('>>01@')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>https://host')), undefined);
+      assert.deepStrictEqual(inspect(parser('>>http://')), undefined);
       assert.deepStrictEqual(inspect(parser('>>tel:1234567890')), undefined);
       assert.deepStrictEqual(inspect(parser('>>..')), undefined);
       assert.deepStrictEqual(inspect(parser('>> 0')), undefined);
@@ -43,6 +43,8 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>>#a')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#a</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#index:a')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#index:a</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#:~:text=a')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#:~:text=a</a></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>http://host')), [['<span class="cite">&gt;<a class="anchor" href="http://host" target="_blank" data-depth="1">&gt;http://host</a></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>https://host')), [['<span class="cite">&gt;<a class="anchor" href="https://host" target="_blank" data-depth="1">&gt;https://host</a></span>', '<br>'], '']);
     });
 
   });
