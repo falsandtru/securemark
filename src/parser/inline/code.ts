@@ -4,8 +4,8 @@ import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = creation(validate('`', match(
   /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
-  ([whole, , body]) => rest =>
-    [[html('code', { 'data-src': whole }, format(body))], rest.slice(whole.length)])));
+  ([whole, , body]) => ({ source }) =>
+    [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)])));
 
 function format(text: string): string {
   assert(text.length > 0);

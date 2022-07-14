@@ -6,10 +6,10 @@ import { inspect } from '../../debug.test';
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
     const parser = (source: string) => {
-      const result = segment(source, {});
+      const result = segment({ source, context: {} });
       return result
-        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading(seg, {}), [seg])), exec(result)] as const
-        : some(heading)(source, {});
+        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading({ source: seg, context: {} }), [seg])), exec(result)] as const
+        : some(heading)({ source, context: {} });
     };
 
     it('invalid', () => {

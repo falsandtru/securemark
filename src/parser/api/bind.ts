@@ -77,7 +77,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(header(seg, { header: index === 0 }) || block(seg, context), []);
+      const es = eval(header({ source: seg, context: { header: index === 0 } }) || block({ source: seg, context }), []);
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.

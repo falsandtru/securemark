@@ -16,7 +16,7 @@ export const math: MathParser = lazy(() => validate('$', creation(rewrite(
       ]))),
       /^\$(?![0-9A-Za-z])/),
   ]),
-  (source, { caches: { math: cache } = {} }) => [[
+  ({ source, context: { caches: { math: cache } = {} } }) => [[
     cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)

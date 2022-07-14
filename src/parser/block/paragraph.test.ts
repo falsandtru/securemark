@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
-    const parser = (source: string) => some(paragraph)(source, {});
+    const parser = (source: string) => some(paragraph)({ source, context: {} });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['<p>a</p>'], '']);

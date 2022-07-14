@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/reply/cite', () => {
   describe('cite', () => {
-    const parser = (source: string) => some(cite)(source, {});
+    const parser = (source: string) => some(cite)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -36,7 +36,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   const node = frag();
   let index = 0;
   for (const seg of segment(source)) {
-    node.append(...eval(header(seg, { header: index++ === 0 }) || block(seg, context), []));
+    node.append(...eval(header({ source: seg, context: { header: index++ === 0 } }) || block({ source: seg, context }), []));
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;

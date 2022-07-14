@@ -1,5 +1,5 @@
 import { undefined } from 'spica/global';
-import { Parser, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { Parser, Input, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
 
@@ -38,19 +38,20 @@ export function surround<T>(
     case 'object':
       return surround(opener, parser, match(closer), optional, f, g);
   }
-  return (lmr_, context) => {
+  return input => {
+    const { source: lmr_, context } = input;
     if (lmr_ === '') return;
-    const res1 = opener(lmr_, context);
+    const res1 = opener({ source: lmr_, context });
     assert(check(lmr_, res1, false));
     if (!res1) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
-    const res2 = mr_ !== '' ? parser(mr_, context) : undefined;
+    const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
     assert(check(mr_, res2));
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
     if (!rm && !optional) return;
-    const res3 = closer(r_, context);
+    const res3 = closer({ source: r_, context });
     assert(check(r_, res3, false));
     const rr = eval(res3);
     const rest = exec(res3, r_);
@@ -65,12 +66,12 @@ export function surround<T>(
   };
 }
 
-function match(pattern: string | RegExp): (source: string, context: Ctx) => [never[], string] | undefined {
+function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {
   switch (typeof pattern) {
     case 'string':
-      return source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
+      return ({ source }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
     case 'object':
-      return source => {
+      return ({ source }) => {
         const m = source.match(pattern);
         return m
           ? [[], source.slice(m[0].length)]

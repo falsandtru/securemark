@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/horizontalrule', () => {
   describe('horizontalrule', () => {
-    const parser = (source: string) => some(horizontalrule)(source, {});
+    const parser = (source: string) => some(horizontalrule)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

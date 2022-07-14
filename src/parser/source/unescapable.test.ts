@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/unescapable', () => {
   describe('unescsource', () => {
-    const parser = (source: string) => some(unescsource)(source, {});
+    const parser = (source: string) => some(unescsource)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

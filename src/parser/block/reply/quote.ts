@@ -33,7 +33,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => creation(block(fmap(val
   ]),
   false)));
 
-const qblock: ReplyParser.QuoteParser.BlockParser = (source, context) => {
+const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
   source = source.replace(/\n$/, '');
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
@@ -41,7 +41,7 @@ const qblock: ReplyParser.QuoteParser.BlockParser = (source, context) => {
   assert(quotes);
   assert(quotes.length > 0);
   const content = lines.reduce((acc, line, row) => acc + line.slice(quotes[row].length), '');
-  const nodes = eval(some(text)(content, context), []);
+  const nodes = eval(some(text)({ source: content, context }), []);
   nodes.unshift(quotes.shift()!);
   for (let i = 0; i < nodes.length; ++i) {
     const child = nodes[i] as string | Text | Element;

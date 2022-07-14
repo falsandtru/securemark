@@ -16,7 +16,8 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
     matcher: Delimiters.matcher(delimiter),
     precedence,
   }));
-  return (source, context) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     let rest = source;
     let nodes: T[] | undefined;
@@ -28,7 +29,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
       if (rest === '') break;
       if (match(rest)) break;
       if (context.delimiters?.match(rest, context.precedence)) break;
-      const result = parser(rest, context);
+      const result = parser({ source: rest, context });
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (!result) break;
       nodes = nodes

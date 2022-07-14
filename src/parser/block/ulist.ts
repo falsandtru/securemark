@@ -28,7 +28,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
 
 export const checkbox = creation(focus(
   /^\[[xX ]\](?=$|\s)/,
-  source => [[
+  ({ source }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ], '']));
 

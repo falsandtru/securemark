@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/aside', () => {
   describe('aside', () => {
-    const parser = (source: string) => some(aside)(source, {});
+    const parser = (source: string) => some(aside)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~aside\n~~~')), [['<pre class="invalid" translate="no">~~~aside\n~~~</pre>'], '']);

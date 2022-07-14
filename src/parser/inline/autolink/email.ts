@@ -8,4 +8,4 @@ import { html } from 'typed-dom/dom';
 export const email: AutolinkParser.EmailParser = creation(rewrite(verify(
   str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*(?![0-9A-Za-z])/),
   ([source]) => source.indexOf('@') <= 64 && source.length <= 255),
-  source => [[html('a', { class: 'email', href: `mailto:${source}` }, source)], '']));
+  ({ source }) => [[html('a', { class: 'email', href: `mailto:${source}` }, source)], '']));

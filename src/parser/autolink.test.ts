@@ -4,7 +4,7 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/autolink', () => {
   describe('autolink', () => {
-    const parser = (source: string) => some(autolink)(source, {});
+    const parser = (source: string) => some(autolink)({ source, context: {} });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a href="http://host" target="_blank">http://host</a>'], '']);

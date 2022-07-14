@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/ruby', () => {
   describe('ruby', () => {
-    const parser = (source: string) => some(ruby)(source, {});
+    const parser = (source: string) => some(ruby)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

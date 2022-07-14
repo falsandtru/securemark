@@ -6,10 +6,11 @@ import { firstline, isEmpty } from './line';
 export function block<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
 export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
   assert(parser);
-  return (source, context = {}) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     context.memo ??= new Memo();
-    const result = parser(source, context);
+    const result = parser(input);
     if (!result) return;
     const rest = exec(result);
     if (separation && !isEmpty(firstline(rest))) return;

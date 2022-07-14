@@ -17,14 +17,14 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
     opener,
     memoize(
     ([indent]) =>
-      some(line(open(indent, source => [[source], '']))),
+      some(line(open(indent, ({ source }) => [[source], '']))),
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), [])), separation),
     (lines, rest, context) => {
       assert(parser = parser as Parser<T>);
-      const memo = context.memo;
-      memo && (memo.offset += rest.length);
-      const result = parser(trimBlockEnd(lines.join('')), context);
-      memo && (memo.offset -= rest.length);
+      context.offset ??= 0;
+      context.offset += rest.length;
+      const result = parser({ source: trimBlockEnd(lines.join('')), context });
+      context.offset -= rest.length;
       return result && exec(result) === ''
         ? [eval(result), rest]
         : undefined;

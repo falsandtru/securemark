@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/bracket', () => {
   describe('bracket', () => {
-    const parser = (source: string) => some(bracket)(source, {});
+    const parser = (source: string) => some(bracket)({ source, context: {} });
 
     it('(', () => {
       assert.deepStrictEqual(inspect(parser('(')), [['', '('], '']);

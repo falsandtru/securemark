@@ -12,9 +12,9 @@ export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D> {
     default:
       return Function('parsers', [
         '"use strict";',
-        'return (source, context) =>',
+        'return (input, context) =>',
         '0',
-        ...parsers.map((_, i) => `|| parsers[${i}](source, context)`),
+        ...parsers.map((_, i) => `|| parsers[${i}](input, context)`),
       ].join('\n'))(parsers);
   }
 }

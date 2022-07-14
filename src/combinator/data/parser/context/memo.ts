@@ -3,14 +3,13 @@ export class Memo {
   public get length(): number {
     return this.memory.length;
   }
-  public offset = 0;
   public get(
     position: number,
     syntax: number,
     state: number,
   ): readonly [any[], number] | readonly [] | undefined {
     //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
-    const cache = this.memory[position + this.offset - 1]?.[`${syntax}:${state}`];
+    const cache = this.memory[position - 1]?.[`${syntax}:${state}`];
     return cache?.length === 2
       ? [cache[0].slice(), cache[1]]
       : cache;
@@ -22,7 +21,7 @@ export class Memo {
     nodes: any[] | undefined,
     offset: number,
   ): void {
-    const record = this.memory[position + this.offset - 1] ??= {};
+    const record = this.memory[position - 1] ??= {};
     assert(!record[`${syntax}:${state}`]);
     record[`${syntax}:${state}`] = nodes
       ? [nodes.slice(), offset]
@@ -31,7 +30,7 @@ export class Memo {
   }
   public clear(position: number): void {
     const memory = this.memory;
-    for (let i = position + this.offset, len = memory.length; i < len; ++i) {
+    for (let i = position, len = memory.length; i < len; ++i) {
       memory.pop();
     }
     //console.log('clear', position + this.offset + 1);

@@ -7,7 +7,7 @@ export import AutolinkParser = MarkdownParser.AutolinkParser;
 
 const delimiter = /[@#>0-9A-Za-z\n]|\S[#>]/;
 
-export const autolink: AutolinkParser = (source, context) => {
+export const autolink: AutolinkParser = ({ source, context }) => {
   if (source === '') return;
   assert(source[0] !== '\x1B');
   const i = source.search(delimiter);
@@ -15,7 +15,7 @@ export const autolink: AutolinkParser = (source, context) => {
     case -1:
       return [[source], ''];
     case 0:
-      return parser(source, context);
+      return parser({ source, context });
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }

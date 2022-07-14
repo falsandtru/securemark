@@ -48,14 +48,14 @@ export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 
     }
   }))));
 
-const text: RubyParser.TextParser = creation((source, context) => {
+const text: RubyParser.TextParser = creation(({ source, context }) => {
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');
     switch (source[0]) {
       // @ts-expect-error
       case '&': {
-        const result = unsafehtmlentity(source, context);
+        const result = unsafehtmlentity({ source, context });
         if (result) {
           acc[acc.length - 1] += eval(result)[0];
           source = exec(result, source.slice(1));
@@ -69,7 +69,7 @@ const text: RubyParser.TextParser = creation((source, context) => {
           source = source.slice(1);
           continue;
         }
-        const result = txt(source, context)!;
+        const result = txt({ source, context })!;
         assert(result);
         acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
         source = exec(result);

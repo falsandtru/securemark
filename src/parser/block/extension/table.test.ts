@@ -5,7 +5,7 @@ import { html } from 'typed-dom/dom';
 
 describe('Unit: parser/block/extension/table', () => {
   describe('table', () => {
-    const parser = (source: string) => some(table)(source, {});
+    const parser = (source: string) => some(table)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);

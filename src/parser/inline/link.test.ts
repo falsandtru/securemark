@@ -5,7 +5,7 @@ import { MarkdownParser } from '../../../markdown';
 
 describe('Unit: parser/inline/link', () => {
   describe('link', () => {
-    const parser = (source: string, context: MarkdownParser.Context = {}) => some(link)(source, context);
+    const parser = (source: string, context: MarkdownParser.Context = {}) => some(link)({ source, context });
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('[]{javascript:alert}')), [['<a class="invalid">javascript:alert</a>'], '']);

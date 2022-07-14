@@ -3,7 +3,7 @@ import { some } from '../../combinator';
 
 describe('Unit: parser/block/extension', () => {
   describe('extension', () => {
-    const parser = (source: string) => some(extension)(source, {});
+    const parser = (source: string) => some(extension)({ source, context: {} });
 
     it('invalid', () => {
       assert(!parser(''));

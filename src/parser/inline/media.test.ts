@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/media', () => {
   describe('media', () => {
-    const parser = (source: string) => some(media)(source, {});
+    const parser = (source: string) => some(media)({ source, context: {} });
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('![]{javascript:alert}')), [['<img class="media invalid" data-src="javascript:alert" alt="">'], '']);

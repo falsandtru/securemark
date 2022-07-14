@@ -6,7 +6,7 @@ import { reduce } from 'spica/memoize';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(validate('&', focus(
   /^&[0-9A-Za-z]+;/,
-  entity => [[parse(entity) ?? `\x1B${entity}`], ''])));
+  ({ source }) => [[parse(source) ?? `\x1B${source}`], ''])));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),

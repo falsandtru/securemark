@@ -8,16 +8,17 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
   const match: (source: string) => string = typeof scope === 'string'
     ? source => source.slice(0, scope.length) === scope ? scope : ''
     : source => source.match(scope)?.[0] ?? '';
-  return (source, context = {}) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     const src = match(source);
     assert(source.startsWith(src));
     if (src === '') return;
-    const memo = context.memo;
-    memo && (memo.offset += source.length - src.length);
-    const result = parser(src, context);
+    context.offset ??= 0;
+    context.offset += source.length - src.length;
+    const result = parser({ source: src, context });
     assert(check(src, result));
-    memo && (memo.offset -= source.length - src.length);
+    context.offset -= source.length - src.length;
     if (!result) return;
     assert(exec(result).length < src.length);
     return exec(result).length < src.length
@@ -31,21 +32,23 @@ export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Contex
 export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T> {
   assert(scope);
   assert(parser);
-  return (source, context = {}) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     const memo = context.memo;
     context.memo = undefined;
-    const res1 = scope(source, context);
+    const res1 = scope(input);
     assert(check(source, res1));
     context.memo = memo;
     if (!res1 || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');
     assert(source.startsWith(src));
-    memo && (memo.offset += source.length - src.length);
-    const res2 = parser(src, context);
+    context.offset ??= 0;
+    context.offset += source.length - src.length;
+    const res2 = parser({ source: src, context });
     assert(check(src, res2));
-    memo && (memo.offset -= source.length - src.length);
+    context.offset -= source.length - src.length;
     if (!res2) return;
     assert(exec(res2) === '');
     return exec(res2).length < src.length

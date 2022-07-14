@@ -5,7 +5,7 @@ import { define } from 'typed-dom/dom';
 import { duffEach } from 'spica/duff';
 
 export function quote(anchor: string, range: Range): string {
-  if (exec(cite(`>>${anchor}`, {})) !== '') throw new Error(`Invalid anchor: ${anchor}`);
+  if (exec(cite({ source: `>>${anchor}`, context: {} })) !== '') throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';

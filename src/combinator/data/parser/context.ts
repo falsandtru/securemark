@@ -9,7 +9,7 @@ export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return (source, context) =>
+  return ({ source, context }) =>
     apply(parser, source, ObjectCreate(context), changes, values);
 }
 
@@ -19,7 +19,7 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return (source, context) =>
+  return ({ source, context }) =>
     apply(parser, source, context, changes, values);
 }
 
@@ -41,7 +41,7 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
         context[prop] = change[1];
     }
   }
-  const result = parser(source, context);
+  const result = parser({ source, context });
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -58,11 +58,13 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
 
 export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, state: number, parser: P): P;
 export function syntax<T>(syntax: number, prec: number, cost: number, state: number, parser?: Parser<T>): Parser<T> {
-  return creation(cost, precedence(prec, (source, context) => {
+  return creation(cost, precedence(prec, input => {
+    const { source, context } = input;
     if (source === '') return;
     const memo = context.memo ??= new Memo();
     context.memorable ??= ~0;
-    const position = source.length;
+    context.offset ??= 0;
+    const position = source.length + context.offset!;
     const st0 = context.state ?? 0;
     const st1 = context.state = st0 | state;
     const cache = syntax && memo.get(position, syntax, st1);
@@ -70,7 +72,7 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
       ? cache.length === 0
         ? undefined
         : [cache[0], source.slice(cache[1])]
-      : parser!(source, context);
+      : parser!(input);
     if (syntax && st0 & context.memorable!) {
       cache ?? memo.set(position, syntax, st1, eval(result), source.length - exec(result, '').length);
       assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, st1));
@@ -89,12 +91,12 @@ export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
 export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
   if (typeof cost === 'function') return creation(1, cost);
   assert(cost > 0);
-  return (source, context) => {
-    const { resources = { clock: 1, recursion: 1 } } = context;
+  return input => {
+    const resources = input.context.resources ?? { clock: 1, recursion: 1 };
     if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
     --resources.recursion;
-    const result = parser!(source, context);
+    const result = parser!(input);
     ++resources.recursion;
     if (result) {
       resources.clock -= cost;
@@ -106,10 +108,11 @@ export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown
 export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
 export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
   assert(precedence > 0);
-  return (source, context) => {
+  return input => {
+    const { context } = input;
     const p = context.precedence;
     context.precedence = precedence;
-    const result = parser(source, context);
+    const result = parser(input);
     context.precedence = p;
     return result;
   };
@@ -117,9 +120,9 @@ export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> 
 
 export function guard<P extends Parser<unknown>>(f: (context: Context<P>) => boolean | number, parser: P): P;
 export function guard<T>(f: (context: Ctx) => boolean | number, parser: Parser<T>): Parser<T> {
-  return (source, context) =>
-    f(context)
-      ? parser(source, context)
+  return input =>
+    f(input.context)
+      ? parser(input)
       : undefined;
 }
 
@@ -131,12 +134,13 @@ export function constraint<T>(state: number, positive: boolean | Parser<T>, pars
     positive = true;
   }
   assert(state);
-  return (source, context) => {
+  return input => {
+    const { context } = input;
     const s = positive
       ? state & context.state!
       : state & ~context.state!;
     return s === state
-      ? parser!(source, context)
+      ? parser!(input)
       : undefined;
   };
 }
@@ -149,12 +153,13 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
     positive = true;
   }
   assert(state);
-  return (source, context) => {
+  return input => {
+    const { context } = input;
     const s = context.state ?? 0;
     context.state = positive
       ? s | state
       : s & ~state;
-    const result = parser!(source, context);
+    const result = parser!(input);
     context.state = s;
     return result;
   };

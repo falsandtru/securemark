@@ -44,7 +44,7 @@ export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap
           html('aside', { class: 'example', 'data-type': 'math' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            eval(mathblock(`$$\n${body}$$`, context), [])[0],
+            eval(mathblock({ source: `$$\n${body}$$`, context }), [])[0],
           ]),
         ];
       default:

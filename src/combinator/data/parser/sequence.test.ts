@@ -4,12 +4,12 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/data/parser/sequence', () => {
   describe('sequence', () => {
-    const a: Parser<string, never> = source => {
+    const a: Parser<string, never> = ({ source }) => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
         : undefined;
     };
-    const b: Parser<string, never> = source => {
+    const b: Parser<string, never> = ({ source }) => {
       return source && source[0] === 'b'
         ? [['B'], source.slice(1)]
         : undefined;
@@ -18,14 +18,14 @@ describe('Unit: combinator/data/parser/sequence', () => {
 
     it('basic', () => {
       const parser = ab;
-      assert.deepStrictEqual(inspect(parser('', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('a', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('b', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('ab', {})), [['A', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser('ba', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('aab', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('abb', {})), [['A', 'B'], 'b']);
-      assert.deepStrictEqual(inspect(parser('bba', {})), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: '', context: {} })), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: 'a', context: {} })), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: 'b', context: {} })), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: 'ab', context: {} })), [['A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser({ source: 'ba', context: {} })), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: 'aab', context: {} })), undefined);
+      assert.deepStrictEqual(inspect(parser({ source: 'abb', context: {} })), [['A', 'B'], 'b']);
+      assert.deepStrictEqual(inspect(parser({ source: 'bba', context: {} })), undefined);
     });
 
   });

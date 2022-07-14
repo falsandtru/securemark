@@ -40,7 +40,7 @@ export const table: TableParser = block(validate('~~~', fmap(
     switch (type) {
       case 'grid':
       case undefined:
-        return (eval(parser(body, context)) ?? [html('table')])
+        return (eval(parser({ source: body, context })) ?? [html('table')])
           .map(el => define(el, { 'data-type': type }));
       default:
         return [html('pre', {

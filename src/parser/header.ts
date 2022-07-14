@@ -9,7 +9,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
   inits([
     rewrite(
-      (source, context) =>
+      ({ source, context }) =>
         [[], context.header ?? true ? source.slice(segment(source).next().value!.length) : ''],
       block(
         union([
@@ -27,7 +27,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
                   ])),
                 ]),
               ])))),
-          source => [[
+          ({ source }) => [[
             html('pre', {
               class: 'invalid',
               translate: 'no',
@@ -40,7 +40,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
     clear(str(/^[^\S\v\f\r\n]*\r?\n/)),
   ])));
 
-const field: MarkdownParser.HeaderParser.FieldParser = line(source => {
+const field: MarkdownParser.HeaderParser.FieldParser = line(({ source }) => {
   const name = source.slice(0, source.indexOf(':'));
   const value = source.slice(name.length + 1).trim();
   return [[

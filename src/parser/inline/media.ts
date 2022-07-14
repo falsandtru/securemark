@@ -55,11 +55,11 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
     if (context.state! & State.link) return [[el], rest];
-    if (cache && cache.tagName !== 'IMG') return creation(10, (..._) => [[el!], rest])('!', context);
+    if (cache && cache.tagName !== 'IMG') return creation(10, (..._) => [[el!], rest])({ source: '!', context });
     return fmap(
       unsafelink as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URI}${params.join('')} }${rest}`, context);
+      ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
   }))))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([

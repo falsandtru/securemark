@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/reply', () => {
   describe('reply', () => {
-    const parser = (source: string) => some(reply)(source, {});
+    const parser = (source: string) => some(reply)({ source, context: {} });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('>>1')), [['<p><span class="cite">&gt;<a href="?at=1" class="anchor" data-depth="1">&gt;1</a></span></p>'], '']);

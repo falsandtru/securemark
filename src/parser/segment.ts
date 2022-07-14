@@ -26,7 +26,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
   if (!validate(source, MAX_INPUT_SIZE)) return yield `\x07Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
-    const result = parser(source, {})!;
+    const result = parser({ source, context: {} })!;
     assert(result);
     const rest = exec(result);
     const segs = eval(result).length ? eval(result) : [source.slice(0, source.length - rest.length)];

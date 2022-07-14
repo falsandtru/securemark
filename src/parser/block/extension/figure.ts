@@ -98,7 +98,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'data-invalid-type': 'fence',
           'data-invalid-message': `Invalid trailing line after the closing delimiter "${delim}"`,
         } ||
-        !seg_label(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context) && {
+        !seg_label({ source: opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context }) && {
           'data-invalid-type': 'label',
           'data-invalid-message': 'Invalid label',
         } ||

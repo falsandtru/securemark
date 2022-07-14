@@ -28,7 +28,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creation(fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
   es => [html('tr', es)]),
-  rewrite(contentline, source => [[
+  rewrite(contentline, ({ source }) => [[
     html('tr', {
       class: 'invalid',
       'data-invalid-syntax': 'table-row',

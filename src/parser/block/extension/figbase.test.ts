@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/figbase', () => {
   describe('figbase', () => {
-    const parser = (source: string) => some(figbase)(source, {});
+    const parser = (source: string) => some(figbase)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('\n$-0')), undefined);

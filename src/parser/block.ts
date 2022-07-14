@@ -57,9 +57,9 @@ export const block: BlockParser = creation(error(
 
 function error(parser: BlockParser): BlockParser {
   return recover<BlockParser>(fallback(
-    open('\x07', source => { throw new Error(source.split('\n', 1)[0]); }),
+    open('\x07', ({source}) => { throw new Error(source.split('\n', 1)[0]); }),
     parser),
-    (source, { id }, reason) => [[
+    ({ source, context: { id } }, reason) => [[
       html('h1',
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,

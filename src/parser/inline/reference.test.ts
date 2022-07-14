@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/reference', () => {
   describe('reference', () => {
-    const parser = (source: string) => some(reference)(source, {});
+    const parser = (source: string) => some(reference)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

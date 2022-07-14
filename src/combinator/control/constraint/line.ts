@@ -5,15 +5,16 @@ import { Memo } from '../../data/parser/context/memo';
 export function line<P extends Parser<unknown>>(parser: P): P;
 export function line<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
-  return (source, context = {}) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     context.memo ??= new Memo();
     const line = firstline(source);
-    const memo = context.memo!;
-    memo.offset += source.length - line.length;
-    const result = parser(line, context);
+    context.offset ??= 0;
+    context.offset += source.length - line.length;
+    const result = parser({ source: line, context });
     assert(check(line, result));
-    memo.offset -= source.length - line.length;
+    context.offset -= source.length - line.length;
     if (!result) return;
     return isEmpty(exec(result))
       ? [eval(result), source.slice(line.length)]

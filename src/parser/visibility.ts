@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { Parser, eval } from '../combinator/data/parser';
+import { Parser, Input, eval } from '../combinator/data/parser';
 import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
@@ -56,23 +56,23 @@ export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): Reg
 
 export function startLoose<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
 export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
-  return (source, context) =>
-    isStartLoose(source, context, except)
-      ? parser(source, context)
+  return input =>
+    isStartLoose(input, except)
+      ? parser(input)
       : undefined;
 }
-const isStartLoose = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
-  return isStartTight(source.replace(regBlankStart, ''), context, except);
-}, (source, _, except = '') => `${source}\x1E${except}`);
+const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
+  return isStartTight({ source: source.replace(regBlankStart, ''), context }, except);
+}, ({ source }, except = '') => `${source}\x1E${except}`);
 
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
-  return (source, context) =>
-    isStartTight(source, context, except)
-      ? parser(source, context)
+  return input =>
+    isStartTight(input, except)
+      ? parser(input)
       : undefined;
 }
-const isStartTight = reduce((source: string, context: MarkdownParser.Context, except?: string): boolean => {
+const isStartTight = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
   switch (source[0]) {
@@ -87,7 +87,7 @@ const isStartTight = reduce((source: string, context: MarkdownParser.Context, ex
       switch (true) {
         case source.length > 2
           && source[1] !== ' '
-          && eval(unsafehtmlentity(source, context))?.[0]?.trimStart() === '':
+          && eval(unsafehtmlentity({ source, context }))?.[0]?.trimStart() === '':
           return false;
       }
       return true;
@@ -102,7 +102,7 @@ const isStartTight = reduce((source: string, context: MarkdownParser.Context, ex
     default:
       return source[0].trimStart() !== '';
   }
-}, (source, _, except = '') => `${source}\x1E${except}`);
+}, ({ source }, except = '') => `${source}\x1E${except}`);
 
 export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;

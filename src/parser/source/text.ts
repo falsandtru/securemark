@@ -10,7 +10,7 @@ export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = syntax(Syntax.none, 1, 1, State.none, (source, context) => {
+export const text: TextParser = syntax(Syntax.none, 1, 1, State.none, ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {
@@ -26,7 +26,7 @@ export const text: TextParser = syntax(Syntax.none, 1, 1, State.none, (source, c
             case '！':
             case '？':
               assert(source[0] !== '\x1B');
-              return text(source.slice(1), context);
+              return text({ source: source.slice(1), context });
           }
           break;
         case '、':
@@ -57,7 +57,7 @@ export const text: TextParser = syntax(Syntax.none, 1, 1, State.none, (source, c
         case '=':
         case '`':
           return source[1] === source[0]
-            ? repeat(source, context)
+            ? repeat({ source, context })
             : [[source[0]], source.slice(1)];
         default:
           assert(source[0] !== '\n');

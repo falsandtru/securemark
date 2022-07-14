@@ -47,7 +47,7 @@ export const emstrong: EmStrongParser = lazy(() => surround(
             rest.slice(0, 1) === '*'
               ? [[html('em', unshift([html('strong', defrag(bs))], defrag(ds)))], rest.slice(1)]
               : [unshift(['*', html('strong', defrag(bs))], ds), rest])
-          (rest, context) ?? [['*', html('strong', defrag(bs))], rest];
+          ({ source: rest, context }) ?? [['*', html('strong', defrag(bs))], rest];
       case '*':
         return bind<StrongParser>(
           substrong,
@@ -55,7 +55,7 @@ export const emstrong: EmStrongParser = lazy(() => surround(
             rest.slice(0, 2) === '**'
               ? [[html('strong', unshift([html('em', defrag(bs))], defrag(ds)))], rest.slice(2)]
               : [unshift(['**', html('em', defrag(bs))], ds), rest])
-          (rest, context) ?? [['**', html('em', defrag(bs))], rest];
+          ({ source: rest, context }) ?? [['**', html('em', defrag(bs))], rest];
     }
     assert(false);
   },

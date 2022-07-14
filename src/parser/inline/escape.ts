@@ -5,7 +5,7 @@ import { str } from '../source';
 
 const repeat = str(/^(.)\1*/);
 
-export const escape: EscapeParser = union([(source, context) => {
+export const escape: EscapeParser = union([({ source, context }) => {
   if (source.length < 3) return;
   switch (source[0]) {
     case '*':
@@ -14,7 +14,7 @@ export const escape: EscapeParser = union([(source, context) => {
       return source[3] === source[0]
           && source[2] === source[0]
           && source[1] === source[0]
-        ? repeat(source, context)
+        ? repeat({ source, context })
         : undefined;
     case '+':
     case '~':
@@ -22,7 +22,7 @@ export const escape: EscapeParser = union([(source, context) => {
       assert(source[2]);
       return source[2] === source[0]
           && source[1] === source[0]
-        ? repeat(source, context)
+        ? repeat({ source, context })
         : undefined;
     default:
       return;

@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/placeholder', () => {
   describe('placeholder', () => {
-    const parser = (source: string) => some(placeholder)(source, {});
+    const parser = (source: string) => some(placeholder)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('[]')), undefined);

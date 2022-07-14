@@ -1,5 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
+import { Parser } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
@@ -11,7 +12,6 @@ import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { duffbk } from 'spica/duff';
 import { shift } from 'spica/array';
-import { tuple } from 'spica/tuple';
 
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
@@ -51,15 +51,15 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    source => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
+    ({ source }) => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
   '(': focus(
     openers['('],
-    source => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
+    ({ source }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
 
 export const invalid = rewrite(
-  inits([contentline, indent((s: string) => [tuple(s), ''] as const)]),
-  source => [[
+  inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),
+  ({ source }) => [[
     '',
     html('span', {
       class: 'invalid',

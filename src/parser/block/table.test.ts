@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/table', () => {
   describe('table', () => {
-    const parser = (source: string) => some(table)(source, {});
+    const parser = (source: string) => some(table)({ source, context: {} });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

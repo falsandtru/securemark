@@ -37,7 +37,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
     creation(99,
     rewrite(
       some(contentline, opener),
-      convert(unindent, (source, context) => {
+      convert(unindent, ({ source, context }) => {
         const references = html('ol', { class: 'references' });
         const document = parse(source, {
           id: '',

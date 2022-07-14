@@ -2,7 +2,11 @@ import { Delimiters } from './parser/context/delimiter';
 import { Memo } from './parser/context/memo';
 
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
-  = (source: string, context: C) => Result<T, C, D>;
+  = (input: Input<C>) => Result<T, C, D>;
+export interface Input<C extends Ctx = Ctx> {
+  readonly source: string;
+  readonly context: C;
+}
 export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = readonly [T[], string, C, D]
   | readonly [T[], string]
@@ -12,6 +16,7 @@ export interface Ctx {
     clock: number;
     recursion: number;
   };
+  offset?: number;
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;

@@ -12,7 +12,7 @@ export function headers(source: string): string[] {
 }
 
 function parse(source: string): [HTMLElement, string] | [] {
-  const result = h(source, {});
+  const result = h({ source, context: {} });
   const [el] = eval(result, []);
   return el?.tagName === 'ASIDE'
     ? [el, exec(result!)]
