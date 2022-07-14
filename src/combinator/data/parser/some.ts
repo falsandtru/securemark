@@ -16,8 +16,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
     matcher: Delimiters.matcher(delimiter),
     precedence,
   }));
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     if (source === '') return;
     let rest = source;
     let nodes: T[] | undefined;

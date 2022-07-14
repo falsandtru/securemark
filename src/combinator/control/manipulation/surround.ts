@@ -38,8 +38,8 @@ export function surround<T>(
     case 'object':
       return surround(opener, parser, match(closer), optional, f, g);
   }
-  return input => {
-    const { source: lmr_, context } = input;
+  return ({ source, context }) => {
+    const lmr_ = source;
     if (lmr_ === '') return;
     const res1 = opener({ source: lmr_, context });
     assert(check(lmr_, res1, false));

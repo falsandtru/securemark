@@ -8,8 +8,7 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
   const match: (source: string) => string = typeof scope === 'string'
     ? source => source.slice(0, scope.length) === scope ? scope : ''
     : source => source.match(scope)?.[0] ?? '';
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     if (source === '') return;
     const src = match(source);
     assert(source.startsWith(src));
@@ -32,12 +31,11 @@ export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Contex
 export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T> {
   assert(scope);
   assert(parser);
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     if (source === '') return;
     const memo = context.memo;
     context.memo = undefined;
-    const res1 = scope(input);
+    const res1 = scope({ source, context });
     assert(check(source, res1));
     context.memo = memo;
     if (!res1 || exec(res1).length >= source.length) return;

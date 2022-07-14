@@ -3,8 +3,7 @@ import { firstline, isEmpty } from '../constraint/line';
 import { unshift } from 'spica/array';
 
 export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
-  return input => {
-    const { source } = input;
+  return ({ source }) => {
     if (source === '') return;
     const matches = source.match(opener);
     if (!matches) return;

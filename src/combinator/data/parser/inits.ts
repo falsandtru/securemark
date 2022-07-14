@@ -6,8 +6,7 @@ export function inits<P extends Parser<unknown>>(parsers: SubParsers<P>, resume?
 export function inits<T, D extends Parser<T>[]>(parsers: D, resume?: (nodes: T[], rest: string) => boolean): Parser<T, Ctx, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     let rest = source;
     let nodes: T[] | undefined;
     for (let i = 0, len = parsers.length; i < len; ++i) {

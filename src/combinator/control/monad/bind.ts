@@ -7,10 +7,9 @@ export function bind<T, P extends Parser<unknown>>(parser: Parser<T, Context<P>,
 export function bind<U, P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<U, Context<P>, SubParsers<P>>): Parser<U, Context<P>, SubParsers<P>>;
 export function bind<T, U>(parser: Parser<T>, f: (nodes: T[], rest: string, context: Ctx) => Result<U>): Parser<U> {
   assert(parser);
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     if (source === '') return;
-    const res1 = parser(input);
+    const res1 = parser({ source, context });
     assert(check(source, res1));
     if (!res1) return;
     const res2 = f(eval(res1), exec(res1), context);

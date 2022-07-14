@@ -3,8 +3,7 @@ import { Parser, check } from '../../data/parser';
 export function convert<P extends Parser<unknown>>(conv: (source: string) => string, parser: P): P;
 export function convert<T>(conv: (source: string) => string, parser: Parser<T>): Parser<T> {
   assert(parser);
-  return input => {
-    const { source, context } = input;
+  return ({ source, context }) => {
     if (source === '') return;
     const src = conv(source);
     if (src === '') return [[], ''];
