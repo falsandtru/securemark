@@ -25,7 +25,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
 
 const textlink: LinkParser.TextLinkParser = lazy(() =>
   constraint(State.link, false,
-  state(State.link | State.media | State.annotation | State.reference | State.index | State.label | State.autolink,
+  state(State.linkable,
   syntax(Syntax.link, 2, 10,
   bind(reverse(tails([
     dup(surround(
@@ -48,7 +48,7 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
 
 const medialink: LinkParser.MediaLinkParser = lazy(() =>
   constraint(State.link | State.media, false,
-  state(State.link | State.annotation | State.reference | State.index | State.label | State.autolink,
+  state(State.linkable ^ State.media,
   syntax(Syntax.link, 2, 10,
   bind(reverse(sequence([
     dup(surround(

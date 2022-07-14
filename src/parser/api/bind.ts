@@ -5,7 +5,7 @@ import { eval } from '../../combinator/data/parser';
 import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
-import { backtrackable } from '../context';
+import { State } from '../context';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
@@ -24,7 +24,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-    memorable: backtrackable,
+    memorable: State.backtrackable,
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);

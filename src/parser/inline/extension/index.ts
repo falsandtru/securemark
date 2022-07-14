@@ -13,7 +13,7 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surround(
   '[#',
   constraint(State.index, false,
-  state(State.annotation | State.reference | State.index | State.label | State.link | State.media | State.autolink,
+  state(State.linkable,
   syntax(Syntax.index, 2, 1,
   startTight(
   open(stropt(/^\|?/), trimBlankEnd(some(union([

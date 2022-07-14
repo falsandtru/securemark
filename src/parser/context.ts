@@ -23,10 +23,18 @@ export const enum State {
   link = 1 << 2,
   media = 1 << 1,
   autolink = 1 << 0,
+  linkable = 0
+    | State.annotation
+    | State.reference
+    | State.index
+    | State.label
+    | State.link
+    | State.media
+    | State.autolink,
+  backtrackable = 0
+    | State.annotation
+    | State.reference
+    | State.index
+    | State.link
+    | State.media,
 }
-export const backtrackable = 0
-  | State.annotation
-  | State.reference
-  | State.index
-  | State.link
-  | State.media;
