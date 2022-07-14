@@ -25,8 +25,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
 
 const textlink: LinkParser.TextLinkParser = lazy(() =>
   constraint(State.link, false,
-  state(State.linkable,
-  syntax(Syntax.link, 2, 10,
+  syntax(Syntax.link, 2, 10, State.linkable,
   bind(reverse(tails([
     dup(surround(
       '[',
@@ -44,12 +43,11 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
       source = exec(result!);
     }
     return parse(content, params, rest, context);
-  })))));
+  }))));
 
 const medialink: LinkParser.MediaLinkParser = lazy(() =>
   constraint(State.link | State.media, false,
-  state(State.linkable ^ State.media,
-  syntax(Syntax.link, 2, 10,
+  syntax(Syntax.link, 2, 10, State.linkable ^ State.media,
   bind(reverse(sequence([
     dup(surround(
       '[',
@@ -58,7 +56,7 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
-    parse(content, params, rest, context))))));
+    parse(content, params, rest, context)))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10, precedence(2,

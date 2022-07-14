@@ -56,28 +56,30 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
   return result;
 }
 
-export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, parser: P): P;
-export function syntax<T>(syntax: number, prec: number, cost: number, parser?: Parser<T>): Parser<T> {
+export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, state: number, parser: P): P;
+export function syntax<T>(syntax: number, prec: number, cost: number, state: number, parser?: Parser<T>): Parser<T> {
   return creation(cost, precedence(prec, (source, context) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
     context.memorable ??= ~0;
     const position = source.length;
-    const state = context.state ?? 0;
-    const cache = syntax && memo.get(position, syntax, state);
+    const st0 = context.state ?? 0;
+    const st1 = context.state = st0 | state;
+    const cache = syntax && memo.get(position, syntax, st1);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
         : [cache[0], source.slice(cache[1])]
       : parser!(source, context);
-    if (syntax && state & context.memorable!) {
-      cache ?? memo.set(position, syntax, state, eval(result), source.length - exec(result, '').length);
-      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, state));
+    if (syntax && st0 & context.memorable!) {
+      cache ?? memo.set(position, syntax, st1, eval(result), source.length - exec(result, '').length);
+      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, st1));
     }
-    if (result && !state && memo.length! >= position) {
-      assert(!(state & context.memorable!));
-      memo.clear(position);
+    if (result && !st0 && memo.length! >= position + 2) {
+      assert(!(st0 & context.memorable!));
+      memo.clear(position + 2);
     }
+    context.state = st0;
     return result;
   }));
 }

@@ -14,7 +14,7 @@ import { stringify } from '../util';
 export const autolink: AutolinkParser = fmap(
   validate(/^(?:[@#>0-9A-Za-z]|\S[#>])/,
   constraint(State.autolink, false,
-  syntax(Syntax.autolink, 1, 1,
+  syntax(Syntax.autolink, 1, 1, State.none,
   some(union([
     url,
     email,

@@ -23,6 +23,7 @@ export const enum State {
   link = 1 << 2,
   media = 1 << 1,
   autolink = 1 << 0,
+  none = 0,
   linkable = 0
     | State.annotation
     | State.reference
