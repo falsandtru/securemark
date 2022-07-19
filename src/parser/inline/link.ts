@@ -5,7 +5,7 @@ import { Result, eval, exec } from '../../combinator/data/parser';
 import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
-import { autolink } from '../autolink';
+import { autolink as autolink_ } from '../autolink';
 import { unescsource, str } from '../source';
 import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
@@ -38,9 +38,9 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     for (let source = stringify(content); source;) {
-      const result = state(State.autolink, false, autolink)({ source, context });
-      if (typeof eval(result!)[0] === 'object') return;
-      source = exec(result!);
+      const result = autolink({ source, context });
+      if (typeof eval(result, [])[0] === 'object') return;
+      source = exec(result, '');
     }
     return parse(content, params, rest, context);
   }))));
@@ -80,6 +80,8 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/),
   fmap(str(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
+
+const autolink = state(State.autolink, false, state(State.shortcut, autolink_));
 
 function parse(
   content: (string | HTMLElement)[],

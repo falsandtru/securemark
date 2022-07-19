@@ -470,10 +470,11 @@
   }
   .cite, .quote {
     white-space: pre-wrap;
+    font-weight: 600;
     color: hsl(130 50% 50% / 1);
   }
-  .index {
-    font-style: italic;
+  .cite > .anchor {
+    font-weight: normal;
   }
   .media {
     max-width: 100%;
@@ -591,6 +592,18 @@
   .code  .comment::before,
   .media .comment::before {
     all: unset;
+  }
+  .index {
+    font-style: italic;
+  }
+  .email, a[href^="tel:" i] {
+    color: coral;
+  }
+  .channel, .account, .hashtag, .hashnum {
+    color: goldenrod;
+  }
+  .anchor {
+    color: limegreen;
   }
   h1.error {
     font-style: italic;

@@ -16,13 +16,14 @@ export const enum Syntax {
 }
 
 export const enum State {
-  annotation = 1 << 6,
-  reference = 1 << 5,
-  index = 1 << 4,
-  label = 1 << 3,
-  link = 1 << 2,
-  media = 1 << 1,
-  autolink = 1 << 0,
+  annotation = 1 << 7,
+  reference = 1 << 6,
+  index = 1 << 5,
+  label = 1 << 4,
+  link = 1 << 3,
+  media = 1 << 2,
+  autolink = 1 << 1,
+  shortcut = 1 << 0,
   none = 0,
   linkable = 0
     | State.annotation

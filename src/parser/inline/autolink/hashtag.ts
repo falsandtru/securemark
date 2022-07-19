@@ -1,7 +1,8 @@
 import { AutolinkParser } from '../../inline';
-import { union, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, tails, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
+import { State } from '../../context';
 import { define } from 'typed-dom/dom';
 
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
@@ -10,6 +11,7 @@ import { define } from 'typed-dom/dom';
 export const emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
 
 export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
+  constraint(State.shortcut, false,
   open(
     '#',
     tails([
@@ -23,7 +25,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
           /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source,
         ].join('').replace(/emoji/g, emoji), 'u')),
         ([source]) => source.length <= 128),
-    ])),
+    ]))),
   convert(
     source =>
       `[${source}]{ ${

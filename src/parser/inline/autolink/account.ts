@@ -1,12 +1,14 @@
 import { AutolinkParser } from '../../inline';
-import { union, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, constraint, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
+import { State } from '../../context';
 import { define } from 'typed-dom/dom';
 
 // https://example/@user must be a user page or a redirect page going there.
 
 export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
+  constraint(State.shortcut, false,
   open(
     '@',
     tails([
@@ -16,7 +18,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
       verify(
         str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
         ([source]) => source.length <= 64),
-    ])),
+    ]))),
   convert(
     source =>
       `[${source}]{ ${

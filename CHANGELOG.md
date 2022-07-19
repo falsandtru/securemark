@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.259.3
+## 0.260.0
 
+- Change link parser to accept shortcut text.
 - Fix html parser.
 
 ## 0.259.2
