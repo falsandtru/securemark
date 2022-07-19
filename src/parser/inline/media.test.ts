@@ -90,6 +90,7 @@ describe('Unit: parser/inline/media', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('![\\[]{/}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="["></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![\\"]{"?"#"}')), [['<a href="&quot;?&quot;#&quot;" target="_blank"><img class="media" data-src="&quot;?&quot;#&quot;" alt="&quot;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![*a*]{/}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="*a*"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![<wbr>]{/}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="<wbr>"></a>'], '']);
     });
 
