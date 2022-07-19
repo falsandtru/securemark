@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.259.3
+
+- Fix html parser.
+
 ## 0.259.2
 
 - Refactoring.

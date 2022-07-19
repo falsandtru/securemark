@@ -64,7 +64,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
 ])))));
 
 export const attribute: HTMLParser.AttributeParser = union([
-  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/i),
+  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),
 ]);
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element

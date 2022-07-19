@@ -10,12 +10,10 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), [['<span class="invalid">&lt;script&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), [['<span class="invalid">&lt;script&gt;alert<span class="paren">()</span><span class="invalid">&lt;script&gt;</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span class="invalid">&lt;script&gt;alert<span class="paren">()</span>&lt;/script&gt;</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('<script src="\\""></script>')), [['<span class="invalid">&lt;script src="\\""&gt;&lt;/script&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()">')), [['<span class="invalid">&lt;bdi onclick="alert()"&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()"></bdi>')), [['<span class="invalid">&lt;bdi onclick="alert()"&gt;&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()">a</bdi>')), [['<span class="invalid">&lt;bdi onclick="alert()"&gt;a&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi><bdi onclick="alert()">a</bdi></bdi>')), [['<bdi><span class="invalid">&lt;bdi onclick="alert()"&gt;a&lt;/bdi&gt;</span></bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl\\"><">a</bdo>')), [['<span class="invalid">&lt;bdo dir="rtl\\"&gt;&lt;"&gt;a&lt;/bdo&gt;</span>'], '']);
     });
 
     it('invalid', () => {
