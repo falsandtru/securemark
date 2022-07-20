@@ -4,7 +4,7 @@ import { nonWhitespace } from './text';
 
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
-export const escsource: EscapableSourceParser = creation(({ source }) => {
+export const escsource: EscapableSourceParser = creation(1, false, ({ source }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {

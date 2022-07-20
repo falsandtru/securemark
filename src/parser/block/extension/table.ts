@@ -79,7 +79,7 @@ const align: AlignParser = line(fmap(
 
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/;
 
-const head: CellParser.HeadParser = creation(block(fmap(open(
+const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
   str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
   rewrite(
     inits([
@@ -91,7 +91,7 @@ const head: CellParser.HeadParser = creation(block(fmap(open(
   ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
   false));
 
-const data: CellParser.DataParser = creation(block(fmap(open(
+const data: CellParser.DataParser = creation(1, false, block(fmap(open(
   str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
   rewrite(
     inits([
@@ -103,7 +103,7 @@ const data: CellParser.DataParser = creation(block(fmap(open(
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
   false));
 
-const dataline: CellParser.DatalineParser = creation(line(
+const dataline: CellParser.DatalineParser = creation(1, false, line(
   rewrite(
     contentline,
     union([

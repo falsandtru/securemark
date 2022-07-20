@@ -8,7 +8,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 
-export const quote: ReplyParser.QuoteParser = lazy(() => creation(block(fmap(validate(
+export const quote: ReplyParser.QuoteParser = lazy(() => creation(1, false, block(fmap(validate(
   '>',
   union([
     rewrite(

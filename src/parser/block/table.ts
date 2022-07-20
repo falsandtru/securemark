@@ -25,7 +25,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     ]),
   ])));
 
-const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creation(fallback(fmap(
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creation(1, false, fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
   es => [html('tr', es)]),
   rewrite(contentline, ({ source }) => [[
@@ -37,7 +37,7 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
     }, [html('td', source.replace('\n', ''))])
   ], ''])));
 
-const align: AlignParser = creation(fmap(open(
+const align: AlignParser = creation(1, false, fmap(open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),
@@ -52,11 +52,11 @@ const cell: CellParser = surround(
   some(union([inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]),
   /^[^|]*/, true);
 
-const head: CellParser.HeadParser = creation(fmap(
+const head: CellParser.HeadParser = creation(1, false, fmap(
   cell,
   ns => [html('th', trimNode(defrag(ns)))]));
 
-const data: CellParser.DataParser = creation(fmap(
+const data: CellParser.DataParser = creation(1, false, fmap(
   cell,
   ns => [html('td', trimNode(defrag(ns)))]));
 

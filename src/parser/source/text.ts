@@ -1,8 +1,7 @@
 import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { union, syntax, focus } from '../../combinator';
+import { union, creation, focus } from '../../combinator';
 import { str } from './str';
-import { Syntax, State } from '../context';
 import { html } from 'typed-dom/dom';
 
 export const delimiter = /[\s\x00-\x7F]|\S[#>]|[（）、。！？][^\S\n]*(?=\\\n)/;
@@ -10,7 +9,7 @@ export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = syntax(Syntax.none, 1, 1, State.none, ({ source, context }) => {
+export const text: TextParser = creation(1, false, ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {

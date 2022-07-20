@@ -36,7 +36,7 @@ export const olist_: OListParser = lazy(() => block(union([
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  some(creation(union([
+  some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
         line(open(heads[form], subsequence([checkbox, trimBlank(some(union([indexer, inline])))]), true)),

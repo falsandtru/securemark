@@ -4,7 +4,7 @@ import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const cite: ReplyParser.CiteParser = creation(line(fmap(validate(
+export const cite: ReplyParser.CiteParser = creation(1, false, line(fmap(validate(
   '>>',
   reverse(tails([
     str(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),

@@ -20,7 +20,7 @@ const opener = /^(?=\|\|+(?:$|\s))/;
 const unindent = (source: string) => source.replace(/(^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '$1');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
-  some(creation(union([
+  some(creation(1, false, union([
     focus(
       /^(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/,
       convert(unindent, source)),

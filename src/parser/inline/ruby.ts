@@ -48,7 +48,7 @@ export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 
     }
   }))));
 
-const text: RubyParser.TextParser = creation(({ source, context }) => {
+const text: RubyParser.TextParser = creation(1, false, ({ source, context }) => {
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');

@@ -17,13 +17,13 @@ export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   ]))),
   es => [html('dl', fillTrailingDescription(es))]))));
 
-const term: DListParser.TermParser = creation(line(indexee(fmap(open(
+const term: DListParser.TermParser = creation(1, false, line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
   visualize(trimBlank(some(union([indexer, inline])))),
   true),
   ns => [html('dt', defrag(ns))]))));
 
-const desc: DListParser.DescriptionParser = creation(block(fmap(open(
+const desc: DListParser.DescriptionParser = creation(1, false, block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),

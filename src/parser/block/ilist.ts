@@ -13,7 +13,7 @@ export const ilist: IListParser = lazy(() => block(validate(
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
   /^[-+*](?:$|\s)/,
-  some(creation(union([
+  some(creation(1, false, union([
     fmap(fallback(
       inits([
         line(open(/^[-+*](?:$|\s)/, some(inline), true)),

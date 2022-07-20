@@ -87,16 +87,18 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
 
 export function creation<P extends Parser<unknown>>(parser: P): P;
 export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
-export function creation(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
-  if (typeof cost === 'function') return creation(1, cost);
+export function creation<P extends Parser<unknown>>(cost: number, recursion: boolean, parser: P): P;
+export function creation(cost: number | Parser<unknown>, recursion?: boolean | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
+  if (typeof cost === 'function') return creation(1, true, cost);
+  if (typeof recursion === 'function') return creation(cost, true, recursion);
   assert(cost > 0);
   return ({ source, context }) => {
     const resources = context.resources ?? { clock: 1, recursion: 1 };
     if (resources.clock <= 0) throw new Error('Too many creations');
     if (resources.recursion <= 0) throw new Error('Too much recursion');
-    --resources.recursion;
+    recursion && --resources.recursion;
     const result = parser!({ source, context });
-    ++resources.recursion;
+    recursion && ++resources.recursion;
     if (result) {
       resources.clock -= cost;
     }
