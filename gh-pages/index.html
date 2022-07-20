@@ -184,10 +184,10 @@
     content: counter(counter, attr(data-type)) ". ";
   }
   */
-  ol[type="i"][data-type="lower-roman"] > li::before {
+  ol[type="i"] > li::before {
     content: counter(counter, lower-roman) ". ";
   }
-  ol[type="a"][data-type="lower-alpha"] > li::before {
+  ol[type="a"] > li::before {
     content: counter(counter, lower-alpha) ". ";
   }
   ol[type="I"][data-type="upper-roman"] > li::before {
