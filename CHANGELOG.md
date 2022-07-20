@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.260.1
+
+- Refactoring.
+
 ## 0.260.0
 
 - Change link parser to accept shortcut text.
