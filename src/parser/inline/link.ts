@@ -102,7 +102,6 @@ function parse(
       context.host?.href || location.href),
     context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
-  assert(el.classList.length === 0);
   return [[define(el, attributes('link', [], optspec, params))], rest];
 }
 
@@ -169,7 +168,7 @@ function elem(
           && pattern.test(INSECURE_URI)
           && pattern.test(content[0])
           && INSECURE_URI.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
-          return html('a', { href: uri.source }, content);
+          return html('a', { class: 'tel', href: uri.source }, content);
       }
       type = 'content';
       message = 'Invalid phone number';

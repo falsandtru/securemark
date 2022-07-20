@@ -8,7 +8,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
   return {
     url: find<HTMLAnchorElement>('a:not(:is(.email, .account, .channel, .hashtag, .hashnum, .anchor))')
       .filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find<HTMLAnchorElement>('a[href^="tel:" i]'),
+    tel: find('a.tel'),
     email: find('a.email'),
     account: find('a.account'),
     channel: find('a.channel'),
