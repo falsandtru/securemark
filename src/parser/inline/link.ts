@@ -147,6 +147,7 @@ function elem(
       }
       return html('a',
         {
+          class: 'link',
           href: uri.source,
           target: undefined
             || uri.origin !== origin

@@ -58,7 +58,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
     if (cache && cache.tagName !== 'IMG') return creation(10, (..._) => [[el!], rest])({ source: '!', context });
     return fmap(
       unsafelink as MediaParser,
-      ([link]) => [define(link, { target: '_blank' }, [el])])
+      ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
       ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
   }))))));
 

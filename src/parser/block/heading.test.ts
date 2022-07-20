@@ -43,7 +43,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# \\ a')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## \\')), [['<h2 id="index:\\">\\</h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# @a')), [['<h1 id="index:@a">@a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('## @a')), [['<h2 id="index:@a"><a href="/@a" class="account">@a</a></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('## @a')), [['<h2 id="index:@a"><a class="account" href="/@a">@a</a></h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# http://host')), [['<h1 id="index:http://host">http://host</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## http://host')), [['<h2 id="index:http://host"><a href="http://host" target="_blank">http://host</a></h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# !http://host')), [['<h1 id="index:!http://host">!http://host</h1>'], '']);
@@ -79,8 +79,8 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a [#b] [#c]')), [['<h1 id="index:c">a [#b]<span class="indexer" data-index="c"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a  [#b] \n')), [['<h1 id="index:b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \\[#b]')), [['<h1 id="index:a_[#b]">a [#b]</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('## a [#b] [#c]')), [['<h2 id="index:c">a [<a href="/hashtags/b" class="hashtag">#b</a>]<span class="indexer" data-index="c"></span></h2>'], '']);
-      assert.deepStrictEqual(inspect(parser('## a [#b  ] [#c  ]')), [['<h2 id="index:c">a [<a href="/hashtags/b" class="hashtag">#b</a>  ]<span class="indexer" data-index="c"></span></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('## a [#b] [#c]')), [['<h2 id="index:c">a [<a class="hashtag" href="/hashtags/b">#b</a>]<span class="indexer" data-index="c"></span></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('## a [#b  ] [#c  ]')), [['<h2 id="index:c">a [<a class="hashtag" href="/hashtags/b">#b</a>  ]<span class="indexer" data-index="c"></span></h2>'], '']);
     });
 
   });

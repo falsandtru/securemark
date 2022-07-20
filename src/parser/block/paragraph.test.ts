@@ -37,23 +37,23 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('anchor', () => {
-      assert.deepStrictEqual(inspect(parser('>>1 a\nb')), [['<p><a href="?at=1" class="anchor">&gt;&gt;1</a> a<br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>1 a\n>>2')), [['<p><a href="?at=1" class="anchor">&gt;&gt;1</a> a<br><a href="?at=2" class="anchor">&gt;&gt;2</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>1 a\n>>b')), [['<p><a href="?at=1" class="anchor">&gt;&gt;1</a> a<br><a href="?at=b" class="anchor">&gt;&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>1 a\n>> b')), [['<p><a href="?at=1" class="anchor">&gt;&gt;1</a> a<br>&gt;&gt; b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>11.')), [['<p><a href="?at=11" class="anchor">&gt;&gt;11</a>.</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p><a href="?at=11" class="anchor">&gt;&gt;11</a> a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>>11 a')), [['<p>&gt;<a href="?at=11" class="anchor">&gt;&gt;11</a> a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>> a\n>>1')), [['<p>&gt;&gt; a<br><a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1 a\nb')), [['<p><a class="anchor" href="?at=1">&gt;&gt;1</a> a<br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1 a\n>>2')), [['<p><a class="anchor" href="?at=1">&gt;&gt;1</a> a<br><a class="anchor" href="?at=2">&gt;&gt;2</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1 a\n>>b')), [['<p><a class="anchor" href="?at=1">&gt;&gt;1</a> a<br><a class="anchor" href="?at=b">&gt;&gt;b</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1 a\n>> b')), [['<p><a class="anchor" href="?at=1">&gt;&gt;1</a> a<br>&gt;&gt; b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>11.')), [['<p><a class="anchor" href="?at=11">&gt;&gt;11</a>.</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p><a class="anchor" href="?at=11">&gt;&gt;11</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>>11 a')), [['<p>&gt;<a class="anchor" href="?at=11">&gt;&gt;11</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>> a\n>>1')), [['<p>&gt;&gt; a<br><a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>>1')), [['<p>a&gt;&gt;1</p>'], '']);
       assert.deepStrictEqual(inspect(parser('ab>>1')), [['<p>ab&gt;&gt;1</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a >>1')), [['<p>a <a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>>1')), [['<p>a<br><a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>>1\nb')), [['<p>a<br><a href="?at=1" class="anchor">&gt;&gt;1</a><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a >>1')), [['<p>a <a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>>1')), [['<p>a<br><a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>>1\nb')), [['<p>a<br><a class="anchor" href="?at=1">&gt;&gt;1</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>> b\nc')), [['<p>a<br>&gt;&gt; b<br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('\t>>1')), [['<p>\t<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('\t>>>1')), [['<p>\t&gt;<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('あ>>1')), [['<p>あ<a href="?at=1" class="anchor">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\t>>1')), [['<p>\t<a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\t>>>1')), [['<p>\t&gt;<a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('あ>>1')), [['<p>あ<a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
     });
 
     it('comment', () => {

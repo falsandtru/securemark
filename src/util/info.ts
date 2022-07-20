@@ -6,8 +6,7 @@ import { push } from 'spica/array';
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = scope(source, '.invalid');
   return {
-    url: find<HTMLAnchorElement>('a:not(:is(.email, .account, .channel, .hashtag, .hashnum, .anchor))')
-      .filter(el => ['http:', 'https:'].includes(el.protocol)),
+    url: find('a.link, a[href]:not([class])'),
     tel: find('a.tel'),
     email: find('a.email'),
     account: find('a.account'),

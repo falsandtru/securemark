@@ -20,15 +20,15 @@ describe('Unit: parser/inline/autolink/anchor', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('>>0')), [['<a href="?at=0" class="anchor">&gt;&gt;0</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a')), [['<a href="?at=a" class="anchor">&gt;&gt;a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>A')), [['<a href="?at=A" class="anchor">&gt;&gt;A</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0-')), [['<a href="?at=0" class="anchor">&gt;&gt;0</a>'], '-']);
-      assert.deepStrictEqual(inspect(parser('>>0-a')), [['<a href="?at=0-a" class="anchor">&gt;&gt;0-a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0-A')), [['<a href="?at=0-A" class="anchor">&gt;&gt;0-A</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a href="?at=0" class="anchor">&gt;&gt;0</a>'], '--a']);
-      assert.deepStrictEqual(inspect(parser('>>2000-01-31-23-59-59-999-JST')), [['<a href="?at=2000-01-31-23-59-59-999-JST" class="anchor">&gt;&gt;2000-01-31-23-59-59-999-JST</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>A/2000-01-31-23-59-59-JST')), [['<a href="/@A/timeline/2000-01-31-23-59-59-JST" class="anchor">&gt;&gt;A/2000-01-31-23-59-59-JST</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0')), [['<a class="anchor" href="?at=0">&gt;&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a')), [['<a class="anchor" href="?at=a">&gt;&gt;a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>A')), [['<a class="anchor" href="?at=A">&gt;&gt;A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0-')), [['<a class="anchor" href="?at=0">&gt;&gt;0</a>'], '-']);
+      assert.deepStrictEqual(inspect(parser('>>0-a')), [['<a class="anchor" href="?at=0-a">&gt;&gt;0-a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0-A')), [['<a class="anchor" href="?at=0-A">&gt;&gt;0-A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a class="anchor" href="?at=0">&gt;&gt;0</a>'], '--a']);
+      assert.deepStrictEqual(inspect(parser('>>2000-01-31-23-59-59-999-JST')), [['<a class="anchor" href="?at=2000-01-31-23-59-59-999-JST">&gt;&gt;2000-01-31-23-59-59-999-JST</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>A/2000-01-31-23-59-59-JST')), [['<a class="anchor" href="/@A/timeline/2000-01-31-23-59-59-JST">&gt;&gt;A/2000-01-31-23-59-59-JST</a>'], '']);
     });
 
   });

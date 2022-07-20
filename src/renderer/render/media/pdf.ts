@@ -14,6 +14,7 @@ export function pdf(source: HTMLImageElement, url: URL): HTMLElement | undefined
     }),
     html('div', [
       define(parse(`{ ${source.getAttribute('data-src')} }`).querySelector('a')!, {
+        class: null,
         target: '_blank',
       }),
     ]),

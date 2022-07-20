@@ -42,10 +42,10 @@ describe('Unit: parser/block/sidefence', () => {
       assert.deepStrictEqual(inspect(parser('|\n| a')), [['<blockquote class="invalid"><pre><br>a</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('| http://host')), [['<blockquote class="invalid"><pre><a href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('| !http://host')), [['<blockquote class="invalid"><pre>!<a href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('| #a')), [['<blockquote class="invalid"><pre><a href="/hashtags/a" class="hashtag">#a</a></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('| @a#b')), [['<blockquote class="invalid"><pre><a href="/@a?ch=b" class="channel">@a#b</a></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('| >>1\n| | b')), [['<blockquote class="invalid"><pre><a href="?at=1" class="anchor">&gt;&gt;1</a><br>| b</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('| >>1\n| | b\n| c')), [['<blockquote class="invalid"><pre><a href="?at=1" class="anchor">&gt;&gt;1</a><br>| b<br>c</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('| #a')), [['<blockquote class="invalid"><pre><a class="hashtag" href="/hashtags/a">#a</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('| @a#b')), [['<blockquote class="invalid"><pre><a class="channel" href="/@a?ch=b">@a#b</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('| >>1\n| | b')), [['<blockquote class="invalid"><pre><a class="anchor" href="?at=1">&gt;&gt;1</a><br>| b</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('| >>1\n| | b\n| c')), [['<blockquote class="invalid"><pre><a class="anchor" href="?at=1">&gt;&gt;1</a><br>| b<br>c</pre></blockquote>'], '']);
     });
 
     it('nest', () => {
