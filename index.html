@@ -184,10 +184,10 @@
     content: counter(counter, attr(data-type)) ". ";
   }
   */
-  ol[type="i"][data-type="lower-roman"] > li::before {
+  ol[type="i"] > li::before {
     content: counter(counter, lower-roman) ". ";
   }
-  ol[type="a"][data-type="lower-alpha"] > li::before {
+  ol[type="a"] > li::before {
     content: counter(counter, lower-alpha) ". ";
   }
   ol[type="I"][data-type="upper-roman"] > li::before {
@@ -507,6 +507,9 @@
   .media[data-type="youtube"] > iframe {
     width: 100%;
     height: 100%;
+  }
+  .media[data-type="twitter"] > a {
+    font-weight: bold;
   }
   .media[data-type="twitter"] + br {
     display: none;

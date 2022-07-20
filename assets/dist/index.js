@@ -6155,12 +6155,8 @@ const link_1 = __webpack_require__(9628);
 
 const source_1 = __webpack_require__(6743);
 
-const dom_1 = __webpack_require__(3252);
-
 const closer = /^[-+*=~^,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
-  class: 'url'
-})])));
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink])))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.precedence)(2, (0, combinator_1.union)([(0, combinator_1.surround)('(', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')'), ')', true), (0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']'), ']', true), (0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}'), '}', true), (0, combinator_1.surround)('"', (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.unescsource, '"')), '"', true)]))));
 
 /***/ }),
@@ -6974,25 +6970,6 @@ function parse(content, params, rest, context) {
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }
 
-function resolve(uri, host, source) {
-  switch (true) {
-    case uri.slice(0, 2) === '^/':
-      const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-      return last.includes('.') // isFile
-      && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
-
-    case host.origin === source.origin && host.pathname === source.pathname:
-    case uri.slice(0, 2) === '//':
-      return uri;
-
-    default:
-      const target = new url_1.ReadonlyURL(uri, source.href);
-      return target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
-  }
-}
-
-exports.resolve = resolve;
-
 function elem(INSECURE_URI, content, uri, origin) {
   let type;
   let message;
@@ -7007,7 +6984,7 @@ function elem(INSECURE_URI, content, uri, origin) {
       }
 
       return (0, dom_1.html)('a', {
-        class: 'link',
+        class: content.length === 0 ? 'url' : 'link',
         href: uri.source,
         target: global_1.undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : global_1.undefined
       }, content.length === 0 ? decode(INSECURE_URI) : content);
@@ -7039,6 +7016,25 @@ function elem(INSECURE_URI, content, uri, origin) {
     'data-invalid-message': message ??= 'Invalid protocol'
   }, content.length === 0 ? INSECURE_URI : content);
 }
+
+function resolve(uri, host, source) {
+  switch (true) {
+    case uri.slice(0, 2) === '^/':
+      const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+      return last.includes('.') // isFile
+      && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
+
+    case host.origin === source.origin && host.pathname === source.pathname:
+    case uri.slice(0, 2) === '//':
+      return uri;
+
+    default:
+      const target = new url_1.ReadonlyURL(uri, source.href);
+      return target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
+  }
+}
+
+exports.resolve = resolve;
 
 function decode(uri) {
   if (!uri.includes('%')) return uri;
@@ -9056,7 +9052,10 @@ function twitter(source, url) {
       status,
       statusText
     }) {
-      (0, dom_1.define)(el, [(0, parser_1.parse)(`*{ ${source.getAttribute('data-src')} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
+      (0, dom_1.define)(el, [(0, dom_1.define)((0, parser_1.parse)(`{ ${source.getAttribute('data-src')} }`).querySelector('a'), {
+        class: null,
+        target: '_blank'
+      }), (0, dom_1.html)('pre', `${status}\n${statusText}`)]);
     }
 
   });
