@@ -511,15 +511,17 @@
   .media[data-type="twitter"] + br {
     display: none;
   }
-  .paren {
-    color: #444;
+  .link {
+    text-decoration: underline;
   }
-  .paren > .paren {
-    font-size: 95%;
-    color: #666;
+  .index {
+    font-style: italic;
   }
-  .comment .paren {
-    color: inherit;
+  .email, .tel {
+    color: coral;
+  }
+  .channel, .account, .hashtag, .hashnum {
+    color: goldenrod;
   }
   ins, del {
     position: relative;
@@ -589,24 +591,18 @@
   .comment > input:checked + span {
     display: none;
   }
-  .code  .comment::before,
-  .media .comment::before {
+  :is(.code, .media) .comment::before {
     all: unset;
   }
-  .link {
-    text-decoration: underline;
+  .paren {
+    color: #444;
   }
-  .index {
-    font-style: italic;
+  .paren > .paren {
+    font-size: 95%;
+    color: #666;
   }
-  .email, .tel {
-    color: coral;
-  }
-  .channel, .account, .hashtag, .hashnum {
-    color: goldenrod;
-  }
-  .anchor {
-    color: limegreen;
+  .comment .paren {
+    color: inherit;
   }
   h1.error {
     font-style: italic;
