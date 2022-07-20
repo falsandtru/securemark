@@ -127,13 +127,13 @@ describe('Unit: parser/api/parse', () => {
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
           '<p><sup class="annotation" id="annotation:ref:1" title="a"><span hidden="">a</span><a href="#annotation:def:1">*1</a></sup></p>',
-          '<p><a class="link" href="https://source/x/a" target="_blank">a</a></p>',
-          '<p><a class="link" href="https://source/a" target="_blank">/a</a></p>',
-          '<p><a class="link" href="/z/a">^/a</a></p>',
-          '<p><a class="link" href="https://source/x/a" target="_blank">./a</a></p>',
-          '<p><a class="link" href="https://source/a" target="_blank">../a</a></p>',
-          '<p><a class="link" href="https://source/a" target="_blank">../../a</a></p>',
-          '<p><a class="link" href="//domain/a" target="_blank">//domain/a</a></p>',
+          '<p><a class="url" href="https://source/x/a" target="_blank">a</a></p>',
+          '<p><a class="url" href="https://source/a" target="_blank">/a</a></p>',
+          '<p><a class="url" href="/z/a">^/a</a></p>',
+          '<p><a class="url" href="https://source/x/a" target="_blank">./a</a></p>',
+          '<p><a class="url" href="https://source/a" target="_blank">../a</a></p>',
+          '<p><a class="url" href="https://source/a" target="_blank">../../a</a></p>',
+          '<p><a class="url" href="//domain/a" target="_blank">//domain/a</a></p>',
           '<p><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
           '<p><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
           '<p><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
@@ -151,8 +151,8 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) }).children].map(el => el.outerHTML),
         [
           '<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span>\n</span></details></aside>',
-          '<p><a class="link" href="/a">^/a</a></p>',
-          '<p><a class="link" href="https://source/x/a" target="_blank">./a</a></p>',
+          '<p><a class="url" href="/a">^/a</a></p>',
+          '<p><a class="url" href="https://source/x/a" target="_blank">./a</a></p>',
         ]);
       assert.deepStrictEqual(
         [...parse([
@@ -166,8 +166,8 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="${location.origin}/x/y"><span class="field-name">URL</span>: <span class="field-value">${location.origin}/x/y</span>\n</span></details></aside>`,
-          '<p><a class="link" href="/z/a">^/a</a></p>',
-          '<p><a class="link" href="/x/a">./a</a></p>',
+          '<p><a class="url" href="/z/a">^/a</a></p>',
+          '<p><a class="url" href="/x/a">./a</a></p>',
         ]);
     });
 
@@ -198,8 +198,8 @@ describe('Unit: parser/api/parse', () => {
         [
           `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span>\n</span></details></aside>`,
           '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-message="Invalid syntax">---\nURL: https://example/y\n---\n</pre>',
-          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a class="link" href="https://example/y#" target="_blank">#</a></p><ol class="references"></ol></section></aside>',
-          '<p><a class="link" href="https://example/x#" target="_blank">#</a></p>',
+          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a class="url" href="https://example/y#" target="_blank">#</a></p><ol class="references"></ol></section></aside>',
+          '<p><a class="url" href="https://example/x#" target="_blank">#</a></p>',
         ]);
     });
 

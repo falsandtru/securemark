@@ -125,7 +125,7 @@ function elem(
       }
       return html('a',
         {
-          class: 'link',
+          class: content.length === 0 ? 'url' : 'link',
           href: uri.source,
           target: undefined
             || uri.origin !== origin
