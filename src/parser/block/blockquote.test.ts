@@ -40,8 +40,8 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('>\n a')), [['<blockquote><pre><br> a</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>\n>')), [['<blockquote><pre><br></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>\n> a')), [['<blockquote><pre><br>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('> http://host')), [['<blockquote><pre><a href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('> !http://host')), [['<blockquote><pre>!<a href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> http://host')), [['<blockquote><pre><a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> !http://host')), [['<blockquote><pre>!<a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> #a')), [['<blockquote><pre><a class="hashtag" href="/hashtags/a">#a</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> @a#b')), [['<blockquote><pre><a class="channel" href="/@a?ch=b">@a#b</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> >>1\n> > b')), [['<blockquote><pre><a class="anchor" href="?at=1">&gt;&gt;1</a><br>&gt; b</pre></blockquote>'], '']);

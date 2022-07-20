@@ -13,7 +13,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
   convert(
     url => `{ ${url} }`,
     union([unsafelink]))),
-  ([el]) => [define(el, { class: null })])));
+  ([el]) => [define(el, { class: 'url' })])));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(precedence(2, union([
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),

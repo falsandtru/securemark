@@ -6,7 +6,7 @@ import { push } from 'spica/array';
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = scope(source, '.invalid');
   return {
-    url: find('a.link, a[href]:not([class])'),
+    url: find('a.link, a.url'),
     tel: find('a.tel'),
     email: find('a.email'),
     account: find('a.account'),

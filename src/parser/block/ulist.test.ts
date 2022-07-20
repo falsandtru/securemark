@@ -56,7 +56,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n 0.')), [['<ul><li>1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. ')), [['<ul><li>1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. 2')), [['<ul><li>1<ol><li>2</li></ol></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a href="http://host" target="_blank">http://host</a></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a class="url" href="http://host" target="_blank">http://host</a></li></ul>'], '']);
     });
 
     it('checkbox', () => {

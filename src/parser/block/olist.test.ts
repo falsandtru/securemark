@@ -81,7 +81,7 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('0. 1\n 0. 2\n 0. 3')), [['<ol><li>1<ol><li>2</li><li>3</li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0. 1\n 0. 2\n  0. 3')), [['<ol><li>1<ol><li>2<ol><li>3</li></ol></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0. 1\n  0. 2\n 0. 3')), [['<ol><li>1<ol><li>2</li></ol></li><li><span class="invalid"> 0. 3</span></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('0. !http://host')), [['<ol><li>!<a href="http://host" target="_blank">http://host</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('0. !http://host')), [['<ol><li>!<a class="url" href="http://host" target="_blank">http://host</a></li></ol>'], '']);
     });
 
     it('index', () => {

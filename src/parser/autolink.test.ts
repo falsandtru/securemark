@@ -7,8 +7,8 @@ describe('Unit: parser/autolink', () => {
     const parser = (source: string) => some(autolink)({ source, context: {} });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a href="http://host" target="_blank">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!http://host')), [['!', '<a href="http://host" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!http://host')), [['!', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" href="/@a?ch=b">@a#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '<br>'], '']);
