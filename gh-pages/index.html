@@ -591,8 +591,7 @@
   .comment > input:checked + span {
     display: none;
   }
-  .code  .comment::before,
-  .media .comment::before {
+  :is(.code, .media) .comment::before {
     all: unset;
   }
   .paren {
