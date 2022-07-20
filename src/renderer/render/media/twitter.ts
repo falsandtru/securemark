@@ -37,7 +37,13 @@ export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undef
     },
     error({ status, statusText }) {
       assert(Number.isSafeInteger(status));
-      define(el, [parse(`*{ ${source.getAttribute('data-src')} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
+      define(el, [
+        define(parse(`{ ${source.getAttribute('data-src')} }`).querySelector('a')!, {
+          class: null,
+          target: '_blank',
+        }),
+        h('pre', `${status}\n${statusText}`),
+      ]);
     },
   });
   return el;
