@@ -105,28 +105,6 @@ function parse(
   return [[define(el, attributes('link', [], optspec, params))], rest];
 }
 
-export function resolve(uri: string, host: URL | Location, source: URL | Location): string {
-  assert(uri);
-  assert(uri === uri.trim());
-  switch (true) {
-    case uri.slice(0, 2) === '^/':
-      const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-      return last.includes('.') // isFile
-          && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1))
-        ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}`
-        : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
-    case host.origin === source.origin
-      && host.pathname === source.pathname:
-    case uri.slice(0, 2) === '//':
-      return uri;
-    default:
-      const target = new ReadonlyURL(uri, source.href);
-      return target.origin === host.origin
-        ? target.href.slice(target.origin.length)
-        : target.href;
-  }
-}
-
 function elem(
   INSECURE_URI: string,
   content: readonly (string | HTMLElement)[],
@@ -185,6 +163,28 @@ function elem(
     content.length === 0
       ? INSECURE_URI
       : content);
+}
+
+export function resolve(uri: string, host: URL | Location, source: URL | Location): string {
+  assert(uri);
+  assert(uri === uri.trim());
+  switch (true) {
+    case uri.slice(0, 2) === '^/':
+      const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+      return last.includes('.') // isFile
+          && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1))
+        ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}`
+        : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
+    case host.origin === source.origin
+      && host.pathname === source.pathname:
+    case uri.slice(0, 2) === '//':
+      return uri;
+    default:
+      const target = new ReadonlyURL(uri, source.href);
+      return target.origin === host.origin
+        ? target.href.slice(target.origin.length)
+        : target.href;
+  }
 }
 
 function decode(uri: string): string {
