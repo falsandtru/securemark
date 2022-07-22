@@ -3209,14 +3209,14 @@ class Memo {
   }
 
   get(position, syntax, state) {
-    //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
+    //console.log('get', position, syntax, state, this.memory[position - 1]?.[`${syntax}:${state}`]);;
     const cache = this.memory[position - 1]?.[`${syntax}:${state}`];
     return cache?.length === 2 ? [cache[0].slice(), cache[1]] : cache;
   }
 
   set(position, syntax, state, nodes, offset) {
     const record = this.memory[position - 1] ??= {};
-    record[`${syntax}:${state}`] = nodes ? [nodes.slice(), offset] : []; //console.log('set', position + this.offset, syntax, state, record[`${syntax}:${state}`]);
+    record[`${syntax}:${state}`] = nodes ? [nodes.slice(), offset] : []; //console.log('set', position, syntax, state, record[`${syntax}:${state}`]);
   }
 
   clear(position) {
@@ -3224,7 +3224,7 @@ class Memo {
 
     for (let i = position, len = memory.length; i < len; ++i) {
       memory.pop();
-    } //console.log('clear', position + this.offset + 1);
+    } //console.log('clear', position + 1);
 
   }
 
@@ -6707,8 +6707,8 @@ const array_1 = __webpack_require__(8112); // Don't use the symbols already used
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 
-exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, combinator_1.syntax)(0
-/* Syntax.none */
+exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, combinator_1.syntax)(512
+/* Syntax.placeholder */
 , 2, 1, 0
 /* State.none */
 , (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]))), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
@@ -6958,7 +6958,7 @@ function parse(content, params, rest, context) {
   content = (0, dom_1.defrag)(content);
 
   for (let source = (0, util_1.stringify)(content); source;) {
-    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
+    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(source)) return;
     const result = autolink({
       source,
       context
@@ -7044,12 +7044,12 @@ exports.resolve = resolve;
 
 function decode(uri) {
   if (!uri.includes('%')) return uri;
-  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]*/i)?.[0] ?? '';
+  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
 
   try {
     let path = (0, global_1.decodeURI)(uri.slice(origin.length));
 
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
       path = uri.slice(origin.length);
     }
 
