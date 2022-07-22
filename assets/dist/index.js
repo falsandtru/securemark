@@ -5944,15 +5944,15 @@ const source_1 = __webpack_require__(6743);
 
 const util_1 = __webpack_require__(9437);
 
-exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9A-Za-z]|\S[#>])/, (0, combinator_1.constraint)(2
+exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9a-z]|\S[#>])/i, (0, combinator_1.constraint)(2
 /* State.autolink */
 , false, (0, combinator_1.syntax)(2
 /* Syntax.autolink */
 , 1, 1, 0
 /* State.none */
 , (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
-(0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)*/), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
-(0, source_1.str)(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), // Escape invalid leading characters.
+(0, source_1.str)(/^[0-9a-z]+(?:[.+_-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
+(0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i), // Escape invalid leading characters.
 (0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum, // Escape unmatched hashtag-like strings.
 (0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')), anchor_1.anchor]))))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
 
@@ -5980,7 +5980,7 @@ const dom_1 = __webpack_require__(3252); // https://example/@user must be a user
 
 exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1
 /* State.shortcut */
-, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, source_1.str)(/^[a-z](?:-(?=[0-9a-z])|[0-9a-z]){0,63}/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]));
 
@@ -6011,7 +6011,7 @@ const dom_1 = __webpack_require__(3252); // Timeline(pseudonym): user/tid
 
 exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.constraint)(1
 /* State.shortcut */
-, false, (0, combinator_1.focus)(/^>>(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*\/)?[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*(?![0-9A-Za-z@#:])/, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
+, false, (0, combinator_1.focus)(/^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
   class: 'anchor'
 })])));
 
@@ -6070,7 +6070,7 @@ const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252); // https://html.spec.whatwg.org/multipage/input.html
 
 
-exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*(?![0-9A-Za-z])/), ([source]) => source.indexOf('@') <= 64 && source.length <= 255), ({
+exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:[.+_-](?=[^\W_])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*(?![0-9a-z])/i), ([source]) => source.length <= 255), ({
   source
 }) => [[(0, dom_1.html)('a', {
   class: 'email',
@@ -6133,7 +6133,7 @@ const dom_1 = __webpack_require__(3252); // https://example/hashtags/a must be a
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
 exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1
 /* State.shortcut */
-, false, (0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+, false, (0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
 }, el.innerText)]));
 
@@ -6931,17 +6931,6 @@ const textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
 , 2, 10, 254
 /* State.linkable */
 , (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
-  if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
-
-  for (let source = (0, util_1.stringify)(content); source;) {
-    const result = autolink({
-      source,
-      context
-    });
-    if (typeof (0, parser_1.eval)(result, [])[0] === 'object') return;
-    source = (0, parser_1.exec)(result, '');
-  }
-
   return parse(content, params, rest, context);
 }))));
 const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
@@ -6965,8 +6954,37 @@ const autolink = (0, combinator_1.state)(2
 , autolink_1.autolink));
 
 function parse(content, params, rest, context) {
+  if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
+  content = (0, dom_1.defrag)(content);
+
+  for (let source = (0, util_1.stringify)(content); source;) {
+    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
+    const result = autolink({
+      source,
+      context
+    });
+    if (typeof (0, parser_1.eval)(result, [])[0] === 'object') return;
+    source = (0, parser_1.exec)(result, '');
+  }
+
   const INSECURE_URI = params.shift();
-  const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href), context.host?.origin || global_1.location.origin);
+  const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
+
+  switch (uri.protocol) {
+    case 'tel:':
+      {
+        const tel = content.length === 0 ? INSECURE_URI : content[0];
+        const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
+
+        if (content.length <= 1 && typeof tel === 'string' && pattern.test(tel) && pattern.test(INSECURE_URI) && tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, '')) {
+          break;
+        }
+
+        return;
+      }
+  }
+
+  const el = elem(INSECURE_URI, content, uri, context.host?.origin || global_1.location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }
@@ -6991,23 +7009,10 @@ function elem(INSECURE_URI, content, uri, origin) {
       }, content.length === 0 ? decode(INSECURE_URI) : content);
 
     case 'tel:':
-      if (content.length === 0) {
-        content = [INSECURE_URI];
-      }
-
-      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
-
-      switch (true) {
-        case content.length === 1 && typeof content[0] === 'string' && pattern.test(INSECURE_URI) && pattern.test(content[0]) && INSECURE_URI.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
-          return (0, dom_1.html)('a', {
-            class: 'tel',
-            href: uri.source
-          }, content);
-      }
-
-      type = 'content';
-      message = 'Invalid phone number';
-      break;
+      return (0, dom_1.html)('a', {
+        class: 'tel',
+        href: uri.source
+      }, content.length === 0 ? [INSECURE_URI] : content);
   }
 
   return (0, dom_1.html)('a', {
@@ -7023,7 +7028,7 @@ function resolve(uri, host, source) {
     case uri.slice(0, 2) === '^/':
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
-      && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
+      && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
 
     case host.origin === source.origin && host.pathname === source.pathname:
     case uri.slice(0, 2) === '//':
@@ -7039,9 +7044,16 @@ exports.resolve = resolve;
 
 function decode(uri) {
   if (!uri.includes('%')) return uri;
+  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]*/i)?.[0] ?? '';
 
   try {
-    uri = (0, global_1.decodeURI)(uri);
+    let path = (0, global_1.decodeURI)(uri.slice(origin.length));
+
+    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]/i.test(path)) {
+      path = uri.slice(origin.length);
+    }
+
+    uri = origin + path;
   } finally {
     return uri.replace(/\s+/g, global_1.encodeURI);
   }
