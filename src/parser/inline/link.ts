@@ -38,6 +38,7 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     if (content.length !== 0 && trimNode(content).length === 0) return;
     for (let source = stringify(content); source;) {
+      if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
       const result = autolink({ source, context });
       if (typeof eval(result, [])[0] === 'object') return;
       source = exec(result, '');
