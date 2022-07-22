@@ -16,7 +16,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
     '#',
     tails([
       verify(
-        str(/^[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-(?=\w)){0,61}[0-9A-Za-z])?)*\//),
+        str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i),
         ([source]) => source.length <= 253 + 1),
       verify(
         str(new RegExp([

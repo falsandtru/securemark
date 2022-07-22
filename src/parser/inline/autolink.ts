@@ -12,18 +12,18 @@ import { Syntax, State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^(?:[@#>0-9A-Za-z]|\S[#>])/,
+  validate(/^(?:[@#>0-9a-z]|\S[#>])/i,
   constraint(State.autolink, false,
   syntax(Syntax.autolink, 1, 1, State.none,
   some(union([
     url,
     email,
     // Escape unmatched email-like strings.
-    str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)*/),
+    str(/^[0-9a-z]+(?:[.+_-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i),
     channel,
     account,
     // Escape unmatched account-like strings.
-    str(/^@+[0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
+    str(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i),
     // Escape invalid leading characters.
     str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', emoji), 'u')),
     hashtag,
