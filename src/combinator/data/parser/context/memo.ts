@@ -8,7 +8,7 @@ export class Memo {
     syntax: number,
     state: number,
   ): readonly [any[], number] | readonly [] | undefined {
-    //console.log('get', position + this.offset, syntax, state, this.memory[position + this.offset - 1]?.[`${syntax}:${state}`]);;
+    //console.log('get', position, syntax, state, this.memory[position - 1]?.[`${syntax}:${state}`]);;
     const cache = this.memory[position - 1]?.[`${syntax}:${state}`];
     return cache?.length === 2
       ? [cache[0].slice(), cache[1]]
@@ -26,13 +26,13 @@ export class Memo {
     record[`${syntax}:${state}`] = nodes
       ? [nodes.slice(), offset]
       : [];
-    //console.log('set', position + this.offset, syntax, state, record[`${syntax}:${state}`]);
+    //console.log('set', position, syntax, state, record[`${syntax}:${state}`]);
   }
   public clear(position: number): void {
     const memory = this.memory;
     for (let i = position, len = memory.length; i < len; ++i) {
       memory.pop();
     }
-    //console.log('clear', position + this.offset + 1);
+    //console.log('clear', position + 1);
   }
 }
