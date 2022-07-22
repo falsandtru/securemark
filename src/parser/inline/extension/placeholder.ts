@@ -13,7 +13,7 @@ import { unshift } from 'spica/array';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate(['[:', '[^'], surround(
   str(/^\[[:^]/),
-  syntax(Syntax.none, 2, 1, State.none,
+  syntax(Syntax.placeholder, 2, 1, State.none,
   startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]]))),
   str(']'), false,
   ([as, bs], rest) => [[
