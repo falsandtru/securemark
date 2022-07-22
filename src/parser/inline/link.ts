@@ -36,13 +36,6 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
-    if (content.length !== 0 && trimNode(content).length === 0) return;
-    for (let source = stringify(content); source;) {
-      if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
-      const result = autolink({ source, context });
-      if (typeof eval(result, [])[0] === 'object') return;
-      source = exec(result, '');
-    }
     return parse(content, params, rest, context);
   }))));
 
@@ -92,15 +85,40 @@ function parse(
 ): Result<HTMLAnchorElement, MarkdownParser.Context> {
   assert(params.length > 0);
   assert(params.every(p => typeof p === 'string'));
+  if (content.length !== 0 && trimNode(content).length === 0) return;
+  content = defrag(content);
+  for (let source = stringify(content); source;) {
+    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
+    const result = autolink({ source, context });
+    if (typeof eval(result, [])[0] === 'object') return;
+    source = exec(result, '');
+  }
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
+  const uri = new ReadonlyURL(
+    resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
+    context.host?.href || location.href);
+  switch (uri.protocol) {
+    case 'tel:': {
+      const tel = content.length === 0
+        ? INSECURE_URI
+        : content[0];
+      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
+      if (content.length <= 1 &&
+          typeof tel === 'string' &&
+          pattern.test(tel) &&
+          pattern.test(INSECURE_URI) &&
+          tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, '')) {
+        break;
+      }
+      return;
+    }
+  }
   const el = elem(
     INSECURE_URI,
-    defrag(content),
-    new ReadonlyURL(
-      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-      context.host?.href || location.href),
+    content,
+    uri,
     context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[define(el, attributes('link', [], optspec, params))], rest];
@@ -138,21 +156,15 @@ function elem(
           ? decode(INSECURE_URI)
           : content);
     case 'tel:':
-      if (content.length === 0) {
-        content = [INSECURE_URI];
-      }
-      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
-      switch (true) {
-        case content.length === 1
-          && typeof content[0] === 'string'
-          && pattern.test(INSECURE_URI)
-          && pattern.test(content[0])
-          && INSECURE_URI.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
-          return html('a', { class: 'tel', href: uri.source }, content);
-      }
-      type = 'content';
-      message = 'Invalid phone number';
-      break;
+      assert(content.length <= 1);
+      return html('a',
+        {
+          class: 'tel',
+          href: uri.source,
+        },
+        content.length === 0
+          ? [INSECURE_URI]
+          : content);
   }
   return html('a',
     {

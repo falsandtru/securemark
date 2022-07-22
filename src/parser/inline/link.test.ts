@@ -30,11 +30,11 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[http://á]{http://evil}')), undefined);
       assert.deepStrictEqual(inspect(parser('[xxx://á]{http://evil}')), undefined);
       assert.deepStrictEqual(inspect(parser('[.http://á]{http://evil}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[0987654321]{tel:1234567890}')), [['<a class="invalid">0987654321</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[1234567890-]{tel:1234567890}')), [[`<a class="invalid">1234567890-</a>`], '']);
-      assert.deepStrictEqual(inspect(parser('[-1234567890]{tel:1234567890}')), [[`<a class="invalid">-1234567890</a>`], '']);
-      assert.deepStrictEqual(inspect(parser('[123456789a]{tel:1234567890}')), [['<a class="invalid">123456789a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[1234567890]{tel:ttel:1234567890}')), [['<a class="invalid">1234567890</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[0987654321]{tel:1234567890}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[1234567890-]{tel:1234567890}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[-1234567890]{tel:1234567890}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[123456789a]{tel:1234567890}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[1234567890]{tel:ttel:1234567890}')), undefined);
       //assert.deepStrictEqual(inspect(parser('[#a]{b}')), undefined);
       //assert.deepStrictEqual(inspect(parser('[\\#a]{b}')), undefined);
       //assert.deepStrictEqual(inspect(parser('[c #a]{b}')), undefined);
