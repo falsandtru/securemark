@@ -29,6 +29,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('{http://a%C3%A1}')), [['<a class="url" href="http://a%C3%A1" target="_blank">http://a%C3%A1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[http://á]{http://evil}')), undefined);
       assert.deepStrictEqual(inspect(parser('[xxx://á]{http://evil}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[mailto:á]{http://evil}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[file:///]{http://evil}')), undefined);
       assert.deepStrictEqual(inspect(parser('[.http://á]{http://evil}')), undefined);
       assert.deepStrictEqual(inspect(parser('[0987654321]{tel:1234567890}')), undefined);
       assert.deepStrictEqual(inspect(parser('[1234567890-]{tel:1234567890}')), undefined);

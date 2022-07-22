@@ -88,7 +88,7 @@ function parse(
   if (content.length !== 0 && trimNode(content).length === 0) return;
   content = defrag(content);
   for (let source = stringify(content); source;) {
-    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:\/\/[^/?#]/i.test(source)) return;
+    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(source)) return;
     const result = autolink({ source, context });
     if (typeof eval(result, [])[0] === 'object') return;
     source = exec(result, '');
@@ -202,10 +202,10 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
 
 function decode(uri: string): string {
   if (!uri.includes('%')) return uri;
-  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]*/i)?.[0] ?? '';
+  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/\/[^/?#]/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;
