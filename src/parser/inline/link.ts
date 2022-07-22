@@ -185,7 +185,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
     case uri.slice(0, 2) === '^/':
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
-          && /^[0-9]*[A-Za-z][0-9A-Za-z]*$/.test(last.slice(last.lastIndexOf('.') + 1))
+          && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1))
         ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}`
         : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
     case host.origin === source.origin
