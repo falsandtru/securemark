@@ -1,8 +1,9 @@
 export const enum Syntax {
-  reference = 1 << 12,
-  comment = 1 << 11,
-  index = 1 << 10,
-  placeholder = 1 << 9,
+  reference = 1 << 13,
+  comment = 1 << 12,
+  index = 1 << 11,
+  placeholder = 1 << 10,
+  ruby = 1 << 9,
   link = 1 << 8,
   bracket = 1 << 7,
   media = 1 << 6,
@@ -25,6 +26,7 @@ export const enum State {
   autolink = 1 << 1,
   shortcut = 1 << 0,
   none = 0,
+  all = ~0,
   linkable = 0
     | State.annotation
     | State.reference

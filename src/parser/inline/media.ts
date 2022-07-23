@@ -21,7 +21,7 @@ Object.setPrototypeOf(optspec, null);
 export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
   '!',
   constraint(State.media, false,
-  syntax(Syntax.media, 2, 10, State.none,
+  syntax(Syntax.media, 2, 10, ~State.link,
   bind(verify(fmap(tails([
     dup(surround(
       '[',
