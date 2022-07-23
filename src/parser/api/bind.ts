@@ -24,7 +24,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-    memorable: State.backtrackable,
+    memorable: State.backtrackers,
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);

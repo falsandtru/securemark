@@ -27,14 +27,14 @@ export const enum State {
   shortcut = 1 << 0,
   none = 0,
   all = ~0,
-  linkable = 0
+  linkers = 0
     | State.annotation
     | State.reference
     | State.index
     | State.label
     | State.link
     | State.autolink,
-  backtrackable = 0
+  backtrackers = 0
     | State.annotation
     | State.reference
     | State.index

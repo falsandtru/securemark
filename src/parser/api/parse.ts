@@ -30,7 +30,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     ...context?.resources && {
       resources: context.resources,
     },
-    memorable: State.backtrackable,
+    memorable: State.backtrackers,
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
