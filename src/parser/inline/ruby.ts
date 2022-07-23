@@ -1,20 +1,24 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, syntax, creation, validate, verify, focus, surround, lazy, fmap } from '../../combinator';
+import { sequence, syntax, creation, validate, verify, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
-import { text as txt } from '../source';
+import { text as txt, str } from '../source';
 import { Syntax, State } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 1, State.none, fmap(verify(
+export const ruby: RubyParser = lazy(() => validate('[', syntax(Syntax.none, 2, 1, State.none, fmap(verify(fmap(
   sequence([
-    surround('[', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'),
-    surround('(', focus(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')'),
+    surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'),
+    surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')'),
   ]),
-  ([texts]) => isStartTightNodes(texts)),
+  ([texts, rubies], _, context) => [
+    eval(text({ source: texts, context }), [])[0] ?? '',
+    eval(text({ source: rubies, context }), [])[0] ?? '',
+  ]),
+  ([texts, rubies]) => texts && rubies && isStartTightNodes(texts)),
   ([texts, rubies]) => {
     texts[texts.length - 1] === '' && texts.pop();
     switch (true) {
