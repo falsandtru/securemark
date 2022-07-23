@@ -66,7 +66,7 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
     const position = source.length + context.offset!;
     const st0 = context.state ?? 0;
     const st1 = context.state = st0 | state;
-    const cache = syntax && memo.get(position, syntax, st1);
+    const cache = syntax && st1 & context.memorable! && memo.get(position, syntax, st1);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
