@@ -64,23 +64,23 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
     context.memorable ??= ~0;
     context.offset ??= 0;
     const position = source.length + context.offset!;
-    const st0 = context.state ?? 0;
-    const st1 = context.state = st0 | state;
-    const cache = syntax && st1 & context.memorable! && memo.get(position, syntax, st1);
+    const stateOuter = context.state ?? 0;
+    const stateInner = context.state = stateOuter | state;
+    const cache = syntax && stateInner & context.memorable! && memo.get(position, syntax, stateInner);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
         : [cache[0], source.slice(cache[1])]
       : parser!({ source, context });
-    if (syntax && st0 & context.memorable!) {
-      cache ?? memo.set(position, syntax, st1, eval(result), source.length - exec(result, '').length);
-      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, st1));
+    if (syntax && stateOuter & context.memorable!) {
+      cache ?? memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
+      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, stateInner));
     }
-    if (result && !st0 && memo.length! >= position + 2) {
-      assert(!(st0 & context.memorable!));
+    if (result && !stateOuter && memo.length! >= position + 2) {
+      assert(!(stateOuter & context.memorable!));
       memo.clear(position + 2);
     }
-    context.state = st0;
+    context.state = stateOuter;
     return result;
   }));
 }
