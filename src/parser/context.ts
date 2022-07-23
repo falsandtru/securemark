@@ -33,7 +33,6 @@ export const enum State {
     | State.index
     | State.label
     | State.link
-    | State.media
     | State.autolink,
   backtrackable = 0
     | State.annotation
