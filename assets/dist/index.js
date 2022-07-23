@@ -2888,12 +2888,16 @@ const parser_1 = __webpack_require__(6728);
 const memo_1 = __webpack_require__(1090);
 
 function reset(base, parser) {
+  if (!('memo' in base)) {
+    base.memo = global_1.undefined;
+  }
+
   const changes = global_1.Object.entries(base);
   const values = (0, global_1.Array)(changes.length);
   return ({
     source,
     context
-  }) => apply(parser, source, (0, alias_1.ObjectCreate)(context), changes, values);
+  }) => apply(parser, source, (0, alias_1.ObjectCreate)(context), changes, values, true);
 }
 
 exports.reset = reset;
@@ -2909,16 +2913,23 @@ function context(base, parser) {
 
 exports.context = context;
 
-function apply(parser, source, context, changes, values) {
+function apply(parser, source, context, changes, values, reset = false) {
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
 
     switch (prop) {
       case 'resources':
-        if (prop in context && !(0, alias_1.hasOwnProperty)(context, prop)) break; // @ts-expect-error
-
+        if (!reset) break;
+        if (prop in context && !(0, alias_1.hasOwnProperty)(context, prop)) break;
         context[prop] = (0, alias_1.ObjectCreate)(change[1]);
+        break;
+
+      case 'memo':
+        if (!reset) break;
+        context.memo = new memo_1.Memo({
+          targets: context.memo?.targets
+        });
         break;
 
       default:
@@ -2935,8 +2946,11 @@ function apply(parser, source, context, changes, values) {
     const prop = change[0];
 
     switch (prop) {
-      case 'resources':
-        break;
+      case 'resources': // @ts-expect-error
+
+      case 'memo':
+        if (!reset) break;
+      // fallthrough
 
       default:
         context[prop] = values[i];
@@ -2953,26 +2967,25 @@ function syntax(syntax, prec, cost, state, parser) {
   }) => {
     if (source === '') return;
     const memo = context.memo ??= new memo_1.Memo();
-    context.memorable ??= ~0;
     context.offset ??= 0;
     const position = source.length + context.offset;
-    const st0 = context.state ?? 0;
-    const st1 = context.state = st0 | state;
-    const cache = syntax && memo.get(position, syntax, st1);
+    const stateOuter = context.state ?? 0;
+    const stateInner = context.state = stateOuter | state;
+    const cache = syntax && stateInner & memo.targets && memo.get(position, syntax, stateInner);
     const result = cache ? cache.length === 0 ? global_1.undefined : [cache[0], source.slice(cache[1])] : parser({
       source,
       context
     });
 
-    if (syntax && st0 & context.memorable) {
-      cache ?? memo.set(position, syntax, st1, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
+    if (syntax && stateOuter & memo.targets) {
+      cache ?? memo.set(position, syntax, stateInner, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
     }
 
-    if (result && !st0 && memo.length >= position + 2) {
+    if (result && !stateOuter && memo.length >= position + 2) {
       memo.clear(position + 2);
     }
 
-    context.state = st0;
+    context.state = stateOuter;
     return result;
   }));
 }
@@ -3200,8 +3213,11 @@ Object.defineProperty(exports, "__esModule", ({
 exports.Memo = void 0;
 
 class Memo {
-  constructor() {
+  constructor({
+    targets = ~0
+  } = {}) {
     this.memory = [];
+    this.targets = targets;
   }
 
   get length() {
@@ -3595,6 +3611,8 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const memo_1 = __webpack_require__(1090);
+
 const segment_1 = __webpack_require__(9002);
 
 const header_1 = __webpack_require__(5702);
@@ -3616,9 +3634,11 @@ const array_1 = __webpack_require__(8112);
 function bind(target, settings) {
   let context = { ...settings,
     host: settings.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
-    memorable: 236
-    /* State.backtrackable */
+    memo: new memo_1.Memo({
+      targets: 236
+      /* State.backtrackers */
 
+    })
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
@@ -3958,6 +3978,8 @@ const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
+const memo_1 = __webpack_require__(1090);
+
 const segment_1 = __webpack_require__(9002);
 
 const header_1 = __webpack_require__(5702);
@@ -3988,9 +4010,11 @@ function parse(source, opts = {}, context) {
     ...(context?.resources && {
       resources: context.resources
     }),
-    memorable: 236
-    /* State.backtrackable */
+    memo: new memo_1.Memo({
+      targets: 236
+      /* State.backtrackers */
 
+    })
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
@@ -5948,8 +5972,8 @@ exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-
 /* State.autolink */
 , false, (0, combinator_1.syntax)(2
 /* Syntax.autolink */
-, 1, 1, 0
-/* State.none */
+, 1, 1, ~1
+/* State.shortcut */
 , (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
 (0, source_1.str)(/^[0-9a-z]+(?:[.+_-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
 (0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i), // Escape invalid leading characters.
@@ -6502,10 +6526,12 @@ const dom_1 = __webpack_require__(3252);
 
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(32
 /* State.index */
-, false, (0, combinator_1.syntax)(1024
+, false, (0, combinator_1.syntax)(2048
 /* Syntax.index */
-, 2, 1, 254
-/* State.linkable */
+, 2, 1, 250
+/* State.linkers */
+| 4
+/* State.media */
 , (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : global_1.undefined,
   class: 'index',
@@ -6707,7 +6733,7 @@ const array_1 = __webpack_require__(8112); // Don't use the symbols already used
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 
-exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, combinator_1.syntax)(512
+exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, combinator_1.syntax)(1024
 /* Syntax.placeholder */
 , 2, 1, 0
 /* State.none */
@@ -6928,8 +6954,10 @@ const textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
 /* State.link */
 , false, (0, combinator_1.syntax)(256
 /* Syntax.link */
-, 2, 10, 254
-/* State.linkable */
+, 2, 10, 250
+/* State.linkers */
+| 4
+/* State.media */
 , (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
   return parse(content, params, rest, context);
 }))));
@@ -6939,10 +6967,8 @@ const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
 /* State.media */
 , false, (0, combinator_1.syntax)(256
 /* Syntax.link */
-, 2, 10, 254
-/* State.linkable */
-^ 4
-/* State.media */
+, 2, 10, 250
+/* State.linkers */
 , (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
@@ -7172,8 +7198,8 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
 /* State.media */
 , false, (0, combinator_1.syntax)(64
 /* Syntax.media */
-, 2, 10, 0
-/* State.none */
+, 2, 10, ~8
+/* State.link */
 , (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
@@ -7195,7 +7221,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
   if (context.state & 8
   /* State.link */
   ) return [[el], rest];
-  if (cache && cache.tagName !== 'IMG') return (0, combinator_1.creation)(10, (..._) => [[el], rest])({
+  if (cache && cache.tagName !== 'IMG') return (0, combinator_1.creation)(10, _ => [[el], rest])({
     source: '!',
     context
   });
@@ -7279,7 +7305,7 @@ const dom_1 = __webpack_require__(3252);
 
 exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(64
 /* State.reference */
-, false, (0, combinator_1.syntax)(4096
+, false, (0, combinator_1.syntax)(8192
 /* Syntax.reference */
 , 6, 1, 128
 /* State.annotation */
@@ -7335,11 +7361,17 @@ const dom_1 = __webpack_require__(3252);
 
 const array_1 = __webpack_require__(8112);
 
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 2, 1, 0
-/* State.none */
-, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=]\()/, text), ']'), (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\\[\](){}"\n])+(?=\))/, text), ')')]), ([texts]) => (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(512
+/* Syntax.ruby */
+, 2, 1, -1
+/* State.all */
+, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'), (0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')')]), ([texts, rubies], _, context) => [(0, parser_1.eval)(text({
+  source: texts,
+  context
+}), [])[0] ?? '', (0, parser_1.eval)(text({
+  source: rubies,
+  context
+}), [])[0] ?? '']), ([texts, rubies]) => texts && rubies && (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
   texts[texts.length - 1] === '' && texts.pop();
 
   switch (true) {
@@ -7499,8 +7531,8 @@ const array_1 = __webpack_require__(8112);
 
 exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.syntax)(0
 /* Syntax.none */
-, 2, 1, 0
-/* State.none */
+, 2, 1, -1
+/* State.all */
 , (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
 }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest]));
