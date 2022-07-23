@@ -20,7 +20,6 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
-  memorable?: number;
   memo?: Memo;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;

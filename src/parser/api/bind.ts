@@ -2,6 +2,7 @@ import { undefined, location } from 'spica/global';
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
+import { Memo } from '../../combinator/data/parser/context/memo';
 import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -24,7 +25,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-    memorable: State.backtrackers,
+    memo: new Memo({ targets: State.backtrackers }),
   };
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);

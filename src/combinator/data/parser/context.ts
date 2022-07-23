@@ -5,12 +5,15 @@ import { Memo } from './context/memo';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
+  if (!('memo' in base)) {
+    base.memo = undefined;
+  }
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
   return ({ source, context }) =>
-    apply(parser, source, ObjectCreate(context), changes, values);
+    apply(parser, source, ObjectCreate(context), changes, values, true);
 }
 
 export function context<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
@@ -23,18 +26,22 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
     apply(parser, source, context, changes, values);
 }
 
-function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: [string, any][], values: any[]): Result<Tree<P>>;
-function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [string, any][], values: any[]): Result<T> {
+function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: [string, any][], values: any[], reset?: boolean): Result<Tree<P>>;
+function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [string, any][], values: any[], reset = false): Result<T> {
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
     switch (prop) {
       case 'resources':
+        if (!reset) break;
         assert(typeof change[1] === 'object');
         assert(context[prop] || !(prop in context));
         if (prop in context && !hasOwnProperty(context, prop)) break;
-        // @ts-expect-error
-        context[prop] = ObjectCreate(change[1]);
+        context[prop as string] = ObjectCreate(change[1]);
+        break;
+      case 'memo':
+        if (!reset) break;
+        context.memo = new Memo({ targets: context.memo?.targets });
         break;
       default:
         values[i] = context[prop];
@@ -47,7 +54,10 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
     const prop = change[0];
     switch (prop) {
       case 'resources':
-        break;
+      // @ts-expect-error
+      case 'memo':
+        if (!reset) break;
+        // fallthrough
       default:
         context[prop] = values[i];
         values[i] = undefined;
@@ -61,23 +71,22 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
   return creation(cost, precedence(prec, ({ source, context }) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
-    context.memorable ??= ~0;
     context.offset ??= 0;
     const position = source.length + context.offset!;
     const stateOuter = context.state ?? 0;
     const stateInner = context.state = stateOuter | state;
-    const cache = syntax && stateInner & context.memorable! && memo.get(position, syntax, stateInner);
+    const cache = syntax && stateInner & memo.targets && memo.get(position, syntax, stateInner);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
         : [cache[0], source.slice(cache[1])]
       : parser!({ source, context });
-    if (syntax && stateOuter & context.memorable!) {
+    if (syntax && stateOuter & memo.targets) {
       cache ?? memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
       assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, stateInner));
     }
     if (result && !stateOuter && memo.length! >= position + 2) {
-      assert(!(stateOuter & context.memorable!));
+      assert(!(stateOuter & memo.targets));
       memo.clear(position + 2);
     }
     context.state = stateOuter;
