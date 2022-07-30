@@ -7,14 +7,14 @@ import { html, define, defrag } from 'typed-dom/dom';
 export const cite: ReplyParser.CiteParser = creation(1, false, line(fmap(validate(
   '>>',
   reverse(tails([
-    str(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/),
+    str(/^>*(?=>>[^>\s]+\s*$)/),
     union([
       anchor,
       // Subject page representation.
       // リンクの実装は後で検討
-      focus(/^>>\.[^\S\n]*(?:$|\n)/, () => [[html('a', { class: 'anchor' }, '>>.')], '']),
-      focus(/^>>#\S*[^\S\n]*(?:$|\n)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], '']),
-      focus(/^>>https?:\/\/\w\S*[^\S\n]*(?:$|\n)/, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], '']),
+      focus(/^>>\.(?=\s*$)/, () => [[html('a', { class: 'anchor' }, '>>.')], '']),
+      focus(/^>>#\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], '']),
+      focus(/^>>https?:\/\/\w\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], '']),
     ]),
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
