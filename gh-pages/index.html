@@ -64,9 +64,6 @@
       Segoe UI Symbol,
       Noto Color Emoji;
   }
-  a {
-    text-decoration: none;
-  }
   #primary {
     position: sticky;
     top: 0;
@@ -514,8 +511,17 @@
   .media[data-type="twitter"] + br {
     display: none;
   }
+  a {
+    text-decoration: none;
+  }
   .link {
     text-decoration: underline;
+  }
+  :is(.link, .url):is(:hover, :active) {
+    text-decoration: underline;
+    text-decoration-color: limegreen;
+    text-decoration-thickness: 2px;
+    text-decoration-skip-ink: none;
   }
   .index {
     font-style: italic;
@@ -710,7 +716,7 @@
 </style>
 
 </head>
-<body id="container" class="container">
+<body id="container" class="container" ontouchstart="">
 <noscript><p class="browsehappy warning">Please enable <strong>JavaScript</strong></p></noscript>
 <!--[if lte IE 9]>
 <p class="alert alert-warning" role="alert">You are using an <strong>outdated</strong> browser. Please <a class="alert-link" href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
