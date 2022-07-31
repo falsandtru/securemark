@@ -64,9 +64,9 @@ __exportStar(__webpack_require__(256), exports);
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
 exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign;
+exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.sqrt = Math.sqrt;
 exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
@@ -356,6 +356,8 @@ exports.Cache = void 0;
 
 const global_1 = __webpack_require__(4128);
 
+const alias_1 = __webpack_require__(5406);
+
 const clock_1 = __webpack_require__(7681);
 
 const invlist_1 = __webpack_require__(7452);
@@ -364,20 +366,23 @@ const heap_1 = __webpack_require__(818);
 
 const assign_1 = __webpack_require__(4401);
 
-const tuple_1 = __webpack_require__(5341);
-
 class Cache {
   constructor(capacity, opts = {}) {
     this.settings = {
+      window: 0,
       capacity: 0,
       space: global_1.Infinity,
       age: global_1.Infinity,
       earlyExpiring: false,
-      limit: 950,
       capture: {
         delete: true,
         clear: true
-      }
+      },
+      resolution: 1,
+      offset: 0,
+      block: 20,
+      sweep: 10,
+      limit: 950
     };
     this.overlap = 0;
     this.SIZE = 0;
@@ -387,31 +392,8 @@ class Cache {
       LFU: new invlist_1.List()
     };
     this.expiries = new heap_1.Heap((a, b) => a.value.expiry - b.value.expiry);
-    this.stats = {
-      LRU: (0, tuple_1.tuple)(0, 0),
-      LFU: (0, tuple_1.tuple)(0, 0),
-
-      slide() {
-        const {
-          LRU,
-          LFU
-        } = this;
-        LRU[1] = LRU[0];
-        LRU[0] = 0;
-        LFU[1] = LFU[0];
-        LFU[0] = 0;
-      },
-
-      clear() {
-        const {
-          LRU,
-          LFU
-        } = this;
-        LRU[0] = LRU[1] = 0;
-        LFU[0] = LFU[1] = 0;
-      }
-
-    };
+    this.misses = 0;
+    this.sweep = 0;
     this.ratio = 500;
 
     if (typeof capacity === 'object') {
@@ -419,15 +401,19 @@ class Cache {
       capacity = opts.capacity ?? 0;
     }
 
-    (0, assign_1.extend)(this.settings, opts, {
+    const settings = (0, assign_1.extend)(this.settings, opts, {
       capacity
     });
-    this.capacity = this.settings.capacity;
+    this.capacity = settings.capacity;
     if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.space = this.settings.space;
-    this.limit = this.settings.limit;
-    this.earlyExpiring = this.settings.earlyExpiring;
-    this.disposer = this.settings.disposer;
+    this.window = settings.window || this.capacity;
+    if (this.window * 1000 < this.capacity) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
+    this.space = settings.space;
+    this.block = settings.block;
+    this.limit = settings.limit;
+    this.earlyExpiring = settings.earlyExpiring;
+    this.disposer = settings.disposer;
+    this.stats = new Stats(this.window, settings.resolution, settings.offset);
   }
 
   get length() {
@@ -452,7 +438,7 @@ class Cache {
 
   ensure(margin, skip) {
     let size = skip?.value.size ?? 0;
-    if (margin - size <= 0) return;
+    if (margin - size <= 0) return true;
     const {
       LRU,
       LFU
@@ -474,7 +460,6 @@ class Cache {
           target = LFU.last !== skip ? LFU.last : LFU.length >= 2 ? LFU.last.prev : skip;
 
           if (target !== skip) {
-            if (this.ratio > 500) break;
             LRU.unshiftNode(target);
             ++this.overlap;
           }
@@ -482,6 +467,18 @@ class Cache {
         // fallthrough
 
         default:
+          if (this.misses * 100 > LRU.length * this.block) {
+            this.sweep ||= LRU.length * this.settings.sweep / 100 + 1 | 0;
+
+            if (this.sweep > 0) {
+              LRU.head = LRU.head.next.next;
+              --this.sweep;
+              this.sweep ||= -(0, alias_1.round)(LRU.length * this.settings.sweep / 100 * 99 / 100);
+            } else {
+              ++this.sweep;
+            }
+          }
+
           target = LRU.last !== skip ? LRU.last : LRU.length >= 2 ? LRU.last.prev : LFU.last;
       }
 
@@ -489,6 +486,8 @@ class Cache {
       skip = skip?.list && skip;
       size = skip?.value.size ?? 0;
     }
+
+    return !!skip?.list;
   }
 
   put(key, value, {
@@ -503,10 +502,9 @@ class Cache {
     const expiry = age === global_1.Infinity ? global_1.Infinity : (0, clock_1.now)() + age;
     const node = this.memory.get(key);
 
-    if (node) {
+    if (node && this.ensure(size, node)) {
       const val = node.value.value;
       const index = node.value;
-      this.ensure(size, node);
       this.SIZE += size - index.size;
       index.size = size;
       index.expiry = expiry;
@@ -550,10 +548,16 @@ class Cache {
 
   get(key) {
     const node = this.memory.get(key);
-    if (!node) return;
+
+    if (!node) {
+      ++this.misses;
+      return;
+    }
+
     const expiry = node.value.expiry;
 
     if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
+      ++this.misses;
       this.evict(node, true);
       return;
     } // Optimization for memoize.
@@ -561,7 +565,9 @@ class Cache {
 
     if (this.capacity > 3 && node === node.list.head) return node.value.value;
     this.access(node);
-    this.slide();
+    this.adjust();
+    this.misses &&= 0;
+    this.sweep = 0;
     return node.value.value;
   }
 
@@ -588,6 +594,8 @@ class Cache {
   }
 
   clear() {
+    this.misses = 0;
+    this.sweep = 0;
     this.overlap = 0;
     this.SIZE = 0;
     this.ratio = 500;
@@ -620,31 +628,26 @@ class Cache {
     return;
   }
 
-  slide() {
-    const {
-      LRU,
-      LFU
-    } = this.stats;
+  adjust() {
     const {
       capacity,
       ratio,
       limit,
+      stats,
       indexes
     } = this;
-    const window = capacity;
-    const total = LRU[0] + LFU[0];
-    total === window && this.stats.slide();
-    if (total * 1000 % capacity || !LRU[1] || !LFU[1]) return;
+    if (stats.subtotal() * 1000 % capacity || !stats.full()) return;
     const lenR = indexes.LRU.length;
     const lenF = indexes.LFU.length;
-    const lenV = this.overlap;
-    const r = (lenF + lenV) * 1000 / (lenR + lenF || 1) | 0;
-    const rateR0 = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1], 0) * r;
-    const rateF0 = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1], 0) * (1000 - r);
-    const rateF1 = rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0], 5) * (1000 - r); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
+    const lenO = this.overlap;
+    const leverage = (lenF + lenO) * 1000 / (lenR + lenF) | 0;
+    const rateR0 = stats.rateLRU() * leverage;
+    const rateF0 = stats.rateLFU() * (1000 - leverage);
+    const rateF1 = stats.offset && stats.rateLFU(true) * (1000 - leverage); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
     // LRUの下限設定ではLRU拡大の要否を迅速に判定できないためLFUのヒット率低下の検出で代替する
 
-    if (ratio > 0 && (rateR0 > rateF0 || rateF0 < rateF1 * 0.95)) {
+    if (ratio > 0 && (rateR0 > rateF0 || stats.offset && rateF0 * 100 < rateF1 * (100 - stats.offset))) {
+      //rateR0 <= rateF0 && rateF0 * 100 < rateF1 * (100 - stats.offset) && console.debug(0);
       if (lenR >= capacity * (1000 - ratio) / 1000) {
         //ratio % 100 || ratio === 1000 || console.debug('-', ratio, LRU, LFU);
         --this.ratio;
@@ -682,13 +685,100 @@ class Cache {
 
 exports.Cache = Cache;
 
-function rate(window, currHits, currTotal, prevHits, prevTotal, offset) {
-  const prevRate = prevHits * 100 / prevTotal | 0;
-  const currRatio = currTotal * 100 / window - offset | 0;
-  if (currRatio <= 0) return prevRate * 100;
-  const currRate = currHits * 100 / currTotal | 0;
-  const prevRatio = 100 - currRatio;
-  return currRate * currRatio + prevRate * prevRatio;
+class Stats {
+  constructor(window, resolution, offset) {
+    this.window = window;
+    this.resolution = resolution;
+    this.offset = offset;
+    this.max = (0, alias_1.ceil)(this.resolution * (100 + this.offset) / 100) + 1;
+    this.LRU = [0];
+    this.LFU = [0];
+  }
+
+  get length() {
+    return this.LRU.length;
+  }
+
+  full() {
+    return this.length === this.max;
+  }
+
+  rateLRU(offset = false) {
+    return rate(this.window, this.LRU, this.LFU, +offset && this.offset);
+  }
+
+  rateLFU(offset = false) {
+    return rate(this.window, this.LFU, this.LRU, +offset && this.offset);
+  }
+
+  subtotal() {
+    const {
+      LRU,
+      LFU,
+      window,
+      resolution,
+      offset
+    } = this;
+
+    if (offset && LRU[0] + LFU[0] >= window * offset / 100) {
+      if (this.length === 1) {
+        this.slide();
+      } else {
+        LRU[1] += LRU[0];
+        LFU[1] += LFU[0];
+        LRU[0] = 0;
+        LFU[0] = 0;
+      }
+    }
+
+    const subtotal = LRU[+offset && 1] + LFU[+offset && 1] || 0;
+    subtotal >= window / resolution && this.slide();
+    return LRU[0] + LFU[0];
+  }
+
+  slide() {
+    const {
+      LRU,
+      LFU,
+      max
+    } = this;
+
+    if (LRU.length === max) {
+      LRU.pop();
+      LFU.pop();
+    }
+
+    LRU.unshift(0);
+    LFU.unshift(0);
+  }
+
+  clear() {
+    this.LRU = [0];
+    this.LFU = [0];
+  }
+
+}
+
+function rate(window, hits1, hits2, offset) {
+  let total = 0;
+  let hits = 0;
+  let ratio = 100;
+
+  for (let i = 0, len = hits1.length; i < len; ++i) {
+    const subtotal = hits1[i] + hits2[i];
+    if (subtotal === 0) continue;
+    offset = i + 1 === len ? 0 : offset;
+    const subratio = (0, alias_1.min)(subtotal * 100 / window, ratio) - offset;
+    offset = offset && subratio < 0 ? -subratio : 0;
+    if (subratio <= 0) continue;
+    const rate = window * subratio / subtotal;
+    total += subtotal * rate;
+    hits += hits1[i] * rate;
+    ratio -= subratio;
+    if (ratio <= 0) break;
+  }
+
+  return hits * 10000 / total | 0;
 }
 
 /***/ }),
@@ -1668,25 +1758,6 @@ function random(len) {
     return random(len);
   }
 }
-
-/***/ }),
-
-/***/ 5341:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.tuple = void 0;
-
-function tuple(...as) {
-  return as;
-}
-
-exports.tuple = tuple;
 
 /***/ }),
 
@@ -5502,15 +5573,16 @@ const source_1 = __webpack_require__(6743);
 
 const dom_1 = __webpack_require__(3252);
 
-exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([(0, source_1.str)(/^>*(?=>>[^>\s]+[^\S\n]*(?:$|\n))/), (0, combinator_1.union)([anchor_1.anchor, // Subject page representation.
+exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([(0, source_1.str)(/^>*(?=>>[^>\s]+\s*$)/), (0, combinator_1.union)([anchor_1.anchor, // Subject page representation.
 // リンクの実装は後で検討
-(0, combinator_1.focus)(/^>>\.[^\S\n]*(?:$|\n)/, () => [[(0, dom_1.html)('a', {
+(0, combinator_1.focus)(/^>>\.(?=\s*$)/, () => [[(0, dom_1.html)('a', {
   class: 'anchor'
-}, '>>.')], '']), (0, combinator_1.focus)(/^>>#\S*[^\S\n]*(?:$|\n)/, ({
+}, '>>.')], '']), (0, combinator_1.focus)(/^>>#\S*(?=\s*$)/, ({
   source
 }) => [[(0, dom_1.html)('a', {
   class: 'anchor'
-}, source)], '']), (0, combinator_1.focus)(/^>>https?:\/\/\w\S*[^\S\n]*(?:$|\n)/, ({
+}, source)], '']), // Support all domains, but don't support IP(v6) addresses.
+(0, combinator_1.focus)(/^>>https?:\/\/[^\p{C}\p{S}\p{P}\s]\S*(?=\s*$)/u, ({
   source
 }) => [[(0, dom_1.html)('a', {
   class: 'anchor',
