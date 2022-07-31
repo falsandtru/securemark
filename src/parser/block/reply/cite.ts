@@ -14,7 +14,8 @@ export const cite: ReplyParser.CiteParser = creation(1, false, line(fmap(validat
       // リンクの実装は後で検討
       focus(/^>>\.(?=\s*$)/, () => [[html('a', { class: 'anchor' }, '>>.')], '']),
       focus(/^>>#\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], '']),
-      focus(/^>>https?:\/\/\w\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], '']),
+      // Support all domains, but don't support IP(v6) addresses.
+      focus(/^>>https?:\/\/[^\p{C}\p{S}\p{P}\s]\S*(?=\s*$)/u, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], '']),
     ]),
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
