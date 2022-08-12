@@ -23,6 +23,7 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser(`#'`)), [[`#'`], '']);
       assert.deepStrictEqual(inspect(parser(`#a''`)), [[`#a''`], '']);
       assert.deepStrictEqual(inspect(parser('#_')), [['#_'], '']);
+      assert.deepStrictEqual(inspect(parser('#_a')), [['#_a'], '']);
       assert.deepStrictEqual(inspect(parser('#(a)')), [['#'], '(a)']);
       assert.deepStrictEqual(inspect(parser('#{}')), [['#'], '{}']);
       assert.deepStrictEqual(inspect(parser('#{{}')), [['#'], '{{}']);

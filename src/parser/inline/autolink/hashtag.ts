@@ -20,7 +20,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         ([source]) => source.length <= 253 + 1),
       verify(
         str(new RegExp([
-          /^(?=[0-9]{0,127}_?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source,
+          /^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji))/u.source,
           /(?:[^\p{C}\p{S}\p{P}\s]|emoji|_(?=[^\p{C}\p{S}\p{P}\s]|emoji)){1,128}/u.source,
           /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji)|')/u.source,
         ].join('').replace(/emoji/g, emoji), 'u')),
