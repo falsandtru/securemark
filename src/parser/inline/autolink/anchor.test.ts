@@ -16,6 +16,7 @@ describe('Unit: parser/inline/autolink/anchor', () => {
       assert.deepStrictEqual(inspect(parser('>>https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('>>tel:1234567890')), undefined);
       assert.deepStrictEqual(inspect(parser('>>>')), undefined);
+      assert.deepStrictEqual(inspect(parser('a>>0')), [['a>>0'], '']);
       assert.deepStrictEqual(inspect(parser(' >>0')), undefined);
     });
 

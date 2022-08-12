@@ -30,6 +30,8 @@ export const autolink: AutolinkParser = fmap(
     hashnum,
     // Escape unmatched hashtag-like strings.
     str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', emoji), 'u')),
+    // Escape invalid leading characters.
+    str(/^[0-9\p{Sc}](?=>)/u),
     anchor,
   ]))))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);
