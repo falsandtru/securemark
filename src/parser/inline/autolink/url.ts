@@ -3,7 +3,7 @@ import { union, some, creation, precedence, validate, focus, rewrite, convert, s
 import { unsafelink } from '../link';
 import { unescsource } from '../../source';
 
-const closer = /^[-+*=~^,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
+const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'https://'], rewrite(
   open(
