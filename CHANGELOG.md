@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.261.0
+
+- Change emphasis syntax and strong syntax.
+
 ## 0.260.6
 
 - Refactoring.

@@ -635,7 +635,6 @@ export namespace MarkdownParser {
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
       InlineParser.MarkParser,
-      InlineParser.EmStrongParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
       InlineParser.CodeParser,
@@ -1032,36 +1031,20 @@ export namespace MarkdownParser {
         MarkParser,
       ]> {
     }
-    export interface EmStrongParser extends
-      // *abc*
-      Inline<'emstrong'>,
-      Parser<HTMLElement | string, Context, [
-        InlineParser,
-        InlineParser,
-      ]> {
-    }
     export interface StrongParser extends
-      // **abc**
+      // *abc*
       Inline<'strong'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        Parser<HTMLElement | string, Context, [
-          EmStrongParser,
-          StrongParser,
-        ]>,
+        StrongParser,
       ]> {
     }
     export interface EmphasisParser extends
-      // *abc*
+      // _abc_
       Inline<'emphasis'>,
       Parser<HTMLElement | string, Context, [
-        StrongParser,
         InlineParser,
-        Parser<HTMLElement | string, Context, [
-          EmStrongParser,
-          StrongParser,
-          EmphasisParser,
-        ]>,
+        EmphasisParser,
       ]> {
     }
     export interface CodeParser extends

@@ -170,7 +170,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[((a))]{b}')), [['<a class="link" href="b"><span class="paren">((a))</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]{b}')), [['<a class="link" href="b">[[a]]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[!http://host]{/}')), [['<a class="link" href="/" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[*a*]{b}')), [['<a class="link" href="b"><em>a</em></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[_a_]{b}')), [['<a class="link" href="b"><em>a</em></a>'], '']);
     });
 
     it('external', () => {

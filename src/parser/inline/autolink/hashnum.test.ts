@@ -20,8 +20,6 @@ describe('Unit: parser/inline/autolink/hashnum', () => {
       assert.deepStrictEqual(inspect(parser('##')), [['##'], '']);
       assert.deepStrictEqual(inspect(parser('##1')), [['##1'], '']);
       assert.deepStrictEqual(inspect(parser('###1')), [['###1'], '']);
-      assert.deepStrictEqual(inspect(parser(`#1'`)), [[`#1'`], '']);
-      assert.deepStrictEqual(inspect(parser(`#1''`)), [[`#1''`], '']);
       assert.deepStrictEqual(inspect(parser('#{}')), [['#'], '{}']);
       assert.deepStrictEqual(inspect(parser('#{{}')), [['#'], '{{}']);
       assert.deepStrictEqual(inspect(parser('#{}}')), [['#'], '{}}']);
@@ -40,6 +38,7 @@ describe('Unit: parser/inline/autolink/hashnum', () => {
 
     it('valid', () => {
       assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashnum">#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#1_')), [['<a class="hashnum">#1</a>'], '_']);
       assert.deepStrictEqual(inspect(parser('#1 ')), [['<a class="hashnum">#1</a>'], ' ']);
       assert.deepStrictEqual(inspect(parser('#1\n')), [['<a class="hashnum">#1</a>'], '\n']);
       assert.deepStrictEqual(inspect(parser('#1\\')), [['<a class="hashnum">#1</a>'], '\\']);

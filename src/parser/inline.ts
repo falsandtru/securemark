@@ -13,7 +13,6 @@ import { html } from './inline/html';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
 import { mark } from './inline/mark';
-import { emstrong } from './inline/emstrong';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
@@ -38,7 +37,6 @@ export import HTMLParser = InlineParser.HTMLParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
 export import MarkParser = InlineParser.MarkParser;
-export import EmStrongParser = InlineParser.EmStrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
 export import StrongParser = InlineParser.StrongParser;
 export import CodeParser = InlineParser.CodeParser;
@@ -64,7 +62,6 @@ export const inline: InlineParser = union([
   insertion,
   deletion,
   mark,
-  emstrong,
   strong,
   emphasis,
   code,

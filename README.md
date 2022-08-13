@@ -51,7 +51,7 @@ https://falsandtru.github.io/securemark/
 - Blockquote (>, !>)
 - Preformattedtext (```)
 - HorizontalRule (---)
-- Inline markups (*, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
+- Inline markups (_, *, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
 - Inline HTML tags (\<bdi>, \<bdo>)
 - Autolink (https://host, user@host, @user)
 - Shortmedia (!https://host/image.png, !https://youtu.be/...)
@@ -69,16 +69,16 @@ https://falsandtru.github.io/securemark/
 
 ## Operator precedence
 
-|P| Operators         |
-|-|-------------------|
-|9| \n, \\\n          |
-|8| `, "              |
-|6| (()), [[]], ${}$  |
-|5| \<tag>\</tag>     |
-|4| [% %]             |
-|3| $                 |
-|2| (), [], {}        |
-|1| *, **, ==, ++, ~~ |
+|P| Operators        |
+|-|------------------|
+|9| \n, \\\n         |
+|8| `, "             |
+|6| (()), [[]], ${}$ |
+|5| \<tag>\</tag>    |
+|4| [% %]            |
+|3| $                |
+|2| (), [], {}       |
+|1| _, *, ==, ++, ~~ |
 
 ## Dependencies
 
@@ -92,7 +92,7 @@ https://falsandtru.github.io/securemark/
 - Chrome
 - Firefox
 - Edge (Chromium edition only)
-- Safari
+- ~~Safari~~ (Awaiting the support of lookbehind assertion in regular expressions)
 
 ## License
 
