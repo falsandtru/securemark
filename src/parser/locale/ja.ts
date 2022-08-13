@@ -1,11 +1,3 @@
 export function japanese(char: string): boolean {
-  switch (char) {
-    case '、':
-    case '。':
-    case '！':
-    case '？':
-      return true;
-    default:
-      return false;
-  }
+  return /^[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？]/u.test(char);
 }

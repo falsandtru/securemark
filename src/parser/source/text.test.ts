@@ -117,10 +117,14 @@ describe('Unit: parser/text/text', () => {
     });
 
     it('localize', () => {
-      assert.deepStrictEqual(inspect(parser('.\\\n0')), [['.', '<span class="linebreak"> </span>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('。\\\n0')), [['。', '<span class="linebreak"></span>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('。 \\\n0')), [['。', '<span class="linebreak"></span>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('。。\\\n0')), [['。', '。', '<span class="linebreak"></span>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('a\\\n0')), [['a', '<span class="linebreak"> </span>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('あ\\\n０')), [['あ', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('ア\\\n０')), [['ア', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('亜\\\n０')), [['亜', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('、\\\n０')), [['、', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('。\\\n０')), [['。', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('！？\\\n０')), [['！', '？', '<span class="linebreak"></span>', '０'], '']);
+      assert.deepStrictEqual(inspect(parser('\\あ\\\n０')), [['あ', '<span class="linebreak"></span>', '０'], '']);
     });
 
   });

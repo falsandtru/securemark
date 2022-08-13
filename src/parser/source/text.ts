@@ -4,9 +4,10 @@ import { union, creation, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /[\s\x00-\x7F]|\S[#>]|[（）、。！？][^\S\n]*(?=\\\n)/;
+export const delimiter = /[\s\x00-\x7F]|\S[#>]|[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
+const nssb = /^[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creation(1, false, ({ source, context }) => {
@@ -19,21 +20,12 @@ export const text: TextParser = creation(1, false, ({ source, context }) => {
       switch (source[0]) {
         case '\x1B':
         case '\\':
-          switch (source[1]) {
-            case '、':
-            case '。':
-            case '！':
-            case '？':
-              assert(source[0] !== '\x1B');
-              return text({ source: source.slice(1), context });
-          }
-          break;
-        case '、':
-        case '。':
-        case '！':
-        case '？':
-          const i = source.slice(1).search(nonWhitespace) + 1;
-          if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
+          if (!nssb.test(source.slice(1))) break;
+          assert(source[0] !== '\x1B');
+          return text({ source: source.slice(1), context });
+        default:
+          const i = source.match(nssb)?.[0].length ?? -1;
+          if (i !== -1) return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
       }
       switch (source[0]) {
         case '\x1B':
