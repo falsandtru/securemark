@@ -4,10 +4,10 @@ import { union, creation, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /[\s\x00-\x7F]|\S[#>]|[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？][^\S\n]*(?=\\\n)/u;
+export const delimiter = /[\s\x00-\x7F]|\S[#>]|[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
-const nssb = /^[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？][^\S\n]*(?=\\\n)/u;
+const nssb = /^[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creation(1, false, ({ source, context }) => {

@@ -1,3 +1,3 @@
 export function japanese(char: string): boolean {
-  return /^[\p{Ideo}\p{Script_Extensions=Hiragana}\p{Script_Extensions=Katakana}～！？]/u.test(char);
+  return /^[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？]/u.test(char);
 }
