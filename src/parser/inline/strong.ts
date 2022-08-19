@@ -8,12 +8,12 @@ import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 export const strong: StrongParser = lazy(() => surround(
-  str('*'),
+  str('*', '*'),
   syntax(Syntax.none, 1, 1, State.none,
   startTight(some(union([
     some(inline, blankWith('*')),
     open(some(inline, '*'), strong),
-  ])), '*')),
+  ])))),
   str('*'), false,
   ([, bs], rest) => [[html('strong', defrag(bs))], rest],
   ([as, bs], rest) => [unshift(as, bs), rest]));

@@ -1,6 +1,5 @@
 import { MarkdownParser } from '../../markdown';
 import { union } from '../combinator';
-import { escape } from './inline/escape';
 import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
@@ -24,7 +23,6 @@ import { bracket } from './inline/bracket';
 import { text } from './source';
 
 export import InlineParser = MarkdownParser.InlineParser;
-export import EscapeParser = InlineParser.EscapeParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
@@ -48,7 +46,6 @@ export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;
 
 export const inline: InlineParser = union([
-  escape,
   annotation,
   reference,
   template,

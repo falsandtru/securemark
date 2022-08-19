@@ -8,7 +8,7 @@ import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 export const mark: MarkParser = lazy(() => surround(
-  str('=='),
+  str('==', '='),
   syntax(Syntax.none, 1, 1, State.none,
   startTight(some(union([
     some(inline, blankWith('==')),
