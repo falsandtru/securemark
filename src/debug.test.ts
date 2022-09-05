@@ -1,6 +1,6 @@
 import { Result, eval, exec } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
-import { querySelector, querySelectorAll } from 'typed-dom/query';
+import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
 export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
   return result && [
@@ -8,8 +8,8 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       assert(node || node === '' && '([{'.includes(nodes[i + 1][0]));
       if (typeof node === 'string') return node;
       node = node.cloneNode(true);
-      assert(!querySelector(node, '.invalid[data-invalid-message$="."]'));
-      querySelectorAll(node, '.invalid').forEach(el => {
+      assert(!querySelectorWith(node, '.invalid[data-invalid-message$="."]'));
+      querySelectorAllWith(node, '.invalid').forEach(el => {
         assert(el.matches('[data-invalid-syntax][data-invalid-type][data-invalid-message]'));
         define(el, {
           'data-invalid-syntax': null,
