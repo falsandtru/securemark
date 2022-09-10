@@ -20,10 +20,10 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   // Bug: Firefox
-  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), i = 0, len = defs.length; i < len; ++i) {
+  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
   for (
     let defs = querySelectorAll(target, 'figure[data-label], h1, h2'),
-        i = 0, len = defs.length; i < len; ++i) {
+        len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
     if (def.parentNode !== target) continue;

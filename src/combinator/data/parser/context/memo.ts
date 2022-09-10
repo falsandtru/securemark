@@ -34,7 +34,7 @@ export class Memo {
   }
   public clear(position: number): void {
     const memory = this.memory;
-    for (let i = position, len = memory.length; i < len; ++i) {
+    for (let len = memory.length, i = position; i < len; ++i) {
       memory.pop();
     }
     //console.log('clear', position + 1);

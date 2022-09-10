@@ -144,7 +144,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
 
   function nearest(index: number): HTMLElement | undefined {
     let el: HTMLElement | undefined;
-    for (let i = 0, len = 0; i < blocks.length; ++i) {
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
       el = block[1][0] ?? el;
@@ -154,7 +154,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   }
 
   function index(source: HTMLElement): number {
-    for (let i = 0, len = 0; i < blocks.length; ++i) {
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       if (block[1].includes(source)) return len;
       len += block[0].length;

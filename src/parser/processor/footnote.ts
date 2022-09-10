@@ -53,7 +53,7 @@ function build(
     let style: 'count' | 'abbr';
     for (
       let refs = querySelectorAll(target, `sup.${syntax}:not(.disabled)`),
-          i = 0, len = refs.length; i < len; ++i) {
+          len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
       while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {

@@ -9,7 +9,7 @@ export function inits<T, D extends Parser<T>[]>(parsers: D, resume?: (nodes: T[]
   return ({ source, context }) => {
     let rest = source;
     let nodes: T[] | undefined;
-    for (let i = 0, len = parsers.length; i < len; ++i) {
+    for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') break;
       if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parsers[i]({ source: rest, context });
