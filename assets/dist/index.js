@@ -1,4 +1,4 @@
-/*! securemark v0.261.1 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED License */
+/*! securemark v0.261.2 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("DOMPurify"), require("Prism"));
