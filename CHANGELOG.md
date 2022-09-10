@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.262.0
+
+- Use :has() CSS selector.
+
 ## 0.261.2
 
 - Refactoring.

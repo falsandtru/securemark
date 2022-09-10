@@ -45,7 +45,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
             references,
           },
         }, context);
-        return [[html('section', [document, references])], ''];
+        return [[html('section', [document, html('h2', 'References'), references])], ''];
       }))),
   ]))),
   ns => [html('blockquote', ns)]));

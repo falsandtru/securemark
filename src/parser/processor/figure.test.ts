@@ -117,8 +117,8 @@ describe('Unit: parser/processor/figure', () => {
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><ol class="references"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $test-a\n&gt; \n\n~~~\n\n$test-a</pre><hr><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label disabled" data-label="test-a">Test 1</a></p><ol class="references"></ol></section></aside>',
+            '<blockquote><blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote>',
+            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $test-a\n&gt; \n\n~~~\n\n$test-a</pre><hr><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label disabled" data-label="test-a">Test 1</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
             '<figure data-type="quote" data-label="test-b" data-group="test" data-number="1" id="label:test-b"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-type="quote" data-label="test-a" data-group="test" data-number="2" id="label:test-a"><figcaption><span class="figindex">Test 2. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
@@ -173,7 +173,7 @@ describe('Unit: parser/processor/figure', () => {
             '<h2 id="index:0">0</h2>',
             '<figure data-type="quote" data-label="test-1" data-group="test" data-number="1" id="label:test-1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
-            '<blockquote><section><h2>0</h2><ol class="references"></ol></section></blockquote>',
+            '<blockquote><section><h2>0</h2><h2>References</h2><ol class="references"></ol></section></blockquote>',
             '<figure data-type="quote" data-label="test-b" data-group="test" data-number="2.1" id="label:test-b"><figcaption><span class="figindex">Test 2.1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-type="argument" data-invalid-message="Base index must be $-x.0 format"></figure>',

@@ -35,7 +35,7 @@ export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap
           html('aside', { class: 'example', 'data-type': 'markdown' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            html('section', [document, references]),
+            html('section', [document, html('h2', 'References'), references]),
           ]),
         ];
       }

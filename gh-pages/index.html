@@ -675,28 +675,12 @@
     width: 100%;
     font-size: 90%;
   }
-  .references {
-    position: relative;
-    margin-block-start: 7em;
-    width: 100%;
+  h2:has(+ .references) {
+    text-align: center;
   }
+  h2:has(+ .references:empty),
   .references:empty {
     display: none;
-  }
-  .references::before {
-    content: "References";
-    display: block;
-    position: absolute;
-    top: -2em;
-    width: 100%;
-    text-align: center;
-    font-size: 2em;
-  }
-  blockquote > section > .references {
-    margin-block-start: 3em;
-  }
-  blockquote > section > .references::before {
-    top: -1.5em;
   }
   @media print {
     #viewer > aside.header {
@@ -737,7 +721,7 @@
   <div class="h-100" translate="no"><textarea id="editor" spellcheck="false"></textarea></div>
 </div>
 <div id="secondary" class="col-6">
-  <div id="viewer"><ol class="references"></ol></div>
+  <div id="viewer"><h2>References</h2><ol class="references"></ol></div>
 </div>
 </div>
 

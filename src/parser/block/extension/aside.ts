@@ -40,6 +40,7 @@ export const aside: ExtensionParser.AsideParser = block(validate('~~~', fmap(
     return [
       html('aside', { id: identity(text(heading)), class: 'aside' }, [
         document,
+        html('h2', 'References'),
         references,
       ]),
     ];

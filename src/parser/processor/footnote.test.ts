@@ -151,8 +151,8 @@ describe('Unit: parser/processor/footnote', () => {
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><ol class="references"></ol></section></blockquote><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup><br>~~~</p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><ol class="references"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">((a))</pre><hr><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><ol class="references"></ol></section></aside>',
+            '<blockquote><blockquote><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup><br>~~~</p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote>',
+            '<aside class="example" data-type="markdown"><pre translate="no">((a))</pre><hr><section><p><sup class="annotation disabled" title="a"><span hidden="">a</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1">a<sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></aside>',
             '<p><sup class="annotation" id="annotation:ref:1" title="a"><span hidden="">a</span><a href="#annotation:def:1">*1</a></sup></p>',
           ]);
         assert.deepStrictEqual(
