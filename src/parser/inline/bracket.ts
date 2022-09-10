@@ -4,8 +4,8 @@ import { union, some, syntax, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
-import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 

@@ -7,8 +7,8 @@ import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
 import { visualize } from '../../visibility';
-import { html, define, defrag } from 'typed-dom/dom';
 import { unshift, splice } from 'spica/array';
+import { html, define, defrag } from 'typed-dom/dom';
 
 import TableParser = ExtensionParser.TableParser;
 import RowParser = TableParser.RowParser;

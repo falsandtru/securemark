@@ -1,7 +1,7 @@
 import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
-import { frag, html, define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
+import { frag, html, define } from 'typed-dom/dom';
 import { querySelectorAll } from 'typed-dom/query';
 
 export function* footnote(

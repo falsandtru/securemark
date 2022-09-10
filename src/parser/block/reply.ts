@@ -6,8 +6,8 @@ import { inline } from '../inline';
 import { anyline } from '../source';
 import { localize } from '../locale';
 import { visualize } from '../visibility';
-import { html, defrag } from 'typed-dom/dom';
 import { push, pop } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 /*
 必ず対象指定から始まる

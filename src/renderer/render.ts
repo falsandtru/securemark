@@ -3,8 +3,8 @@ import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';
-import { querySelectorAllWith } from 'typed-dom/query';
 import { reduce } from 'spica/memoize';
+import { querySelectorAllWith } from 'typed-dom/query';
 
 const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
 

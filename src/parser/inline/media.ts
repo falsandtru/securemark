@@ -6,9 +6,9 @@ import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
 import { Syntax, State } from '../context';
-import { html, define } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
+import { html, define } from 'typed-dom/dom';
 
 const optspec = {
   'width': [],

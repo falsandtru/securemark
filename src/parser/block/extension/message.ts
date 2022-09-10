@@ -12,8 +12,8 @@ import { mathblock } from '../mathblock';
 import { sidefence } from '../sidefence';
 import { blockquote } from '../blockquote';
 import { paragraph } from '../paragraph';
-import { html } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
+import { html } from 'typed-dom/dom';
 
 import MessageParser = ExtensionParser.MessageParser;
 

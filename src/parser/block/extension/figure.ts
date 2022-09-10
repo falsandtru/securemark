@@ -16,8 +16,8 @@ import { inline, media, shortmedia } from '../../inline';
 import { State } from '../../context';
 import { localize } from '../../locale';
 import { visualize, trimBlank } from '../../visibility';
-import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
+import { html, defrag } from 'typed-dom/dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 

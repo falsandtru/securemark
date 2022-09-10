@@ -8,9 +8,9 @@ import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
 import { State } from '../context';
 import { trimBlank } from '../visibility';
-import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
+import { html, define, defrag } from 'typed-dom/dom';
 
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,

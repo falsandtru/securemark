@@ -11,8 +11,8 @@ import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
 import { footnote } from '../processor/footnote';
-import { frag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
+import { frag } from 'typed-dom/dom';
 
 interface Options extends ParserOptions {
   readonly test?: boolean;

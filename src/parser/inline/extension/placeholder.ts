@@ -4,8 +4,8 @@ import { inline } from '../../inline';
 import { str } from '../../source';
 import { Syntax, State } from '../../context';
 import { startTight } from '../../visibility';
-import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 // Don't use the symbols already used: !#$%@&*+~=
 

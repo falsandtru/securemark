@@ -3,9 +3,9 @@ import { union, some, syntax, validate, surround, open, close, match, lazy } fro
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { Syntax, State } from '../context';
-import { html, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 export const comment: CommentParser = lazy(() => validate('[%', syntax(Syntax.none, 4, 1, State.none, match(
   /^\[(%+)\s/,

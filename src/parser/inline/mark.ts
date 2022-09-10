@@ -4,8 +4,8 @@ import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, blankWith } from '../visibility';
 import { Syntax, State } from '../context';
-import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() => surround(
   str('==', '='),

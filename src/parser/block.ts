@@ -16,8 +16,8 @@ import { sidefence } from './block/sidefence';
 import { blockquote } from './block/blockquote';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
-import { html } from 'typed-dom/dom';
 import { rnd0Z } from 'spica/random';
+import { html } from 'typed-dom/dom';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;

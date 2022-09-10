@@ -10,8 +10,8 @@ import { unescsource, str } from '../source';
 import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
 import { stringify } from '../util';
-import { html, define, defrag } from 'typed-dom/dom';
 import { ReadonlyURL } from 'spica/url';
+import { html, define, defrag } from 'typed-dom/dom';
 
 const optspec = {
   rel: ['nofollow'],

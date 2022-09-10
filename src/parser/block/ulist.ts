@@ -5,8 +5,8 @@ import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
 import { State } from '../context';
 import { trimBlank } from '../visibility';
-import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 export const ulist: UListParser = lazy(() => block(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,

@@ -5,10 +5,10 @@ import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
-import { html as h, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice } from 'spica/array';
+import { html as h, defrag } from 'typed-dom/dom';
 
 const tags = Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
