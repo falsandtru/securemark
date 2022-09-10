@@ -2,30 +2,31 @@ import { Element } from 'spica/global';
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
 import { define } from 'typed-dom/dom';
-import { duffEach } from 'spica/duff';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite({ source: `>>${anchor}`, context: {} })) !== '') throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-  duffEach(node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), el => {
+  for (let es = querySelectorAll(node, 'code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0; i < es.length; ++i) {
+    const el = es[i];
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         define(el, el.getAttribute('data-src')!);
-        return;
+        continue;
       case el.matches('.media'):
         el.replaceWith(
           /[\s{}]/.test(el.getAttribute('data-src')!)
             ? `!{ ${el.getAttribute('data-src')} }`
             : `!{${el.getAttribute('data-src')}}`);
-        return;
+        continue;
       case el.matches('rt, rp'):
         el.remove();
-        return;
+        continue;
     }
-  });
+  }
   if (range.startOffset === 0 &&
       range.startContainer.parentElement?.matches('.cite, .quote') &&
       (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
@@ -35,25 +36,26 @@ export function quote(anchor: string, range: Range): string {
     node.prepend(`>>${anchor}\n> `);
     anchor = '';
   }
-  duffEach(node.querySelectorAll('br'), el => {
+  for (let es = querySelectorAll(node, 'br'), i = 0; i < es.length; ++i) {
+    const el = es[i];
     if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
-      return;
+      continue;
     }
     if (anchor && el.parentElement?.closest('.cite, .quote')) {
       el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
-      return;
+      continue;
     }
     if (anchor) {
       el.replaceWith(`\n>>${anchor}\n> `);
       anchor = '';
-      return;
+      continue;
     }
     else {
       el.replaceWith(`\n> `);
-      return;
+      continue;
     }
-  });
+  }
   anchor && node.append(`\n>>${anchor}`);
   return node.textContent!;
 }

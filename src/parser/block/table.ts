@@ -3,9 +3,9 @@ import { union, sequence, some, creation, block, line, validate, focus, rewrite,
 import { inline } from '../inline';
 import { contentline } from '../source';
 import { trimNode } from '../visibility';
-import { html, defrag } from 'typed-dom/dom';
-import { duffEach, duffReduce } from 'spica/duff';
+import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;
@@ -65,13 +65,13 @@ function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
     ? []
     : duffReduce(rows.shift()!.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);
   for (let i = 0; i < rows.length; ++i) {
-    duffEach(rows[i].children, (col, i) => {
-      if (i > 0 && !aligns[i]) {
-        aligns[i] = aligns[i - 1];
+    for (let cols = rows[i].children, len = cols.length, j = 0; j < len; ++j) {
+      if (j > 0 && !aligns[j]) {
+        aligns[j] = aligns[j - 1];
       }
-      if (!aligns[i]) return;
-      col.setAttribute('align', aligns[i]);
-    });
+      if (!aligns[j]) continue;
+      cols[j].setAttribute('align', aligns[j]);
+    }
   }
   return rows;
 }

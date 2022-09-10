@@ -1,7 +1,6 @@
 import { Info } from '../..';
 import { scope } from './scope';
-import { duffReduce } from 'spica/duff';
-import { push } from 'spica/array';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = scope(source, '.invalid');
@@ -19,8 +18,11 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
   };
 
   function find<T extends HTMLElement>(selector: string): T[] {
-    return duffReduce(source.querySelectorAll<T>(selector), (acc, el) =>
-      match(el) ? push(acc, [el]) : acc
-    , [] as T[]);
+    const acc: T[] = [];
+    for (let es = querySelectorAll<T>(source, selector), i = 0; i < es.length; ++i) {
+      const el = es[i];
+      match(el) && acc.push(el);
+    }
+    return acc;
   }
 }

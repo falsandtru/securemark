@@ -2,8 +2,7 @@ import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
 import { frag, html, define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
-import { duffEach, duffReduce } from 'spica/duff';
-import { push } from 'spica/array';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function* footnote(
   target: ParentNode & Node,
@@ -12,8 +11,11 @@ export function* footnote(
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   // Bug: Firefox
-  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
-  duffEach(target.querySelectorAll(`.annotations`), el => el.parentNode === target && el.remove());
+  //querySelectorAll(target, `:scope > .annotations`).forEach(el => el.remove());
+  for (let es = querySelectorAll(target, `.annotations`), i = 0; i < es.length; ++i) {
+    const el = es[i];
+    el.parentNode === target && el.remove();
+  }
   yield* reference(target, footnotes?.references, opts, bottom);
   yield* annotation(target, footnotes?.annotations, opts, bottom);
   return;
@@ -40,15 +42,17 @@ function build(
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     // Bug: Firefox
-    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
-    const splitters = duffReduce(target.querySelectorAll(splitter ?? '_'), (acc, el) =>
-      el.parentNode === target ? push(acc, [el]) : acc
-    , [] as Element[]);
+    //const splitters = push([], querySelectorAll(target, `:scope > :is(${splitter ?? '_'})`));
+    const splitters: Element[] = [];
+    for (let es = querySelectorAll(target, splitter ?? '_'), i = 0; i < es.length; ++i) {
+      const el = es[i];
+      el.parentNode === target && splitters.push(el);
+    }
     let count = 0;
     let total = 0;
     let style: 'count' | 'abbr';
     for (
-      let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
+      let refs = querySelectorAll(target, `sup.${syntax}:not(.disabled)`),
           i = 0, len = refs.length; i < len; ++i) {
       yield;
       const ref = refs[i];

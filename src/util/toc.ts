@@ -1,22 +1,26 @@
 import { undefined } from 'spica/global';
-import { html } from 'typed-dom/dom';
-import { duffEach, duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
+import { html } from 'typed-dom/dom';
+import { querySelectorAll } from 'typed-dom/query';
 
 // Bug: Firefox
 //const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
-  const hs = duffReduce(source.querySelectorAll(selector), (acc, el) => {
+  const hs: HTMLHeadingElement[] = [];
+  for (let es = querySelectorAll(source, selector), i = 0; i < es.length; ++i) {
+    const el = es[i];
     assert(el.parentNode === source);
     switch (el.tagName) {
       case 'ASIDE':
-        return push(acc, [html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes)]);
+        hs.push(html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes));
+        continue;
       default:
-        return push(acc, [el as HTMLHeadingElement]);
+        hs.push(el as HTMLHeadingElement);
+        continue;
     }
-  }, [] as HTMLHeadingElement[]);
+  }
   return parse(cons(hs));
 }
 
@@ -58,7 +62,9 @@ function level(h: HTMLHeadingElement): number {
 }
 
 function unlink(h: HTMLHeadingElement): Iterable<Node> {
-  duffEach(h.getElementsByTagName('a'), el =>
-    void el.replaceWith(...el.childNodes));
+  for (let es = h.getElementsByTagName('a'), len = es.length, i = 0; i < len; ++i) {
+    const el = es[i];
+    el.replaceWith(...el.childNodes);
+  }
   return h.childNodes;
 }

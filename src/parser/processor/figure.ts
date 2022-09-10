@@ -1,17 +1,18 @@
 import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
-import { define } from 'typed-dom/dom';
 import { MultiMap } from 'spica/multimap';
 import { push } from 'spica/array';
+import { define } from 'typed-dom/dom';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function* figure(
   target: ParentNode & Node,
   footnotes?: { readonly references: HTMLOListElement; },
   opts: { readonly id?: string; } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
-  const refs = new MultiMap<string, HTMLAnchorElement>(push(push([],
-    target.querySelectorAll('a.label:not(.disabled)[data-label]')),
-    footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? [])
+  const refs = new MultiMap<string, HTMLAnchorElement>(push(
+    querySelectorAll(target, 'a.label:not(.disabled)[data-label]'),
+    footnotes && querySelectorAll(footnotes.references, 'a.label:not(.disabled)') || [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
@@ -19,9 +20,9 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   // Bug: Firefox
-  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), i = 0, len = defs.length; i < len; ++i) {
+  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), i = 0, len = defs.length; i < len; ++i) {
   for (
-    let defs = target.querySelectorAll('figure[data-label], h1, h2'),
+    let defs = querySelectorAll(target, 'figure[data-label], h1, h2'),
         i = 0, len = defs.length; i < len; ++i) {
     yield;
     const def = defs[i];

@@ -3,7 +3,7 @@ import { MarkdownParser } from '../../../../markdown';
 import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom/dom';
-import { duffEach } from 'spica/duff';
+import { querySelectorAll } from 'typed-dom/query';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
@@ -28,32 +28,33 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
   if (index) return index;
   assert(!source.querySelector('.annotation, br'));
   const target = source.cloneNode(true) as typeof source;
-  duffEach(target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), el => {
+  for (let es = querySelectorAll(target, 'code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0; i < es.length; ++i) {
+    const el = es[i];
     switch (el.tagName) {
       case 'CODE':
         define(el, el.getAttribute('data-src')!);
-        return;
+        continue;
       case 'RT':
       case 'RP':
       case 'UL':
       case 'OL':
         el.remove();
-        return;
+        continue;
     }
     switch (el.className) {
       case 'math':
         define(el, el.getAttribute('data-src')!);
-        return;
+        continue;
       case 'comment':
       case 'checkbox':
         el.remove();
-        return;
+        continue;
       case 'reference':
         assert(el.firstElementChild?.hasAttribute('hidden'));
         el.firstChild!.remove();
-        return;
+        continue;
     }
-  });
+  }
   // Better:
   //return target.innerText;
   return target.textContent!;
