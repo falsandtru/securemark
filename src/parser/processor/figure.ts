@@ -141,7 +141,8 @@ export function* figure(
     }
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
-    for (const ref of refs.take(label, Infinity)) {
+    for (let rs = refs.take(label, Infinity), i = 0; i < rs.length; ++i) {
+      const ref = rs[i];
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
         define(ref, {
           class: void ref.classList.remove('invalid'),

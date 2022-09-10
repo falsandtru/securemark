@@ -114,7 +114,8 @@ function build(
       if (title && !blank && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
-        for (const ref of buffer.take(identifier, Infinity)) {
+        for (let refs = buffer.take(identifier, Infinity), i = 0; i < refs.length; ++i) {
+          const ref = refs[i];
           if (ref.getAttribute('data-invalid-type') !== 'content') continue;
           define(ref, {
             title,

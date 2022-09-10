@@ -14,8 +14,8 @@ const extend = reduce((opts: RenderingOptions): RenderingOptions =>
 export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
   opts = extend(opts);
   const base = location.href;
-  for (const el of querySelectorAllWith<HTMLElement>(source, selector)) {
-    render_(base, el, opts);
+  for (let es = querySelectorAllWith<HTMLElement>(source, selector), i = 0; i < es.length; ++i) {
+    render_(base, es[i], opts);
   }
 }
 

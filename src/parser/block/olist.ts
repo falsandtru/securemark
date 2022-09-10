@@ -10,7 +10,6 @@ import { State } from '../context';
 import { trimBlank } from '../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 import { memoize } from 'spica/memoize';
-import { duffbk } from 'spica/duff';
 import { shift } from 'spica/array';
 
 const openers = {
@@ -124,16 +123,15 @@ function format(el: HTMLOListElement, type: string, form: string): HTMLOListElem
     'data-type': style(type) || undefined,
   });
   const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
-  const es = el.children;
-  duffbk(es.length, i => {
+  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.getAttribute('data-marker')) {
       case '':
       case marker:
         el.removeAttribute('data-marker');
-        return;
+        continue;
     }
-    return false;
-  });
+    break;
+  }
   return el;
 }
