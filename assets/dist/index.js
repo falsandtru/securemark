@@ -92,6 +92,8 @@ exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = 
 
 const global_1 = __webpack_require__(4128);
 
+const undefined = void 0;
+
 function indexOf(as, a) {
   if (as.length === 0) return -1;
   return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
@@ -101,7 +103,10 @@ exports.indexOf = indexOf;
 
 function unshift(as, bs) {
   if ('length' in as) {
-    for (let i = as.length - 1; i >= 0; --i) {
+    if (as.length === 1) return bs.unshift(as[0]), bs;
+    if (global_1.Symbol.iterator in as) return bs.unshift(...as), bs;
+
+    for (let i = as.length; i--;) {
       bs.unshift(as[i]);
     }
   } else {
@@ -115,13 +120,16 @@ exports.unshift = unshift;
 
 function shift(as, count) {
   if (count < 0) throw new Error('Unexpected negative number');
-  return count === void 0 ? [as.shift(), as] : [splice(as, 0, count), as];
+  return count === undefined ? [as.shift(), as] : [splice(as, 0, count), as];
 }
 
 exports.shift = shift;
 
 function push(as, bs) {
   if ('length' in bs) {
+    if (bs.length === 1) return as.push(bs[0]), as;
+    if (global_1.Symbol.iterator in bs && bs.length > 50) return as.push(...bs), as;
+
     for (let i = 0, len = bs.length; i < len; ++i) {
       as.push(bs[i]);
     }
@@ -138,50 +146,39 @@ exports.push = push;
 
 function pop(as, count) {
   if (count < 0) throw new Error('Unexpected negative number');
-  return count === void 0 ? [as, as.pop()] : [as, splice(as, as.length - count, count)];
+  return count === undefined ? [as, as.pop()] : [as, splice(as, as.length - count, count)];
 }
 
 exports.pop = pop;
 
-function splice(as, index, count, ...inserts) {
-  if (count === 0 && inserts.length === 0) return [];
+function splice(as, index, count, ...values) {
+  if (as.length === 0) return push(as, values), [];
+
+  if (index > as.length) {
+    index = as.length;
+  } else if (index < 0) {
+    index = -index > as.length ? 0 : as.length + index;
+  }
+
   count = count > as.length ? as.length : count;
+  if (count === 0 && values.length === 0) return [];
+  if (count === 1 && values.length === 1) return [[as[index], as[index] = values[0]][0]];
 
   switch (index) {
     case 0:
-      switch (count) {
-        case 0:
-          return [[], unshift(inserts, as)][0];
-
-        case 1:
-          return as.length === 0 ? [[], unshift(inserts, as)][0] : [[as.shift()], unshift(inserts, as)][0];
-
-        case void 0:
-          if (as.length > 1 || arguments.length > 2) break;
-          return as.length === 0 ? [] : splice(as, index, 1);
-      }
-
+      if (count === 0) return unshift(values, as), [];
+      if (count === 1) return [[as.shift()], unshift(values, as)][0];
       break;
 
-    case -1:
     case as.length - 1:
-      switch (count) {
-        case 1:
-          return as.length === 0 ? [[], push(as, inserts)][0] : [[as.pop()], push(as, inserts)][0];
-
-        case void 0:
-          if (as.length > 1 || arguments.length > 2) break;
-          return as.length === 0 ? [] : splice(as, index, 1);
-      }
-
+      if (count === 1) return [[as.pop()], push(as, values)][0];
       break;
 
     case as.length:
-    case global_1.Infinity:
-      return [[], push(as, inserts)][0];
+      return push(as, values), [];
   }
 
-  return arguments.length > 2 ? as.splice(index, count, ...inserts) : as.splice(index);
+  return arguments.length > 2 ? as.splice(index, count, ...values) : as.splice(index);
 }
 
 exports.splice = splice;
@@ -369,15 +366,14 @@ const assign_1 = __webpack_require__(4401);
 class Cache {
   constructor(capacity, opts = {}) {
     this.settings = {
-      window: 0,
       capacity: 0,
-      space: global_1.Infinity,
       age: global_1.Infinity,
       earlyExpiring: false,
       capture: {
         delete: true,
         clear: true
       },
+      window: 0,
       resolution: 1,
       offset: 0,
       block: 20,
@@ -391,7 +387,7 @@ class Cache {
       LRU: new invlist_1.List(),
       LFU: new invlist_1.List()
     };
-    this.expiries = new heap_1.Heap((a, b) => a.value.expiry - b.value.expiry);
+    this.expiries = new heap_1.Heap(heap_1.Heap.min);
     this.misses = 0;
     this.sweep = 0;
     this.ratio = 500;
@@ -407,8 +403,7 @@ class Cache {
     this.capacity = settings.capacity;
     if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
     this.window = settings.window || this.capacity;
-    if (this.window * 1000 < this.capacity) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
-    this.space = settings.space;
+    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
     this.block = settings.block;
     this.limit = settings.limit;
     this.earlyExpiring = settings.earlyExpiring;
@@ -438,13 +433,12 @@ class Cache {
 
   ensure(margin, skip) {
     let size = skip?.value.size ?? 0;
-    if (margin - size <= 0) return true;
     const {
       LRU,
       LFU
     } = this.indexes;
 
-    while (this.length === this.capacity || this.size + margin - size > this.space) {
+    while (this.size + margin - size > this.capacity) {
       let target;
 
       switch (true) {
@@ -494,7 +488,7 @@ class Cache {
     size = 1,
     age = this.settings.age
   } = {}) {
-    if (size > this.space || age <= 0) {
+    if (size < 1 || this.capacity < size || age <= 0) {
       this.disposer?.(value, key);
       return false;
     }
@@ -510,7 +504,7 @@ class Cache {
       index.expiry = expiry;
 
       if (this.earlyExpiring && expiry !== global_1.Infinity) {
-        index.enode ? this.expiries.update(index.enode) : index.enode = this.expiries.insert(node);
+        index.enode ? this.expiries.update(index.enode, expiry) : index.enode = this.expiries.insert(node, expiry);
       } else if (index.enode) {
         this.expiries.delete(index.enode);
         index.enode = void 0;
@@ -535,7 +529,7 @@ class Cache {
     }));
 
     if (this.earlyExpiring && expiry !== global_1.Infinity) {
-      LRU.head.value.enode = this.expiries.insert(LRU.head);
+      LRU.head.value.enode = this.expiries.insert(LRU.head, expiry);
     }
 
     return false;
@@ -560,14 +554,14 @@ class Cache {
       ++this.misses;
       this.evict(node, true);
       return;
-    } // Optimization for memoize.
+    }
 
+    this.misses &&= 0;
+    this.sweep &&= 0; // Optimization for memoize.
 
     if (this.capacity > 3 && node === node.list.head) return node.value.value;
     this.access(node);
     this.adjust();
-    this.misses &&= 0;
-    this.sweep = 0;
     return node.value.value;
   }
 
@@ -607,21 +601,35 @@ class Cache {
     const memory = this.memory;
     this.memory = new global_1.Map();
 
-    for (const [key, {
-      value: {
-        value
+    for (const {
+      0: key,
+      1: {
+        value: {
+          value
+        }
       }
-    }] of memory) {
+    } of memory) {
       this.disposer(value, key);
     }
   }
 
+  resize(capacity) {
+    if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
+    this.capacity = capacity;
+    this.window = this.settings.window || this.capacity;
+    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
+    this.ensure(0);
+  }
+
   *[Symbol.iterator]() {
-    for (const [key, {
-      value: {
-        value
+    for (const {
+      0: key,
+      1: {
+        value: {
+          value
+        }
       }
-    }] of this.memory) {
+    } of this.memory) {
       yield [key, value];
     }
 
@@ -792,58 +800,56 @@ function rate(window, hits1, hits2, offset) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.tick = exports.clock = exports.now = void 0;
+exports.tick = exports.promise = exports.clock = exports.now = void 0;
 
 const global_1 = __webpack_require__(4128);
 
-const alias_1 = __webpack_require__(5406);
+const queue_1 = __webpack_require__(4934);
 
 const exception_1 = __webpack_require__(7822);
 
-let mem;
+const undefined = void 0;
+let time;
 let count = 0;
 
-function now(nocache = false) {
-  if (mem === void 0) {
-    tick(() => mem = void 0);
-  } else if (!nocache && ++count !== 100) {
-    return mem;
+function now(nocache) {
+  if (time === undefined) {
+    tick(() => time = undefined);
+  } else if (!nocache && count++ !== 20) {
+    return time;
   }
 
-  count = 0;
-  return mem = global_1.Date.now();
+  count = 1;
+  return time = global_1.Date.now();
 }
 
 exports.now = now;
-exports.clock = Promise.resolve(void 0);
-let queue = [];
-let jobs = [];
-let index = 0;
-const scheduler = Promise.resolve();
+exports.clock = global_1.Promise.resolve(undefined);
+
+function promise(cb) {
+  global_1.Promise.resolve().then(cb);
+}
+
+exports.promise = promise;
+const queue = new queue_1.Queue();
+const scheduler = global_1.Promise.resolve();
 
 function tick(cb) {
-  index === 0 && scheduler.then(run);
-  index++ === queue.length ? queue.push(cb) : queue[index - 1] = cb;
+  queue.isEmpty() && scheduler.then(run);
+  queue.push(cb);
 }
 
 exports.tick = tick;
 
 function run() {
-  const count = index;
-  [index, queue, jobs] = [0, jobs, queue];
-
-  for (let i = 0; i < count; ++i) {
+  for (let count = queue.length; count--;) {
     try {
-      (void 0, jobs[i])(); // Release the reference.
-
-      jobs[i] = void 0;
+      // @ts-expect-error
+      (0, queue.pop())();
     } catch (reason) {
       (0, exception_1.causeAsyncException)(reason);
     }
-  } // Gradually reduce the unused buffer space.
-
-
-  jobs.length > 1000 && count < jobs.length * 0.5 && jobs.splice((0, alias_1.floor)(jobs.length * 0.9), jobs.length);
+  }
 }
 
 /***/ }),
@@ -880,62 +886,51 @@ exports.MultiMap = void 0;
 
 const global_1 = __webpack_require__(4128);
 
-const array_1 = __webpack_require__(8112);
+const ring_1 = __webpack_require__(6395);
 
 class MultiMap {
   constructor(entries = [], memory = new global_1.Map()) {
     this.memory = memory;
 
-    for (const [k, v] of entries) {
+    for (const {
+      0: k,
+      1: v
+    } of entries) {
       this.set(k, v);
     }
   }
 
   get(key) {
-    return this.memory.get(key)?.[0];
+    return this.memory.get(key)?.at(0);
+  }
+
+  getAll(key) {
+    return this.memory.get(key);
   }
 
   set(key, val) {
-    this.memory.get(key)?.push(val) ?? this.memory.set(key, [val]);
+    let vs = this.memory.get(key);
+    if (vs) return vs.push(val), this;
+    vs = new ring_1.Ring();
+    vs.push(val);
+    this.memory.set(key, vs);
     return this;
   }
 
   has(key, value) {
     const vs = this.memory.get(key);
-    if (!vs || vs.length === 0) return false;
+    if (!vs?.length) return false;
     if (arguments.length < 2) return true;
-
-    switch (value) {
-      case vs[0]:
-      case vs[vs.length - 1]:
-        return true;
-
-      default:
-        return (0, array_1.indexOf)(vs, value) > -1;
-    }
+    return vs.includes(value);
   }
 
   delete(key, value) {
     if (arguments.length < 2) return this.memory.delete(key);
     const vs = this.memory.get(key);
-    if (!vs || vs.length === 0) return false;
-
-    switch (value) {
-      case vs[0]:
-        vs.shift();
-        break;
-
-      case vs[vs.length - 1]:
-        vs.pop();
-        break;
-
-      default:
-        const i = (0, array_1.indexOf)(vs, value);
-        if (i === -1) return false;
-        (0, array_1.splice)(vs, i, 1);
-    }
-
-    vs.length === 0 && this.memory.delete(key);
+    if (!vs?.length) return false;
+    const i = vs.indexOf(value);
+    if (i === -1) return false;
+    vs.splice(i, 1);
     return true;
   }
 
@@ -944,22 +939,32 @@ class MultiMap {
   }
 
   take(key, count) {
-    const vs = this.memory.get(key) ?? [];
-    return count === void 0 ? (0, array_1.splice)(vs, 0, 1)[0] : (0, array_1.splice)(vs, 0, count);
+    const vs = this.memory.get(key);
+    if (count === void 0) return vs?.shift();
+    const acc = [];
+
+    while (vs?.length && count--) {
+      acc.push(vs.shift());
+    }
+
+    return acc;
   }
 
   ref(key) {
     let vs = this.memory.get(key);
     if (vs) return vs;
-    vs = [];
+    vs = new ring_1.Ring();
     this.memory.set(key, vs);
     return vs;
   }
 
   *[Symbol.iterator]() {
-    for (const [k, vs] of this.memory) {
+    for (const {
+      0: k,
+      1: vs
+    } of this.memory) {
       for (let i = 0; i < vs.length; ++i) {
-        yield [k, vs[i]];
+        yield [k, vs.at(i)];
       }
     }
 
@@ -981,12 +986,12 @@ exports.MultiMap = MultiMap;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
+exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0; // 100,000以上でforより大幅に低速となり実用不可
 
 function duff(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count % 8,
+        m = count & 7,
         d = (count - m) / 8;
 
     while (m--) {
@@ -1005,7 +1010,7 @@ function duff(count, proc) {
     }
   } else {
     let i = -count,
-        m = i % 8,
+        m = i & 7,
         d = (i - m) / 8;
 
     while (m--) {
@@ -1025,12 +1030,12 @@ function duff(count, proc) {
   }
 }
 
-exports.duff = duff;
+exports.duff = duff; // 100,000以上でforより大幅に低速となり実用不可
 
 function duffbk(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count % 8,
+        m = count & 7,
         d = (count - m) / 8;
 
     while (m--) {
@@ -1038,18 +1043,21 @@ function duffbk(count, proc) {
     }
 
     while (d--) {
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
+      switch (false) {
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+          return;
+      }
     }
   } else {
     let i = -count,
-        m = i % 8,
+        m = i & 7,
         d = (i - m) / 8;
 
     while (m--) {
@@ -1057,14 +1065,17 @@ function duffbk(count, proc) {
     }
 
     while (d--) {
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
+      switch (false) {
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+          return;
+      }
     }
   }
 }
@@ -1074,7 +1085,7 @@ exports.duffbk = duffbk;
 function duffEach(array, proc) {
   let count = array.length;
   let i = 0,
-      m = count % 8,
+      m = count & 7,
       d = (count - m) / 8;
 
   while (m--) {
@@ -1093,30 +1104,32 @@ function duffEach(array, proc) {
   }
 }
 
-exports.duffEach = duffEach;
+exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られる場合があるがNodeListなどでの
+// 実際の使用では速度低下は見られない
 
 function duffReduce(array, proc, initial) {
   let count = array.length;
   let i = 0,
-      m = count % 8,
+      m = count & 7,
       d = (count - m) / 8;
+  let acc = initial;
 
   while (m--) {
-    initial = proc(initial, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
   }
 
   while (d--) {
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
   }
 
-  return initial;
+  return acc;
 }
 
 exports.duffReduce = duffReduce;
@@ -1180,18 +1193,22 @@ var global = (/* unused pure expression or super */ null && (globalThis));
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.Heap = void 0;
+exports.MultiHeap = exports.Heap = void 0;
 
-const alias_1 = __webpack_require__(5406); // Min heap
+const global_1 = __webpack_require__(4128);
 
+const invlist_1 = __webpack_require__(7452);
+
+const memoize_1 = __webpack_require__(1808);
 
 const undefined = void 0;
+let size = 16;
 
 class Heap {
-  constructor(cmp = (a, b) => a > b ? 1 : a < b ? -1 : 0, stable = false) {
+  constructor(cmp = Heap.max, stable = false) {
     this.cmp = cmp;
     this.stable = stable;
-    this.array = [];
+    this.array = (0, global_1.Array)(size);
     this.$length = 0;
   }
 
@@ -1199,19 +1216,35 @@ class Heap {
     return this.$length;
   }
 
-  insert(value, order = value) {
+  isEmpty() {
+    return this.array[0] !== undefined;
+  }
+
+  peek() {
+    return this.array[0]?.[1];
+  }
+
+  insert(value, order) {
+    if (arguments.length < 2) {
+      order = value;
+    }
+
     const array = this.array;
     const node = array[this.$length] = [order, value, this.$length++];
-    upHeapify(array, this.cmp, this.$length);
+    upHeapify(this.cmp, array, this.$length);
     return node;
   }
 
-  replace(value, order = value) {
-    const array = this.array;
+  replace(value, order) {
+    if (arguments.length < 2) {
+      order = value;
+    }
+
     if (this.$length === 0) return void this.insert(value, order);
+    const array = this.array;
     const replaced = array[0][1];
     array[0] = [order, value, 0];
-    downHeapify(array, this.cmp, 1, this.$length, this.stable);
+    downHeapify(this.cmp, array, 1, this.$length, this.stable);
     return replaced;
   }
 
@@ -1229,34 +1262,28 @@ class Heap {
     swap(array, index, --this.$length); // @ts-expect-error
 
     array[this.$length] = undefined;
-    index < this.$length && this.sort(array[index]);
-
-    if (array.length >= 2 ** 16 && array.length >= this.$length * 2) {
-      array.splice(array.length / 2, array.length / 2);
-    }
-
+    index < this.$length && sort(this.cmp, array, index, this.$length, this.stable);
     return node[1];
   }
 
-  update(node, order = node[1], value = node[1]) {
+  update(node, order, value) {
+    if (arguments.length < 2) {
+      order = node[0];
+    }
+
     const array = this.array;
     if (array[node[2]] !== node) throw new Error('Invalid node');
-    node[1] = value;
+
+    if (arguments.length > 2) {
+      node[1] = value;
+    }
+
     if (this.cmp(node[0], node[0] = order) === 0) return;
-    this.sort(node);
-  }
-
-  sort(node) {
-    const array = this.array;
-    return upHeapify(array, this.cmp, node[2] + 1) || downHeapify(array, this.cmp, node[2] + 1, this.$length, this.stable);
-  }
-
-  peek() {
-    return this.array[0]?.[1];
+    sort(this.cmp, array, node[2], this.$length, this.stable);
   }
 
   clear() {
-    this.array = [];
+    this.array = (0, global_1.Array)(size);
     this.$length = 0;
   }
 
@@ -1264,12 +1291,117 @@ class Heap {
 
 exports.Heap = Heap;
 
-function upHeapify(array, cmp, index) {
+Heap.max = (a, b) => a > b ? -1 : a < b ? 1 : 0;
+
+Heap.min = (a, b) => a > b ? 1 : a < b ? -1 : 0;
+
+class MultiHeap {
+  constructor(cmp = MultiHeap.max, clean = true) {
+    this.cmp = cmp;
+    this.clean = clean;
+    this.heap = new Heap(this.cmp);
+    this.dict = new Map();
+    this.list = (0, memoize_1.memoize)(order => {
+      const list = new invlist_1.List();
+      list[MultiHeap.order] = order;
+      list[MultiHeap.heap] = this.heap.insert(list, order);
+      return list;
+    }, this.dict);
+    this.$length = 0;
+  }
+
+  get length() {
+    return this.$length;
+  }
+
+  isEmpty() {
+    return this.heap.isEmpty();
+  }
+
+  peek() {
+    return this.heap.peek()?.head.value;
+  }
+
+  insert(value, order) {
+    if (arguments.length < 2) {
+      order = value;
+    }
+
+    ++this.$length;
+    const list = this.list(order);
+    return [order, list.push(value)];
+  }
+
+  extract() {
+    if (this.$length === 0) return;
+    --this.$length;
+    const list = this.heap.peek();
+    const value = list.shift();
+
+    if (list.length === 0) {
+      this.heap.extract();
+      this.clean && this.dict.delete(list[MultiHeap.order]);
+    }
+
+    return value;
+  }
+
+  delete(node) {
+    if (!node[1].list) throw new Error('Invalid node');
+    const {
+      0: order,
+      1: lnode
+    } = node;
+    --this.$length;
+
+    if (lnode.list.length === 1) {
+      this.heap.delete(lnode[MultiHeap.heap]);
+      this.clean && this.dict.delete(order);
+    }
+
+    return lnode.delete();
+  }
+
+  update(node, order, value) {
+    if (!node[1].list) throw new Error('Invalid node');
+
+    if (arguments.length < 2) {
+      order = node[0];
+    }
+
+    if (arguments.length > 2) {
+      node[1].value = value;
+    }
+
+    if (this.cmp(node[0], order) === 0) return node;
+    this.delete(node);
+    return this.insert(node[1].value, order);
+  }
+
+  clear() {
+    this.heap.clear();
+    this.dict.clear();
+    this.$length = 0;
+  }
+
+}
+
+exports.MultiHeap = MultiHeap;
+MultiHeap.order = Symbol('order');
+MultiHeap.heap = Symbol('heap');
+MultiHeap.max = Heap.max;
+MultiHeap.min = Heap.min;
+
+function sort(cmp, array, index, length, stable) {
+  return upHeapify(cmp, array, index + 1) || downHeapify(cmp, array, index + 1, length, stable);
+}
+
+function upHeapify(cmp, array, index) {
   const order = array[index - 1][0];
   let changed = false;
 
   while (index > 1) {
-    const parent = (0, alias_1.floor)(index / 2);
+    const parent = index / 2 | 0;
     if (cmp(array[parent - 1][0], order) <= 0) break;
     swap(array, index - 1, parent - 1);
     index = parent;
@@ -1279,7 +1411,7 @@ function upHeapify(array, cmp, index) {
   return changed;
 }
 
-function downHeapify(array, cmp, index, length, stable) {
+function downHeapify(cmp, array, index, length, stable) {
   let changed = false;
 
   while (index < length) {
@@ -1357,7 +1489,7 @@ __exportStar(__webpack_require__(2310), exports);
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
- // Circular inverse list
+ // Circular Inverse List
 
 var _a;
 
@@ -1395,8 +1527,16 @@ class List {
     return this.head = this.push(value);
   }
 
+  push(value) {
+    return new Node(this, value, this.head, this.head?.prev);
+  }
+
   unshiftNode(node) {
     return this.head = this.pushNode(node);
+  }
+
+  pushNode(node) {
+    return this.insert(node, this.head);
   }
 
   unshiftRotationally(value) {
@@ -1407,18 +1547,6 @@ class List {
     return node;
   }
 
-  shift() {
-    return this.head?.delete();
-  }
-
-  push(value) {
-    return new Node(value, this.head, this.head?.prev, this);
-  }
-
-  pushNode(node) {
-    return this.insert(node, this.head);
-  }
-
   pushRotationally(value) {
     const node = this.head;
     if (!node) return this.push(value);
@@ -1427,12 +1555,16 @@ class List {
     return node;
   }
 
+  shift() {
+    return this.head?.delete();
+  }
+
   pop() {
     return this.last?.delete();
   }
 
   insert(node, before = this.head) {
-    if (node.list === this) return before && node.move(before), node;
+    if (node.list === this) return node.moveTo(before), node;
     node.delete();
     ++this[LENGTH];
     this.head ??= node; // @ts-expect-error
@@ -1457,11 +1589,11 @@ class List {
 exports.List = List;
 
 class Node {
-  constructor(value, next, prev, list = next?.list ?? new List()) {
+  constructor(list, value, next, prev) {
+    this.list = list;
     this.value = value;
     this.next = next;
     this.prev = prev;
-    this.list = list;
     ++list[LENGTH];
     list.head ??= this;
     next && prev ? next.prev = prev.next = this : this.next = this.prev = this;
@@ -1470,17 +1602,21 @@ class Node {
   delete() {
     if (!this.list) return this.value;
     --this.list[LENGTH];
+    const {
+      next,
+      prev
+    } = this;
 
     if (this.list.head === this) {
-      this.list.head = this.next === this ? undefined : this.next;
+      this.list.head = next === this ? undefined : next;
     }
 
-    if (this.next) {
-      this.next.prev = this.prev;
+    if (next) {
+      next.prev = prev;
     }
 
-    if (this.prev) {
-      this.prev.next = this.next;
+    if (prev) {
+      prev.next = next;
     } // @ts-expect-error
 
 
@@ -1491,20 +1627,19 @@ class Node {
   }
 
   insertBefore(value) {
-    return new Node(value, this, this.prev, this.list);
+    return new Node(this.list, value, this, this.prev);
   }
 
   insertAfter(value) {
-    return new Node(value, this.next, this, this.list);
+    return new Node(this.list, value, this.next, this);
   }
 
-  move(before) {
+  moveTo(before) {
     if (!before) return false;
     if (this === before) return false;
     if (before.list !== this.list) return before.list.insert(this, before), true;
     const a1 = this;
     const b1 = before;
-    if (!b1) return false;
     if (a1.next === b1) return false;
     const b0 = b1.prev;
     const a0 = a1.prev;
@@ -1519,12 +1654,12 @@ class Node {
   }
 
   moveToHead() {
-    this.move(this.list.head);
+    this.moveTo(this.list.head);
     this.list.head = this;
   }
 
   moveToLast() {
-    this.move(this.list.head);
+    this.moveTo(this.list.head);
   }
 
   swap(node) {
@@ -1533,8 +1668,8 @@ class Node {
     if (node1 === node2) return false;
     const node3 = node2.next;
     if (node1.list !== node2.list) throw new Error(`Spica: InvList: Cannot swap nodes across lists.`);
-    node2.move(node1);
-    node1.move(node3);
+    node2.moveTo(node1);
+    node1.moveTo(node3);
 
     switch (this.list.head) {
       case node1:
@@ -1570,12 +1705,14 @@ const alias_1 = __webpack_require__(5406);
 
 const compare_1 = __webpack_require__(5529);
 
+const undefined = void 0;
+
 function memoize(f, identify = (...as) => as[0], memory) {
-  if (typeof identify === 'object') return memoize(f, void 0, identify);
-  if (memory === void 0) return memoize(f, identify, new global_1.Map());
+  if (typeof identify === 'object') return memoize(f, undefined, identify);
+  if (memory === undefined) return memoize(f, identify, new global_1.Map());
   if ((0, alias_1.isArray)(memory)) return memoize(f, identify, {
     has(key) {
-      return memory[key] !== void 0;
+      return memory[key] !== undefined;
     },
 
     get(key) {
@@ -1596,9 +1733,9 @@ function memoize(f, identify = (...as) => as[0], memory) {
   return (...as) => {
     const b = identify(...as);
     let z = memory.get(b);
-    if (z !== void 0 || nullish && memory.has(b)) return z;
+    if (z !== undefined || nullish && memory.has(b)) return z;
     z = f(...as);
-    nullish ||= z === void 0;
+    nullish ||= z === undefined;
     memory.set(b, z);
     return z;
   };
@@ -1607,8 +1744,8 @@ function memoize(f, identify = (...as) => as[0], memory) {
 exports.memoize = memoize;
 
 function reduce(f, identify = (...as) => as[0]) {
-  let key = [];
-  let val = [];
+  let key = {};
+  let val;
   return (...as) => {
     const b = identify(...as);
 
@@ -1662,6 +1799,210 @@ __exportStar(__webpack_require__(5084), exports);
 
 /***/ }),
 
+/***/ 4934:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.PriorityQueue = exports.Queue = void 0;
+
+const global_1 = __webpack_require__(4128);
+
+const heap_1 = __webpack_require__(818);
+
+const memoize_1 = __webpack_require__(1808);
+
+const undefined = void 0;
+const size = 2048;
+const initsize = 16;
+
+class Queue {
+  constructor() {
+    this.head = new FixedQueue(initsize);
+    this.tail = this.head;
+    this.count = 0;
+    this.irregular = 0;
+  }
+
+  get length() {
+    return this.count === 0 ? this.head.length : this.head.length + this.tail.length + (size - 1) * (this.count - 2) + (this.irregular || size) - 1;
+  }
+
+  isEmpty() {
+    return this.head.isEmpty();
+  }
+
+  peek(index = 0) {
+    return index === 0 ? this.head.peek(0) : this.tail.peek(-1);
+  }
+
+  push(value) {
+    const tail = this.tail;
+
+    if (tail.isFull()) {
+      if (tail.next.isEmpty()) {
+        this.tail = tail.next;
+      } else {
+        this.tail = tail.next = new FixedQueue(size, tail.next);
+      }
+
+      ++this.count;
+
+      if (tail.size !== size && tail !== this.head) {
+        this.irregular = tail.size;
+      }
+    }
+
+    this.tail.push(value);
+  }
+
+  pop() {
+    const head = this.head;
+    const value = head.pop();
+
+    if (head.isEmpty() && !head.next.isEmpty()) {
+      --this.count;
+      this.head = head.next;
+
+      if (this.head.size === this.irregular) {
+        this.irregular = 0;
+      }
+    }
+
+    return value;
+  }
+
+  clear() {
+    this.head = this.tail = new FixedQueue(initsize);
+    this.count = 0;
+    this.irregular = 0;
+  }
+
+  *[Symbol.iterator]() {
+    while (!this.isEmpty()) {
+      yield this.pop();
+    }
+
+    return;
+  }
+
+}
+
+exports.Queue = Queue;
+
+class FixedQueue {
+  constructor(size, next) {
+    this.size = size;
+    this.array = (0, global_1.Array)(this.size);
+    this.mask = this.array.length - 1;
+    this.head = 0;
+    this.tail = 0;
+    this.next = next ?? this;
+  }
+
+  get length() {
+    return this.tail >= this.head ? this.tail - this.head : this.array.length - this.head + this.tail;
+  }
+
+  isEmpty() {
+    return this.tail === this.head;
+  }
+
+  isFull() {
+    return (this.tail + 1 & this.mask) === this.head;
+  }
+
+  peek(index = 0) {
+    return index === 0 ? this.array[this.head] : this.array[this.tail - 1 & this.mask];
+  }
+
+  push(value) {
+    this.array[this.tail] = value;
+    this.tail = this.tail + 1 & this.mask;
+  }
+
+  pop() {
+    if (this.isEmpty()) return;
+    const value = this.array[this.head];
+    this.array[this.head] = undefined;
+    this.head = this.head + 1 & this.mask;
+    return value;
+  }
+
+}
+
+class PriorityQueue {
+  constructor(cmp = PriorityQueue.max, clean = true) {
+    this.clean = clean;
+    this.dict = new Map();
+    this.queue = (0, memoize_1.memoize)(priority => {
+      const queue = new Queue();
+      queue[PriorityQueue.priority] = priority;
+      this.heap.insert(queue, priority);
+      return queue;
+    }, this.dict);
+    this.$length = 0;
+    this.heap = new heap_1.Heap(cmp);
+  }
+
+  get length() {
+    return this.$length;
+  }
+
+  isEmpty() {
+    return this.$length === 0;
+  }
+
+  peek() {
+    return this.heap.peek()?.peek();
+  }
+
+  push(value, priority) {
+    ++this.$length;
+    this.queue(priority).push(value);
+  }
+
+  pop() {
+    if (this.$length === 0) return;
+    --this.$length;
+    const queue = this.heap.peek();
+    const value = queue.pop();
+
+    if (queue.isEmpty()) {
+      this.heap.extract();
+      this.clean && this.dict.delete(queue[PriorityQueue.priority]);
+    }
+
+    return value;
+  }
+
+  clear() {
+    this.heap.clear();
+    this.dict.clear();
+    this.$length = 0;
+  }
+
+  *[Symbol.iterator]() {
+    while (!this.isEmpty()) {
+      yield this.pop();
+    }
+
+    return;
+  }
+
+}
+
+exports.PriorityQueue = PriorityQueue;
+PriorityQueue.priority = Symbol('priority');
+PriorityQueue.max = heap_1.Heap.max;
+PriorityQueue.min = heap_1.Heap.min;
+
+/***/ }),
+
 /***/ 7325:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1695,12 +2036,14 @@ function unique(rnd, len, mem) {
   let limit = 5;
   return () => {
     while (true) {
-      for (let i = 0; i < limit; ++i) {
-        const r = rnd(len);
-        if (mem.has(r)) continue;
-        mem.add(r);
-        return r;
-      }
+      try {
+        for (let i = 0; i < limit; ++i) {
+          const r = rnd(len);
+          if (mem.has(r)) continue;
+          mem.add(r);
+          return r;
+        }
+      } catch {}
 
       clear && mem.clear();
       ++len;
@@ -1757,6 +2100,235 @@ function random(len) {
     ++index;
     return random(len);
   }
+}
+
+/***/ }),
+
+/***/ 6395:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Ring = void 0;
+
+const global_1 = __webpack_require__(4128);
+
+const alias_1 = __webpack_require__(5406);
+
+const array_1 = __webpack_require__(8112);
+
+const undefined = void 0;
+const empty = Symbol('empty');
+
+const unempty = value => value === empty ? undefined : value;
+
+const space = Object.freeze((0, global_1.Array)(100).fill(empty));
+let size = 16;
+
+class Ring {
+  constructor() {
+    this.array = (0, global_1.Array)(size);
+    this.head = 0;
+    this.tail = 0;
+    this.$length = 0;
+    this.excess = 0;
+  }
+
+  get length() {
+    return this.$length;
+  }
+
+  at(index) {
+    // Inline the code for optimization.
+    const array = this.array;
+
+    if (index >= 0) {
+      if (index >= this.$length) return;
+      return unempty(array[(this.head - 1 + index) % array.length]);
+    } else {
+      if (-index > this.$length) return;
+      return this.tail + index >= 0 ? unempty(array[this.tail + index]) : unempty(array[array.length + this.tail + index]);
+    }
+  }
+
+  replace(index, value, replacer) {
+    const array = this.array;
+
+    if (index >= 0) {
+      if (index >= this.$length) throw new RangeError('Invalid index');
+      index = (this.head - 1 + index) % array.length;
+    } else {
+      if (-index > this.$length) throw new RangeError('Invalid index');
+      index = this.tail + index >= 0 ? this.tail + index : array.length + this.tail + index;
+    }
+
+    const val = unempty(array[index]);
+    array[index] = replacer ? replacer(val, value) : value;
+    return val;
+  }
+
+  push(value) {
+    const array = this.array;
+    let {
+      head,
+      tail
+    } = this;
+    tail = this.tail = next(head, tail, array.length);
+    head = this.head ||= tail;
+
+    if (head === tail && this.$length !== 0) {
+      (0, array_1.splice)(array, tail - 1, 0, ...space);
+      head = this.head += space.length;
+    }
+
+    array[tail - 1] = value;
+    ++this.$length;
+  }
+
+  unshift(value) {
+    const array = this.array;
+    let {
+      head,
+      tail
+    } = this;
+    head = this.head = prev(head, tail, array.length);
+    tail = this.tail ||= head;
+
+    if (head === tail && this.$length !== 0) {
+      (0, array_1.splice)(array, head, 0, ...space);
+      head = this.head += space.length;
+    }
+
+    array[head - 1] = value;
+    ++this.$length;
+  }
+
+  pop() {
+    if (this.$length === 0) return;
+    const array = this.array;
+    const i = this.tail - 1;
+    const value = unempty(array[i]);
+    array[i] = empty;
+    --this.$length === 0 ? this.head = this.tail = 0 : this.tail = this.tail === 1 ? array.length : this.tail - 1;
+    return value;
+  }
+
+  shift() {
+    if (this.$length === 0) return;
+    const array = this.array;
+    const i = this.head - 1;
+    const value = unempty(array[i]);
+    array[i] = empty;
+    --this.$length === 0 ? this.head = this.tail = 0 : this.head = this.head === array.length ? 1 : this.head + 1;
+    return value;
+  }
+
+  splice(index, count, ...values) {
+    const array = this.array;
+
+    if (this.excess > 100 && array.length - this.$length > 200) {
+      (0, array_1.splice)(array, 0, 100 - (0, array_1.splice)(array, this.tail, 100).length);
+      this.excess -= 100;
+    } else if (-this.excess > array.length * 2) {
+      this.excess = array.length;
+    }
+
+    index = index < 0 ? (0, alias_1.max)(0, this.$length + index) : index <= this.$length ? index : this.$length;
+    count = (0, alias_1.min)((0, alias_1.max)(count, 0), this.$length - index);
+
+    if (values.length === 0) {
+      if (count === 0) return [];
+
+      switch (index) {
+        case 0:
+          if (count === 1) return [this.shift()];
+          break;
+
+        case this.$length - 1:
+          if (count === 1) return [this.pop()];
+          break;
+
+        case this.$length:
+          return [];
+      }
+    }
+
+    index = (this.head || 1) - 1 + index;
+    index = index > array.length ? index % array.length : index;
+    this.excess += values.length - count;
+    this.$length += values.length - count; // |--H>*>T--|
+
+    if (this.head <= this.tail) {
+      this.tail += values.length - count;
+      return (0, array_1.splice)(array, index, count, ...values);
+    } // |*>T---H>>|
+
+
+    if (index < this.tail) {
+      this.head += values.length - count;
+      this.tail += values.length - count;
+      return (0, array_1.splice)(array, index, count, ...values);
+    } // |>>T---H>*|
+
+
+    const cnt = (0, alias_1.min)(count, array.length - index);
+    const vs = (0, array_1.splice)(array, index, cnt, ...(0, array_1.splice)(values, 0, cnt));
+    vs.push(...(0, array_1.splice)(array, 0, count - vs.length, ...values));
+    return vs;
+  }
+
+  clear() {
+    this.array = (0, global_1.Array)(size);
+    this.$length = this.head = this.tail = 0;
+  }
+
+  includes(value) {
+    return this.array.includes(value);
+  }
+
+  relational(index) {
+    if (index === -1) return -1;
+    return index + 1 >= this.head ? index + 1 - this.head : this.array.length - this.head + index;
+  }
+
+  indexOf(value) {
+    return this.relational((0, array_1.indexOf)(this.array, value));
+  }
+
+  findIndex(f) {
+    return this.relational(this.array.findIndex(value => value !== empty && f(value)));
+  }
+
+  find(f) {
+    return unempty(this.array.find(value => value !== empty && f(value)));
+  }
+
+  toArray() {
+    return this.head <= this.tail ? this.array.slice((this.head || 1) - 1, this.tail) : this.array.slice((this.head || 1) - 1).concat(this.array.slice(0, this.tail));
+  }
+
+  *[Symbol.iterator]() {
+    for (let i = 0; i < this.$length; ++i) {
+      yield this.at(i);
+    }
+
+    return;
+  }
+
+}
+
+exports.Ring = Ring;
+
+function next(head, tail, length) {
+  return tail === length && head !== 1 ? 1 : tail + 1;
+}
+
+function prev(head, tail, length) {
+  return head === 0 || head === 1 ? tail === length ? length + 1 : length : head - 1;
 }
 
 /***/ }),
@@ -1847,84 +2419,80 @@ Object.defineProperty(exports, "ReadonlyURL", ({
     return format_3.ReadonlyURL;
   }
 }));
-const internal = Symbol.for('spica/url::internal');
 
 class URL {
   constructor(source, base) {
     this.source = source;
     this.base = base;
-    this[internal] = {
-      url: new format_1.ReadonlyURL(source, base),
-      searchParams: void 0
-    };
+    this.url = new format_1.ReadonlyURL(source, base);
   }
 
   get href() {
-    return this[internal].searchParams?.toString().replace(/^(?=.)/, `${this[internal].url.href.slice(0, -this[internal].url.query.length - this[internal].url.fragment.length || this[internal].url.href.length)}?`).concat(this.fragment) ?? this[internal].url.href;
+    return this.params?.toString().replace(/^(?=.)/, `${this.url.href.slice(0, -this.url.query.length - this.url.fragment.length || this.url.href.length)}?`).concat(this.fragment) ?? this.url.href;
   }
 
   get resource() {
-    return this[internal].searchParams?.toString().replace(/^(?=.)/, `${this[internal].url.href.slice(0, -this[internal].url.query.length - this[internal].url.fragment.length || this[internal].url.href.length)}?`) ?? this[internal].url.resource;
+    return this.params?.toString().replace(/^(?=.)/, `${this.url.href.slice(0, -this.url.query.length - this.url.fragment.length || this.url.href.length)}?`) ?? this.url.resource;
   }
 
   get origin() {
-    return this[internal].url.origin;
+    return this.url.origin;
   }
 
   get scheme() {
-    return this[internal].url.protocol.slice(0, -1);
+    return this.url.protocol.slice(0, -1);
   }
 
   get protocol() {
-    return this[internal].url.protocol;
+    return this.url.protocol;
   }
 
   get username() {
-    return this[internal].url.username;
+    return this.url.username;
   }
 
   get password() {
-    return this[internal].url.password;
+    return this.url.password;
   }
 
   get host() {
-    return this[internal].url.host;
+    return this.url.host;
   }
 
   get hostname() {
-    return this[internal].url.hostname;
+    return this.url.hostname;
   }
 
   get port() {
-    return this[internal].url.port;
+    return this.url.port;
   }
 
   get path() {
-    return this[internal].searchParams?.toString().replace(/^(?=.)/, `${this.pathname}?`) ?? this[internal].url.path;
+    return this.params?.toString().replace(/^(?=.)/, `${this.pathname}?`) ?? this.url.path;
   }
 
   get pathname() {
-    return this[internal].url.pathname;
+    return this.url.pathname;
   }
 
   get search() {
-    return this[internal].searchParams?.toString().replace(/^(?=.)/, '?') ?? this[internal].url.search;
+    return this.params?.toString().replace(/^(?=.)/, '?') ?? this.url.search;
   }
 
   get query() {
-    return this[internal].searchParams?.toString().replace(/^(?=.)/, '?') ?? this[internal].url.query;
+    return this.params?.toString().replace(/^(?=.)/, '?') ?? this.url.query;
   }
 
   get hash() {
-    return this[internal].url.hash;
+    return this.url.hash;
   }
 
   get fragment() {
-    return this[internal].url.fragment;
+    return this.url.fragment;
   }
 
   get searchParams() {
-    return this[internal].searchParams ??= new global_1.URLSearchParams(this.search);
+    return this.params ??= new global_1.URLSearchParams(this.search);
   }
 
   toString() {
@@ -1973,7 +2541,6 @@ function encode(url) {
 }
 
 exports._encode = encode;
-const internal = Symbol.for('spica/url::internal');
 
 class ReadonlyURL {
   constructor(source, base) {
@@ -2006,74 +2573,71 @@ class ReadonlyURL {
 
     }
 
-    this[internal] = {
-      share: ReadonlyURL.get(source, base),
-      searchParams: void 0
-    };
+    this.share = ReadonlyURL.get(source, base);
   }
 
   get href() {
-    return this[internal].share.href ??= this[internal].share.url.href;
+    return this.share.href ??= this.share.url.href;
   }
 
   get resource() {
-    return this[internal].share.resource ??= this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search;
+    return this.share.resource ??= this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search;
   }
 
   get origin() {
-    return this[internal].share.origin ??= this[internal].share.url.origin;
+    return this.share.origin ??= this.share.url.origin;
   }
 
   get protocol() {
-    return this[internal].share.protocol ??= this[internal].share.url.protocol;
+    return this.share.protocol ??= this.share.url.protocol;
   }
 
   get username() {
-    return this[internal].share.username ??= this[internal].share.url.username;
+    return this.share.username ??= this.share.url.username;
   }
 
   get password() {
-    return this[internal].share.password ??= this[internal].share.url.password;
+    return this.share.password ??= this.share.url.password;
   }
 
   get host() {
-    return this[internal].share.host ??= this[internal].share.url.host;
+    return this.share.host ??= this.share.url.host;
   }
 
   get hostname() {
-    return this[internal].share.hostname ??= this[internal].share.url.hostname;
+    return this.share.hostname ??= this.share.url.hostname;
   }
 
   get port() {
-    return this[internal].share.port ??= this[internal].share.url.port;
+    return this.share.port ??= this.share.url.port;
   }
 
   get path() {
-    return this[internal].share.path ??= `${this.pathname}${this.search}`;
+    return this.share.path ??= `${this.pathname}${this.search}`;
   }
 
   get pathname() {
-    return this[internal].share.pathname ??= this[internal].share.url.pathname;
+    return this.share.pathname ??= this.share.url.pathname;
   }
 
   get search() {
-    return this[internal].share.search ??= this[internal].share.url.search;
+    return this.share.search ??= this.share.url.search;
   }
 
   get query() {
-    return this[internal].share.query ??= this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
+    return this.share.query ??= this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
   }
 
   get hash() {
-    return this[internal].share.hash ??= this[internal].share.url.hash;
+    return this.share.hash ??= this.share.url.hash;
   }
 
   get fragment() {
-    return this[internal].share.fragment ??= this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
+    return this.share.fragment ??= this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
   }
 
   get searchParams() {
-    return this[internal].searchParams ??= new global_1.URLSearchParams(this.search);
+    return this.params ??= new global_1.URLSearchParams(this.search);
   }
 
   toString() {
@@ -5367,8 +5931,6 @@ const dom_1 = __webpack_require__(3252);
 
 const memoize_1 = __webpack_require__(1808);
 
-const duff_1 = __webpack_require__(8099);
-
 const array_1 = __webpack_require__(8112);
 
 const openers = {
@@ -5471,19 +6033,20 @@ function format(el, type, form) {
     'data-type': style(type) || global_1.undefined
   });
   const marker = el.firstElementChild?.getAttribute('data-marker').match(initial(type))?.[0] ?? '';
-  const es = el.children;
-  (0, duff_1.duffbk)(es.length, i => {
+
+  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
     switch (el.getAttribute('data-marker')) {
       case '':
       case marker:
         el.removeAttribute('data-marker');
-        return;
+        continue;
     }
 
-    return false;
-  });
+    break;
+  }
+
   return el;
 }
 
@@ -7737,7 +8300,9 @@ function* figure(target, footnotes, opts = {}) {
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
 
-    for (const ref of refs.take(label, global_1.Infinity)) {
+    for (let rs = refs.take(label, global_1.Infinity), i = 0; i < rs.length; ++i) {
+      const ref = rs[i];
+
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
         (0, dom_1.define)(ref, {
           class: void ref.classList.remove('invalid'),
@@ -7906,7 +8471,8 @@ function build(syntax, marker, splitter) {
       if (title && !blank && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
 
-        for (const ref of buffer.take(identifier, global_1.Infinity)) {
+        for (let refs = buffer.take(identifier, global_1.Infinity), i = 0; i < refs.length; ++i) {
+          const ref = refs[i];
           if (ref.getAttribute('data-invalid-type') !== 'content') continue;
           (0, dom_1.define)(ref, {
             title,
@@ -8746,8 +9312,8 @@ function render(source, opts = {}) {
   opts = extend(opts);
   const base = global_1.location.href;
 
-  for (const el of (0, query_1.querySelectorAll)(source, selector)) {
-    render_(base, el, opts);
+  for (let es = (0, query_1.querySelectorAllWith)(source, selector), i = 0; i < es.length; ++i) {
+    render_(base, es[i], opts);
   }
 }
 
@@ -9448,7 +10014,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.301 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.305 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9466,9 +10032,9 @@ return /******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
 exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign;
+exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.sqrt = Math.sqrt;
 exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
@@ -9500,11 +10066,11 @@ exports.equal = equal;
 /***/ }),
 
 /***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_2590__) => {
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_2745__) => {
 
 
 
-__nested_webpack_require_2590__(921);
+__nested_webpack_require_2745__(921);
 
 const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
@@ -9525,7 +10091,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /***/ }),
 
 /***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3077__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3232__) => {
 
 
 
@@ -9534,11 +10100,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reduce = exports.memoize = void 0;
 
-const global_1 = __nested_webpack_require_3077__(128);
+const global_1 = __nested_webpack_require_3232__(128);
 
-const alias_1 = __nested_webpack_require_3077__(406);
+const alias_1 = __nested_webpack_require_3232__(406);
 
-const compare_1 = __nested_webpack_require_3077__(529);
+const compare_1 = __nested_webpack_require_3232__(529);
 
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, void 0, identify);
@@ -9596,7 +10162,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4467__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4622__) => {
 
 
 
@@ -9605,11 +10171,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 
-const global_1 = __nested_webpack_require_4467__(128);
+const global_1 = __nested_webpack_require_4622__(128);
 
-const alias_1 = __nested_webpack_require_4467__(406);
+const alias_1 = __nested_webpack_require_4622__(406);
 
-const memoize_1 = __nested_webpack_require_4467__(808);
+const memoize_1 = __nested_webpack_require_4622__(808);
 
 var caches;
 
@@ -9650,9 +10216,8 @@ function text(source) {
 exports.text = text;
 
 function element(context, ns) {
-  const cache = (0, memoize_1.memoize)(elem, (_, ns, tag) => `${ns}:${tag}`);
   return (tag, attrs, children) => {
-    const el = tag.includes('-') ? elem(context, ns, tag) : cache(context, ns, tag).cloneNode(true);
+    const el = elem(context, ns, tag);
     return !attrs || isChildren(attrs) ? defineChildren(el, attrs ?? children) : defineChildren(defineAttrs(el, attrs), children);
   };
 }
@@ -9845,7 +10410,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11560__(moduleId) {
+/******/ 	function __nested_webpack_require_11575__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -9859,7 +10424,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11560__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11575__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -9870,7 +10435,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_11560__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_11575__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -9882,7 +10447,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.301 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.305 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -9891,114 +10456,6 @@ exports.defrag = defrag;
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ 112:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_645__) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
-
-const global_1 = __nested_webpack_require_645__(128);
-
-function indexOf(as, a) {
-  if (as.length === 0) return -1;
-  return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
-}
-
-exports.indexOf = indexOf;
-
-function unshift(as, bs) {
-  if ('length' in as) {
-    for (let i = as.length - 1; i >= 0; --i) {
-      bs.unshift(as[i]);
-    }
-  } else {
-    bs.unshift(...as);
-  }
-
-  return bs;
-}
-
-exports.unshift = unshift;
-
-function shift(as, count) {
-  if (count < 0) throw new Error('Unexpected negative number');
-  return count === void 0 ? [as.shift(), as] : [splice(as, 0, count), as];
-}
-
-exports.shift = shift;
-
-function push(as, bs) {
-  if ('length' in bs) {
-    for (let i = 0, len = bs.length; i < len; ++i) {
-      as.push(bs[i]);
-    }
-  } else {
-    for (const b of bs) {
-      as.push(b);
-    }
-  }
-
-  return as;
-}
-
-exports.push = push;
-
-function pop(as, count) {
-  if (count < 0) throw new Error('Unexpected negative number');
-  return count === void 0 ? [as, as.pop()] : [as, splice(as, as.length - count, count)];
-}
-
-exports.pop = pop;
-
-function splice(as, index, count, ...inserts) {
-  if (count === 0 && inserts.length === 0) return [];
-  count = count > as.length ? as.length : count;
-
-  switch (index) {
-    case 0:
-      switch (count) {
-        case 0:
-          return [[], unshift(inserts, as)][0];
-
-        case 1:
-          return as.length === 0 ? [[], unshift(inserts, as)][0] : [[as.shift()], unshift(inserts, as)][0];
-
-        case void 0:
-          if (as.length > 1 || arguments.length > 2) break;
-          return as.length === 0 ? [] : splice(as, index, 1);
-      }
-
-      break;
-
-    case -1:
-    case as.length - 1:
-      switch (count) {
-        case 1:
-          return as.length === 0 ? [[], push(as, inserts)][0] : [[as.pop()], push(as, inserts)][0];
-
-        case void 0:
-          if (as.length > 1 || arguments.length > 2) break;
-          return as.length === 0 ? [] : splice(as, index, 1);
-      }
-
-      break;
-
-    case as.length:
-    case global_1.Infinity:
-      return [[], push(as, inserts)][0];
-  }
-
-  return arguments.length > 2 ? as.splice(index, count, ...inserts) : as.splice(index);
-}
-
-exports.splice = splice;
-
-/***/ }),
 
 /***/ 99:
 /***/ ((__unused_webpack_module, exports) => {
@@ -10013,7 +10470,7 @@ exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
 function duff(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count % 8,
+        m = count & 7,
         d = (count - m) / 8;
 
     while (m--) {
@@ -10032,7 +10489,7 @@ function duff(count, proc) {
     }
   } else {
     let i = -count,
-        m = i % 8,
+        m = i & 7,
         d = (i - m) / 8;
 
     while (m--) {
@@ -10057,7 +10514,7 @@ exports.duff = duff;
 function duffbk(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count % 8,
+        m = count & 7,
         d = (count - m) / 8;
 
     while (m--) {
@@ -10065,18 +10522,21 @@ function duffbk(count, proc) {
     }
 
     while (d--) {
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
-      if (proc(i++) === false) return;
+      switch (false) {
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+        case proc(i++):
+          return;
+      }
     }
   } else {
     let i = -count,
-        m = i % 8,
+        m = i & 7,
         d = (i - m) / 8;
 
     while (m--) {
@@ -10084,14 +10544,17 @@ function duffbk(count, proc) {
     }
 
     while (d--) {
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
-      if (proc(--i) === false) return;
+      switch (false) {
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+        case proc(--i):
+          return;
+      }
     }
   }
 }
@@ -10101,7 +10564,7 @@ exports.duffbk = duffbk;
 function duffEach(array, proc) {
   let count = array.length;
   let i = 0,
-      m = count % 8,
+      m = count & 7,
       d = (count - m) / 8;
 
   while (m--) {
@@ -10120,30 +10583,32 @@ function duffEach(array, proc) {
   }
 }
 
-exports.duffEach = duffEach;
+exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られるがNodeListなどでの
+// 実際の使用では速度低下は見られない
 
 function duffReduce(array, proc, initial) {
   let count = array.length;
   let i = 0,
-      m = count % 8,
+      m = count & 7,
       d = (count - m) / 8;
+  let acc = initial;
 
   while (m--) {
-    initial = proc(initial, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
   }
 
   while (d--) {
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
-    initial = proc(initial, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
+    acc = proc(acc, array[i], i++, array);
   }
 
-  return initial;
+  return acc;
 }
 
 exports.duffReduce = duffReduce;
@@ -10151,11 +10616,11 @@ exports.duffReduce = duffReduce;
 /***/ }),
 
 /***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_6113__) => {
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_3560__) => {
 
 
 
-__nested_webpack_require_6113__(921);
+__nested_webpack_require_3560__(921);
 
 const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
@@ -10181,7 +10646,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_6765__(moduleId) {
+/******/ 	function __nested_webpack_require_4212__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -10195,7 +10660,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_6765__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_4212__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -10211,26 +10676,32 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.querySelectorAll = exports.querySelector = void 0;
+exports.querySelectorAll = exports.querySelectorAllWith = exports.querySelectorWith = void 0;
 
-const duff_1 = __nested_webpack_require_6765__(99);
+const global_1 = __nested_webpack_require_4212__(128);
 
-const array_1 = __nested_webpack_require_6765__(112);
+const duff_1 = __nested_webpack_require_4212__(99);
 
-function querySelector(node, selector) {
+function querySelectorWith(node, selector) {
   return 'matches' in node && node.matches(selector) ? node : node.querySelector(selector);
 }
 
-exports.querySelector = querySelector;
+exports.querySelectorWith = querySelectorWith;
 
-function querySelectorAll(node, selector) {
+function querySelectorAllWith(node, selector) {
   const acc = [];
 
   if ('matches' in node && node.matches(selector)) {
     acc.push(node);
   }
 
-  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, node) => (0, array_1.push)(acc, [node]), acc);
+  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, el) => (acc.push(el), acc), acc);
+}
+
+exports.querySelectorAllWith = querySelectorAllWith;
+
+function querySelectorAll(node, selector) {
+  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, el) => (acc.push(el), acc), (0, global_1.Array)());
 }
 
 exports.querySelectorAll = querySelectorAll;
