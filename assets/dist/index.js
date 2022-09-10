@@ -3873,7 +3873,7 @@ class Memo {
   clear(position) {
     const memory = this.memory;
 
-    for (let i = position, len = memory.length; i < len; ++i) {
+    for (let len = memory.length, i = position; i < len; ++i) {
       memory.pop();
     } //console.log('clear', position + 1);
 
@@ -3911,7 +3911,7 @@ function inits(parsers, resume) {
     let rest = source;
     let nodes;
 
-    for (let i = 0, len = parsers.length; i < len; ++i) {
+    for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') break;
       if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parsers[i]({
@@ -3958,7 +3958,7 @@ function sequence(parsers, resume) {
     let rest = source;
     let nodes;
 
-    for (let i = 0, len = parsers.length; i < len; ++i) {
+    for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') return;
       if (context.delimiters?.match(rest, context.precedence)) return;
       const result = parsers[i]({
@@ -4422,7 +4422,7 @@ function bind(target, settings) {
   function nearest(index) {
     let el;
 
-    for (let i = 0, len = 0; i < blocks.length; ++i) {
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
       el = block[1][0] ?? el;
@@ -4433,7 +4433,7 @@ function bind(target, settings) {
   }
 
   function index(source) {
-    for (let i = 0, len = 0; i < blocks.length; ++i) {
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       if (block[1].includes(source)) return len;
       len += block[0].length;
@@ -4629,9 +4629,9 @@ const figure_1 = __webpack_require__(9123);
 
 const footnote_1 = __webpack_require__(7529);
 
-const dom_1 = __webpack_require__(3252);
-
 const url_1 = __webpack_require__(2261);
+
+const dom_1 = __webpack_require__(3252);
 
 function parse(source, opts = {}, context) {
   if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.`);
@@ -4771,9 +4771,9 @@ const reply_1 = __webpack_require__(9978);
 
 const paragraph_1 = __webpack_require__(6457);
 
-const dom_1 = __webpack_require__(3252);
-
 const random_1 = __webpack_require__(7325);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.block = (0, combinator_1.creation)(1, false, error((0, combinator_1.reset)({
   resources: {
@@ -4845,7 +4845,7 @@ const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combina
       references
     }
   }, context);
-  return [[(0, dom_1.html)('section', [document, references])], ''];
+  return [[(0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references])], ''];
 })))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 
 /***/ }),
@@ -4946,9 +4946,9 @@ const locale_1 = __webpack_require__(5485);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(128
 /* State.annotation */
@@ -5056,7 +5056,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
   return [(0, dom_1.html)('aside', {
     id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
     class: 'aside'
-  }, [document, references])];
+  }, [document, (0, dom_1.html)('h2', 'References'), references])];
 })));
 
 /***/ }),
@@ -5110,7 +5110,7 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
           'data-type': 'markdown'
         }, [(0, dom_1.html)('pre', {
           translate: 'no'
-        }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, references])])];
+        }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references])])];
       }
 
     case 'math':
@@ -5246,9 +5246,9 @@ const locale_1 = __webpack_require__(5485);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const memoize_1 = __webpack_require__(1808);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
@@ -5398,9 +5398,9 @@ const blockquote_1 = __webpack_require__(7859);
 
 const paragraph_1 = __webpack_require__(6457);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300), // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type, param], _, context) => {
@@ -5508,9 +5508,9 @@ const locale_1 = __webpack_require__(5485);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
@@ -5927,11 +5927,11 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
@@ -6102,9 +6102,9 @@ const locale_1 = __webpack_require__(5485);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 /*
 必ず対象指定から始まる
 対象がページである場合>>.を表現方法とする
@@ -6289,11 +6289,11 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const duff_1 = __webpack_require__(8099);
 
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\|[^\n]*(?:\n\|[^\n]*){2}/, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => [(0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift()]), (0, dom_1.html)('tbody', format(rows))])])));
 
@@ -6315,14 +6315,14 @@ function format(rows) {
   const aligns = rows[0].className === 'invalid' ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
 
   for (let i = 0; i < rows.length; ++i) {
-    (0, duff_1.duffEach)(rows[i].children, (col, i) => {
-      if (i > 0 && !aligns[i]) {
-        aligns[i] = aligns[i - 1];
+    for (let cols = rows[i].children, len = cols.length, j = 0; j < len; ++j) {
+      if (j > 0 && !aligns[j]) {
+        aligns[j] = aligns[j - 1];
       }
 
-      if (!aligns[i]) return;
-      col.setAttribute('align', aligns[i]);
-    });
+      if (!aligns[j]) continue;
+      cols[j].setAttribute('align', aligns[j]);
+    }
   }
 
   return rows;
@@ -6351,9 +6351,9 @@ const inline_1 = __webpack_require__(1160);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(4
 /* State.media */
@@ -6844,9 +6844,9 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(0
@@ -6930,11 +6930,11 @@ const inline_1 = __webpack_require__(1160);
 
 const source_1 = __webpack_require__(6743);
 
-const dom_1 = __webpack_require__(3252);
-
 const memoize_1 = __webpack_require__(1808);
 
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -6967,9 +6967,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('~~', '~'), (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -6998,9 +6998,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('_', '_'), (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -7096,7 +7096,7 @@ const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
 
-const duff_1 = __webpack_require__(8099);
+const query_1 = __webpack_require__(6120);
 
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
@@ -7121,36 +7121,40 @@ function text(source, optional = false) {
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   const target = source.cloneNode(true);
-  (0, duff_1.duffEach)(target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), el => {
+
+  for (let es = (0, query_1.querySelectorAll)(target, 'code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0; i < es.length; ++i) {
+    const el = es[i];
+
     switch (el.tagName) {
       case 'CODE':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        return;
+        continue;
 
       case 'RT':
       case 'RP':
       case 'UL':
       case 'OL':
         el.remove();
-        return;
+        continue;
     }
 
     switch (el.className) {
       case 'math':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        return;
+        continue;
 
       case 'comment':
       case 'checkbox':
         el.remove();
-        return;
+        continue;
 
       case 'reference':
         el.firstChild.remove();
-        return;
+        continue;
     }
-  }); // Better:
+  } // Better:
   //return target.innerText;
+
 
   return target.textContent;
 }
@@ -7261,9 +7265,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
+const array_1 = __webpack_require__(8112);
 
-const array_1 = __webpack_require__(8112); // Don't use the symbols already used: !#$%@&*+~=
+const dom_1 = __webpack_require__(3252); // Don't use the symbols already used: !#$%@&*+~=
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 
@@ -7301,13 +7305,13 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const memoize_1 = __webpack_require__(1808);
 
 const cache_1 = __webpack_require__(9210);
 
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 const tags = global_1.Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
@@ -7434,9 +7438,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('++', '+'), (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -7475,9 +7479,9 @@ const visibility_1 = __webpack_require__(7618);
 
 const util_1 = __webpack_require__(9437);
 
-const dom_1 = __webpack_require__(3252);
-
 const url_1 = __webpack_require__(2261);
+
+const dom_1 = __webpack_require__(3252);
 
 const optspec = {
   rel: ['nofollow']
@@ -7640,9 +7644,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -7715,11 +7719,11 @@ const htmlentity_1 = __webpack_require__(1562);
 
 const source_1 = __webpack_require__(6743);
 
-const dom_1 = __webpack_require__(3252);
-
 const url_1 = __webpack_require__(2261);
 
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 const optspec = {
   'width': [],
@@ -7891,9 +7895,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(512
 /* Syntax.ruby */
@@ -8028,9 +8032,9 @@ const source_1 = __webpack_require__(6743);
 
 const visibility_1 = __webpack_require__(7618);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -8057,9 +8061,9 @@ const combinator_1 = __webpack_require__(2087);
 
 const source_1 = __webpack_require__(6743);
 
-const dom_1 = __webpack_require__(3252);
-
 const array_1 = __webpack_require__(8112);
+
+const dom_1 = __webpack_require__(3252);
 
 exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.syntax)(0
 /* Syntax.none */
@@ -8089,16 +8093,19 @@ const ja_1 = __webpack_require__(1499);
 
 const dom_1 = __webpack_require__(3252);
 
-const duff_1 = __webpack_require__(8099);
+const query_1 = __webpack_require__(6120);
 
 function localize(parser) {
   return (0, combinator_1.fmap)(parser, ns => {
     if (ns.length === 0) return ns;
     const el = ns.length === 1 && typeof ns[0] === 'object' ? ns[0] : (0, dom_1.html)('div', ns);
-    (0, duff_1.duffEach)(el.querySelectorAll('.linebreak:not(:empty)'), el => {
-      if (!check(el)) return;
+
+    for (let es = (0, query_1.querySelectorAll)(el, '.linebreak:not(:empty)'), i = 0; i < es.length; ++i) {
+      const el = es[i];
+      if (!check(el)) continue;
       el.firstChild.remove();
-    });
+    }
+
     return ns;
   });
 }
@@ -8184,22 +8191,24 @@ const global_1 = __webpack_require__(4128);
 
 const label_1 = __webpack_require__(466);
 
-const dom_1 = __webpack_require__(3252);
-
 const multimap_1 = __webpack_require__(940);
 
 const array_1 = __webpack_require__(8112);
 
+const dom_1 = __webpack_require__(3252);
+
+const query_1 = __webpack_require__(6120);
+
 function* figure(target, footnotes, opts = {}) {
-  const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), footnotes?.references.querySelectorAll('a.label:not(.disabled)') ?? []).map(el => [el.getAttribute('data-label'), el]));
+  const refs = new multimap_1.MultiMap((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new global_1.Set();
   const numbers = new global_1.Map();
   let base = '0';
   let bases = base.split('.');
   let index = bases; // Bug: Firefox
-  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), i = 0, len = defs.length; i < len; ++i) {
+  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
 
-  for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), i = 0, len = defs.length; i < len; ++i) {
+  for (let defs = (0, query_1.querySelectorAll)(target, 'figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
     if (def.parentNode !== target) continue;
@@ -8381,18 +8390,20 @@ const global_1 = __webpack_require__(4128);
 
 const indexee_1 = __webpack_require__(1269);
 
-const dom_1 = __webpack_require__(3252);
-
 const multimap_1 = __webpack_require__(940);
 
-const duff_1 = __webpack_require__(8099);
+const dom_1 = __webpack_require__(3252);
 
-const array_1 = __webpack_require__(8112);
+const query_1 = __webpack_require__(6120);
 
 function* footnote(target, footnotes, opts = {}, bottom = null) {
   // Bug: Firefox
-  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
-  (0, duff_1.duffEach)(target.querySelectorAll(`.annotations`), el => el.parentNode === target && el.remove());
+  //querySelectorAll(target, `:scope > .annotations`).forEach(el => el.remove());
+  for (let es = (0, query_1.querySelectorAll)(target, `.annotations`), i = 0; i < es.length; ++i) {
+    const el = es[i];
+    el.parentNode === target && el.remove();
+  }
+
   yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
   return;
@@ -8409,14 +8420,20 @@ function build(syntax, marker, splitter) {
     const defs = new global_1.Map();
     const buffer = new multimap_1.MultiMap();
     const titles = new global_1.Map(); // Bug: Firefox
-    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
+    //const splitters = push([], querySelectorAll(target, `:scope > :is(${splitter ?? '_'})`));
 
-    const splitters = (0, duff_1.duffReduce)(target.querySelectorAll(splitter ?? '_'), (acc, el) => el.parentNode === target ? (0, array_1.push)(acc, [el]) : acc, []);
+    const splitters = [];
+
+    for (let es = (0, query_1.querySelectorAll)(target, splitter ?? '_'), i = 0; i < es.length; ++i) {
+      const el = es[i];
+      el.parentNode === target && splitters.push(el);
+    }
+
     let count = 0;
     let total = 0;
     let style;
 
-    for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
+    for (let refs = (0, query_1.querySelectorAll)(target, `sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
 
@@ -9296,9 +9313,9 @@ const math_1 = __webpack_require__(611);
 
 const media_1 = __webpack_require__(2233);
 
-const query_1 = __webpack_require__(6120);
-
 const memoize_1 = __webpack_require__(1808);
+
+const query_1 = __webpack_require__(6120);
 
 const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
 const extend = (0, memoize_1.reduce)(opts => ({
@@ -9767,9 +9784,7 @@ exports.info = void 0;
 
 const scope_1 = __webpack_require__(5202);
 
-const duff_1 = __webpack_require__(8099);
-
-const array_1 = __webpack_require__(8112);
+const query_1 = __webpack_require__(6120);
 
 function info(source) {
   const match = (0, scope_1.scope)(source, '.invalid');
@@ -9787,7 +9802,14 @@ function info(source) {
   };
 
   function find(selector) {
-    return (0, duff_1.duffReduce)(source.querySelectorAll(selector), (acc, el) => match(el) ? (0, array_1.push)(acc, [el]) : acc, []);
+    const acc = [];
+
+    for (let es = (0, query_1.querySelectorAll)(source, selector), i = 0; i < es.length; ++i) {
+      const el = es[i];
+      match(el) && acc.push(el);
+    }
+
+    return acc;
   }
 }
 
@@ -9814,7 +9836,7 @@ const cite_1 = __webpack_require__(6315);
 
 const dom_1 = __webpack_require__(3252);
 
-const duff_1 = __webpack_require__(8099);
+const query_1 = __webpack_require__(6120);
 
 function quote(anchor, range) {
   if ((0, parser_1.exec)((0, cite_1.cite)({
@@ -9824,22 +9846,25 @@ function quote(anchor, range) {
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-  (0, duff_1.duffEach)(node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), el => {
+
+  for (let es = (0, query_1.querySelectorAll)(node, 'code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0; i < es.length; ++i) {
+    const el = es[i];
+
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         (0, dom_1.define)(el, el.getAttribute('data-src'));
-        return;
+        continue;
 
       case el.matches('.media'):
         el.replaceWith(/[\s{}]/.test(el.getAttribute('data-src')) ? `!{ ${el.getAttribute('data-src')} }` : `!{${el.getAttribute('data-src')}}`);
-        return;
+        continue;
 
       case el.matches('rt, rp'):
         el.remove();
-        return;
+        continue;
     }
-  });
+  }
 
   if (range.startOffset === 0 && range.startContainer.parentElement?.matches('.cite, .quote') && (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
     node.prepend(`>${range.startContainer.parentElement.matches('.quote.invalid') ? ' ' : ''}`);
@@ -9848,26 +9873,29 @@ function quote(anchor, range) {
     anchor = '';
   }
 
-  (0, duff_1.duffEach)(node.querySelectorAll('br'), el => {
+  for (let es = (0, query_1.querySelectorAll)(node, 'br'), i = 0; i < es.length; ++i) {
+    const el = es[i];
+
     if (anchor && el.nextSibling instanceof global_1.Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
-      return;
+      continue;
     }
 
     if (anchor && el.parentElement?.closest('.cite, .quote')) {
       el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
-      return;
+      continue;
     }
 
     if (anchor) {
       el.replaceWith(`\n>>${anchor}\n> `);
       anchor = '';
-      return;
+      continue;
     } else {
       el.replaceWith(`\n> `);
-      return;
+      continue;
     }
-  });
+  }
+
   anchor && node.append(`\n>>${anchor}`);
   return node.textContent;
 }
@@ -9953,29 +9981,36 @@ exports.toc = void 0;
 
 const global_1 = __webpack_require__(4128);
 
+const array_1 = __webpack_require__(8112);
+
 const dom_1 = __webpack_require__(3252);
 
-const duff_1 = __webpack_require__(8099);
-
-const array_1 = __webpack_require__(8112); // Bug: Firefox
+const query_1 = __webpack_require__(6120); // Bug: Firefox
 //const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
 
 
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 function toc(source) {
-  const hs = (0, duff_1.duffReduce)(source.querySelectorAll(selector), (acc, el) => {
+  const hs = [];
+
+  for (let es = (0, query_1.querySelectorAll)(source, selector), i = 0; i < es.length; ++i) {
+    const el = es[i];
+
     switch (el.tagName) {
       case 'ASIDE':
-        return (0, array_1.push)(acc, [(0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
+        hs.push((0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
           id: el.id,
           class: 'aside'
-        }, el.firstElementChild.cloneNode(true).childNodes)]);
+        }, el.firstElementChild.cloneNode(true).childNodes));
+        continue;
 
       default:
-        return (0, array_1.push)(acc, [el]);
+        hs.push(el);
+        continue;
     }
-  }, []);
+  }
+
   return parse(cons(hs));
 }
 
@@ -10005,7 +10040,11 @@ function level(h) {
 }
 
 function unlink(h) {
-  (0, duff_1.duffEach)(h.getElementsByTagName('a'), el => void el.replaceWith(...el.childNodes));
+  for (let es = h.getElementsByTagName('a'), len = es.length, i = 0; i < len; ++i) {
+    const el = es[i];
+    el.replaceWith(...el.childNodes);
+  }
+
   return h.childNodes;
 }
 
