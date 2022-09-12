@@ -130,7 +130,7 @@ function push(as, bs) {
     if (bs.length === 1) return as.push(bs[0]), as;
     if (global_1.Symbol.iterator in bs && bs.length > 50) return as.push(...bs), as;
 
-    for (let i = 0, len = bs.length; i < len; ++i) {
+    for (let len = bs.length, i = 0; i < len; ++i) {
       as.push(bs[i]);
     }
   } else {
@@ -772,7 +772,7 @@ function rate(window, hits1, hits2, offset) {
   let hits = 0;
   let ratio = 100;
 
-  for (let i = 0, len = hits1.length; i < len; ++i) {
+  for (let len = hits1.length, i = 0; i < len; ++i) {
     const subtotal = hits1[i] + hits2[i];
     if (subtotal === 0) continue;
     offset = i + 1 === len ? 0 : offset;
@@ -1709,26 +1709,25 @@ const undefined = void 0;
 
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
-  if (memory === undefined) return memoize(f, identify, new global_1.Map());
-  if ((0, alias_1.isArray)(memory)) return memoize(f, identify, {
-    has(key) {
-      return memory[key] !== undefined;
-    },
+  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new global_1.Map());
+}
 
-    get(key) {
-      return memory[key];
-    },
+exports.memoize = memoize;
 
-    set(key, value) {
-      memory[key] = value;
-      return this;
-    },
+function memoizeArray(f, identify, memory) {
+  let nullish = false;
+  return (...as) => {
+    const b = identify(...as);
+    let z = memory[b];
+    if (z !== undefined || nullish && memory[b] !== undefined) return z;
+    z = f(...as);
+    nullish ||= z === undefined;
+    memory[b] = z;
+    return z;
+  };
+}
 
-    delete() {
-      throw 0;
-    }
-
-  });
+function memoizeObject(f, identify, memory) {
   let nullish = false;
   return (...as) => {
     const b = identify(...as);
@@ -1740,8 +1739,6 @@ function memoize(f, identify = (...as) => as[0], memory) {
     return z;
   };
 }
-
-exports.memoize = memoize;
 
 function reduce(f, identify = (...as) => as[0]) {
   let key = {};
@@ -2016,9 +2013,10 @@ exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z =
 
 const global_1 = __webpack_require__(4128);
 
-const bases = [...Array(7)].map((_, i) => 1 << i);
-const dict0_ = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_'];
-const dictAz = [...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), ...[...Array(36)].map((_, i) => i.toString(36)).slice(-26)];
+const radixes = Object.freeze([...Array(7)].map((_, i) => 1 << i));
+const masks = Object.freeze(radixes.map(radix => radix - 1));
+const dict0_ = Object.freeze([...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_']);
+const dictAz = Object.freeze([...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), ...[...Array(36)].map((_, i) => i.toString(36)).slice(-26)]);
 exports.rnd16 = cons(16);
 exports.rnd32 = cons(32);
 exports.rnd62 = cons(62);
@@ -2030,38 +2028,54 @@ exports.rnd0_ = conv(exports.rnd64, dict0_);
 exports.rndAP = conv(exports.rnd16, dictAz);
 exports.rndAf = conv(exports.rnd32, dictAz);
 
-function unique(rnd, len, mem) {
-  const clear = !mem;
+function unique(rnd, len = 1, mem) {
+  const independence = !mem;
   mem ??= new global_1.Set();
-  let limit = 5;
-  return () => {
-    while (true) {
-      try {
-        for (let i = 0; i < limit; ++i) {
-          const r = rnd(len);
-          if (mem.has(r)) continue;
-          mem.add(r);
-          return r;
-        }
-      } catch {}
+  const trials = 3;
+  let prefixes;
+  let prefix = '';
+  return function random() {
+    for (let i = 0; i < trials; ++i) {
+      const r = rnd(len);
+      if (mem.has(r)) continue;
 
-      clear && mem.clear();
-      ++len;
-      limit = len < 3 ? limit : 3;
+      try {
+        mem.add(r);
+      } catch (reason) {
+        // ベンチマーク程度でもSetがパンクする場合がある。
+        if (!independence) throw reason;
+        prefixes ??= new global_1.Set();
+        prefix ||= '?';
+
+        for (let i = 0; i < trials; ++i) {
+          prefix = rnd(prefix.length);
+          if (prefixes.has(prefix)) continue;
+          prefixes.add(prefix);
+          mem.clear();
+          return random();
+        }
+
+        prefixes = new global_1.Set();
+        prefix += '?';
+        return random();
+      }
+
+      return prefix + r;
     }
+
+    ++len;
+    independence && mem.clear();
+    return random();
   };
 }
 
 exports.unique = unique;
 
-function cons(radix) {
-  const base = bases.find(base => base >= radix);
-  const len = bases.indexOf(base);
-  return () => {
-    while (true) {
-      const r = random(len);
-      if (r < radix) return r;
-    }
+function cons(size) {
+  const len = radixes.findIndex(radix => radix >= size);
+  return function rnd() {
+    const r = random(len);
+    return r < size ? r : rnd();
   };
 }
 
@@ -2079,7 +2093,6 @@ function conv(rnd, dict) {
 
 const buffer = new Uint16Array(512);
 const digit = 16;
-const masks = bases.map((_, i) => +`0b${'1'.repeat(i) || 0}`);
 let index = buffer.length;
 let offset = digit;
 
@@ -2342,7 +2355,7 @@ function prev(head, tail, length) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isPrimitive = exports.isType = exports.type = void 0;
+exports.isPrimitive = exports.is = exports.type = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -2352,35 +2365,64 @@ const ObjectPrototype = Object.prototype;
 const ArrayPrototype = Array.prototype;
 
 function type(value) {
-  if (value === void 0) return 'undefined';
-  if (value === null) return 'null';
   const type = typeof value;
 
-  if (type === 'object') {
-    if (value[global_1.Symbol.toStringTag]) return value[global_1.Symbol.toStringTag];
-    const proto = (0, alias_1.ObjectGetPrototypeOf)(value);
-    if (proto === ObjectPrototype) return 'Object';
-    if (proto === ArrayPrototype) return 'Array';
-    return (0, alias_1.toString)(value).slice(8, -1);
-  }
+  switch (type) {
+    case 'function':
+      return 'Function';
 
-  if (type === 'function') return 'Function';
-  return type;
+    case 'object':
+      if (value === null) return 'null';
+      const tag = value[global_1.Symbol.toStringTag];
+      if (tag) return tag;
+
+      switch ((0, alias_1.ObjectGetPrototypeOf)(value)) {
+        case ArrayPrototype:
+          return 'Array';
+
+        case ObjectPrototype:
+          return 'Object';
+
+        default:
+          return (0, alias_1.toString)(value).slice(8, -1);
+      }
+
+    default:
+      return type;
+  }
 }
 
 exports.type = type;
 
-function isType(value, name) {
-  if (name === 'object') return value !== null && typeof value === name;
-  if (name === 'function') return typeof value === name;
-  return type(value) === name;
+function is(type, value) {
+  switch (type) {
+    case 'null':
+      return value === null;
+
+    case 'array':
+      return (0, alias_1.isArray)(value);
+
+    case 'object':
+      return value !== null && typeof value === type;
+
+    default:
+      return typeof value === type;
+  }
 }
 
-exports.isType = isType;
+exports.is = is;
 
 function isPrimitive(value) {
-  const type = typeof value;
-  return type === 'object' || type === 'function' ? value === null : true;
+  switch (typeof value) {
+    case 'function':
+      return false;
+
+    case 'object':
+      return value === null;
+
+    default:
+      return true;
+  }
 }
 
 exports.isPrimitive = isPrimitive;
@@ -2805,7 +2847,7 @@ const parser_1 = __webpack_require__(6728);
 function validate(patterns, has, parser) {
   if (typeof has === 'function') return validate(patterns, '', has);
   if (!(0, alias_1.isArray)(patterns)) return validate([patterns], has, parser);
-  const match = (0, global_1.Function)(['"use strict";', 'return source =>', '0', ...patterns.map(pattern => typeof pattern === 'string' ? `|| source.slice(0, ${pattern.length}) === '${pattern}'` : `|| /${pattern.source}/${pattern.flags}.test(source)`)].join(''))();
+  const match = global_1.global.eval(['source =>', patterns.map(pattern => typeof pattern === 'string' ? `|| source.slice(0, ${pattern.length}) === '${pattern}'` : `|| /${pattern.source}/${pattern.flags}.test(source)`).join('').slice(2)].join(''));
   return ({
     source,
     context
@@ -4112,8 +4154,20 @@ function union(parsers) {
     case 1:
       return parsers[0];
 
+    case 2:
+      return input => parsers[0](input) ?? parsers[1](input);
+
+    case 3:
+      return input => parsers[0](input) ?? parsers[1](input) ?? parsers[2](input);
+
     default:
-      return (0, global_1.Function)('parsers', ['"use strict";', 'return (input, context) =>', '0', ...parsers.map((_, i) => `|| parsers[${i}](input, context)`)].join('\n'))(parsers);
+      return input => {
+        for (let i = 0; i < parsers.length; ++i) {
+          const parser = parsers[i];
+          const result = parser(input);
+          if (result) return result;
+        }
+      };
   }
 }
 
@@ -10053,7 +10107,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.305 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.307 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10145,45 +10199,44 @@ const alias_1 = __nested_webpack_require_3232__(406);
 
 const compare_1 = __nested_webpack_require_3232__(529);
 
+const undefined = void 0;
+
 function memoize(f, identify = (...as) => as[0], memory) {
-  if (typeof identify === 'object') return memoize(f, void 0, identify);
-  if (memory === void 0) return memoize(f, identify, new global_1.Map());
-  if ((0, alias_1.isArray)(memory)) return memoize(f, identify, {
-    has(key) {
-      return memory[key] !== void 0;
-    },
+  if (typeof identify === 'object') return memoize(f, undefined, identify);
+  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new global_1.Map());
+}
 
-    get(key) {
-      return memory[key];
-    },
+exports.memoize = memoize;
 
-    set(key, value) {
-      memory[key] = value;
-      return this;
-    },
+function memoizeArray(f, identify, memory) {
+  let nullish = false;
+  return (...as) => {
+    const b = identify(...as);
+    let z = memory[b];
+    if (z !== undefined || nullish && memory[b] !== undefined) return z;
+    z = f(...as);
+    nullish ||= z === undefined;
+    memory[b] = z;
+    return z;
+  };
+}
 
-    delete() {
-      throw 0;
-    }
-
-  });
+function memoizeObject(f, identify, memory) {
   let nullish = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory.get(b);
-    if (z !== void 0 || nullish && memory.has(b)) return z;
+    if (z !== undefined || nullish && memory.has(b)) return z;
     z = f(...as);
-    nullish ||= z === void 0;
+    nullish ||= z === undefined;
     memory.set(b, z);
     return z;
   };
 }
 
-exports.memoize = memoize;
-
 function reduce(f, identify = (...as) => as[0]) {
-  let key = [];
-  let val = [];
+  let key = {};
+  let val;
   return (...as) => {
     const b = identify(...as);
 
@@ -10201,7 +10254,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4622__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4777__) => {
 
 
 
@@ -10210,11 +10263,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 
-const global_1 = __nested_webpack_require_4622__(128);
+const global_1 = __nested_webpack_require_4777__(128);
 
-const alias_1 = __nested_webpack_require_4622__(406);
+const alias_1 = __nested_webpack_require_4777__(406);
 
-const memoize_1 = __nested_webpack_require_4622__(808);
+const memoize_1 = __nested_webpack_require_4777__(808);
 
 var caches;
 
@@ -10449,7 +10502,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11575__(moduleId) {
+/******/ 	function __nested_webpack_require_11730__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -10463,7 +10516,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11575__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11730__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -10474,7 +10527,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_11575__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_11730__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -10486,7 +10539,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.305 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.307 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10504,7 +10557,7 @@ return /******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
+exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0; // 100,000以上でforより大幅に低速となり実用不可
 
 function duff(count, proc) {
   if (count > 0) {
@@ -10548,7 +10601,7 @@ function duff(count, proc) {
   }
 }
 
-exports.duff = duff;
+exports.duff = duff; // 100,000以上でforより大幅に低速となり実用不可
 
 function duffbk(count, proc) {
   if (count > 0) {
@@ -10622,7 +10675,7 @@ function duffEach(array, proc) {
   }
 }
 
-exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られるがNodeListなどでの
+exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られる場合があるがNodeListなどでの
 // 実際の使用では速度低下は見られない
 
 function duffReduce(array, proc, initial) {
@@ -10655,11 +10708,11 @@ exports.duffReduce = duffReduce;
 /***/ }),
 
 /***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_3560__) => {
+/***/ ((module, __unused_webpack_exports, __nested_webpack_require_3627__) => {
 
 
 
-__nested_webpack_require_3560__(921);
+__nested_webpack_require_3627__(921);
 
 const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
@@ -10685,7 +10738,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_4212__(moduleId) {
+/******/ 	function __nested_webpack_require_4279__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -10699,7 +10752,7 @@ var global = (/* unused pure expression or super */ null && (0));
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_4212__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_4279__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -10717,9 +10770,9 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.querySelectorAll = exports.querySelectorAllWith = exports.querySelectorWith = void 0;
 
-const global_1 = __nested_webpack_require_4212__(128);
+const global_1 = __nested_webpack_require_4279__(128);
 
-const duff_1 = __nested_webpack_require_4212__(99);
+const duff_1 = __nested_webpack_require_4279__(99);
 
 function querySelectorWith(node, selector) {
   return 'matches' in node && node.matches(selector) ? node : node.querySelector(selector);
