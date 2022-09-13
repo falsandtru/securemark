@@ -20,9 +20,9 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   // Bug: Firefox
-  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
+  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
   for (
-    let defs = querySelectorAll(target, 'figure[data-label], h1, h2'),
+    let defs = target.querySelectorAll('figure[data-label], h1, h2'),
         len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];

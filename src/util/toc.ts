@@ -1,15 +1,15 @@
 import { undefined } from 'spica/global';
 import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 // Bug: Firefox
-//const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
+//const selector = `:scope > :is(h1, h2, h3, h4, h5, h6, aside.aside)[id]`;
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs: HTMLHeadingElement[] = [];
-  for (let es = querySelectorAll(source, selector), i = 0; i < es.length; ++i) {
+  for (let es = source.querySelectorAll(selector),
+           len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     assert(el.parentNode === source);
     switch (el.tagName) {

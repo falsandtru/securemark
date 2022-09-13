@@ -3,7 +3,6 @@ import { MarkdownParser } from '../../../../markdown';
 import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
@@ -28,7 +27,8 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
   if (index) return index;
   assert(!source.querySelector('.annotation, br'));
   const target = source.cloneNode(true) as typeof source;
-  for (let es = querySelectorAll(target, 'code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0; i < es.length; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'),
+           len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':

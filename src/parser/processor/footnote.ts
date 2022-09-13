@@ -2,7 +2,6 @@ import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
 import { MultiMap } from 'spica/multimap';
 import { frag, html, define } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 export function* footnote(
   target: ParentNode & Node,
@@ -11,8 +10,9 @@ export function* footnote(
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   // Bug: Firefox
-  //querySelectorAll(target, `:scope > .annotations`).forEach(el => el.remove());
-  for (let es = querySelectorAll(target, `.annotations`), i = 0; i < es.length; ++i) {
+  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
+  for (let es = target.querySelectorAll(`.annotations`),
+           len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     el.parentNode === target && el.remove();
   }
@@ -42,9 +42,10 @@ function build(
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     // Bug: Firefox
-    //const splitters = push([], querySelectorAll(target, `:scope > :is(${splitter ?? '_'})`));
+    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
     const splitters: Element[] = [];
-    for (let es = querySelectorAll(target, splitter ?? '_'), i = 0; i < es.length; ++i) {
+    for (let es = target.querySelectorAll(splitter ?? '_'),
+             len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
@@ -52,7 +53,7 @@ function build(
     let total = 0;
     let style: 'count' | 'abbr';
     for (
-      let refs = querySelectorAll(target, `sup.${syntax}:not(.disabled)`),
+      let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
           len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];

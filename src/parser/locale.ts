@@ -2,7 +2,6 @@ import { Parser } from '../combinator/data/parser';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
 import { html } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 export function localize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLElement | string> {
@@ -11,7 +10,8 @@ export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLEleme
     const el = ns.length === 1 && typeof ns[0] === 'object'
       ? ns[0]
       : html('div', ns);
-    for (let es = querySelectorAll(el, '.linebreak:not(:empty)'), i = 0; i < es.length; ++i) {
+    for (let es = el.querySelectorAll('.linebreak:not(:empty)'),
+             len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       assert(el.firstChild!.textContent === ' ');
       if (!check(el)) continue;

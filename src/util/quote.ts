@@ -2,14 +2,14 @@ import { Element } from 'spica/global';
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
 import { define } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite({ source: `>>${anchor}`, context: {} })) !== '') throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-  for (let es = querySelectorAll(node, 'code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0; i < es.length; ++i) {
+  for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'),
+           len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (true) {
       case el.matches('code'):
@@ -36,7 +36,8 @@ export function quote(anchor: string, range: Range): string {
     node.prepend(`>>${anchor}\n> `);
     anchor = '';
   }
-  for (let es = querySelectorAll(node, 'br'), i = 0; i < es.length; ++i) {
+  for (let es = node.querySelectorAll('br'),
+           len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
