@@ -1,6 +1,6 @@
 import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
-import { MultiMap } from 'spica/multimap';
+import { MultiQueue } from 'spica/queue';
 import { push } from 'spica/array';
 import { define } from 'typed-dom/dom';
 import { querySelectorAll } from 'typed-dom/query';
@@ -10,7 +10,7 @@ export function* figure(
   footnotes?: { readonly references: HTMLOListElement; },
   opts: { readonly id?: string; } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
-  const refs = new MultiMap<string, HTMLAnchorElement>(push(
+  const refs = new MultiQueue<string, HTMLAnchorElement>(push(
     querySelectorAll(target, 'a.label:not(.disabled)[data-label]'),
     footnotes && querySelectorAll(footnotes.references, 'a.label:not(.disabled)') || [])
     .map(el => [el.getAttribute('data-label')!, el]));

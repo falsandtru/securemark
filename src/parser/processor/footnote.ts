@@ -1,6 +1,6 @@
 import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
-import { MultiMap } from 'spica/multimap';
+import { MultiQueue } from 'spica/queue';
 import { frag, html, define } from 'typed-dom/dom';
 
 export function* footnote(
@@ -39,7 +39,7 @@ function build(
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
-    const buffer = new MultiMap<string, HTMLElement>();
+    const buffer = new MultiQueue<string, HTMLElement>();
     const titles = new Map<string, string>();
     // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
