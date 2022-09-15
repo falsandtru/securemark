@@ -178,7 +178,28 @@ function splice(as, index, count, ...values) {
       return push(as, values), [];
   }
 
-  return arguments.length > 2 ? as.splice(index, count, ...values) : as.splice(index);
+  switch (values.length) {
+    case 0:
+      return count !== undefined || arguments.length > 1 ? as.splice(index, count) : as.splice(index);
+
+    case 1:
+      return as.splice(index, count, values[0]);
+
+    case 2:
+      return as.splice(index, count, values[0], values[1]);
+
+    case 3:
+      return as.splice(index, count, values[0], values[1], values[2]);
+
+    case 4:
+      return as.splice(index, count, values[0], values[1], values[2], values[3]);
+
+    case 5:
+      return as.splice(index, count, values[0], values[1], values[2], values[3], values[4]);
+
+    default:
+      return count !== undefined || arguments.length > 1 ? as.splice(index, count, ...values) : as.splice(index);
+  }
 }
 
 exports.splice = splice;
@@ -406,6 +427,7 @@ class Cache {
     if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
     this.block = settings.block;
     this.limit = settings.limit;
+    this.age = settings.age;
     this.earlyExpiring = settings.earlyExpiring;
     this.disposer = settings.disposer;
     this.stats = new Stats(this.window, settings.resolution, settings.offset);
@@ -424,7 +446,12 @@ class Cache {
     const index = node.value;
     callback &&= !!this.disposer;
     this.overlap -= +(index.region === 'LFU' && node.list === this.indexes.LRU);
-    index.enode && this.expiries.delete(index.enode);
+
+    if (index.enode) {
+      this.expiries.delete(index.enode);
+      index.enode = void 0;
+    }
+
     node.delete();
     this.memory.delete(index.key);
     this.SIZE -= index.size;
@@ -486,14 +513,18 @@ class Cache {
 
   put(key, value, {
     size = 1,
-    age = this.settings.age
+    age = this.age
   } = {}) {
     if (size < 1 || this.capacity < size || age <= 0) {
       this.disposer?.(value, key);
       return false;
     }
 
-    const expiry = age === global_1.Infinity ? global_1.Infinity : (0, clock_1.now)() + age;
+    if (age === global_1.Infinity) {
+      age = 0;
+    }
+
+    const expiry = age ? (0, clock_1.now)() + age : global_1.Infinity;
     const node = this.memory.get(key);
 
     if (node && this.ensure(size, node)) {
@@ -503,7 +534,7 @@ class Cache {
       index.size = size;
       index.expiry = expiry;
 
-      if (this.earlyExpiring && expiry !== global_1.Infinity) {
+      if (this.earlyExpiring && age) {
         index.enode ? this.expiries.update(index.enode, expiry) : index.enode = this.expiries.insert(node, expiry);
       } else if (index.enode) {
         this.expiries.delete(index.enode);
@@ -528,7 +559,7 @@ class Cache {
       region: 'LRU'
     }));
 
-    if (this.earlyExpiring && expiry !== global_1.Infinity) {
+    if (this.earlyExpiring && age) {
       LRU.head.value.enode = this.expiries.insert(LRU.head, expiry);
     }
 
@@ -873,110 +904,6 @@ exports.equal = equal;
 
 /***/ }),
 
-/***/ 5084:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.MultiMap = void 0;
-
-const global_1 = __webpack_require__(4128);
-
-const ring_1 = __webpack_require__(6395);
-
-class MultiMap {
-  constructor(entries = [], memory = new global_1.Map()) {
-    this.memory = memory;
-
-    for (const {
-      0: k,
-      1: v
-    } of entries) {
-      this.set(k, v);
-    }
-  }
-
-  get(key) {
-    return this.memory.get(key)?.at(0);
-  }
-
-  getAll(key) {
-    return this.memory.get(key);
-  }
-
-  set(key, val) {
-    let vs = this.memory.get(key);
-    if (vs) return vs.push(val), this;
-    vs = new ring_1.Ring();
-    vs.push(val);
-    this.memory.set(key, vs);
-    return this;
-  }
-
-  has(key, value) {
-    const vs = this.memory.get(key);
-    if (!vs?.length) return false;
-    if (arguments.length < 2) return true;
-    return vs.includes(value);
-  }
-
-  delete(key, value) {
-    if (arguments.length < 2) return this.memory.delete(key);
-    const vs = this.memory.get(key);
-    if (!vs?.length) return false;
-    const i = vs.indexOf(value);
-    if (i === -1) return false;
-    vs.splice(i, 1);
-    return true;
-  }
-
-  clear() {
-    this.memory.clear();
-  }
-
-  take(key, count) {
-    const vs = this.memory.get(key);
-    if (count === void 0) return vs?.shift();
-    const acc = [];
-
-    while (vs?.length && count--) {
-      acc.push(vs.shift());
-    }
-
-    return acc;
-  }
-
-  ref(key) {
-    let vs = this.memory.get(key);
-    if (vs) return vs;
-    vs = new ring_1.Ring();
-    this.memory.set(key, vs);
-    return vs;
-  }
-
-  *[Symbol.iterator]() {
-    for (const {
-      0: k,
-      1: vs
-    } of this.memory) {
-      for (let i = 0; i < vs.length; ++i) {
-        yield [k, vs.at(i)];
-      }
-    }
-
-    return;
-  }
-
-}
-
-exports.MultiMap = MultiMap;
-
-/***/ }),
-
 /***/ 8099:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -1282,6 +1209,10 @@ class Heap {
     sort(this.cmp, array, node[2], this.$length, this.stable);
   }
 
+  find(order) {
+    return this.array.find(node => node && node[0] === order);
+  }
+
   clear() {
     this.array = (0, global_1.Array)(size);
     this.$length = 0;
@@ -1300,7 +1231,7 @@ class MultiHeap {
     this.cmp = cmp;
     this.clean = clean;
     this.heap = new Heap(this.cmp);
-    this.dict = new Map();
+    this.dict = new global_1.Map();
     this.list = (0, memoize_1.memoize)(order => {
       const list = new invlist_1.List();
       list[MultiHeap.order] = order;
@@ -1328,8 +1259,7 @@ class MultiHeap {
     }
 
     ++this.$length;
-    const list = this.list(order);
-    return [order, list.push(value)];
+    return this.list(order).push(value);
   }
 
   extract() {
@@ -1347,35 +1277,37 @@ class MultiHeap {
   }
 
   delete(node) {
-    if (!node[1].list) throw new Error('Invalid node');
-    const {
-      0: order,
-      1: lnode
-    } = node;
+    const list = node.list;
+    if (!list) throw new Error('Invalid node');
     --this.$length;
 
-    if (lnode.list.length === 1) {
-      this.heap.delete(lnode[MultiHeap.heap]);
-      this.clean && this.dict.delete(order);
+    if (list.length === 1) {
+      this.heap.delete(list[MultiHeap.heap]);
+      this.clean && this.dict.delete(list[MultiHeap.order]);
     }
 
-    return lnode.delete();
+    return node.delete();
   }
 
   update(node, order, value) {
-    if (!node[1].list) throw new Error('Invalid node');
+    const list = node.list;
+    if (!list) throw new Error('Invalid node');
 
     if (arguments.length < 2) {
-      order = node[0];
+      order = list[MultiHeap.order];
     }
 
     if (arguments.length > 2) {
-      node[1].value = value;
+      node.value = value;
     }
 
-    if (this.cmp(node[0], order) === 0) return node;
+    if (this.cmp(list[MultiHeap.order], order) === 0) return node;
     this.delete(node);
-    return this.insert(node[1].value, order);
+    return this.insert(node.value, order);
+  }
+
+  find(order) {
+    return this.dict.get(order);
   }
 
   clear() {
@@ -1491,23 +1423,20 @@ __exportStar(__webpack_require__(2310), exports);
 "use strict";
  // Circular Inverse List
 
-var _a;
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.List = void 0;
 const undefined = void 0;
-const LENGTH = Symbol('length');
 
 class List {
   constructor() {
-    this[_a] = 0;
+    this.$length = 0;
     this.head = undefined;
   }
 
   get length() {
-    return this[LENGTH];
+    return this.$length;
   }
 
   get tail() {
@@ -1520,7 +1449,7 @@ class List {
 
   clear() {
     this.head = undefined;
-    this[LENGTH] = 0;
+    this.$length = 0;
   }
 
   unshift(value) {
@@ -1566,7 +1495,7 @@ class List {
   insert(node, before = this.head) {
     if (node.list === this) return node.moveTo(before), node;
     node.delete();
-    ++this[LENGTH];
+    ++this.$length;
     this.head ??= node; // @ts-expect-error
 
     node.list = this;
@@ -1576,11 +1505,43 @@ class List {
     return node;
   }
 
-  *[(_a = LENGTH, Symbol.iterator)]() {
-    for (let node = this.head; node;) {
+  find(f) {
+    for (let head = this.head, node = head; node;) {
+      if (f(node.value)) return node;
+      node = node.next;
+      if (node === head) break;
+    }
+  }
+
+  toNodes() {
+    const acc = [];
+
+    for (let head = this.head, node = head; node;) {
+      acc.push(node);
+      node = node.next;
+      if (node === head) break;
+    }
+
+    return acc;
+  }
+
+  toArray() {
+    const acc = [];
+
+    for (let head = this.head, node = head; node;) {
+      acc.push(node.value);
+      node = node.next;
+      if (node === head) break;
+    }
+
+    return acc;
+  }
+
+  *[Symbol.iterator]() {
+    for (let head = this.head, node = head; node;) {
       yield node.value;
       node = node.next;
-      if (node === this.head) return;
+      if (node === head) return;
     }
   }
 
@@ -1594,14 +1555,14 @@ class Node {
     this.value = value;
     this.next = next;
     this.prev = prev;
-    ++list[LENGTH];
+    ++list.$length;
     list.head ??= this;
     next && prev ? next.prev = prev.next = this : this.next = this.prev = this;
   }
 
   delete() {
     if (!this.list) return this.value;
-    --this.list[LENGTH];
+    --this.list.$length;
     const {
       next,
       prev
@@ -1759,43 +1720,6 @@ exports.reduce = reduce;
 
 /***/ }),
 
-/***/ 940:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  var desc = Object.getOwnPropertyDescriptor(m, k);
-
-  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-    desc = {
-      enumerable: true,
-      get: function () {
-        return m[k];
-      }
-    };
-  }
-
-  Object.defineProperty(o, k2, desc);
-} : function (o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  o[k2] = m[k];
-});
-
-var __exportStar = this && this.__exportStar || function (m, exports) {
-  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-__exportStar(__webpack_require__(5084), exports);
-
-/***/ }),
-
 /***/ 4934:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1805,7 +1729,7 @@ __exportStar(__webpack_require__(5084), exports);
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.PriorityQueue = exports.Queue = void 0;
+exports.MultiQueue = exports.PriorityQueue = exports.Queue = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -1935,7 +1859,7 @@ class FixedQueue {
 class PriorityQueue {
   constructor(cmp = PriorityQueue.max, clean = true) {
     this.clean = clean;
-    this.dict = new Map();
+    this.dict = new global_1.Map();
     this.queue = (0, memoize_1.memoize)(priority => {
       const queue = new Queue();
       queue[PriorityQueue.priority] = priority;
@@ -1954,22 +1878,22 @@ class PriorityQueue {
     return this.$length === 0;
   }
 
-  peek() {
-    return this.heap.peek()?.peek();
+  peek(priority) {
+    return arguments.length === 0 ? this.heap.peek()?.peek() : this.dict.get(priority)?.peek();
   }
 
-  push(value, priority) {
+  push(priority, value) {
     ++this.$length;
     this.queue(priority).push(value);
   }
 
-  pop() {
+  pop(priority) {
     if (this.$length === 0) return;
     --this.$length;
-    const queue = this.heap.peek();
-    const value = queue.pop();
+    const queue = arguments.length === 0 ? this.heap.peek() : this.dict.get(priority);
+    const value = queue?.pop();
 
-    if (queue.isEmpty()) {
+    if (queue?.isEmpty()) {
       this.heap.extract();
       this.clean && this.dict.delete(queue[PriorityQueue.priority]);
     }
@@ -1998,6 +1922,103 @@ PriorityQueue.priority = Symbol('priority');
 PriorityQueue.max = heap_1.Heap.max;
 PriorityQueue.min = heap_1.Heap.min;
 
+class MultiQueue {
+  constructor(entries) {
+    this.dict = new global_1.Map();
+    if (entries) for (const {
+      0: k,
+      1: v
+    } of entries) {
+      this.set(k, v);
+    }
+  }
+
+  get length() {
+    return this.dict.size;
+  }
+
+  isEmpty() {
+    return this.dict.size === 0;
+  }
+
+  peek(key) {
+    return this.dict.get(key)?.peek();
+  }
+
+  push(key, value) {
+    let vs = this.dict.get(key);
+    if (vs) return void vs.push(value);
+    vs = new Queue();
+    vs.push(value);
+    this.dict.set(key, vs);
+  }
+
+  pop(key) {
+    return this.dict.get(key)?.pop();
+  }
+
+  clear() {
+    this.dict = new global_1.Map();
+  }
+
+  take(key, count) {
+    if (count === void 0) return this.pop(key);
+    const vs = this.dict.get(key);
+    const acc = [];
+
+    while (vs && !vs.isEmpty() && count--) {
+      acc.push(vs.pop());
+    }
+
+    return acc;
+  }
+
+  ref(key) {
+    let vs = this.dict.get(key);
+    if (vs) return vs;
+    vs = new Queue();
+    this.dict.set(key, vs);
+    return vs;
+  }
+
+  get size() {
+    return this.length;
+  }
+
+  get(key) {
+    return this.peek(key);
+  }
+
+  set(key, value) {
+    this.push(key, value);
+    return this;
+  }
+
+  has(key) {
+    return this.dict.has(key);
+  }
+
+  delete(key) {
+    return this.dict.delete(key);
+  }
+
+  *[Symbol.iterator]() {
+    for (const {
+      0: k,
+      1: vs
+    } of this.dict) {
+      while (!vs.isEmpty()) {
+        yield [k, vs.pop()];
+      }
+    }
+
+    return;
+  }
+
+}
+
+exports.MultiQueue = MultiQueue;
+
 /***/ }),
 
 /***/ 7325:
@@ -2015,8 +2036,8 @@ const global_1 = __webpack_require__(4128);
 
 const radixes = Object.freeze([...Array(7)].map((_, i) => 1 << i));
 const masks = Object.freeze(radixes.map(radix => radix - 1));
-const dict0_ = Object.freeze([...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_']);
-const dictAz = Object.freeze([...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), ...[...Array(36)].map((_, i) => i.toString(36)).slice(-26)]);
+const dict0_ = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_'].join('');
+const dictAz = [...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), ...[...Array(36)].map((_, i) => i.toString(36)).slice(-26)].join('');
 exports.rnd16 = cons(16);
 exports.rnd32 = cons(32);
 exports.rnd62 = cons(62);
@@ -2113,235 +2134,6 @@ function random(len) {
     ++index;
     return random(len);
   }
-}
-
-/***/ }),
-
-/***/ 6395:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.Ring = void 0;
-
-const global_1 = __webpack_require__(4128);
-
-const alias_1 = __webpack_require__(5406);
-
-const array_1 = __webpack_require__(8112);
-
-const undefined = void 0;
-const empty = Symbol('empty');
-
-const unempty = value => value === empty ? undefined : value;
-
-const space = Object.freeze((0, global_1.Array)(100).fill(empty));
-let size = 16;
-
-class Ring {
-  constructor() {
-    this.array = (0, global_1.Array)(size);
-    this.head = 0;
-    this.tail = 0;
-    this.$length = 0;
-    this.excess = 0;
-  }
-
-  get length() {
-    return this.$length;
-  }
-
-  at(index) {
-    // Inline the code for optimization.
-    const array = this.array;
-
-    if (index >= 0) {
-      if (index >= this.$length) return;
-      return unempty(array[(this.head - 1 + index) % array.length]);
-    } else {
-      if (-index > this.$length) return;
-      return this.tail + index >= 0 ? unempty(array[this.tail + index]) : unempty(array[array.length + this.tail + index]);
-    }
-  }
-
-  replace(index, value, replacer) {
-    const array = this.array;
-
-    if (index >= 0) {
-      if (index >= this.$length) throw new RangeError('Invalid index');
-      index = (this.head - 1 + index) % array.length;
-    } else {
-      if (-index > this.$length) throw new RangeError('Invalid index');
-      index = this.tail + index >= 0 ? this.tail + index : array.length + this.tail + index;
-    }
-
-    const val = unempty(array[index]);
-    array[index] = replacer ? replacer(val, value) : value;
-    return val;
-  }
-
-  push(value) {
-    const array = this.array;
-    let {
-      head,
-      tail
-    } = this;
-    tail = this.tail = next(head, tail, array.length);
-    head = this.head ||= tail;
-
-    if (head === tail && this.$length !== 0) {
-      (0, array_1.splice)(array, tail - 1, 0, ...space);
-      head = this.head += space.length;
-    }
-
-    array[tail - 1] = value;
-    ++this.$length;
-  }
-
-  unshift(value) {
-    const array = this.array;
-    let {
-      head,
-      tail
-    } = this;
-    head = this.head = prev(head, tail, array.length);
-    tail = this.tail ||= head;
-
-    if (head === tail && this.$length !== 0) {
-      (0, array_1.splice)(array, head, 0, ...space);
-      head = this.head += space.length;
-    }
-
-    array[head - 1] = value;
-    ++this.$length;
-  }
-
-  pop() {
-    if (this.$length === 0) return;
-    const array = this.array;
-    const i = this.tail - 1;
-    const value = unempty(array[i]);
-    array[i] = empty;
-    --this.$length === 0 ? this.head = this.tail = 0 : this.tail = this.tail === 1 ? array.length : this.tail - 1;
-    return value;
-  }
-
-  shift() {
-    if (this.$length === 0) return;
-    const array = this.array;
-    const i = this.head - 1;
-    const value = unempty(array[i]);
-    array[i] = empty;
-    --this.$length === 0 ? this.head = this.tail = 0 : this.head = this.head === array.length ? 1 : this.head + 1;
-    return value;
-  }
-
-  splice(index, count, ...values) {
-    const array = this.array;
-
-    if (this.excess > 100 && array.length - this.$length > 200) {
-      (0, array_1.splice)(array, 0, 100 - (0, array_1.splice)(array, this.tail, 100).length);
-      this.excess -= 100;
-    } else if (-this.excess > array.length * 2) {
-      this.excess = array.length;
-    }
-
-    index = index < 0 ? (0, alias_1.max)(0, this.$length + index) : index <= this.$length ? index : this.$length;
-    count = (0, alias_1.min)((0, alias_1.max)(count, 0), this.$length - index);
-
-    if (values.length === 0) {
-      if (count === 0) return [];
-
-      switch (index) {
-        case 0:
-          if (count === 1) return [this.shift()];
-          break;
-
-        case this.$length - 1:
-          if (count === 1) return [this.pop()];
-          break;
-
-        case this.$length:
-          return [];
-      }
-    }
-
-    index = (this.head || 1) - 1 + index;
-    index = index > array.length ? index % array.length : index;
-    this.excess += values.length - count;
-    this.$length += values.length - count; // |--H>*>T--|
-
-    if (this.head <= this.tail) {
-      this.tail += values.length - count;
-      return (0, array_1.splice)(array, index, count, ...values);
-    } // |*>T---H>>|
-
-
-    if (index < this.tail) {
-      this.head += values.length - count;
-      this.tail += values.length - count;
-      return (0, array_1.splice)(array, index, count, ...values);
-    } // |>>T---H>*|
-
-
-    const cnt = (0, alias_1.min)(count, array.length - index);
-    const vs = (0, array_1.splice)(array, index, cnt, ...(0, array_1.splice)(values, 0, cnt));
-    vs.push(...(0, array_1.splice)(array, 0, count - vs.length, ...values));
-    return vs;
-  }
-
-  clear() {
-    this.array = (0, global_1.Array)(size);
-    this.$length = this.head = this.tail = 0;
-  }
-
-  includes(value) {
-    return this.array.includes(value);
-  }
-
-  relational(index) {
-    if (index === -1) return -1;
-    return index + 1 >= this.head ? index + 1 - this.head : this.array.length - this.head + index;
-  }
-
-  indexOf(value) {
-    return this.relational((0, array_1.indexOf)(this.array, value));
-  }
-
-  findIndex(f) {
-    return this.relational(this.array.findIndex(value => value !== empty && f(value)));
-  }
-
-  find(f) {
-    return unempty(this.array.find(value => value !== empty && f(value)));
-  }
-
-  toArray() {
-    return this.head <= this.tail ? this.array.slice((this.head || 1) - 1, this.tail) : this.array.slice((this.head || 1) - 1).concat(this.array.slice(0, this.tail));
-  }
-
-  *[Symbol.iterator]() {
-    for (let i = 0; i < this.$length; ++i) {
-      yield this.at(i);
-    }
-
-    return;
-  }
-
-}
-
-exports.Ring = Ring;
-
-function next(head, tail, length) {
-  return tail === length && head !== 1 ? 1 : tail + 1;
-}
-
-function prev(head, tail, length) {
-  return head === 0 || head === 1 ? tail === length ? length + 1 : length : head - 1;
 }
 
 /***/ }),
@@ -7150,8 +6942,6 @@ const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
 
-const query_1 = __webpack_require__(6120);
-
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
@@ -7176,7 +6966,7 @@ function text(source, optional = false) {
   if (index) return index;
   const target = source.cloneNode(true);
 
-  for (let es = (0, query_1.querySelectorAll)(target, 'code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), i = 0; i < es.length; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
     switch (el.tagName) {
@@ -8147,14 +7937,12 @@ const ja_1 = __webpack_require__(1499);
 
 const dom_1 = __webpack_require__(3252);
 
-const query_1 = __webpack_require__(6120);
-
 function localize(parser) {
   return (0, combinator_1.fmap)(parser, ns => {
     if (ns.length === 0) return ns;
     const el = ns.length === 1 && typeof ns[0] === 'object' ? ns[0] : (0, dom_1.html)('div', ns);
 
-    for (let es = (0, query_1.querySelectorAll)(el, '.linebreak:not(:empty)'), i = 0; i < es.length; ++i) {
+    for (let es = el.querySelectorAll('.linebreak:not(:empty)'), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       if (!check(el)) continue;
       el.firstChild.remove();
@@ -8245,7 +8033,7 @@ const global_1 = __webpack_require__(4128);
 
 const label_1 = __webpack_require__(466);
 
-const multimap_1 = __webpack_require__(940);
+const queue_1 = __webpack_require__(4934);
 
 const array_1 = __webpack_require__(8112);
 
@@ -8254,15 +8042,15 @@ const dom_1 = __webpack_require__(3252);
 const query_1 = __webpack_require__(6120);
 
 function* figure(target, footnotes, opts = {}) {
-  const refs = new multimap_1.MultiMap((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
+  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new global_1.Set();
   const numbers = new global_1.Map();
   let base = '0';
   let bases = base.split('.');
   let index = bases; // Bug: Firefox
-  //for (let defs = querySelectorAll(target, ':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
+  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
 
-  for (let defs = (0, query_1.querySelectorAll)(target, 'figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
+  for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
     if (def.parentNode !== target) continue;
@@ -8444,16 +8232,14 @@ const global_1 = __webpack_require__(4128);
 
 const indexee_1 = __webpack_require__(1269);
 
-const multimap_1 = __webpack_require__(940);
+const queue_1 = __webpack_require__(4934);
 
 const dom_1 = __webpack_require__(3252);
 
-const query_1 = __webpack_require__(6120);
-
 function* footnote(target, footnotes, opts = {}, bottom = null) {
   // Bug: Firefox
-  //querySelectorAll(target, `:scope > .annotations`).forEach(el => el.remove());
-  for (let es = (0, query_1.querySelectorAll)(target, `.annotations`), i = 0; i < es.length; ++i) {
+  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
+  for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     el.parentNode === target && el.remove();
   }
@@ -8472,13 +8258,13 @@ function build(syntax, marker, splitter) {
   // 構文ごとに各1回の処理では不可能
   return function* (target, footnote, opts = {}, bottom = null) {
     const defs = new global_1.Map();
-    const buffer = new multimap_1.MultiMap();
+    const buffer = new queue_1.MultiQueue();
     const titles = new global_1.Map(); // Bug: Firefox
-    //const splitters = push([], querySelectorAll(target, `:scope > :is(${splitter ?? '_'})`));
+    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
 
     const splitters = [];
 
-    for (let es = (0, query_1.querySelectorAll)(target, splitter ?? '_'), i = 0; i < es.length; ++i) {
+    for (let es = target.querySelectorAll(splitter ?? '_'), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
@@ -8487,7 +8273,7 @@ function build(syntax, marker, splitter) {
     let total = 0;
     let style;
 
-    for (let refs = (0, query_1.querySelectorAll)(target, `sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
+    for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
 
@@ -9838,8 +9624,6 @@ exports.info = void 0;
 
 const scope_1 = __webpack_require__(5202);
 
-const query_1 = __webpack_require__(6120);
-
 function info(source) {
   const match = (0, scope_1.scope)(source, '.invalid');
   return {
@@ -9858,7 +9642,7 @@ function info(source) {
   function find(selector) {
     const acc = [];
 
-    for (let es = (0, query_1.querySelectorAll)(source, selector), i = 0; i < es.length; ++i) {
+    for (let es = source.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       match(el) && acc.push(el);
     }
@@ -9890,8 +9674,6 @@ const cite_1 = __webpack_require__(6315);
 
 const dom_1 = __webpack_require__(3252);
 
-const query_1 = __webpack_require__(6120);
-
 function quote(anchor, range) {
   if ((0, parser_1.exec)((0, cite_1.cite)({
     source: `>>${anchor}`,
@@ -9901,7 +9683,7 @@ function quote(anchor, range) {
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
 
-  for (let es = (0, query_1.querySelectorAll)(node, 'code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0; i < es.length; ++i) {
+  for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
     switch (true) {
@@ -9927,7 +9709,7 @@ function quote(anchor, range) {
     anchor = '';
   }
 
-  for (let es = (0, query_1.querySelectorAll)(node, 'br'), i = 0; i < es.length; ++i) {
+  for (let es = node.querySelectorAll('br'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
     if (anchor && el.nextSibling instanceof global_1.Element && el.nextSibling.matches('.cite, .quote')) {
@@ -10037,10 +9819,8 @@ const global_1 = __webpack_require__(4128);
 
 const array_1 = __webpack_require__(8112);
 
-const dom_1 = __webpack_require__(3252);
-
-const query_1 = __webpack_require__(6120); // Bug: Firefox
-//const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
+const dom_1 = __webpack_require__(3252); // Bug: Firefox
+//const selector = `:scope > :is(h1, h2, h3, h4, h5, h6, aside.aside)[id]`;
 
 
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
@@ -10048,7 +9828,7 @@ const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 function toc(source) {
   const hs = [];
 
-  for (let es = (0, query_1.querySelectorAll)(source, selector), i = 0; i < es.length; ++i) {
+  for (let es = source.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
     switch (el.tagName) {
@@ -10107,7 +9887,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.307 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.309 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10539,7 +10319,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.307 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.309 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10547,220 +10327,8 @@ exports.defrag = defrag;
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 99:
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0; // 100,000以上でforより大幅に低速となり実用不可
-
-function duff(count, proc) {
-  if (count > 0) {
-    let i = 0,
-        m = count & 7,
-        d = (count - m) / 8;
-
-    while (m--) {
-      proc(i++);
-    }
-
-    while (d--) {
-      proc(i++);
-      proc(i++);
-      proc(i++);
-      proc(i++);
-      proc(i++);
-      proc(i++);
-      proc(i++);
-      proc(i++);
-    }
-  } else {
-    let i = -count,
-        m = i & 7,
-        d = (i - m) / 8;
-
-    while (m--) {
-      proc(--i);
-    }
-
-    while (d--) {
-      proc(--i);
-      proc(--i);
-      proc(--i);
-      proc(--i);
-      proc(--i);
-      proc(--i);
-      proc(--i);
-      proc(--i);
-    }
-  }
-}
-
-exports.duff = duff; // 100,000以上でforより大幅に低速となり実用不可
-
-function duffbk(count, proc) {
-  if (count > 0) {
-    let i = 0,
-        m = count & 7,
-        d = (count - m) / 8;
-
-    while (m--) {
-      if (proc(i++) === false) return;
-    }
-
-    while (d--) {
-      switch (false) {
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-        case proc(i++):
-          return;
-      }
-    }
-  } else {
-    let i = -count,
-        m = i & 7,
-        d = (i - m) / 8;
-
-    while (m--) {
-      if (proc(--i) === false) return;
-    }
-
-    while (d--) {
-      switch (false) {
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-        case proc(--i):
-          return;
-      }
-    }
-  }
-}
-
-exports.duffbk = duffbk;
-
-function duffEach(array, proc) {
-  let count = array.length;
-  let i = 0,
-      m = count & 7,
-      d = (count - m) / 8;
-
-  while (m--) {
-    proc(array[i], i++, array);
-  }
-
-  while (d--) {
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-    proc(array[i], i++, array);
-  }
-}
-
-exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られる場合があるがNodeListなどでの
-// 実際の使用では速度低下は見られない
-
-function duffReduce(array, proc, initial) {
-  let count = array.length;
-  let i = 0,
-      m = count & 7,
-      d = (count - m) / 8;
-  let acc = initial;
-
-  while (m--) {
-    acc = proc(acc, array[i], i++, array);
-  }
-
-  while (d--) {
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-    acc = proc(acc, array[i], i++, array);
-  }
-
-  return acc;
-}
-
-exports.duffReduce = duffReduce;
-
-/***/ }),
-
-/***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_3627__) => {
-
-
-
-__nested_webpack_require_3627__(921);
-
-const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
-|| typeof self !== 'undefined' && self || Function('return this')();
-global.global = global;
-module.exports = global;
-
-/***/ }),
-
-/***/ 921:
-/***/ (() => {
-
- // @ts-ignore
-
-var globalThis; // @ts-ignore
-
-var global = (/* unused pure expression or super */ null && (0));
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nested_webpack_require_4279__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_4279__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it uses a non-standard name for the exports (exports).
 (() => {
 var exports = __webpack_exports__;
 
@@ -10769,10 +10337,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.querySelectorAll = exports.querySelectorAllWith = exports.querySelectorWith = void 0;
-
-const global_1 = __nested_webpack_require_4279__(128);
-
-const duff_1 = __nested_webpack_require_4279__(99);
 
 function querySelectorWith(node, selector) {
   return 'matches' in node && node.matches(selector) ? node : node.querySelector(selector);
@@ -10787,13 +10351,23 @@ function querySelectorAllWith(node, selector) {
     acc.push(node);
   }
 
-  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, el) => (acc.push(el), acc), acc);
+  for (let es = node.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
+    acc.push(es[i]);
+  }
+
+  return acc;
 }
 
 exports.querySelectorAllWith = querySelectorAllWith;
 
 function querySelectorAll(node, selector) {
-  return (0, duff_1.duffReduce)(node.querySelectorAll(selector), (acc, el) => (acc.push(el), acc), (0, global_1.Array)());
+  const acc = [];
+
+  for (let es = node.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
+    acc.push(es[i]);
+  }
+
+  return acc;
 }
 
 exports.querySelectorAll = querySelectorAll;
