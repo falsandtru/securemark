@@ -180,7 +180,7 @@ function splice(as, index, count, ...values) {
 
   switch (values.length) {
     case 0:
-      return count !== undefined || arguments.length > 1 ? as.splice(index, count) : as.splice(index);
+      return arguments.length > 2 ? as.splice(index, count) : as.splice(index);
 
     case 1:
       return as.splice(index, count, values[0]);
@@ -198,7 +198,7 @@ function splice(as, index, count, ...values) {
       return as.splice(index, count, values[0], values[1], values[2], values[3], values[4]);
 
     default:
-      return count !== undefined || arguments.length > 1 ? as.splice(index, count, ...values) : as.splice(index);
+      return as.splice(index, count, ...values);
   }
 }
 
@@ -489,7 +489,7 @@ class Cache {
 
         default:
           if (this.misses * 100 > LRU.length * this.block) {
-            this.sweep ||= LRU.length * this.settings.sweep / 100 + 1 | 0;
+            this.sweep ||= LRU.length * this.settings.sweep / 100 + 1 >>> 0;
 
             if (this.sweep > 0) {
               LRU.head = LRU.head.next.next;
@@ -675,7 +675,7 @@ class Cache {
       stats,
       indexes
     } = this;
-    if (stats.subtotal() * 1000 % capacity || !stats.full()) return;
+    if (stats.subtotal() * 1000 % capacity || !stats.isFull()) return;
     const lenR = indexes.LRU.length;
     const lenF = indexes.LFU.length;
     const lenO = this.overlap;
@@ -738,7 +738,7 @@ class Stats {
     return this.LRU.length;
   }
 
-  full() {
+  isFull() {
     return this.length === this.max;
   }
 
@@ -770,7 +770,7 @@ class Stats {
       }
     }
 
-    const subtotal = LRU[+offset && 1] + LFU[+offset && 1] || 0;
+    const subtotal = LRU[offset && 1] + LFU[offset && 1] || 0;
     subtotal >= window / resolution && this.slide();
     return LRU[0] + LFU[0];
   }
@@ -831,7 +831,7 @@ function rate(window, hits1, hits2, offset) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.tick = exports.promise = exports.clock = exports.now = void 0;
+exports.clock = exports.now = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -845,7 +845,7 @@ let count = 0;
 
 function now(nocache) {
   if (time === undefined) {
-    tick(() => time = undefined);
+    exports.clock.now(() => time = undefined);
   } else if (!nocache && count++ !== 20) {
     return time;
   }
@@ -855,32 +855,45 @@ function now(nocache) {
 }
 
 exports.now = now;
-exports.clock = global_1.Promise.resolve(undefined);
+exports.clock = new class Clock extends global_1.Promise {
+  constructor() {
+    super(resolve => resolve(undefined)); // Promise subclass is slow.
 
-function promise(cb) {
-  global_1.Promise.resolve().then(cb);
-}
+    const clock = global_1.Promise.resolve();
+    clock.next = this.next;
+    clock.now = this.now;
+    return clock;
+  }
 
-exports.promise = promise;
+  next(callback) {
+    scheduled || schedule();
+    exports.clock.then(callback);
+  }
+
+  now(callback) {
+    scheduled || schedule();
+    queue.push(callback);
+  }
+
+}();
 const queue = new queue_1.Queue();
-const scheduler = global_1.Promise.resolve();
+let scheduled = false;
 
-function tick(cb) {
-  queue.isEmpty() && scheduler.then(run);
-  queue.push(cb);
+function schedule() {
+  scheduled = true;
+  exports.clock.then(run);
 }
-
-exports.tick = tick;
 
 function run() {
-  for (let count = queue.length; count--;) {
+  for (let cb; cb = queue.pop();) {
     try {
-      // @ts-expect-error
-      (0, queue.pop())();
+      cb();
     } catch (reason) {
       (0, exception_1.causeAsyncException)(reason);
     }
   }
+
+  scheduled = false;
 }
 
 /***/ }),
@@ -1072,15 +1085,35 @@ exports.duffReduce = duffReduce;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.causeAsyncException = void 0;
+exports.suppressAsyncException = exports.causeAsyncException = void 0;
 
 const global_1 = __webpack_require__(4128);
 
+const stack_1 = __webpack_require__(5352);
+
+const stack = new stack_1.Stack();
+
 function causeAsyncException(reason) {
-  global_1.Promise.reject(reason);
+  if (stack.isEmpty()) {
+    global_1.Promise.reject(reason);
+  } else {
+    stack.peek().push(reason);
+  }
 }
 
 exports.causeAsyncException = causeAsyncException;
+
+function suppressAsyncException(test) {
+  return done => {
+    stack.push([]);
+    return test(err => {
+      stack.pop();
+      done(err);
+    });
+  };
+}
+
+exports.suppressAsyncException = suppressAsyncException;
 
 /***/ }),
 
@@ -1186,8 +1219,7 @@ class Heap {
     const array = this.array;
     const index = node[2];
     if (array[index] !== node) throw new Error('Invalid node');
-    swap(array, index, --this.$length); // @ts-expect-error
-
+    swap(array, index, --this.$length);
     array[this.$length] = undefined;
     index < this.$length && sort(this.cmp, array, index, this.$length, this.stable);
     return node[1];
@@ -1496,8 +1528,7 @@ class List {
     if (node.list === this) return node.moveTo(before), node;
     node.delete();
     ++this.$length;
-    this.head ??= node; // @ts-expect-error
-
+    this.head ??= node;
     node.list = this;
     const next = node.next = before ?? node;
     const prev = node.prev = next.prev ?? node;
@@ -1555,21 +1586,26 @@ class Node {
     this.value = value;
     this.next = next;
     this.prev = prev;
-    ++list.$length;
+    ++list['$length'];
     list.head ??= this;
     next && prev ? next.prev = prev.next = this : this.next = this.prev = this;
   }
 
+  get alive() {
+    return this.list !== undefined;
+  }
+
   delete() {
-    if (!this.list) return this.value;
-    --this.list.$length;
+    const list = this.list;
+    if (!list) return this.value;
+    --list['$length'];
     const {
       next,
       prev
     } = this;
 
-    if (this.list.head === this) {
-      this.list.head = next === this ? undefined : next;
+    if (list.head === this) {
+      list.head = next === this ? undefined : next;
     }
 
     if (next) {
@@ -1578,11 +1614,9 @@ class Node {
 
     if (prev) {
       prev.next = next;
-    } // @ts-expect-error
+    }
 
-
-    this.list = undefined; // @ts-expect-error
-
+    this.list = undefined;
     this.next = this.prev = undefined;
     return this.value;
   }
@@ -2030,7 +2064,7 @@ exports.MultiQueue = MultiQueue;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
+exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -2135,6 +2169,89 @@ function random(len) {
     return random(len);
   }
 }
+
+function xorshift(seed = xorshift.seed()) {
+  return () => {
+    let x = seed;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    return seed = x >>> 0;
+  };
+}
+
+exports.xorshift = xorshift;
+
+(function (xorshift) {
+  const size = -1 >>> 0;
+
+  function seed() {
+    return global_1.Math.random() * size + 1 >>> 0;
+  }
+
+  xorshift.seed = seed;
+
+  function random(seed) {
+    const rnd = xorshift(seed);
+    return () => rnd() / (size + 1);
+  }
+
+  xorshift.random = random;
+})(xorshift = exports.xorshift || (exports.xorshift = {}));
+
+/***/ }),
+
+/***/ 5352:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Stack = void 0;
+
+class Stack {
+  constructor() {
+    this.array = [];
+  }
+
+  get length() {
+    return this.array.length;
+  }
+
+  isEmpty() {
+    return this.length === 0;
+  }
+
+  peek(index = 0) {
+    return index === 0 ? this.array[this.array.length - 1] : this.array[0];
+  }
+
+  push(value) {
+    this.array.push(value);
+  }
+
+  pop() {
+    return this.array.pop();
+  }
+
+  clear() {
+    this.array = [];
+  }
+
+  *[Symbol.iterator]() {
+    while (!this.isEmpty()) {
+      yield this.pop();
+    }
+
+    return;
+  }
+
+}
+
+exports.Stack = Stack;
 
 /***/ }),
 
