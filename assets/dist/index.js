@@ -388,18 +388,19 @@ class Cache {
   constructor(capacity, opts = {}) {
     this.settings = {
       capacity: 0,
+      window: 100,
       age: global_1.Infinity,
       earlyExpiring: false,
       capture: {
         delete: true,
         clear: true
       },
-      window: 0,
       resolution: 1,
       offset: 0,
-      block: 20,
+      entrance: 50,
+      threshold: 20,
       sweep: 10,
-      limit: 950
+      test: false
     };
     this.overlap = 0;
     this.SIZE = 0;
@@ -423,14 +424,15 @@ class Cache {
     });
     this.capacity = settings.capacity;
     if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.window = settings.window || this.capacity;
+    this.window = settings.window * this.capacity / 100 >>> 0 || this.capacity;
     if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
-    this.block = settings.block;
-    this.limit = settings.limit;
+    this.threshold = settings.threshold;
+    this.limit = 1000 - settings.entrance;
     this.age = settings.age;
     this.earlyExpiring = settings.earlyExpiring;
     this.disposer = settings.disposer;
-    this.stats = new Stats(this.window, settings.resolution, settings.offset);
+    this.stats = opts.resolution || opts.offset ? new StatsExperimental(this.window, settings.resolution, settings.offset) : new Stats(this.window);
+    this.test = settings.test;
   }
 
   get length() {
@@ -488,7 +490,7 @@ class Cache {
         // fallthrough
 
         default:
-          if (this.misses * 100 > LRU.length * this.block) {
+          if (this.misses * 100 > LRU.length * this.threshold) {
             this.sweep ||= LRU.length * this.settings.sweep / 100 + 1 >>> 0;
 
             if (this.sweep > 0) {
@@ -590,7 +592,7 @@ class Cache {
     this.misses &&= 0;
     this.sweep &&= 0; // Optimization for memoize.
 
-    if (this.capacity > 3 && node === node.list.head) return node.value.value;
+    if (!this.test && node === node.list.head) return node.value.value;
     this.access(node);
     this.adjust();
     return node.value.value;
@@ -680,8 +682,10 @@ class Cache {
     const lenF = indexes.LFU.length;
     const lenO = this.overlap;
     const leverage = (lenF + lenO) * 1000 / (lenR + lenF) | 0;
-    const rateR0 = stats.rateLRU() * leverage;
-    const rateF0 = stats.rateLFU() * (1000 - leverage);
+    const rateR = stats.rateLRU();
+    const rateF = 10000 - rateR;
+    const rateR0 = rateR * leverage;
+    const rateF0 = rateF * (1000 - leverage);
     const rateF1 = stats.offset && stats.rateLFU(true) * (1000 - leverage); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
     // LRUの下限設定ではLRU拡大の要否を迅速に判定できないためLFUのヒット率低下の検出で代替する
 
@@ -725,13 +729,25 @@ class Cache {
 exports.Cache = Cache;
 
 class Stats {
-  constructor(window, resolution, offset) {
+  constructor(window) {
     this.window = window;
-    this.resolution = resolution;
-    this.offset = offset;
-    this.max = (0, alias_1.ceil)(this.resolution * (100 + this.offset) / 100) + 1;
+    this.offset = 0;
+    this.max = 2;
     this.LRU = [0];
     this.LFU = [0];
+  }
+
+  static rate(window, hits1, hits2, offset) {
+    const currTotal = hits1[0] + hits2[0];
+    const prevTotal = hits1[1] + hits2[1];
+    const currHits = hits1[0];
+    const prevHits = hits1[1];
+    const prevRate = prevHits * 100 / (prevTotal || 1);
+    const currRatio = currTotal * 100 / window - offset;
+    if (currRatio <= 0) return prevRate * 100 | 0;
+    const currRate = currHits * 100 / (currTotal || 1);
+    const prevRatio = 100 - currRatio;
+    return currRate * currRatio + prevRate * prevRatio | 0;
   }
 
   get length() {
@@ -743,11 +759,83 @@ class Stats {
   }
 
   rateLRU(offset = false) {
-    return rate(this.window, this.LRU, this.LFU, +offset && this.offset);
+    return Stats.rate(this.window, this.LRU, this.LFU, +offset & 0);
   }
 
   rateLFU(offset = false) {
-    return rate(this.window, this.LFU, this.LRU, +offset && this.offset);
+    return Stats.rate(this.window, this.LFU, this.LRU, +offset & 0);
+  }
+
+  subtotal() {
+    const {
+      LRU,
+      LFU,
+      window
+    } = this;
+    const subtotal = LRU[0] + LFU[0];
+    subtotal >= window && this.slide();
+    return LRU[0] + LFU[0];
+  }
+
+  slide() {
+    const {
+      LRU,
+      LFU,
+      max
+    } = this;
+
+    if (LRU.length === max) {
+      LRU.pop();
+      LFU.pop();
+    }
+
+    LRU.unshift(0);
+    LFU.unshift(0);
+  }
+
+  clear() {
+    this.LRU = [0];
+    this.LFU = [0];
+  }
+
+}
+
+class StatsExperimental extends Stats {
+  constructor(window, resolution, offset) {
+    super(window);
+    this.resolution = resolution;
+    this.offset = offset;
+    this.max = (0, alias_1.ceil)(this.resolution * (100 + this.offset) / 100) + 1;
+  }
+
+  static rate(window, hits1, hits2, offset) {
+    let total = 0;
+    let hits = 0;
+    let ratio = 100;
+
+    for (let len = hits1.length, i = 0; i < len; ++i) {
+      const subtotal = hits1[i] + hits2[i];
+      if (subtotal === 0) continue;
+      offset = i + 1 === len ? 0 : offset;
+      const subratio = (0, alias_1.min)(subtotal * 100 / window, ratio) - offset;
+      offset = offset && subratio < 0 ? -subratio : 0;
+      if (subratio <= 0) continue;
+      const rate = window * subratio / subtotal;
+      total += subtotal * rate;
+      hits += hits1[i] * rate;
+      ratio -= subratio;
+      if (ratio <= 0) break;
+    }
+
+    return hits * 10000 / total | 0;
+  }
+
+  rateLRU(offset = false) {
+    return StatsExperimental.rate(this.window, this.LRU, this.LFU, +offset && this.offset);
+  }
+
+  rateLFU(offset = false) {
+    return StatsExperimental.rate(this.window, this.LFU, this.LRU, +offset && this.offset);
   }
 
   subtotal() {
@@ -775,49 +863,6 @@ class Stats {
     return LRU[0] + LFU[0];
   }
 
-  slide() {
-    const {
-      LRU,
-      LFU,
-      max
-    } = this;
-
-    if (LRU.length === max) {
-      LRU.pop();
-      LFU.pop();
-    }
-
-    LRU.unshift(0);
-    LFU.unshift(0);
-  }
-
-  clear() {
-    this.LRU = [0];
-    this.LFU = [0];
-  }
-
-}
-
-function rate(window, hits1, hits2, offset) {
-  let total = 0;
-  let hits = 0;
-  let ratio = 100;
-
-  for (let len = hits1.length, i = 0; i < len; ++i) {
-    const subtotal = hits1[i] + hits2[i];
-    if (subtotal === 0) continue;
-    offset = i + 1 === len ? 0 : offset;
-    const subratio = (0, alias_1.min)(subtotal * 100 / window, ratio) - offset;
-    offset = offset && subratio < 0 ? -subratio : 0;
-    if (subratio <= 0) continue;
-    const rate = window * subratio / subtotal;
-    total += subtotal * rate;
-    hits += hits1[i] * rate;
-    ratio -= subratio;
-    if (ratio <= 0) break;
-  }
-
-  return hits * 10000 / total | 0;
 }
 
 /***/ }),
@@ -2064,7 +2109,7 @@ exports.MultiQueue = MultiQueue;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
+exports.pcg32 = exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
 
 const global_1 = __webpack_require__(4128);
 
@@ -2149,23 +2194,27 @@ function conv(rnd, dict) {
 const buffer = new Uint16Array(512);
 const digit = 16;
 let index = buffer.length;
+let rnd = 2 ** digit;
 let offset = digit;
 
 function random(len) {
-  if (index === buffer.length) {
+  if (rnd === 2 ** digit) {
     global_1.crypto.getRandomValues(buffer);
     index = 0;
+    rnd = buffer[index];
   }
 
   if (offset === len) {
     offset = digit;
-    return buffer[index++] & masks[len];
+    const r = rnd & masks[len];
+    rnd = buffer[++index] ?? 2 ** digit;
+    return r;
   } else if (offset > len) {
     offset -= len;
-    return buffer[index] >> offset & masks[len];
+    return rnd >> offset & masks[len];
   } else {
     offset = digit;
-    ++index;
+    rnd = buffer[++index] ?? 2 ** digit;
     return random(len);
   }
 }
@@ -2183,21 +2232,92 @@ function xorshift(seed = xorshift.seed()) {
 exports.xorshift = xorshift;
 
 (function (xorshift) {
-  const size = -1 >>> 0;
+  const max = -1 >>> 0;
 
   function seed() {
-    return global_1.Math.random() * size + 1 >>> 0;
+    return global_1.Math.random() * max + 1 >>> 0;
   }
 
   xorshift.seed = seed;
 
   function random(seed) {
     const rnd = xorshift(seed);
-    return () => rnd() / (size + 1);
+    return () => rnd() / (max + 1);
   }
 
   xorshift.random = random;
 })(xorshift = exports.xorshift || (exports.xorshift = {}));
+
+const uint32n = n => n & 2n ** 32n - 1n;
+
+const uint64n = n => n & 2n ** 64n - 1n; // https://www.pcg-random.org/download.html
+// https://github.com/imneme/pcg-c/blob/master/include/pcg_variants.h
+
+
+function pcg32(seed = pcg32.seed()) {
+  return () => pcg32.next(seed);
+}
+
+exports.pcg32 = pcg32;
+
+(function (pcg32) {
+  const MULT = 6364136223846793005n;
+
+  function random(seed) {
+    const rnd = pcg32(seed);
+    return () => rnd() / 2 ** 32;
+  }
+
+  pcg32.random = random;
+
+  function seed(state = BigInt(xorshift.seed()) << 32n | BigInt(xorshift.seed()), inc = BigInt(xorshift.seed()) << 32n | BigInt(xorshift.seed())) {
+    const seed = [0n, uint64n(inc << 1n | 1n)];
+    seed[0] = uint64n(seed[0] * MULT + seed[1]);
+    seed[0] = uint64n(seed[0] + state);
+    seed[0] = uint64n(seed[0] * MULT + seed[1]);
+    return seed;
+  }
+
+  pcg32.seed = seed;
+
+  function next(seed) {
+    const oldstate = seed[0];
+    seed[0] = uint64n(oldstate * MULT + seed[1]);
+    const xorshifted = uint32n((oldstate >> 18n ^ oldstate) >> 27n);
+    const rot = oldstate >> 59n;
+    return (0, global_1.Number)(uint32n(xorshifted >> rot | xorshifted << (-rot & 31n)));
+  }
+
+  pcg32.next = next;
+
+  function advance(seed, delta) {
+    while (delta < 0) {
+      delta = 2n ** 64n + delta;
+    }
+
+    delta = uint64n(delta);
+    let acc_mult = 1n;
+    let acc_plus = 0n;
+    let cur_mult = MULT;
+    let cur_plus = seed[1];
+
+    while (delta > 0) {
+      if (delta & 1n) {
+        acc_mult = uint64n(acc_mult * cur_mult);
+        acc_plus = uint64n(acc_plus * cur_mult + cur_plus);
+      }
+
+      cur_plus = uint64n((cur_mult + 1n) * cur_plus);
+      cur_mult = uint64n(cur_mult * cur_mult);
+      delta /= 2n;
+    }
+
+    seed[0] = uint64n(acc_mult * seed[0] + acc_plus);
+    return seed;
+  }
+
+  pcg32.advance = advance;
+})(pcg32 = exports.pcg32 || (exports.pcg32 = {}));
 
 /***/ }),
 
@@ -2293,7 +2413,7 @@ function type(value) {
           return 'Object';
 
         default:
-          return (0, alias_1.toString)(value).slice(8, -1);
+          return value?.constructor?.name || (0, alias_1.toString)(value).slice(8, -1);
       }
 
     default:
@@ -2877,7 +2997,7 @@ function convert(conv, parser) {
     context
   }) => {
     if (source === '') return;
-    const src = conv(source);
+    const src = conv(source, context);
     if (src === '') return [[], ''];
     context.offset ??= 0;
     context.offset += source.length - src.length;
@@ -5129,11 +5249,17 @@ const blockquote_1 = __webpack_require__(7859);
 
 const placeholder_1 = __webpack_require__(5198);
 
+const inline_1 = __webpack_require__(1160);
+
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^(?=\s).*\n/)), (0, combinator_1.union)([codeblock_1.segment, mathblock_1.segment, table_1.segment, blockquote_1.segment, placeholder_1.segment, (0, combinator_1.some)(source_1.contentline)])])));
-exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.verify)((0, combinator_1.convert)(source => {
+exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.verify)((0, combinator_1.convert)((source, context) => {
   const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
-  return `${fence}figure ${source}\n\n${fence}`;
+  return parser({
+    source,
+    context
+  }) ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}` : `${fence}figure ${source}\n\n${fence}`;
 }, (0, combinator_1.union)([figure_1.figure])), ([el]) => el.tagName === 'FIGURE')));
+const parser = (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^(?=\s).*\n/)), (0, combinator_1.line)((0, combinator_1.union)([inline_1.media, inline_1.shortmedia])), (0, combinator_1.some)(source_1.contentline)]);
 
 /***/ }),
 
@@ -10004,7 +10130,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.309 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.310 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10436,7 +10562,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.309 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.310 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
