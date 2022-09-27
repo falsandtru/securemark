@@ -10,7 +10,6 @@ describe('Unit: parser/block/extension/fig', () => {
       assert.deepStrictEqual(inspect(parser('\n!https://host\n')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]\nhttps://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]\nhttps://host\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('[$group-name]\n!https://host\na')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]\n !https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]\n\n!https://host')), undefined);
       assert.deepStrictEqual(inspect(parser('[$group-name]a\nhttps://host')), undefined);
@@ -43,6 +42,8 @@ describe('Unit: parser/block/extension/fig', () => {
       assert.deepStrictEqual(inspect(parser('[$group-name]\n!> _a_')), [['<figure data-type="quote" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><blockquote><section><p><em>a</em></p><h2>References</h2><ol class="references"></ol></section></blockquote></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('[$group-name]\n![]{https://host}')), [['<figure data-type="media" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('[$group-name]\n![]{https://host}\n')), [['<figure data-type="media" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('[$group-name]\n!https://host\ncaption')), [['<figure data-type="media" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext">caption</span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('[$group-name]\n!https://host\ncaption\n')), [['<figure data-type="media" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext">caption</span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('$group-name\n!https://host')), [['<figure data-type="media" data-label="group-name" data-group="group"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div></figure>'], '']);
     });
 

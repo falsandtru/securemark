@@ -1,11 +1,11 @@
-import { Parser, check } from '../../data/parser';
+import { Parser, Ctx, Context, check } from '../../data/parser';
 
-export function convert<P extends Parser<unknown>>(conv: (source: string) => string, parser: P): P;
-export function convert<T>(conv: (source: string) => string, parser: Parser<T>): Parser<T> {
+export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P): P;
+export function convert<T>(conv: (source: string, context: Ctx) => string, parser: Parser<T>): Parser<T> {
   assert(parser);
   return ({ source, context }) => {
     if (source === '') return;
-    const src = conv(source);
+    const src = conv(source, context);
     if (src === '') return [[], ''];
     context.offset ??= 0;
     context.offset += source.length - src.length;

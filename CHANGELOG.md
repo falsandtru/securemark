@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.263.0
+
+- Extend fig syntax to set the caption only for inline syntax such as media syntax.
+
 ## 0.262.2
 
 - Refactoring.
@@ -1676,7 +1680,7 @@
 
 ## 0.99.2
 
-- Fix figure syntax to disallow to set a caption with formula number.
+- Fix figure syntax to disallow to set the caption with formula number.
 
 ## 0.99.1
 
