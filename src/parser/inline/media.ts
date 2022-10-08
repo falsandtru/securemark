@@ -1,4 +1,3 @@
-import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve } from './link';

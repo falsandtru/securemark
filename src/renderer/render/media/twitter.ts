@@ -1,4 +1,3 @@
-import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
 import { html as h, define } from 'typed-dom/dom';
 import DOMPurify from 'dompurify';

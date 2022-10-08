@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { TemplateParser } from '../inline';
 import { union, some, syntax, creation, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';

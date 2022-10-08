@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { BracketParser } from '../inline';
 import { union, some, syntax, surround, lazy } from '../../combinator';
 import { inline } from '../inline';

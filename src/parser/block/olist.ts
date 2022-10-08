@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { OListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';

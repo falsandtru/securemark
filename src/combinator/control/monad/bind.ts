@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 
 export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: SubTree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;

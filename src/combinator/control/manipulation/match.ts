@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, exec, check } from '../../data/parser';
 
 export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;

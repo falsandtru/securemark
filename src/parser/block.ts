@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { union, reset, creation, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';

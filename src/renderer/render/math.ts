@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Dict } from 'spica/dict';
 import { html, define } from 'typed-dom/dom';
 

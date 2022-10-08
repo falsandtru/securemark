@@ -1,4 +1,3 @@
-import { undefined, Object } from 'spica/global';
 import { html } from 'typed-dom/dom';
 
 const extensions = [

@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, Context, eval, exec, check } from '../../data/parser';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;

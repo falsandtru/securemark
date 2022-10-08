@@ -1,4 +1,3 @@
-import { Blob } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { eval, exec } from '../combinator/data/parser';
 import { union, some } from '../combinator';

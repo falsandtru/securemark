@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, context, syntax, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';

@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
 import { union, some, syntax, creation, precedence, constraint, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';

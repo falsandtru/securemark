@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, state, block, line, fence, rewrite, close, match, convert, trimEnd, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';

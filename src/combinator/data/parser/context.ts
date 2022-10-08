@@ -1,4 +1,3 @@
-import { undefined, Array, Object } from 'spica/global';
 import { hasOwnProperty, ObjectCreate } from 'spica/alias';
 import { Parser, Result, Ctx, Context, eval, exec, Tree } from '../../data/parser';
 import { Memo } from './context/memo';

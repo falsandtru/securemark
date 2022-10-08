@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { block } from '../constraint/block';

@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
 import { union, subsequence, some, context, syntax, creation, constraint, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';

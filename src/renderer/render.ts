@@ -1,4 +1,3 @@
-import { location } from 'spica/global';
 import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';

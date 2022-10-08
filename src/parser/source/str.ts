@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { StrParser } from '../source';
 import { Parser, Context } from '../../combinator/data/parser';
 import { creation } from '../../combinator';

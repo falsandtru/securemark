@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, Input, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';

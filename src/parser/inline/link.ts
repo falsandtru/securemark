@@ -1,4 +1,3 @@
-import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { Result, eval, exec } from '../../combinator/data/parser';

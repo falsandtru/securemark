@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, Ctx, Tree, Context, SubParsers, SubTree } from '../parser';
 
 export function union<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, Context<P>, SubParsers<P>>;

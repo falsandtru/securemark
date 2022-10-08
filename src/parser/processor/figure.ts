@@ -1,4 +1,3 @@
-import { Infinity, Set, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
 import { MultiQueue } from 'spica/queue';
 import { push } from 'spica/array';

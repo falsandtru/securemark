@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { union, creation, validate, focus, fmap } from '../../combinator';
 import { html } from 'typed-dom/dom';

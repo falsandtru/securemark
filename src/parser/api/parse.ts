@@ -1,4 +1,3 @@
-import { location } from 'spica/global';
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';

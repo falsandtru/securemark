@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { Parser, Input, eval } from '../combinator/data/parser';
 import { union, some, verify, convert, fmap } from '../combinator';

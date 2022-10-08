@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, exec } from '../../data/parser';
 import { Memo } from '../../data/parser/context/memo';
 import { firstline, isEmpty } from './line';

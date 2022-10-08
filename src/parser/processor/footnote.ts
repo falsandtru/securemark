@@ -1,4 +1,3 @@
-import { undefined, Infinity, Map, Node } from 'spica/global';
 import { text } from '../inline/extension/indexee';
 import { MultiQueue } from 'spica/queue';
 import { frag, html, define } from 'typed-dom/dom';

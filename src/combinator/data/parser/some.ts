@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../parser';
 import { Delimiters } from './context/delimiter';
 import { unshift, push } from 'spica/array';

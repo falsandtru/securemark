@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
 import { sequence, syntax, creation, validate, verify, surround, lazy, fmap } from '../../combinator';

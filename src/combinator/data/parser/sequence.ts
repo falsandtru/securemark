@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { Parser, Ctx, Tree, Context, SubParsers, SubTree, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 

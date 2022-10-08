@@ -1,4 +1,3 @@
-import { undefined, BigInt, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';

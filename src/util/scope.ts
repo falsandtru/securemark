@@ -1,5 +1,3 @@
-import { undefined, WeakMap } from 'spica/global';
-
 export function scope(
   base: DocumentFragment | HTMLElement | ShadowRoot,
   filter: string = '',

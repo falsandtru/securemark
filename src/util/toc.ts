@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 

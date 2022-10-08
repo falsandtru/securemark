@@ -1,4 +1,3 @@
-import { undefined, Object } from 'spica/global';
 import { HTMLParser } from '../inline';
 import { union, subsequence, some, syntax, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';

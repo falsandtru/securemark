@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { CodeBlockParser } from '../block';
 import { eval } from '../../combinator/data/parser';
 import { some, block, validate, fence, clear, fmap } from '../../combinator';

@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { union, creation, focus } from '../../combinator';
 import { str } from './str';
