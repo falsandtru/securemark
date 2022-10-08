@@ -1,14 +1,14 @@
 /*! securemark v0.263.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("DOMPurify"), require("Prism"));
+		module.exports = factory(require("Prism"), require("DOMPurify"));
 	else if(typeof define === 'function' && define.amd)
-		define(["DOMPurify", "Prism"], factory);
+		define(["Prism", "DOMPurify"], factory);
 	else if(typeof exports === 'object')
-		exports["securemark"] = factory(require("DOMPurify"), require("Prism"));
+		exports["securemark"] = factory(require("Prism"), require("DOMPurify"));
 	else
-		root["securemark"] = factory(root["DOMPurify"], root["Prism"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__6231__, __WEBPACK_EXTERNAL_MODULE__9450__) => {
+		root["securemark"] = factory(root["Prism"], root["DOMPurify"]);
+})(this, (__WEBPACK_EXTERNAL_MODULE__9450__, __WEBPACK_EXTERNAL_MODULE__6231__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -45,8 +45,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-__webpack_require__(4128);
-
 __exportStar(__webpack_require__(3019), exports);
 
 __exportStar(__webpack_require__(4613), exports);
@@ -80,7 +78,7 @@ exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
 /***/ }),
 
 /***/ 8112:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -89,10 +87,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
-
-const global_1 = __webpack_require__(4128);
-
-const undefined = void 0;
 
 function indexOf(as, a) {
   if (as.length === 0) return -1;
@@ -104,7 +98,7 @@ exports.indexOf = indexOf;
 function unshift(as, bs) {
   if ('length' in as) {
     if (as.length === 1) return bs.unshift(as[0]), bs;
-    if (global_1.Symbol.iterator in as) return bs.unshift(...as), bs;
+    if (Symbol.iterator in as) return bs.unshift(...as), bs;
 
     for (let i = as.length; i--;) {
       bs.unshift(as[i]);
@@ -128,7 +122,7 @@ exports.shift = shift;
 function push(as, bs) {
   if ('length' in bs) {
     if (bs.length === 1) return as.push(bs[0]), as;
-    if (global_1.Symbol.iterator in bs && bs.length > 50) return as.push(...bs), as;
+    if (Symbol.iterator in bs && bs.length > 50) return as.push(...bs), as;
 
     for (let len = bs.length, i = 0; i < len; ++i) {
       as.push(bs[i]);
@@ -165,13 +159,14 @@ function splice(as, index, count, ...values) {
   if (count === 1 && values.length === 1) return [[as[index], as[index] = values[0]][0]];
 
   switch (index) {
+    case as.length - 1:
+      if (as.length === 0) return push(as, values), [];
+      if (count >= 1) return [[as.pop()], push(as, values)][0];
+      break;
+
     case 0:
       if (count === 0) return unshift(values, as), [];
       if (count === 1) return [[as.shift()], unshift(values, as)][0];
-      break;
-
-    case as.length - 1:
-      if (count === 1) return [[as.pop()], push(as, values)][0];
       break;
 
     case as.length:
@@ -216,8 +211,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.template = exports.inherit = exports.merge = exports.extend = exports.overwrite = exports.clone = exports.assign = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const alias_1 = __webpack_require__(5406);
 
@@ -342,7 +335,7 @@ function template(strategy) {
       const source = sources[i];
       if (source === target) continue;
       if ((0, type_1.isPrimitive)(source)) continue;
-      const keys = global_1.Object.keys(source);
+      const keys = Object.keys(source);
 
       for (let i = 0; i < keys.length; ++i) {
         strategy(keys[i], target, source);
@@ -356,7 +349,7 @@ function template(strategy) {
 exports.template = template;
 
 function empty(source) {
-  return source instanceof global_1.Object ? {} : (0, alias_1.ObjectCreate)(null);
+  return source instanceof Object ? {} : (0, alias_1.ObjectCreate)(null);
 }
 
 /***/ }),
@@ -371,8 +364,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Cache = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const alias_1 = __webpack_require__(5406);
 
@@ -389,7 +380,7 @@ class Cache {
     this.settings = {
       capacity: 0,
       window: 100,
-      age: global_1.Infinity,
+      age: Infinity,
       earlyExpiring: false,
       capture: {
         delete: true,
@@ -397,19 +388,18 @@ class Cache {
       },
       resolution: 1,
       offset: 0,
-      entrance: 50,
+      entrance: 5,
       threshold: 20,
       sweep: 10,
       test: false
     };
     this.overlap = 0;
     this.SIZE = 0;
-    this.memory = new global_1.Map();
+    this.memory = new Map();
     this.indexes = {
       LRU: new invlist_1.List(),
       LFU: new invlist_1.List()
     };
-    this.expiries = new heap_1.Heap(heap_1.Heap.min);
     this.misses = 0;
     this.sweep = 0;
     this.ratio = 500;
@@ -422,21 +412,25 @@ class Cache {
     const settings = (0, assign_1.extend)(this.settings, opts, {
       capacity
     });
-    this.capacity = settings.capacity;
-    if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
+    this.capacity = capacity = settings.capacity;
+    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
+    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
     this.window = settings.window * this.capacity / 100 >>> 0 || this.capacity;
-    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
+    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% or more of capacity.`);
     this.threshold = settings.threshold;
-    this.limit = 1000 - settings.entrance;
+    this.limit = 1000 - settings.entrance * 10;
     this.age = settings.age;
-    this.earlyExpiring = settings.earlyExpiring;
+
+    if (settings.earlyExpiring) {
+      this.expiries = new heap_1.Heap(heap_1.Heap.min);
+    }
+
     this.disposer = settings.disposer;
     this.stats = opts.resolution || opts.offset ? new StatsExperimental(this.window, settings.resolution, settings.offset) : new Stats(this.window);
     this.test = settings.test;
   }
 
   get length() {
-    //assert(this.indexes.LRU.length + this.indexes.LFU.length === this.memory.size);
     return this.indexes.LRU.length + this.indexes.LFU.length;
   }
 
@@ -445,22 +439,21 @@ class Cache {
   }
 
   evict(node, callback) {
-    const index = node.value;
-    callback &&= !!this.disposer;
-    this.overlap -= +(index.region === 'LFU' && node.list === this.indexes.LRU);
+    const entry = node.value;
+    this.overlap -= +(entry.region === 'LFU' && node.list === this.indexes.LRU);
 
-    if (index.enode) {
-      this.expiries.delete(index.enode);
-      index.enode = void 0;
+    if (entry.eid !== -1) {
+      this.expiries.delete(entry.eid);
+      entry.eid = -1;
     }
 
     node.delete();
-    this.memory.delete(index.key);
-    this.SIZE -= index.size;
-    callback && this.disposer?.(node.value.value, index.key);
+    this.memory.delete(entry.key);
+    this.SIZE -= entry.size;
+    callback && this.disposer?.(node.value.value, entry.key);
   }
 
-  ensure(margin, skip) {
+  ensure(margin, skip, capture = false) {
     let size = skip?.value.size ?? 0;
     const {
       LRU,
@@ -468,49 +461,47 @@ class Cache {
     } = this.indexes;
 
     while (this.size + margin - size > this.capacity) {
-      let target;
+      let victim = this.expiries?.peek();
 
-      switch (true) {
-        case (target = this.expiries.peek()) && target !== skip && target.value.expiry < (0, clock_1.now)():
-          break;
+      if (victim && victim !== skip && victim.value.expiry < (0, clock_1.now)()) {} else if (LRU.length === 0) {
+        victim = LFU.last !== skip ? LFU.last : LFU.last.prev;
+      } else {
+        if (this.misses > LRU.length * this.threshold / 100) {
+          this.sweep ||= (0, alias_1.round)(LRU.length * this.settings.sweep / 100) || 1;
 
-        case LRU.length === 0:
-          target = LFU.last !== skip ? LFU.last : LFU.last.prev;
-          break;
-        // @ts-expect-error
+          if (this.sweep > 0) {
+            LRU.head = LRU.head.next.next;
+            --this.sweep;
+            this.sweep ||= -(0, alias_1.round)(LRU.length * this.settings.sweep / 100) || -1;
+          } else {
+            ++this.sweep;
+          }
+        } else if (LFU.length > this.capacity * this.ratio / 1000) {
+          victim = LFU.last !== skip ? LFU.last : LFU.length !== 1 ? LFU.last.prev : undefined;
 
-        case LFU.length > this.capacity * this.ratio / 1000:
-          target = LFU.last !== skip ? LFU.last : LFU.length >= 2 ? LFU.last.prev : skip;
-
-          if (target !== skip) {
-            LRU.unshiftNode(target);
+          if (victim) {
+            LRU.unshiftNode(victim);
             ++this.overlap;
           }
+        }
 
-        // fallthrough
+        victim = LRU.last !== skip ? LRU.last : LRU.length !== 1 ? LRU.last.prev : undefined;
 
-        default:
-          if (this.misses * 100 > LRU.length * this.threshold) {
-            this.sweep ||= LRU.length * this.settings.sweep / 100 + 1 >>> 0;
+        if (capture && !skip && victim) {
+          skip = victim;
+          size = skip?.value.size ?? 0;
+          continue;
+        }
 
-            if (this.sweep > 0) {
-              LRU.head = LRU.head.next.next;
-              --this.sweep;
-              this.sweep ||= -(0, alias_1.round)(LRU.length * this.settings.sweep / 100 * 99 / 100);
-            } else {
-              ++this.sweep;
-            }
-          }
-
-          target = LRU.last !== skip ? LRU.last : LRU.length >= 2 ? LRU.last.prev : LFU.last;
+        victim ??= LFU.last;
       }
 
-      this.evict(target, true);
+      this.evict(victim, true);
       skip = skip?.list && skip;
       size = skip?.value.size ?? 0;
     }
 
-    return !!skip?.list;
+    return skip;
   }
 
   put(key, value, {
@@ -522,47 +513,61 @@ class Cache {
       return false;
     }
 
-    if (age === global_1.Infinity) {
-      age = 0;
-    }
-
-    const expiry = age ? (0, clock_1.now)() + age : global_1.Infinity;
-    const node = this.memory.get(key);
-
-    if (node && this.ensure(size, node)) {
-      const val = node.value.value;
-      const index = node.value;
-      this.SIZE += size - index.size;
-      index.size = size;
-      index.expiry = expiry;
-
-      if (this.earlyExpiring && age) {
-        index.enode ? this.expiries.update(index.enode, expiry) : index.enode = this.expiries.insert(node, expiry);
-      } else if (index.enode) {
-        this.expiries.delete(index.enode);
-        index.enode = void 0;
-      }
-
-      node.value.value = value;
-      this.disposer?.(val, key);
-      return true;
-    }
-
-    this.ensure(size);
     const {
       LRU
     } = this.indexes;
+
+    if (age === Infinity) {
+      age = 0;
+    }
+
+    const expiry = age ? (0, clock_1.now)() + age : Infinity;
+    let node = this.memory.get(key);
+    const match = !!node;
+    node = this.ensure(size, node, true);
+
+    if (node) {
+      const entry = node.value;
+      const key$ = entry.key;
+      const value$ = entry.value;
+
+      if (!match) {
+        this.overlap -= +(entry.region === 'LFU');
+        this.memory.delete(key$);
+        this.memory.set(key, node);
+        entry.key = key;
+        entry.region = 'LRU';
+        LRU.head = node;
+      }
+
+      entry.value = value;
+      this.SIZE += size - entry.size;
+      entry.size = size;
+      entry.expiry = expiry;
+
+      if (this.expiries && age) {
+        entry.eid !== -1 ? this.expiries.update(entry.eid, expiry) : entry.eid = this.expiries.insert(node, expiry);
+      } else if (entry.eid !== -1) {
+        this.expiries.delete(entry.eid);
+        entry.eid = -1;
+      }
+
+      this.disposer?.(value$, key$);
+      return match;
+    }
+
     this.SIZE += size;
     this.memory.set(key, LRU.unshift({
       key,
       value,
       size,
       expiry,
+      eid: -1,
       region: 'LRU'
     }));
 
-    if (this.earlyExpiring && age) {
-      LRU.head.value.enode = this.expiries.insert(LRU.head, expiry);
+    if (this.expiries && age) {
+      LRU.head.value.eid = this.expiries.insert(LRU.head, expiry);
     }
 
     return false;
@@ -581,9 +586,10 @@ class Cache {
       return;
     }
 
-    const expiry = node.value.expiry;
+    const entry = node.value;
+    const expiry = entry.expiry;
 
-    if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
+    if (expiry !== Infinity && expiry < (0, clock_1.now)()) {
       ++this.misses;
       this.evict(node, true);
       return;
@@ -592,20 +598,19 @@ class Cache {
     this.misses &&= 0;
     this.sweep &&= 0; // Optimization for memoize.
 
-    if (!this.test && node === node.list.head) return node.value.value;
+    if (!this.test && node === node.list.head) return entry.value;
     this.access(node);
     this.adjust();
-    return node.value.value;
+    return entry.value;
   }
 
   has(key) {
-    //assert(this.memory.has(key) === (this.indexes.LFU.has(key) || this.indexes.LRU.has(key)));
-    //assert(this.memory.size === this.indexes.LFU.length + this.indexes.LRU.length);
     const node = this.memory.get(key);
     if (!node) return false;
-    const expiry = node.value.expiry;
+    const entry = node.value;
+    const expiry = entry.expiry;
 
-    if (expiry !== global_1.Infinity && expiry < (0, clock_1.now)()) {
+    if (expiry !== Infinity && expiry < (0, clock_1.now)()) {
       this.evict(node, true);
       return false;
     }
@@ -629,10 +634,10 @@ class Cache {
     this.stats.clear();
     this.indexes.LRU.clear();
     this.indexes.LFU.clear();
-    this.expiries.clear();
+    this.expiries?.clear();
     if (!this.disposer || !this.settings.capture.clear) return void this.memory.clear();
     const memory = this.memory;
-    this.memory = new global_1.Map();
+    this.memory = new Map();
 
     for (const {
       0: key,
@@ -647,10 +652,11 @@ class Cache {
   }
 
   resize(capacity) {
-    if (this.capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
+    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
+    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
     this.capacity = capacity;
-    this.window = this.settings.window || this.capacity;
-    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% of capacity or more.`);
+    this.window = this.settings.window * this.capacity / 100 >>> 0 || this.capacity;
+    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% or more of capacity.`);
     this.ensure(0);
   }
 
@@ -667,6 +673,26 @@ class Cache {
     }
 
     return;
+  }
+
+  access(node) {
+    const entry = node.value;
+    const {
+      LRU,
+      LFU
+    } = this.indexes;
+
+    if (node.list === LRU) {
+      ++this.stats[entry.region][0];
+      this.overlap -= +(entry.region === 'LFU');
+      entry.region = 'LFU';
+      LFU.unshiftNode(node);
+    } else {
+      ++this.stats[entry.region][0];
+      node.moveToHead();
+    }
+
+    return true;
   }
 
   adjust() {
@@ -701,27 +727,6 @@ class Cache {
         ++this.ratio;
       }
     }
-  }
-
-  access(node) {
-    return this.accessLFU(node) || this.accessLRU(node);
-  }
-
-  accessLRU(node) {
-    const index = node.value;
-    ++this.stats[index.region][0];
-    this.overlap -= +(index.region === 'LFU');
-    index.region = 'LFU';
-    this.indexes.LFU.unshiftNode(node);
-    return true;
-  }
-
-  accessLFU(node) {
-    if (node.list !== this.indexes.LFU) return false;
-    const index = node.value;
-    ++this.stats[index.region][0];
-    node.moveToHead();
-    return true;
   }
 
 }
@@ -878,13 +883,10 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.clock = exports.now = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const queue_1 = __webpack_require__(4934);
 
 const exception_1 = __webpack_require__(7822);
 
-const undefined = void 0;
 let time;
 let count = 0;
 
@@ -896,15 +898,15 @@ function now(nocache) {
   }
 
   count = 1;
-  return time = global_1.Date.now();
+  return time = Date.now();
 }
 
 exports.now = now;
-exports.clock = new class Clock extends global_1.Promise {
+exports.clock = new class Clock extends Promise {
   constructor() {
     super(resolve => resolve(undefined)); // Promise subclass is slow.
 
-    const clock = global_1.Promise.resolve();
+    const clock = Promise.resolve();
     clock.next = this.next;
     clock.now = this.now;
     return clock;
@@ -1132,15 +1134,13 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.suppressAsyncException = exports.causeAsyncException = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const stack_1 = __webpack_require__(5352);
 
 const stack = new stack_1.Stack();
 
 function causeAsyncException(reason) {
   if (stack.isEmpty()) {
-    global_1.Promise.reject(reason);
+    Promise.reject(reason);
   } else {
     stack.peek().push(reason);
   }
@@ -1170,7 +1170,7 @@ exports.suppressAsyncException = suppressAsyncException;
 
 __webpack_require__(6921);
 
-const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
+const global =  false || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
 global.global = global;
 module.exports = global;
@@ -1200,33 +1200,29 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.MultiHeap = exports.Heap = void 0;
 
-const global_1 = __webpack_require__(4128);
+const alias_1 = __webpack_require__(5406);
 
 const invlist_1 = __webpack_require__(7452);
 
 const memoize_1 = __webpack_require__(1808);
 
-const undefined = void 0;
-let size = 16;
-
 class Heap {
-  constructor(cmp = Heap.max, stable = false) {
+  constructor(cmp = Heap.max, options) {
     this.cmp = cmp;
-    this.stable = stable;
-    this.array = (0, global_1.Array)(size);
-    this.$length = 0;
+    this.stable = options?.stable ?? false;
+    this.array = new List();
   }
 
   get length() {
-    return this.$length;
+    return this.array.length;
   }
 
   isEmpty() {
-    return this.array[0] !== undefined;
+    return this.array.length === 0;
   }
 
   peek() {
-    return this.array[0]?.[1];
+    return this.array.value(this.array.index(0));
   }
 
   insert(value, order) {
@@ -1234,10 +1230,9 @@ class Heap {
       order = value;
     }
 
-    const array = this.array;
-    const node = array[this.$length] = [order, value, this.$length++];
-    upHeapify(this.cmp, array, this.$length);
-    return node;
+    const index = this.array.push(value, order);
+    upHeapify(this.cmp, this.array, this.length);
+    return index;
   }
 
   replace(value, order) {
@@ -1245,54 +1240,50 @@ class Heap {
       order = value;
     }
 
-    if (this.$length === 0) return void this.insert(value, order);
-    const array = this.array;
-    const replaced = array[0][1];
-    array[0] = [order, value, 0];
-    downHeapify(this.cmp, array, 1, this.$length, this.stable);
+    if (this.length === 0) return void this.insert(value, order);
+    const replaced = this.peek();
+    const index = this.array.index(0);
+    this.array.setValue(index, value);
+    this.array.setOrder(index, order);
+    downHeapify(this.cmp, this.array, 1, this.length, this.stable);
     return replaced;
   }
 
   extract() {
-    if (this.$length === 0) return;
-    const node = this.array[0];
-    this.delete(node);
-    return node[1];
+    if (this.length === 0) return;
+    const value = this.peek();
+    this.del(0);
+    return value;
   }
 
-  delete(node) {
-    const array = this.array;
-    const index = node[2];
-    if (array[index] !== node) throw new Error('Invalid node');
-    swap(array, index, --this.$length);
-    array[this.$length] = undefined;
-    index < this.$length && sort(this.cmp, array, index, this.$length, this.stable);
-    return node[1];
+  del(pos) {
+    swap(this.array, pos + 1, this.length);
+    this.array.pop();
+    sort(this.cmp, this.array, pos + 1, this.length, this.stable);
   }
 
-  update(node, order, value) {
-    if (arguments.length < 2) {
-      order = node[0];
+  delete(index) {
+    const value = this.array.value(index);
+    this.del(this.array.position(index));
+    return value;
+  }
+
+  update(index, order, value) {
+    const ord = this.array.order(index);
+
+    if (arguments.length < 3) {
+      this.array.setOrder(index, order);
+    } else {
+      this.array.setOrder(index, order);
+      this.array.setValue(index, value);
     }
 
-    const array = this.array;
-    if (array[node[2]] !== node) throw new Error('Invalid node');
-
-    if (arguments.length > 2) {
-      node[1] = value;
-    }
-
-    if (this.cmp(node[0], node[0] = order) === 0) return;
-    sort(this.cmp, array, node[2], this.$length, this.stable);
-  }
-
-  find(order) {
-    return this.array.find(node => node && node[0] === order);
+    if (this.cmp(ord, order) === 0) return;
+    sort(this.cmp, this.array, this.array.position(index) + 1, this.length, this.stable);
   }
 
   clear() {
-    this.array = (0, global_1.Array)(size);
-    this.$length = 0;
+    this.array.clear();
   }
 
 }
@@ -1303,12 +1294,186 @@ Heap.max = (a, b) => a > b ? -1 : a < b ? 1 : 0;
 
 Heap.min = (a, b) => a > b ? 1 : a < b ? -1 : 0;
 
+function sort(cmp, array, index, length, stable) {
+  if (length === 0) return false;
+
+  switch (index) {
+    case 1:
+      return  false || downHeapify(cmp, array, index, length, stable);
+
+    case length:
+      return upHeapify(cmp, array, index);
+
+    default:
+      return upHeapify(cmp, array, index) || downHeapify(cmp, array, index, length, stable);
+  }
+}
+
+function upHeapify(cmp, array, index) {
+  const order = array.ord(index - 1);
+  let changed = false;
+
+  while (index > 1) {
+    const parent = index / 2 | 0;
+    if (cmp(array.ord(parent - 1), order) <= 0) break;
+    swap(array, index, parent);
+    index = parent;
+    changed ||= true;
+  }
+
+  return changed;
+}
+
+function downHeapify(cmp, array, index, length, stable) {
+  let changed = false;
+
+  while (index < length) {
+    const left = index * 2;
+    const right = index * 2 + 1;
+    let min = index;
+
+    if (left <= length) {
+      const result = cmp(array.ord(left - 1), array.ord(min - 1));
+
+      if (stable ? result <= 0 : result < 0) {
+        min = left;
+      }
+    }
+
+    if (right <= length) {
+      const result = cmp(array.ord(right - 1), array.ord(min - 1));
+
+      if (stable ? result <= 0 : result < 0) {
+        min = right;
+      }
+    }
+
+    if (min === index) break;
+    swap(array, index, min);
+    index = min;
+    changed ||= true;
+  }
+
+  return changed;
+}
+
+function swap(array, index1, index2) {
+  array.swap(index1 - 1, index2 - 1);
+}
+
+class List {
+  constructor() {
+    this.capacity = 4;
+    this.orders = Array(this.capacity);
+    this.values = Array(this.capacity);
+    this.indexes = new Uint32Array(this.capacity);
+    this.positions = new Uint32Array(this.capacity);
+    this.$length = 0;
+  }
+
+  get length() {
+    return this.$length;
+  }
+
+  index(pos) {
+    return this.indexes[pos];
+  }
+
+  position(index) {
+    return this.positions[index];
+  }
+
+  ord(pos) {
+    return this.orders[this.indexes[pos]];
+  }
+
+  order(index) {
+    return this.orders[index];
+  }
+
+  value(index) {
+    return this.values[index];
+  }
+
+  isFull() {
+    return this.$length === this.capacity;
+  }
+
+  extend() {
+    if (this.capacity === 2 ** 32) throw new Error(`Too large capacity`);
+    const capacity = (0, alias_1.min)(this.capacity * 2, 2 ** 32);
+    this.orders.length = capacity;
+    this.values.length = capacity;
+    const indexes = new Uint32Array(capacity);
+    indexes.set(this.indexes);
+    this.indexes = indexes;
+    const positions = new Uint32Array(capacity);
+    positions.set(this.positions);
+    this.positions = positions;
+    this.capacity = capacity;
+  }
+
+  clear() {
+    this.orders = Array(this.capacity);
+    this.values = Array(this.capacity);
+    this.$length = 0;
+  }
+
+  setValue(index, value) {
+    this.values[index] = value;
+  }
+
+  setOrder(index, order) {
+    this.orders[index] = order;
+  }
+
+  push(value, order) {
+    this.isFull() && this.extend();
+    const pos = this.$length++;
+    this.indexes[pos] = pos;
+    this.positions[pos] = pos;
+    this.values[pos] = value;
+    this.orders[pos] = order;
+    return pos;
+  }
+
+  pop() {
+    if (this.$length === 0) return;
+    const pos = this.indexes[--this.$length];
+    this.values[pos] = undefined;
+    this.orders[pos] = undefined;
+  }
+
+  swap(pos1, pos2) {
+    if (pos1 === pos2) return false;
+    const {
+      indexes,
+      positions
+    } = this;
+    const idx1 = indexes[pos1];
+    const idx2 = indexes[pos2];
+    indexes[pos1] = idx2;
+    indexes[pos2] = idx1;
+    positions[idx1] = pos2;
+    positions[idx2] = pos1;
+    return true;
+  }
+
+  *[Symbol.iterator]() {
+    if (this.$length === 0) return;
+
+    for (let i = 0; i < this.$length; ++i) {
+      const index = this.indexes[i];
+      yield [this.orders[index], this.values[index], i];
+    }
+  }
+
+}
+
 class MultiHeap {
-  constructor(cmp = MultiHeap.max, clean = true) {
+  constructor(cmp = MultiHeap.max, options) {
     this.cmp = cmp;
-    this.clean = clean;
-    this.heap = new Heap(this.cmp);
-    this.dict = new global_1.Map();
+    this.dict = new Map();
     this.list = (0, memoize_1.memoize)(order => {
       const list = new invlist_1.List();
       list[MultiHeap.order] = order;
@@ -1316,6 +1481,8 @@ class MultiHeap {
       return list;
     }, this.dict);
     this.$length = 0;
+    this.clean = options?.clean ?? true;
+    this.heap = new Heap(this.cmp);
   }
 
   get length() {
@@ -1401,60 +1568,6 @@ MultiHeap.heap = Symbol('heap');
 MultiHeap.max = Heap.max;
 MultiHeap.min = Heap.min;
 
-function sort(cmp, array, index, length, stable) {
-  return upHeapify(cmp, array, index + 1) || downHeapify(cmp, array, index + 1, length, stable);
-}
-
-function upHeapify(cmp, array, index) {
-  const order = array[index - 1][0];
-  let changed = false;
-
-  while (index > 1) {
-    const parent = index / 2 | 0;
-    if (cmp(array[parent - 1][0], order) <= 0) break;
-    swap(array, index - 1, parent - 1);
-    index = parent;
-    changed ||= true;
-  }
-
-  return changed;
-}
-
-function downHeapify(cmp, array, index, length, stable) {
-  let changed = false;
-
-  while (index < length) {
-    const left = index * 2;
-    const right = index * 2 + 1;
-    let min = index;
-
-    if (left <= length && (stable ? cmp(array[left - 1][0], array[min - 1][0]) <= 0 : cmp(array[left - 1][0], array[min - 1][0]) < 0)) {
-      min = left;
-    }
-
-    if (right <= length && (stable ? cmp(array[right - 1][0], array[min - 1][0]) <= 0 : cmp(array[right - 1][0], array[min - 1][0]) < 0)) {
-      min = right;
-    }
-
-    if (min === index) break;
-    swap(array, index - 1, min - 1);
-    index = min;
-    changed ||= true;
-  }
-
-  return changed;
-}
-
-function swap(array, index1, index2) {
-  if (index1 === index2) return;
-  const node1 = array[index1];
-  const node2 = array[index2];
-  node1[2] = index2;
-  node2[2] = index1;
-  array[index1] = node2;
-  array[index2] = node1;
-}
-
 /***/ }),
 
 /***/ 7452:
@@ -1504,7 +1617,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.List = void 0;
-const undefined = void 0;
 
 class List {
   constructor() {
@@ -1570,7 +1682,7 @@ class List {
   }
 
   insert(node, before = this.head) {
-    if (node.list === this) return node.moveTo(before), node;
+    if (node.list === this) return node.move(before), node;
     node.delete();
     ++this.$length;
     this.head ??= node;
@@ -1614,7 +1726,9 @@ class List {
   }
 
   *[Symbol.iterator]() {
-    for (let head = this.head, node = head; node;) {
+    const head = this.head;
+
+    for (let node = head; node;) {
       yield node.value;
       node = node.next;
       if (node === head) return;
@@ -1674,7 +1788,7 @@ class Node {
     return new Node(this.list, value, this.next, this);
   }
 
-  moveTo(before) {
+  move(before) {
     if (!before) return false;
     if (this === before) return false;
     if (before.list !== this.list) return before.list.insert(this, before), true;
@@ -1694,12 +1808,12 @@ class Node {
   }
 
   moveToHead() {
-    this.moveTo(this.list.head);
+    this.move(this.list.head);
     this.list.head = this;
   }
 
   moveToLast() {
-    this.moveTo(this.list.head);
+    this.move(this.list.head);
   }
 
   swap(node) {
@@ -1708,8 +1822,8 @@ class Node {
     if (node1 === node2) return false;
     const node3 = node2.next;
     if (node1.list !== node2.list) throw new Error(`Spica: InvList: Cannot swap nodes across lists.`);
-    node2.moveTo(node1);
-    node1.moveTo(node3);
+    node2.move(node1);
+    node1.move(node3);
 
     switch (this.list.head) {
       case node1:
@@ -1739,17 +1853,13 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reduce = exports.memoize = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const alias_1 = __webpack_require__(5406);
 
 const compare_1 = __webpack_require__(5529);
 
-const undefined = void 0;
-
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new global_1.Map());
+  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new Map());
 }
 
 exports.memoize = memoize;
@@ -1810,13 +1920,10 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.MultiQueue = exports.PriorityQueue = exports.Queue = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const heap_1 = __webpack_require__(818);
 
 const memoize_1 = __webpack_require__(1808);
 
-const undefined = void 0;
 const size = 2048;
 const initsize = 16;
 
@@ -1897,7 +2004,7 @@ exports.Queue = Queue;
 class FixedQueue {
   constructor(size, next) {
     this.size = size;
-    this.array = (0, global_1.Array)(this.size);
+    this.array = Array(this.size);
     this.mask = this.array.length - 1;
     this.head = 0;
     this.tail = 0;
@@ -1938,7 +2045,7 @@ class FixedQueue {
 class PriorityQueue {
   constructor(cmp = PriorityQueue.max, clean = true) {
     this.clean = clean;
-    this.dict = new global_1.Map();
+    this.dict = new Map();
     this.queue = (0, memoize_1.memoize)(priority => {
       const queue = new Queue();
       queue[PriorityQueue.priority] = priority;
@@ -2003,7 +2110,7 @@ PriorityQueue.min = heap_1.Heap.min;
 
 class MultiQueue {
   constructor(entries) {
-    this.dict = new global_1.Map();
+    this.dict = new Map();
     if (entries) for (const {
       0: k,
       1: v
@@ -2037,11 +2144,11 @@ class MultiQueue {
   }
 
   clear() {
-    this.dict = new global_1.Map();
+    this.dict = new Map();
   }
 
   take(key, count) {
-    if (count === void 0) return this.pop(key);
+    if (count === undefined) return this.pop(key);
     const vs = this.dict.get(key);
     const acc = [];
 
@@ -2101,7 +2208,7 @@ exports.MultiQueue = MultiQueue;
 /***/ }),
 
 /***/ 7325:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -2110,9 +2217,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pcg32 = exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
-
-const global_1 = __webpack_require__(4128);
-
 const radixes = Object.freeze([...Array(7)].map((_, i) => 1 << i));
 const masks = Object.freeze(radixes.map(radix => radix - 1));
 const dict0_ = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_'].join('');
@@ -2130,7 +2234,7 @@ exports.rndAf = conv(exports.rnd32, dictAz);
 
 function unique(rnd, len = 1, mem) {
   const independence = !mem;
-  mem ??= new global_1.Set();
+  mem ??= new Set();
   const trials = 3;
   let prefixes;
   let prefix = '';
@@ -2144,7 +2248,7 @@ function unique(rnd, len = 1, mem) {
       } catch (reason) {
         // ベンチマーク程度でもSetがパンクする場合がある。
         if (!independence) throw reason;
-        prefixes ??= new global_1.Set();
+        prefixes ??= new Set();
         prefix ||= '?';
 
         for (let i = 0; i < trials; ++i) {
@@ -2155,7 +2259,7 @@ function unique(rnd, len = 1, mem) {
           return random();
         }
 
-        prefixes = new global_1.Set();
+        prefixes = new Set();
         prefix += '?';
         return random();
       }
@@ -2199,7 +2303,7 @@ let offset = digit;
 
 function random(len) {
   if (rnd === 2 ** digit) {
-    global_1.crypto.getRandomValues(buffer);
+    crypto.getRandomValues(buffer);
     index = 0;
     rnd = buffer[index];
   }
@@ -2235,7 +2339,7 @@ exports.xorshift = xorshift;
   const max = -1 >>> 0;
 
   function seed() {
-    return global_1.Math.random() * max + 1 >>> 0;
+    return Math.random() * max + 1 >>> 0;
   }
 
   xorshift.seed = seed;
@@ -2285,16 +2389,12 @@ exports.pcg32 = pcg32;
     seed[0] = uint64n(oldstate * MULT + seed[1]);
     const xorshifted = uint32n((oldstate >> 18n ^ oldstate) >> 27n);
     const rot = oldstate >> 59n;
-    return (0, global_1.Number)(uint32n(xorshifted >> rot | xorshifted << (-rot & 31n)));
+    return Number(uint32n(xorshifted >> rot | xorshifted << (-rot & 31n)));
   }
 
   pcg32.next = next;
 
   function advance(seed, delta) {
-    while (delta < 0) {
-      delta = 2n ** 64n + delta;
-    }
-
     delta = uint64n(delta);
     let acc_mult = 1n;
     let acc_plus = 0n;
@@ -2386,8 +2486,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.isPrimitive = exports.is = exports.type = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const alias_1 = __webpack_require__(5406);
 
 const ObjectPrototype = Object.prototype;
@@ -2402,7 +2500,7 @@ function type(value) {
 
     case 'object':
       if (value === null) return 'null';
-      const tag = value[global_1.Symbol.toStringTag];
+      const tag = value[Symbol.toStringTag];
       if (tag) return tag;
 
       switch ((0, alias_1.ObjectGetPrototypeOf)(value)) {
@@ -2468,8 +2566,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const format_1 = __webpack_require__(137);
 
@@ -2563,7 +2659,7 @@ class URL {
   }
 
   get searchParams() {
-    return this.params ??= new global_1.URLSearchParams(this.search);
+    return this.params ??= new URLSearchParams(this.search);
   }
 
   toString() {
@@ -2591,7 +2687,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.ReadonlyURL = exports._encode = exports.standardize = void 0;
 
-const global_1 = __webpack_require__(4128);
+__webpack_require__(4128);
 
 const memoize_1 = __webpack_require__(1808);
 
@@ -2607,7 +2703,7 @@ exports.standardize = standardize;
 
 function encode(url) {
   return url // Percent-encoding
-  .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, global_1.encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : (0, global_1.encodeURIComponent)(str))) // Use uppercase letters within percent-encoding triplets
+  .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : encodeURIComponent(str))) // Use uppercase letters within percent-encoding triplets
   .replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')));
 }
 
@@ -2621,7 +2717,7 @@ class ReadonlyURL {
     switch (source.slice(0, source.lastIndexOf('://', 9) + 1).toLowerCase()) {
       case 'http:':
       case 'https:':
-        base = void 0;
+        base = undefined;
         break;
 
       default:
@@ -2708,7 +2804,7 @@ class ReadonlyURL {
   }
 
   get searchParams() {
-    return this.params ??= new global_1.URLSearchParams(this.search);
+    return this.params ??= new URLSearchParams(this.search);
   }
 
   toString() {
@@ -2727,7 +2823,7 @@ exports.ReadonlyURL = ReadonlyURL; // Can't freeze URL object in the Firefox ext
 // @ts-ignore
 
 ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
-  url: new global_1.global.URL(url, base)
+  url: new __webpack_require__.g.URL(url, base)
 }), (url, base = '') => `${base.indexOf('\n') > -1 ? base.replace(/\n+/g, '') : base}\n${url}`, new cache_1.Cache(10000));
 
 /***/ }),
@@ -2826,8 +2922,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.block = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const memo_1 = __webpack_require__(1090);
@@ -2848,7 +2942,7 @@ function block(parser, separation = true) {
     if (!result) return;
     const rest = (0, parser_1.exec)(result);
     if (separation && !(0, line_1.isEmpty)((0, line_1.firstline)(rest))) return;
-    return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : global_1.undefined;
+    return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : undefined;
   };
 }
 
@@ -2888,7 +2982,7 @@ function validate(patterns, has, parser) {
       context
     });
     if (!result) return;
-    return (0, parser_1.exec)(result).length < source.length ? result : global_1.undefined;
+    return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
 }
 
@@ -2906,7 +3000,7 @@ function verify(parser, cond) {
     });
     if (!result) return;
     if (!cond((0, parser_1.eval)(result), (0, parser_1.exec)(result), context)) return;
-    return (0, parser_1.exec)(result).length < source.length ? result : global_1.undefined;
+    return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
 }
 
@@ -2924,8 +3018,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isEmpty = exports.firstline = exports.line = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
@@ -2947,7 +3039,7 @@ function line(parser) {
     });
     context.offset -= source.length - line.length;
     if (!result) return;
-    return isEmpty((0, parser_1.exec)(result)) ? [(0, parser_1.eval)(result), source.slice(line.length)] : global_1.undefined;
+    return isEmpty((0, parser_1.exec)(result)) ? [(0, parser_1.eval)(result), source.slice(line.length)] : undefined;
   };
 }
 
@@ -3138,8 +3230,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.indent = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const some_1 = __webpack_require__(5418);
@@ -3168,7 +3258,7 @@ function indent(opener, parser, separation = false) {
       context
     });
     context.offset -= rest.length;
-    return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : global_1.undefined;
+    return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : undefined;
   });
 }
 
@@ -3211,8 +3301,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.match = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 function match(pattern, f) {
@@ -3228,7 +3316,7 @@ function match(pattern, f) {
       context
     });
     if (!result) return;
-    return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= source.length ? result : global_1.undefined;
+    return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= source.length ? result : undefined;
   };
 }
 
@@ -3293,8 +3381,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.rewrite = exports.focus = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 function focus(scope, parser) {
@@ -3314,7 +3400,7 @@ function focus(scope, parser) {
     });
     context.offset -= source.length - src.length;
     if (!result) return;
-    return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : global_1.undefined;
+    return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : undefined;
   };
 }
 
@@ -3327,7 +3413,7 @@ function rewrite(scope, parser) {
   }) => {
     if (source === '') return;
     const memo = context.memo;
-    context.memo = global_1.undefined;
+    context.memo = undefined;
     const res1 = scope({
       source,
       context
@@ -3343,7 +3429,7 @@ function rewrite(scope, parser) {
     });
     context.offset -= source.length - src.length;
     if (!res2) return;
-    return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : global_1.undefined;
+    return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : undefined;
   };
 }
 
@@ -3361,8 +3447,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.clear = exports.close = exports.open = exports.surround = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
@@ -3399,7 +3483,7 @@ function surround(opener, parser, closer, optional = false, f, g) {
     const res2 = mr_ !== '' ? parser({
       source: mr_,
       context
-    }) : global_1.undefined;
+    }) : undefined;
     const rm = (0, parser_1.eval)(res2);
     const r_ = (0, parser_1.exec)(res2, mr_);
     if (!rm && !optional) return;
@@ -3410,7 +3494,7 @@ function surround(opener, parser, closer, optional = false, f, g) {
     const rr = (0, parser_1.eval)(res3);
     const rest = (0, parser_1.exec)(res3, r_);
     if (rest.length === lmr_.length) return;
-    return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : global_1.undefined;
+    return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
   };
 }
 
@@ -3421,14 +3505,14 @@ function match(pattern) {
     case 'string':
       return ({
         source
-      }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : global_1.undefined;
+      }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
 
     case 'object':
       return ({
         source
       }) => {
         const m = source.match(pattern);
-        return m ? [[], source.slice(m[0].length)] : global_1.undefined;
+        return m ? [[], source.slice(m[0].length)] : undefined;
       };
   }
 }
@@ -3497,8 +3581,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.bind = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 function bind(parser, f) {
@@ -3514,7 +3596,7 @@ function bind(parser, f) {
     if (!res1) return;
     const res2 = f((0, parser_1.eval)(res1), (0, parser_1.exec)(res1), context);
     if (!res2) return;
-    return (0, parser_1.exec)(res2).length <= (0, parser_1.exec)(res1).length ? res2 : global_1.undefined;
+    return (0, parser_1.exec)(res2).length <= (0, parser_1.exec)(res1).length ? res2 : undefined;
   };
 }
 
@@ -3585,8 +3667,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.state = exports.constraint = exports.guard = exports.precedence = exports.creation = exports.syntax = exports.context = exports.reset = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const alias_1 = __webpack_require__(5406);
 
 const parser_1 = __webpack_require__(6728);
@@ -3595,11 +3675,11 @@ const memo_1 = __webpack_require__(1090);
 
 function reset(base, parser) {
   if (!('memo' in base)) {
-    base.memo = global_1.undefined;
+    base.memo = undefined;
   }
 
-  const changes = global_1.Object.entries(base);
-  const values = (0, global_1.Array)(changes.length);
+  const changes = Object.entries(base);
+  const values = Array(changes.length);
   return ({
     source,
     context
@@ -3609,8 +3689,8 @@ function reset(base, parser) {
 exports.reset = reset;
 
 function context(base, parser) {
-  const changes = global_1.Object.entries(base);
-  const values = (0, global_1.Array)(changes.length);
+  const changes = Object.entries(base);
+  const values = Array(changes.length);
   return ({
     source,
     context
@@ -3660,7 +3740,7 @@ function apply(parser, source, context, changes, values, reset = false) {
 
       default:
         context[prop] = values[i];
-        values[i] = global_1.undefined;
+        values[i] = undefined;
     }
   }
   return result;
@@ -3678,7 +3758,7 @@ function syntax(syntax, prec, cost, state, parser) {
     const stateOuter = context.state ?? 0;
     const stateInner = context.state = stateOuter | state;
     const cache = syntax && stateInner & memo.targets && memo.get(position, syntax, stateInner);
-    const result = cache ? cache.length === 0 ? global_1.undefined : [cache[0], source.slice(cache[1])] : parser({
+    const result = cache ? cache.length === 0 ? undefined : [cache[0], source.slice(cache[1])] : parser({
       source,
       context
     });
@@ -3753,7 +3833,7 @@ function guard(f, parser) {
   }) => f(context) ? parser({
     source,
     context
-  }) : global_1.undefined;
+  }) : undefined;
 }
 
 exports.guard = guard;
@@ -3772,7 +3852,7 @@ function constraint(state, positive, parser) {
     return s === state ? parser({
       source,
       context
-    }) : global_1.undefined;
+    }) : undefined;
   };
 }
 
@@ -3967,8 +4047,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.inits = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const array_1 = __webpack_require__(8112);
@@ -3995,7 +4073,7 @@ function inits(parsers, resume) {
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) break;
     }
 
-    return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
+    return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
 
@@ -4013,8 +4091,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sequence = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
@@ -4042,7 +4118,7 @@ function sequence(parsers, resume) {
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) return;
     }
 
-    return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
+    return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
 
@@ -4061,8 +4137,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.some = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const delimiter_1 = __webpack_require__(1435);
@@ -4070,7 +4144,7 @@ const delimiter_1 = __webpack_require__(1435);
 const array_1 = __webpack_require__(8112);
 
 function some(parser, end, delimiters = [], limit = -1) {
-  if (typeof end === 'number') return some(parser, global_1.undefined, delimiters, end);
+  if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
   const delims = delimiters.map(([delimiter, precedence]) => ({
     signature: delimiter_1.Delimiters.signature(delimiter),
@@ -4108,7 +4182,7 @@ function some(parser, end, delimiters = [], limit = -1) {
       context.delimiters.pop(delims.length);
     }
 
-    return nodes && rest.length < source.length ? [nodes, rest] : global_1.undefined;
+    return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
 
@@ -4163,7 +4237,7 @@ exports.tails = tails;
 /***/ }),
 
 /***/ 6366:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -4173,12 +4247,10 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.union = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 function union(parsers) {
   switch (parsers.length) {
     case 0:
-      return () => global_1.undefined;
+      return () => undefined;
 
     case 1:
       return parsers[0];
@@ -4325,8 +4397,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.bind = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const memo_1 = __webpack_require__(1090);
@@ -4351,7 +4421,7 @@ const array_1 = __webpack_require__(8112);
 
 function bind(target, settings) {
   let context = { ...settings,
-    host: settings.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+    host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     memo: new memo_1.Memo({
       targets: 236
       /* State.backtrackers */
@@ -4376,7 +4446,7 @@ function bind(target, settings) {
     source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1)); // Change the object identity.
 
     context = { ...context,
-      url: url ? new url_1.ReadonlyURL(url) : global_1.undefined
+      url: url ? new url_1.ReadonlyURL(url) : undefined
     };
     const rev = revision = Symbol();
     const sourceSegments = [];
@@ -4692,8 +4762,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.parse = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const memo_1 = __webpack_require__(1090);
@@ -4721,7 +4789,7 @@ function parse(source, opts = {}, context) {
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
-    host: opts.host ?? context?.host ?? new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+    host: opts.host ?? context?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     url: url ? new url_1.ReadonlyURL(url) : context?.url,
     id: opts.id ?? context?.id,
     caches: context?.caches,
@@ -4820,8 +4888,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.block = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const source_1 = __webpack_require__(6743);
@@ -4876,12 +4942,12 @@ function error(parser) {
       id
     }
   }, reason) => [[(0, dom_1.html)('h1', {
-    id: id !== '' ? `error:${(0, random_1.rnd0Z)(8)}` : global_1.undefined,
+    id: id !== '' ? `error:${(0, random_1.rnd0Z)(8)}` : undefined,
     class: 'error'
   }, reason instanceof Error ? `${reason.name}: ${reason.message}` : `UnknownError: ${reason}`), (0, dom_1.html)('pre', {
     class: 'error',
     translate: 'no'
-  }, source.replace(/^\x07.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)], '']);
+  }, source.replace(/^\x07.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || undefined)], '']);
 }
 
 /***/ }),
@@ -4944,8 +5010,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.codeblock = exports.segment_ = exports.segment = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const combinator_1 = __webpack_require__(2087);
@@ -4995,11 +5059,11 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0
   }, `${opener}${body}${overflow || closer}`)];
   const el = (0, dom_1.html)('pre', {
     class: params.lang ? `code language-${params.lang}` : 'text',
-    translate: params.lang ? 'no' : global_1.undefined,
-    'data-lang': params.lang || global_1.undefined,
-    'data-line': params.line || global_1.undefined,
-    'data-path': params.path || global_1.undefined
-  }, params.lang ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes || body.slice(0, -1) || global_1.undefined : (0, dom_1.defrag)((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)({
+    translate: params.lang ? 'no' : undefined,
+    'data-lang': params.lang || undefined,
+    'data-line': params.line || undefined,
+    'data-path': params.path || undefined
+  }, params.lang ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes || body.slice(0, -1) || undefined : (0, dom_1.defrag)((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)({
     source: body.slice(0, -1),
     context
   }), [])));
@@ -5303,8 +5367,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.figure = exports.segment = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const source_1 = __webpack_require__(6743);
@@ -5435,7 +5497,7 @@ function attributes(label, param, content, caption) {
   } || group === 'example' && type !== group && {
     'data-invalid-type': 'label',
     'data-invalid-message': '"example" label group must be used to examples'
-  } || global_1.undefined;
+  } || undefined;
   return {
     'data-type': type,
     'data-label': label,
@@ -5581,8 +5643,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.table = exports.segment_ = exports.segment = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const alias_1 = __webpack_require__(5406);
 
 const parser_1 = __webpack_require__(6728);
@@ -5616,7 +5676,7 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
 
   switch (type) {
     case 'grid':
-    case global_1.undefined:
+    case undefined:
       return ((0, parser_1.eval)(parser({
         source: body,
         context
@@ -5644,19 +5704,19 @@ const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, co
 const dataline = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
 
 function attributes(source) {
-  let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
-  rowspan === '1' ? rowspan = global_1.undefined : global_1.undefined;
-  colspan === '1' ? colspan = global_1.undefined : global_1.undefined;
+  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
+  rowspan === '1' ? rowspan = undefined : undefined;
+  colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= `${(0, alias_1.max)(0, (0, alias_1.min)(+rowspan, 65534))}`;
   colspan &&= `${(0, alias_1.max)(0, (0, alias_1.min)(+colspan, 1000))}`;
-  highlight &&= highlight.length > 0 ? `${highlight.length}` : global_1.undefined;
+  highlight &&= highlight.length > 0 ? `${highlight.length}` : undefined;
   const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 6;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
     ...(valid ? {
-      'data-highlight-level': +highlight > 1 ? highlight : global_1.undefined
+      'data-highlight-level': +highlight > 1 ? highlight : undefined
     } : {
       'data-invalid-syntax': 'table',
       'data-invalid-type': 'syntax',
@@ -5678,7 +5738,7 @@ function format(rows) {
   ROW: for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
     const [[[...as], [...vs] = []], ...cells] = rows[i];
-    let isBody = target === tfoot ? false : global_1.undefined;
+    let isBody = target === tfoot ? false : undefined;
     as.length === 0 && as.push('-');
 
     ALIGN_H: for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
@@ -5749,12 +5809,12 @@ function format(rows) {
     let rHeadCellIdx;
 
     for (let j = 0; j < cells.length; ++j) {
-      const jn = (0, global_1.BigInt)(j);
+      const jn = BigInt(j);
       const isVirtual = !!ranges[i]?.[j];
-      const cell = isVirtual ? (0, array_1.splice)(cells, j, 0, global_1.undefined) && ranges[i][j] : cells[j];
+      const cell = isVirtual ? (0, array_1.splice)(cells, j, 0, undefined) && ranges[i][j] : cells[j];
       const isHeadCell = cell.tagName === 'TH';
-      heads |= (0, global_1.BigInt)(isHeadCell) << jn;
-      highlights |= (0, global_1.BigInt)(cell.className === 'highlight') << jn;
+      heads |= BigInt(isHeadCell) << jn;
+      highlights |= BigInt(cell.className === 'highlight') << jn;
       hasDataCell ||= !isHeadCell;
 
       if (isHeadCell && !hasDataCell) {
@@ -5779,9 +5839,9 @@ function format(rows) {
       const colSpan = cell.colSpan;
 
       if (colSpan > 1) {
-        (0, array_1.splice)(cells, j + 1, 0, ...(0, global_1.Array)(colSpan - 1));
-        heads |= heads & 1n << jn && ~(~0n << (0, global_1.BigInt)(colSpan)) << jn;
-        highlights |= highlights & 1n << jn && ~(~0n << (0, global_1.BigInt)(colSpan)) << jn;
+        (0, array_1.splice)(cells, j + 1, 0, ...Array(colSpan - 1));
+        heads |= heads & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        highlights |= highlights & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         j += colSpan - 1;
       }
 
@@ -5964,8 +6024,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.mathblock = exports.segment_ = exports.segment = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
@@ -5976,7 +6034,7 @@ exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, 
 exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, {
   caches: {
-    math: cache = global_1.undefined
+    math: cache = undefined
   } = {}
 }) => [delim.length === 2 && closer && !overflow && param.trimStart() === '' ? cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) || (0, dom_1.html)('div', {
   class: 'math',
@@ -6001,8 +6059,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.invalid = exports.olist_ = exports.olist = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const combinator_1 = __webpack_require__(2087);
 
@@ -6032,7 +6088,7 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
 
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
-  'data-marker': ns[0] || global_1.undefined
+  'data-marker': ns[0] || undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 
 const heads = {
@@ -6117,9 +6173,9 @@ function format(el, type, form) {
   }
 
   (0, dom_1.define)(el, {
-    type: type || global_1.undefined,
-    'data-format': form === '.' ? global_1.undefined : 'paren',
-    'data-type': style(type) || global_1.undefined
+    type: type || undefined,
+    'data-format': form === '.' ? undefined : 'paren',
+    'data-type': style(type) || undefined
   });
   const marker = el.firstElementChild?.getAttribute('data-marker').match(initial(type))?.[0] ?? '';
 
@@ -6631,8 +6687,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.annotation = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -6650,7 +6704,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((
 | 4
 /* State.media */
 , (0, visibility_1.startLoose)((0, combinator_1.context)({
-  delimiters: global_1.undefined
+  delimiters: undefined
 }, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
@@ -6925,8 +6979,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.bracket = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -6962,16 +7014,16 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, comb
 /* Syntax.bracket */
 , 2, 1, 0
 /* State.none */
-, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(128
+, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(128
 /* Syntax.bracket */
 , 2, 1, 0
 /* State.none */
-, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), // Control media blinking in editing rather than control confusion of pairs of quote marks.
+, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), // Control media blinking in editing rather than control confusion of pairs of quote marks.
 (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(1
 /* Syntax.quote */
 , 8, 1, 0
 /* State.none */
-, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
+, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
 
 /***/ }),
 
@@ -7133,8 +7185,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.index = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -7156,9 +7206,9 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0
 | 4
 /* State.media */
 , (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
-  id: el.id ? null : global_1.undefined,
+  id: el.id ? null : undefined,
   class: 'index',
-  href: el.id ? `#${el.id}` : global_1.undefined
+  href: el.id ? `#${el.id}` : undefined
 }, el.childNodes)])));
 const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
@@ -7179,8 +7229,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.text = exports.identity = exports.indexee = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
@@ -7189,7 +7237,7 @@ function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
   }) => [(0, dom_1.define)(el, {
-    id: id !== '' && identity(text(el, optional)) || global_1.undefined
+    id: id !== '' && identity(text(el, optional)) || undefined
   })]);
 }
 
@@ -7290,8 +7338,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.isFixed = exports.number = exports.label = exports.segment = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const source_1 = __webpack_require__(6743);
@@ -7322,7 +7368,7 @@ exports.isFixed = isFixed;
 function increment(number, position) {
   if (number === '0' && position > 1) return increment('1', position);
   const ns = number.split('.');
-  const ms = (0, global_1.Array)(position);
+  const ms = Array(position);
 
   for (let i = 0; i < position; ++i) {
     ms[i] = i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1;
@@ -7382,8 +7428,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.attributes = exports.attribute = exports.html = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -7400,14 +7444,14 @@ const array_1 = __webpack_require__(8112);
 
 const dom_1 = __webpack_require__(3252);
 
-const tags = global_1.Object.freeze(['bdo', 'bdi']);
+const tags = Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
   bdo: {
-    dir: global_1.Object.freeze(['ltr', 'rtl'])
+    dir: Object.freeze(['ltr', 'rtl'])
   }
 };
-global_1.Object.setPrototypeOf(attrspecs, null);
-global_1.Object.values(attrspecs).forEach(o => global_1.Object.setPrototypeOf(o, null));
+Object.setPrototypeOf(attrspecs, null);
+Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/i, (0, combinator_1.syntax)(0
 /* Syntax.none */
 , 5, 1, 0
@@ -7417,7 +7461,7 @@ exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, 
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
 
-const TAGS = global_1.Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "basefont", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "hgroup", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
+const TAGS = Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "basefont", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "hgroup", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
 
 function elem(tag, as, bs, cs) {
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
@@ -7437,7 +7481,7 @@ function invalid(type, message, as, bs, cs) {
   }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)));
 }
 
-const requiredAttributes = (0, memoize_1.memoize)(spec => global_1.Object.entries(spec).flatMap(([k, v]) => v && global_1.Object.isFrozen(v) ? [k] : []), new WeakMap());
+const requiredAttributes = (0, memoize_1.memoize)(spec => Object.entries(spec).flatMap(([k, v]) => v && Object.isFrozen(v) ? [k] : []), new WeakMap());
 
 function attributes(syntax, classes, spec, params) {
   let invalid = false;
@@ -7446,10 +7490,10 @@ function attributes(syntax, classes, spec, params) {
   for (let i = 0; i < params.length; ++i) {
     const param = params[i].trim();
     const name = param.split('=', 1)[0];
-    const value = param !== name ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
+    const value = param !== name ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1') : undefined;
     invalid ||= !spec || name in attrs;
     if (spec && name in spec && !spec[name]) continue;
-    spec?.[name]?.includes(value) || value !== global_1.undefined && spec?.[name]?.length === 0 ? attrs[name] = value ?? '' : invalid ||= !!spec;
+    spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0 ? attrs[name] = value ?? '' : invalid ||= !!spec;
     (0, array_1.splice)(params, i--, 1);
   }
 
@@ -7480,8 +7524,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.htmlentity = exports.unsafehtmlentity = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const dom_1 = __webpack_require__(3252);
@@ -7501,7 +7543,7 @@ const parse = (0, memoize_1.reduce)((el => entity => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
   const text = el.textContent;
-  return entity === text ? global_1.undefined : text;
+  return entity === text ? undefined : text;
 })((0, dom_1.html)('b')));
 
 /***/ }),
@@ -7547,8 +7589,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.link = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
@@ -7619,7 +7659,7 @@ function parse(content, params, rest, context) {
   }
 
   const INSECURE_URI = params.shift();
-  const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
+  const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
 
   switch (uri.protocol) {
     case 'tel:':
@@ -7635,7 +7675,7 @@ function parse(content, params, rest, context) {
       }
   }
 
-  const el = elem(INSECURE_URI, content, uri, context.host?.origin || global_1.location.origin);
+  const el = elem(INSECURE_URI, content, uri, context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }
@@ -7656,7 +7696,7 @@ function elem(INSECURE_URI, content, uri, origin) {
       return (0, dom_1.html)('a', {
         class: content.length === 0 ? 'url' : 'link',
         href: uri.source,
-        target: global_1.undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : global_1.undefined
+        target:  false || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
       }, content.length === 0 ? decode(INSECURE_URI) : content);
 
     case 'tel:':
@@ -7698,7 +7738,7 @@ function decode(uri) {
   const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
 
   try {
-    let path = (0, global_1.decodeURI)(uri.slice(origin.length));
+    let path = decodeURI(uri.slice(origin.length));
 
     if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
       path = uri.slice(origin.length);
@@ -7706,7 +7746,7 @@ function decode(uri) {
 
     uri = origin + path;
   } finally {
-    return uri.replace(/\s+/g, global_1.encodeURI);
+    return uri.replace(/\s+/g, encodeURI);
   }
 }
 
@@ -7794,8 +7834,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.media = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const link_1 = __webpack_require__(9628);
@@ -7816,7 +7854,7 @@ const optspec = {
   'width': [],
   'height': [],
   'aspect-ratio': [],
-  rel: global_1.undefined
+  rel: undefined
 };
 Object.setPrototypeOf(optspec, null);
 exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.open)('!', (0, combinator_1.constraint)(4
@@ -7827,9 +7865,9 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
 /* State.link */
 , (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
-  const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? global_1.location, context.url ?? context.host ?? global_1.location), context.host?.href || global_1.location.href);
+  const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
   let cache;
-  const el = global_1.undefined || (cache = context.caches?.media?.get(url.href)?.cloneNode(true)) || (0, dom_1.html)('img', {
+  const el =  false || (cache = context.caches?.media?.get(url.href)?.cloneNode(true)) || (0, dom_1.html)('img', {
     class: 'media',
     'data-src': url.source,
     alt: text
@@ -7858,7 +7896,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
     context
   });
 }))))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
 
 function sanitize(target, uri, alt) {
@@ -7914,8 +7952,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reference = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const inline_1 = __webpack_require__(1160);
@@ -7939,7 +7975,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[['
 | 4
 /* State.media */
 , (0, visibility_1.startLoose)((0, combinator_1.context)({
-  delimiters: global_1.undefined
+  delimiters: undefined
 }, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
 const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 
@@ -7969,8 +8005,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ruby = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const parser_1 = __webpack_require__(6728);
 
@@ -8053,7 +8087,7 @@ const text = (0, combinator_1.creation)(1, false, ({
     }
   }
 
-  return acc.join('').trimStart() ? [[acc], ''] : global_1.undefined;
+  return acc.join('').trimStart() ? [[acc], ''] : undefined;
 });
 
 function attributes(texts, rubies) {
@@ -8142,8 +8176,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.template = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 const source_1 = __webpack_require__(6743);
@@ -8159,7 +8191,7 @@ exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{',
 , (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
 }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest]));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, global_1.undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
 
 /***/ }),
 
@@ -8272,8 +8304,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.figure = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const label_1 = __webpack_require__(466);
 
 const queue_1 = __webpack_require__(4934);
@@ -8286,8 +8316,8 @@ const query_1 = __webpack_require__(6120);
 
 function* figure(target, footnotes, opts = {}) {
   const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
-  const labels = new global_1.Set();
-  const numbers = new global_1.Map();
+  const labels = new Set();
+  const numbers = new Map();
   let base = '0';
   let bases = base.split('.');
   let index = bases; // Bug: Firefox
@@ -8394,7 +8424,7 @@ function* figure(target, footnotes, opts = {}) {
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
 
-    for (let rs = refs.take(label, global_1.Infinity), i = 0; i < rs.length; ++i) {
+    for (let rs = refs.take(label, Infinity), i = 0; i < rs.length; ++i) {
       const ref = rs[i];
 
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
@@ -8471,8 +8501,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reference = exports.annotation = exports.footnote = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const indexee_1 = __webpack_require__(1269);
 
 const queue_1 = __webpack_require__(4934);
@@ -8500,9 +8528,9 @@ function build(syntax, marker, splitter) {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   return function* (target, footnote, opts = {}, bottom = null) {
-    const defs = new global_1.Map();
+    const defs = new Map();
     const buffer = new queue_1.MultiQueue();
-    const titles = new global_1.Map(); // Bug: Firefox
+    const titles = new Map(); // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
 
     const splitters = [];
@@ -8520,7 +8548,7 @@ function build(syntax, marker, splitter) {
       yield;
       const ref = refs[i];
 
-      while (+splitters[0]?.compareDocumentPosition(ref) & global_1.Node.DOCUMENT_POSITION_FOLLOWING) {
+      while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
           total += defs.size;
           yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
@@ -8532,7 +8560,7 @@ function build(syntax, marker, splitter) {
       }
 
       const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild.innerHTML}`;
-      const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
+      const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
 
@@ -8558,20 +8586,20 @@ function build(syntax, marker, splitter) {
         ref.lastChild?.remove();
       }
 
-      const title = global_1.undefined || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || global_1.undefined;
+      const title =  false || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || undefined;
       title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
       const blank = !!abbr && !content.firstChild;
       const refIndex = ++count;
-      const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}` : global_1.undefined;
-      const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : global_1.undefined,
-        'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : global_1.undefined
+      const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}` : undefined;
+      const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
+        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : undefined,
+        'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
       }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
 
       if (title && !blank && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
 
-        for (let refs = buffer.take(identifier, global_1.Infinity), i = 0; i < refs.length; ++i) {
+        for (let refs = buffer.take(identifier, Infinity), i = 0; i < refs.length; ++i) {
           const ref = refs[i];
           if (ref.getAttribute('data-invalid-type') !== 'content') continue;
           (0, dom_1.define)(ref, {
@@ -8585,10 +8613,10 @@ function build(syntax, marker, splitter) {
       }
 
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
-      const defId = def.id || global_1.undefined;
+      const defId = def.id || undefined;
       (0, dom_1.define)(ref, {
         id: refId,
-        class: opts.id !== '' ? global_1.undefined : `${ref.className} disabled`,
+        class: opts.id !== '' ? undefined : `${ref.className} disabled`,
         ...(title ? {
           title
         } : {
@@ -8603,7 +8631,7 @@ function build(syntax, marker, splitter) {
       }, marker(defIndex, abbr)));
       def.lastChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
-        title: abbr && !blank ? title : global_1.undefined
+        title: abbr && !blank ? title : undefined
       }, `^${refIndex}`));
     }
 
@@ -8667,8 +8695,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const combinator_1 = __webpack_require__(2087);
@@ -8711,7 +8737,7 @@ function* segment(source) {
 exports.segment = segment;
 
 function validate(source, size) {
-  return source.length <= size / 4 || source.length <= size && new global_1.Blob([source]).size <= size;
+  return source.length <= size / 4 || source.length <= size && new Blob([source]).size <= size;
 }
 
 exports.validate = validate;
@@ -8864,13 +8890,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.contentline = exports.emptyline = exports.anyline = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 exports.anyline = (0, combinator_1.line)(() => [[], '']);
-exports.emptyline = (0, combinator_1.line)(i => (0, combinator_1.isEmpty)(i.source) ? [[], ''] : global_1.undefined);
-exports.contentline = (0, combinator_1.line)(i => !(0, combinator_1.isEmpty)(i.source) ? [[], ''] : global_1.undefined);
+exports.emptyline = (0, combinator_1.line)(i => (0, combinator_1.isEmpty)(i.source) ? [[], ''] : undefined);
+exports.contentline = (0, combinator_1.line)(i => !(0, combinator_1.isEmpty)(i.source) ? [[], ''] : undefined);
 
 /***/ }),
 
@@ -8885,8 +8909,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.stropt = exports.str = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const combinator_1 = __webpack_require__(2087);
 
 function str(pattern, not) {
@@ -8895,14 +8917,14 @@ function str(pattern, not) {
   }) => {
     if (source === '') return;
     if (not && source.slice(pattern.length, pattern.length + not.length) === not) return;
-    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : global_1.undefined;
+    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : undefined;
   }) : (0, combinator_1.creation)(1, false, ({
     source
   }) => {
     if (source === '') return;
     const m = source.match(pattern);
     if (m && not && source.slice(m[0].length, m[0].length + not.length) === not) return;
-    return m && m[0].length > 0 ? [[m[0]], source.slice(m[0].length)] : global_1.undefined;
+    return m && m[0].length > 0 ? [[m[0]], source.slice(m[0].length)] : undefined;
   });
 }
 
@@ -8913,13 +8935,13 @@ function stropt(pattern) {
     source
   }) => {
     if (source === '') return;
-    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : global_1.undefined;
+    return source.slice(0, pattern.length) === pattern ? [[pattern], source.slice(pattern.length)] : undefined;
   }) : (0, combinator_1.creation)(1, false, ({
     source
   }) => {
     if (source === '') return;
     const m = source.match(pattern);
-    return m ? [[m[0]], source.slice(m[0].length)] : global_1.undefined;
+    return m ? [[m[0]], source.slice(m[0].length)] : undefined;
   });
 }
 
@@ -8937,8 +8959,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.delimiter = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const combinator_1 = __webpack_require__(2087);
 
@@ -8983,7 +9003,7 @@ exports.text = (0, combinator_1.creation)(1, false, ({
         case '\x1B':
         case '\\':
           switch (source[1]) {
-            case global_1.undefined:
+            case undefined:
               return [[], ''];
 
             case '\n':
@@ -9113,8 +9133,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.trimNode = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.startLoose = exports.blankWith = exports.regBlankStart = exports.visualize = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const combinator_1 = __webpack_require__(2087);
@@ -9160,14 +9178,14 @@ function hasVisible(nodes, {
 exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
 
 function blankWith(starting, delimiter) {
-  if (delimiter === global_1.undefined) return blankWith('', starting);
+  if (delimiter === undefined) return blankWith('', starting);
   return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
 }
 
 exports.blankWith = blankWith;
 
 function startLoose(parser, except) {
-  return input => isStartLoose(input, except) ? parser(input) : global_1.undefined;
+  return input => isStartLoose(input, except) ? parser(input) : undefined;
 }
 
 exports.startLoose = startLoose;
@@ -9184,7 +9202,7 @@ const isStartLoose = (0, memoize_1.reduce)(({
 }, except = '') => `${source}\x1E${except}`);
 
 function startTight(parser, except) {
-  return input => isStartTight(input, except) ? parser(input) : global_1.undefined;
+  return input => isStartTight(input, except) ? parser(input) : undefined;
 }
 
 exports.startTight = startTight;
@@ -9262,7 +9280,7 @@ exports.isStartTightNodes = isStartTightNodes; //export function isEndTightNodes
 function isVisible(node, strpos) {
   switch (typeof node) {
     case 'string':
-      const char = node && strpos !== global_1.undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
+      const char = node && strpos !== undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
 
       switch (char) {
         case '':
@@ -9388,8 +9406,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.render = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const code_1 = __webpack_require__(7686);
 
 const math_1 = __webpack_require__(611);
@@ -9410,7 +9426,7 @@ const extend = (0, memoize_1.reduce)(opts => ({
 
 function render(source, opts = {}) {
   opts = extend(opts);
-  const base = global_1.location.href;
+  const base = location.href;
 
   for (let es = (0, query_1.querySelectorAllWith)(source, selector), i = 0; i < es.length; ++i) {
     render_(base, es[i], opts);
@@ -9491,8 +9507,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.math = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const dom_1 = __webpack_require__(3252);
 
 function math(target, cache) {
@@ -9505,7 +9519,7 @@ function math(target, cache) {
 
 exports.math = math;
 
-async function queue(target, callback = () => global_1.undefined) {
+async function queue(target, callback = () => undefined) {
   // @ts-ignore
   !MathJax.typesetPromise && (await MathJax.startup.promise); // @ts-ignore
 
@@ -9602,18 +9616,16 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.image = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const dom_1 = __webpack_require__(3252);
 
 function image(source, url, cache) {
-  if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), global_1.Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])));
+  if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])));
   (0, dom_1.define)(source, {
     'data-type': 'image',
     src: source.getAttribute('data-src'),
     loading: 'lazy'
   });
-  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), global_1.Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
+  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
   return source;
 }
 
@@ -9673,8 +9685,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.twitter = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(3019);
 
 const dom_1 = __webpack_require__(3252);
@@ -9700,10 +9710,10 @@ function twitter(source, url) {
       html
     }) {
       el.innerHTML = dompurify_1.default.sanitize(html);
-      if (global_1.window.twttr) return void global_1.window.twttr.widgets.load(el);
+      if (window.twttr) return void window.twttr.widgets.load(el);
       const id = 'twitter-wjs';
-      if (global_1.document.getElementById(id)) return;
-      global_1.document.body.appendChild((0, dom_1.html)('script', {
+      if (document.getElementById(id)) return;
+      document.body.appendChild((0, dom_1.html)('script', {
         id,
         src: 'https://platform.twitter.com/widgets.js'
       }));
@@ -9738,8 +9748,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.video = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const dom_1 = __webpack_require__(3252);
 
 const extensions = ['.webm', '.ogv'];
@@ -9749,8 +9757,8 @@ function video(source, url) {
   return (0, dom_1.html)('video', {
     src: source.getAttribute('data-src'),
     'data-type': 'video',
-    ...global_1.Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])),
-    style: source.hasAttribute('aspect-ratio') ? `aspect-ratio: ${source.getAttribute('aspect-ratio')};` : global_1.undefined,
+    ...Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])),
+    style: source.hasAttribute('aspect-ratio') ? `aspect-ratio: ${source.getAttribute('aspect-ratio')};` : undefined,
     muted: '',
     controls: ''
   });
@@ -9770,8 +9778,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.youtube = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const dom_1 = __webpack_require__(3252);
 
@@ -9793,10 +9799,10 @@ exports.youtube = youtube;
 function resolve(url) {
   switch (url.origin) {
     case 'https://www.youtube.com':
-      return url.pathname.match(/^\/watch\/?$/) ? url.searchParams.get('v')?.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : global_1.undefined;
+      return url.pathname.match(/^\/watch\/?$/) ? url.searchParams.get('v')?.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : undefined;
 
     case 'https://youtu.be':
-      return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : global_1.undefined;
+      return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : undefined;
 
     default:
       return;
@@ -9909,8 +9915,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.quote = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 const parser_1 = __webpack_require__(6728);
 
 const cite_1 = __webpack_require__(6315);
@@ -9955,7 +9959,7 @@ function quote(anchor, range) {
   for (let es = node.querySelectorAll('br'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
 
-    if (anchor && el.nextSibling instanceof global_1.Element && el.nextSibling.matches('.cite, .quote')) {
+    if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
       continue;
     }
@@ -9988,7 +9992,7 @@ function fit(range) {
     return void range.setStart(node.parentElement.previousSibling, 0);
   }
 
-  if (node.nodeName === 'BR' && node.nextSibling instanceof global_1.Element && node.nextSibling.matches('.cite, .quote')) {
+  if (node.nodeName === 'BR' && node.nextSibling instanceof Element && node.nextSibling.matches('.cite, .quote')) {
     return void range.setStart(node.nextSibling.firstChild, 0);
   }
 
@@ -10011,7 +10015,7 @@ function trim(node) {
 /***/ }),
 
 /***/ 5202:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -10021,11 +10025,9 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.scope = void 0;
 
-const global_1 = __webpack_require__(4128);
-
 function scope(base, filter = '', bound = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote, pre, .quote, .math, .media`) {
   bound += filter && `, ${filter}`;
-  const memory = new global_1.WeakMap();
+  const memory = new WeakMap();
   const context = 'id' in base && base.closest(bound) || null;
   return el => {
     const {
@@ -10034,7 +10036,7 @@ function scope(base, filter = '', bound = `${'id' in base && base.id ? `#${base.
     const node = memory.has(parentNode) ? parentNode : parentNode.parentNode;
     let result = memory.get(node);
 
-    if (result === global_1.undefined) {
+    if (result === undefined) {
       result = el.closest(bound) === context;
       memory.set(node, result);
     }
@@ -10057,8 +10059,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.toc = void 0;
-
-const global_1 = __webpack_require__(4128);
 
 const array_1 = __webpack_require__(8112);
 
@@ -10100,7 +10100,7 @@ function parse(node, index = '') {
     const idx = isHeading ? index === '' ? `${++i}` : `${index}.${++i}` : index === '' ? `${i}` : `${index}.${i}`;
     return (0, dom_1.html)('li', (0, array_1.push)([(0, dom_1.html)('a', {
       href: `#${el.id}`,
-      'data-index': isHeading ? idx : global_1.undefined
+      'data-index': isHeading ? idx : undefined
     }, unlink(el.cloneNode(true)))], cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
@@ -10130,7 +10130,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.310 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.312 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10181,33 +10181,8 @@ exports.equal = equal;
 
 /***/ }),
 
-/***/ 128:
-/***/ ((module, __unused_webpack_exports, __nested_webpack_require_2745__) => {
-
-
-
-__nested_webpack_require_2745__(921);
-
-const global = void 0 || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
-|| typeof self !== 'undefined' && self || Function('return this')();
-global.global = global;
-module.exports = global;
-
-/***/ }),
-
-/***/ 921:
-/***/ (() => {
-
- // @ts-ignore
-
-var globalThis; // @ts-ignore
-
-var global = (/* unused pure expression or super */ null && (0));
-
-/***/ }),
-
 /***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3232__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_2745__) => {
 
 
 
@@ -10216,17 +10191,13 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reduce = exports.memoize = void 0;
 
-const global_1 = __nested_webpack_require_3232__(128);
+const alias_1 = __nested_webpack_require_2745__(406);
 
-const alias_1 = __nested_webpack_require_3232__(406);
-
-const compare_1 = __nested_webpack_require_3232__(529);
-
-const undefined = void 0;
+const compare_1 = __nested_webpack_require_2745__(529);
 
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new global_1.Map());
+  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new Map());
 }
 
 exports.memoize = memoize;
@@ -10277,7 +10248,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4777__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4210__) => {
 
 
 
@@ -10286,25 +10257,23 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 
-const global_1 = __nested_webpack_require_4777__(128);
+const alias_1 = __nested_webpack_require_4210__(406);
 
-const alias_1 = __nested_webpack_require_4777__(406);
-
-const memoize_1 = __nested_webpack_require_4777__(808);
+const memoize_1 = __nested_webpack_require_4210__(808);
 
 var caches;
 
 (function (caches) {
   caches.shadows = new WeakMap();
   caches.shadow = (0, memoize_1.memoize)((el, opts) => el.attachShadow(opts), caches.shadows);
-  caches.fragment = global_1.document.createDocumentFragment();
+  caches.fragment = document.createDocumentFragment();
 })(caches || (caches = {}));
 
 function shadow(el, opts, children, factory = exports.html) {
   if (typeof el === 'string') return shadow(factory(el), opts, children, factory);
-  if (typeof opts === 'function') return shadow(el, void 0, children, opts);
-  if (typeof children === 'function') return shadow(el, opts, void 0, children);
-  if (isChildren(opts)) return shadow(el, void 0, opts, factory);
+  if (typeof opts === 'function') return shadow(el, undefined, children, opts);
+  if (typeof children === 'function') return shadow(el, opts, undefined, children);
+  if (isChildren(opts)) return shadow(el, undefined, opts, factory);
   return defineChildren(!opts ? el.shadowRoot ?? caches.shadows.get(el) ?? el.attachShadow({
     mode: 'open'
   }) : opts.mode === 'open' ? el.shadowRoot ?? el.attachShadow(opts) : caches.shadows.get(el) ?? caches.shadow(el, opts), children);
@@ -10317,15 +10286,15 @@ function frag(children) {
 }
 
 exports.frag = frag;
-exports.html = element(global_1.document, "HTML"
+exports.html = element(document, "HTML"
 /* NS.HTML */
 );
-exports.svg = element(global_1.document, "SVG"
+exports.svg = element(document, "SVG"
 /* NS.SVG */
 );
 
 function text(source) {
-  return global_1.document.createTextNode(source);
+  return document.createTextNode(source);
 }
 
 exports.text = text;
@@ -10390,7 +10359,7 @@ function defineAttrs(el, attrs) {
             case 'connect':
             case 'disconnect':
               const prop = `on${type}`;
-              el[prop] ?? global_1.Object.defineProperty(el, prop, {
+              el[prop] ?? Object.defineProperty(el, prop, {
                 configurable: true,
                 enumerable: false,
                 writable: true,
@@ -10417,7 +10386,7 @@ function defineAttrs(el, attrs) {
             case 'connect':
             case 'disconnect':
               const prop = `on${type}`;
-              el[prop] ?? global_1.Object.defineProperty(el, prop, {
+              el[prop] ?? Object.defineProperty(el, prop, {
                 configurable: true,
                 enumerable: false,
                 writable: true,
@@ -10441,7 +10410,7 @@ function defineAttrs(el, attrs) {
 }
 
 function defineChildren(node, children) {
-  if (children === void 0) return node;
+  if (children === undefined) return node;
 
   if (typeof children === 'string') {
     node.textContent = children;
@@ -10458,13 +10427,13 @@ function defineChildren(node, children) {
 }
 
 function isChildren(value) {
-  return !!value?.[global_1.Symbol.iterator];
+  return !!value?.[Symbol.iterator];
 }
 
 exports.isChildren = isChildren;
 
 function append(node, children) {
-  if (children === void 0) return node;
+  if (children === undefined) return node;
 
   if (typeof children === 'string') {
     node.append(children);
@@ -10480,7 +10449,7 @@ function append(node, children) {
 exports.append = append;
 
 function prepend(node, children) {
-  if (children === void 0) return node;
+  if (children === undefined) return node;
 
   if (typeof children === 'string') {
     node.prepend(children);
@@ -10525,7 +10494,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11730__(moduleId) {
+/******/ 	function __nested_webpack_require_11074__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -10539,7 +10508,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11730__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11074__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -10550,7 +10519,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_11730__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_11074__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -10562,7 +10531,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.310 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.312 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10664,6 +10633,19 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__9450__;
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
 /******/ 	
 /************************************************************************/
 /******/ 	
