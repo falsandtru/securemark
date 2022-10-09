@@ -13,7 +13,7 @@ export function line<T>(parser: Parser<T>): Parser<T> {
     const result = parser({ source: line, context });
     assert(check(line, result));
     context.offset -= source.length - line.length;
-    if (!result) return;
+    if (result === undefined) return;
     return isEmpty(exec(result))
       ? [eval(result), source.slice(line.length)]
       : undefined;

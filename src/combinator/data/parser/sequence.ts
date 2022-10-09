@@ -13,7 +13,7 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D, resume?: (nodes: 
       if (context.delimiters?.match(rest, context.precedence)) return;
       const result = parsers[i]({ source: rest, context });
       assert(check(rest, result));
-      if (!result) return;
+      if (result === undefined) return;
       nodes = nodes
         ? push(nodes, eval(result))
         : eval(result);

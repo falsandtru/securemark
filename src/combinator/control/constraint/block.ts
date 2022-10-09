@@ -9,7 +9,7 @@ export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
     if (source === '') return;
     context.memo ??= new Memo();
     const result = parser({ source, context });
-    if (!result) return;
+    if (result === undefined) return;
     const rest = exec(result);
     if (separation && !isEmpty(firstline(rest))) return;
     assert(rest === '' || source[source.length - rest.length - 1] === '\n');

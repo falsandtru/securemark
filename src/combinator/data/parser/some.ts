@@ -29,7 +29,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
       if (context.delimiters?.match(rest, context.precedence)) break;
       const result = parser({ source: rest, context });
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
-      if (!result) break;
+      if (result === undefined) break;
       nodes = nodes
         ? nodes.length < eval(result).length
           ? unshift(nodes, eval(result))

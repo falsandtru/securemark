@@ -27,7 +27,7 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
     if (!match(source)) return;
     const result = parser!({ source, context });
     assert(check(source, result));
-    if (!result) return;
+    if (result === undefined) return;
     assert(exec(result).length < source.length);
     return exec(result).length < source.length
       ? result
@@ -42,7 +42,7 @@ export function verify<T>(parser: Parser<T>, cond: (results: readonly T[], rest:
     if (source === '') return;
     const result = parser({ source, context });
     assert(check(source, result));
-    if (!result) return;
+    if (result === undefined) return;
     if (!cond(eval(result), exec(result), context)) return;
     assert(exec(result).length < source.length);
     return exec(result).length < source.length

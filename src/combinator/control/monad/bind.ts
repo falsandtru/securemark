@@ -10,11 +10,11 @@ export function bind<T, U>(parser: Parser<T>, f: (nodes: T[], rest: string, cont
     if (source === '') return;
     const res1 = parser({ source, context });
     assert(check(source, res1));
-    if (!res1) return;
+    if (res1 === undefined) return;
     const res2 = f(eval(res1), exec(res1), context);
     assert(check(source, res2));
     assert(check(exec(res1), res2, false));
-    if (!res2) return;
+    if (res2 === undefined) return;
     return exec(res2).length <= exec(res1).length
       ? res2
       : undefined;

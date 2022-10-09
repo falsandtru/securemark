@@ -17,7 +17,7 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
     const result = parser({ source: src, context });
     assert(check(src, result));
     context.offset -= source.length - src.length;
-    if (!result) return;
+    if (result === undefined) return;
     assert(exec(result).length < src.length);
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
@@ -37,7 +37,7 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
     const res1 = scope({ source, context });
     assert(check(source, res1));
     context.memo = memo;
-    if (!res1 || exec(res1).length >= source.length) return;
+    if (res1 === undefined || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');
     assert(source.startsWith(src));
@@ -46,7 +46,7 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
     const res2 = parser({ source: src, context });
     assert(check(src, res2));
     context.offset -= source.length - src.length;
-    if (!res2) return;
+    if (res2 === undefined) return;
     assert(exec(res2) === '');
     return exec(res2).length < src.length
       ? [eval(res2), exec(res2) + exec(res1)]

@@ -42,7 +42,7 @@ export function surround<T>(
     if (lmr_ === '') return;
     const res1 = opener({ source: lmr_, context });
     assert(check(lmr_, res1, false));
-    if (!res1) return;
+    if (res1 === undefined) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;

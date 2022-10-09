@@ -10,7 +10,7 @@ export function match<T>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     assert(source.startsWith(param[0]));
     const result = f(param)({ source, context });
     assert(check(source, result, false));
-    if (!result) return;
+    if (result === undefined) return;
     return exec(result).length < source.length && exec(result).length <= source.length
       ? result
       : undefined;
