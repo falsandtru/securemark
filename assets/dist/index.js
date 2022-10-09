@@ -62,8 +62,8 @@ __exportStar(__webpack_require__(256), exports);
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
-exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports.MIN_VALUE = exports.MIN_SAFE_INTEGER = exports.MAX_VALUE = exports.MAX_SAFE_INTEGER = void 0;
+exports.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER, exports.MAX_VALUE = Number.MAX_VALUE, exports.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER, exports.MIN_VALUE = Number.MIN_VALUE, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
 exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.sqrt = Math.sqrt;
 exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
@@ -440,7 +440,7 @@ class Cache {
 
   evict(node, callback) {
     const entry = node.value;
-    this.overlap -= +(entry.region === 'LFU' && node.list === this.indexes.LRU);
+    entry.region === 'LFU' && node.list === this.indexes.LRU && --this.overlap;
 
     if (entry.eid !== -1) {
       this.expiries.delete(entry.eid);
@@ -526,13 +526,13 @@ class Cache {
     const match = !!node;
     node = this.ensure(size, node, true);
 
-    if (node) {
+    if (node !== undefined) {
       const entry = node.value;
       const key$ = entry.key;
       const value$ = entry.value;
 
       if (!match) {
-        this.overlap -= +(entry.region === 'LFU');
+        entry.region === 'LFU' && --this.overlap;
         this.memory.delete(key$);
         this.memory.set(key, node);
         entry.key = key;
@@ -581,7 +581,7 @@ class Cache {
   get(key) {
     const node = this.memory.get(key);
 
-    if (!node) {
+    if (node === undefined) {
       ++this.misses;
       return;
     }
@@ -606,7 +606,7 @@ class Cache {
 
   has(key) {
     const node = this.memory.get(key);
-    if (!node) return false;
+    if (node === undefined) return false;
     const entry = node.value;
     const expiry = entry.expiry;
 
@@ -620,7 +620,7 @@ class Cache {
 
   delete(key) {
     const node = this.memory.get(key);
-    if (!node) return false;
+    if (node === undefined) return false;
     this.evict(node, this.settings.capture.delete === true);
     return true;
   }
@@ -678,21 +678,27 @@ class Cache {
   access(node) {
     const entry = node.value;
     const {
+      region
+    } = entry;
+    const {
       LRU,
       LFU
     } = this.indexes;
 
     if (node.list === LRU) {
-      ++this.stats[entry.region][0];
-      this.overlap -= +(entry.region === 'LFU');
-      entry.region = 'LFU';
+      ++this.stats[region][0];
+
+      if (region === 'LFU') {
+        --this.overlap;
+      } else {
+        entry.region = 'LFU';
+      }
+
       LFU.unshiftNode(node);
     } else {
-      ++this.stats[entry.region][0];
+      ++this.stats[region][0];
       node.moveToHead();
     }
-
-    return true;
   }
 
   adjust() {
@@ -1646,7 +1652,8 @@ class List {
   }
 
   push(value) {
-    return new Node(this, value, this.head, this.head?.prev);
+    const head = this.head;
+    return new Node(this, value, head, head?.prev);
   }
 
   unshiftNode(node) {
@@ -1659,7 +1666,7 @@ class List {
 
   unshiftRotationally(value) {
     const node = this.last;
-    if (!node) return this.unshift(value);
+    if (node === undefined) return this.unshift(value);
     node.value = value;
     this.head = node;
     return node;
@@ -1667,7 +1674,7 @@ class List {
 
   pushRotationally(value) {
     const node = this.head;
-    if (!node) return this.push(value);
+    if (node === undefined) return this.push(value);
     node.value = value;
     this.head = node.next;
     return node;
@@ -1684,8 +1691,11 @@ class List {
   insert(node, before = this.head) {
     if (node.list === this) return node.move(before), node;
     node.delete();
-    ++this.$length;
-    this.head ??= node;
+
+    if (this.$length++ === 0) {
+      this.head = node;
+    }
+
     node.list = this;
     const next = node.next = before ?? node;
     const prev = node.prev = next.prev ?? node;
@@ -1745,9 +1755,13 @@ class Node {
     this.value = value;
     this.next = next;
     this.prev = prev;
-    ++list['$length'];
     list.head ??= this;
-    next && prev ? next.prev = prev.next = this : this.next = this.prev = this;
+
+    if (list['$length']++ === 0) {
+      this.next = this.prev = this;
+    } else {
+      next.prev = prev.next = this;
+    }
   }
 
   get alive() {
@@ -1756,27 +1770,25 @@ class Node {
 
   delete() {
     const list = this.list;
-    if (!list) return this.value;
-    --list['$length'];
+    if (list === undefined) return this.value;
     const {
       next,
       prev
     } = this;
 
-    if (list.head === this) {
-      list.head = next === this ? undefined : next;
-    }
-
-    if (next) {
+    if (--list['$length'] === 0) {
+      list.head = undefined;
+    } else {
       next.prev = prev;
-    }
-
-    if (prev) {
       prev.next = next;
+
+      if (this === list.head) {
+        list.head = next;
+      }
     }
 
-    this.list = undefined;
     this.next = this.prev = undefined;
+    this.list = undefined;
     return this.value;
   }
 
@@ -1789,7 +1801,7 @@ class Node {
   }
 
   move(before) {
-    if (!before) return false;
+    if (before === undefined) return false;
     if (this === before) return false;
     if (before.list !== this.list) return before.list.insert(this, before), true;
     const a1 = this;
@@ -2297,30 +2309,25 @@ function conv(rnd, dict) {
 
 const buffer = new Uint16Array(512);
 const digit = 16;
-let index = buffer.length;
-let rnd = 2 ** digit;
-let offset = digit;
+let index = 0;
+let buf = 0;
+let offset = 0;
 
 function random(len) {
-  if (rnd === 2 ** digit) {
-    crypto.getRandomValues(buffer);
-    index = 0;
-    rnd = buffer[index];
+  if (offset < len) {
+    if (index === 0) {
+      crypto.getRandomValues(buffer);
+      index = buffer.length - 1;
+      buf = buffer[index];
+      offset = digit;
+    } else {
+      buf = buf << digit | buffer[--index];
+      offset += digit;
+    }
   }
 
-  if (offset === len) {
-    offset = digit;
-    const r = rnd & masks[len];
-    rnd = buffer[++index] ?? 2 ** digit;
-    return r;
-  } else if (offset > len) {
-    offset -= len;
-    return rnd >> offset & masks[len];
-  } else {
-    offset = digit;
-    rnd = buffer[++index] ?? 2 ** digit;
-    return random(len);
-  }
+  offset -= len;
+  return buf >> offset & masks[len];
 }
 
 function xorshift(seed = xorshift.seed()) {
@@ -2939,7 +2946,7 @@ function block(parser, separation = true) {
       source,
       context
     });
-    if (!result) return;
+    if (result === undefined) return;
     const rest = (0, parser_1.exec)(result);
     if (separation && !(0, line_1.isEmpty)((0, line_1.firstline)(rest))) return;
     return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : undefined;
@@ -2961,7 +2968,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.verify = exports.validate = void 0;
 
-const global_1 = __webpack_require__(4128);
+__webpack_require__(4128);
 
 const alias_1 = __webpack_require__(5406);
 
@@ -2970,7 +2977,7 @@ const parser_1 = __webpack_require__(6728);
 function validate(patterns, has, parser) {
   if (typeof has === 'function') return validate(patterns, '', has);
   if (!(0, alias_1.isArray)(patterns)) return validate([patterns], has, parser);
-  const match = global_1.global.eval(['source =>', patterns.map(pattern => typeof pattern === 'string' ? `|| source.slice(0, ${pattern.length}) === '${pattern}'` : `|| /${pattern.source}/${pattern.flags}.test(source)`).join('').slice(2)].join(''));
+  const match = __webpack_require__.g.eval(['source =>', patterns.map(pattern => typeof pattern === 'string' ? `|| source.slice(0, ${pattern.length}) === '${pattern}'` : `|| /${pattern.source}/${pattern.flags}.test(source)`).join('').slice(2)].join(''));
   return ({
     source,
     context
@@ -2981,7 +2988,7 @@ function validate(patterns, has, parser) {
       source,
       context
     });
-    if (!result) return;
+    if (result === undefined) return;
     return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
 }
@@ -2998,7 +3005,7 @@ function verify(parser, cond) {
       source,
       context
     });
-    if (!result) return;
+    if (result === undefined) return;
     if (!cond((0, parser_1.eval)(result), (0, parser_1.exec)(result), context)) return;
     return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
@@ -3038,7 +3045,7 @@ function line(parser) {
       context
     });
     context.offset -= source.length - line.length;
-    if (!result) return;
+    if (result === undefined) return;
     return isEmpty((0, parser_1.exec)(result)) ? [(0, parser_1.eval)(result), source.slice(line.length)] : undefined;
   };
 }
@@ -3315,7 +3322,7 @@ function match(pattern, f) {
       source,
       context
     });
-    if (!result) return;
+    if (result === undefined) return;
     return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= source.length ? result : undefined;
   };
 }
@@ -3399,7 +3406,7 @@ function focus(scope, parser) {
       context
     });
     context.offset -= source.length - src.length;
-    if (!result) return;
+    if (result === undefined) return;
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : undefined;
   };
 }
@@ -3419,7 +3426,7 @@ function rewrite(scope, parser) {
       context
     });
     context.memo = memo;
-    if (!res1 || (0, parser_1.exec)(res1).length >= source.length) return;
+    if (res1 === undefined || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
     context.offset ??= 0;
     context.offset += source.length - src.length;
@@ -3428,7 +3435,7 @@ function rewrite(scope, parser) {
       context
     });
     context.offset -= source.length - src.length;
-    if (!res2) return;
+    if (res2 === undefined) return;
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : undefined;
   };
 }
@@ -3477,7 +3484,7 @@ function surround(opener, parser, closer, optional = false, f, g) {
       source: lmr_,
       context
     });
-    if (!res1) return;
+    if (res1 === undefined) return;
     const rl = (0, parser_1.eval)(res1);
     const mr_ = (0, parser_1.exec)(res1);
     const res2 = mr_ !== '' ? parser({
@@ -3593,9 +3600,9 @@ function bind(parser, f) {
       source,
       context
     });
-    if (!res1) return;
+    if (res1 === undefined) return;
     const res2 = f((0, parser_1.eval)(res1), (0, parser_1.exec)(res1), context);
-    if (!res2) return;
+    if (res2 === undefined) return;
     return (0, parser_1.exec)(res2).length <= (0, parser_1.exec)(res1).length ? res2 : undefined;
   };
 }
@@ -4067,7 +4074,7 @@ function inits(parsers, resume) {
         source: rest,
         context
       });
-      if (!result) break;
+      if (result === undefined) break;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
       rest = (0, parser_1.exec)(result);
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) break;
@@ -4112,7 +4119,7 @@ function sequence(parsers, resume) {
         source: rest,
         context
       });
-      if (!result) return;
+      if (result === undefined) return;
       nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
       rest = (0, parser_1.exec)(result);
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) return;
@@ -4172,7 +4179,7 @@ function some(parser, end, delimiters = [], limit = -1) {
         source: rest,
         context
       });
-      if (!result) break;
+      if (result === undefined) break;
       nodes = nodes ? nodes.length < (0, parser_1.eval)(result).length ? (0, array_1.unshift)(nodes, (0, parser_1.eval)(result)) : (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
       rest = (0, parser_1.exec)(result);
       if (limit >= 0 && source.length - rest.length > limit) break;
@@ -4255,20 +4262,8 @@ function union(parsers) {
     case 1:
       return parsers[0];
 
-    case 2:
-      return input => parsers[0](input) ?? parsers[1](input);
-
-    case 3:
-      return input => parsers[0](input) ?? parsers[1](input) ?? parsers[2](input);
-
     default:
-      return input => {
-        for (let i = 0; i < parsers.length; ++i) {
-          const parser = parsers[i];
-          const result = parser(input);
-          if (result) return result;
-        }
-      };
+      return eval(['input =>', parsers.map((_, i) => `|| parsers[${i}](input)`).join('').slice(2)].join(''));
   }
 }
 
