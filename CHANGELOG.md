@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.263.1
+
+- Refactoring.
+
 ## 0.263.0
 
 - Extend fig syntax to set the caption only for inline syntax such as media syntax.
