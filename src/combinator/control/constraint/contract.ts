@@ -1,4 +1,4 @@
-import { global } from 'spica/global';
+import 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, Ctx, Tree, Context, eval, exec, check } from '../../data/parser';
 
