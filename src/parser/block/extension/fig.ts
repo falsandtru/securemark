@@ -27,7 +27,8 @@ export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
 
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {
-    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) || [])
+    // Bug: TypeScript
+    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return parser({ source, context })
       ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
