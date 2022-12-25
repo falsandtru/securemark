@@ -5,7 +5,7 @@ import { str } from '../source';
 import { Syntax, State } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
 import { memoize } from 'spica/memoize';
-import { Cache } from 'spica/cache';
+import { Clock } from 'spica/clock';
 import { unshift, push, splice } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
@@ -59,7 +59,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
         ([as, bs = []], rest) =>
           [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => tag,
-    new Cache(10000))),
+    new Clock(10000))),
 ])))));
 
 export const attribute: HTMLParser.AttributeParser = union([
