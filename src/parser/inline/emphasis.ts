@@ -11,8 +11,8 @@ export const emphasis: EmphasisParser = lazy(() => surround(
   str('_', '_'),
   syntax(Syntax.none, 1, 1, State.none,
   startTight(some(union([
-    some(inline, blankWith('_')),
-    open(some(inline, '_'), emphasis),
+    some(inline, blankWith('_'), [[/^\\?\n/, 9]]),
+    open(some(inline, '_', [[/^\\?\n/, 9]]), emphasis),
   ])))),
   str('_'), false,
   ([, bs], rest) => [[html('em', defrag(bs))], rest],

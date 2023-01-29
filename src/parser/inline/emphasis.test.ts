@@ -12,8 +12,10 @@ describe('Unit: parser/inline/emphasis', () => {
       assert.deepStrictEqual(inspect(parser('_a _')), [['_', 'a'], ' _']);
       assert.deepStrictEqual(inspect(parser('_a  _')), [['_', 'a', ' '], ' _']);
       assert.deepStrictEqual(inspect(parser('_a\n_')), [['_', 'a'], '\n_']);
+      assert.deepStrictEqual(inspect(parser('_a\nb_')), [['_', 'a'], '\nb_']);
       assert.deepStrictEqual(inspect(parser('_a\\ _')), [['_', 'a'], '\\ _']);
       assert.deepStrictEqual(inspect(parser('_a\\\n_')), [['_', 'a'], '\\\n_']);
+      assert.deepStrictEqual(inspect(parser('_a\\\nb_')), [['_', 'a'], '\\\nb_']);
       assert.deepStrictEqual(inspect(parser('_ _')), undefined);
       assert.deepStrictEqual(inspect(parser('_ a_')), undefined);
       assert.deepStrictEqual(inspect(parser('_ a _')), undefined);
@@ -28,8 +30,6 @@ describe('Unit: parser/inline/emphasis', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('_a_')), [['<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('_ab_')), [['<em>ab</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a\nb_')), [['<em>a<br>b</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a\\\nb_')), [['<em>a<span class="linebreak"> </span>b</em>'], '']);
     });
 
     it('nest', () => {

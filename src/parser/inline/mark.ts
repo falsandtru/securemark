@@ -11,8 +11,8 @@ export const mark: MarkParser = lazy(() => surround(
   str('==', '='),
   syntax(Syntax.none, 1, 1, State.none,
   startTight(some(union([
-    some(inline, blankWith('==')),
-    open(some(inline, '='), mark),
+    some(inline, blankWith('=='), [[/^\\?\n/, 9]]),
+    open(some(inline, '=', [[/^\\?\n/, 9]]), mark),
   ])))),
   str('=='), false,
   ([, bs], rest) => [[html('mark', defrag(bs))], rest],

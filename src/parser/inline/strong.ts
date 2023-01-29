@@ -11,8 +11,8 @@ export const strong: StrongParser = lazy(() => surround(
   str('*', '*'),
   syntax(Syntax.none, 1, 1, State.none,
   startTight(some(union([
-    some(inline, blankWith('*')),
-    open(some(inline, '*'), strong),
+    some(inline, blankWith('*'), [[/^\\?\n/, 9]]),
+    open(some(inline, '*', [[/^\\?\n/, 9]]), strong),
   ])))),
   str('*'), false,
   ([, bs], rest) => [[html('strong', defrag(bs))], rest],

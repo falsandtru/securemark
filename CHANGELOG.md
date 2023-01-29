@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.264.0
+
+- Change emphasis, strong, and mark syntax to disallow linebreaks.
+
 ## 0.263.1
 
 - Refactoring.
