@@ -4,7 +4,6 @@ import { Tree, eval } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { localize } from '../../locale';
 import { visualize } from '../../visibility';
 import { unshift, splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -52,9 +51,9 @@ export const table: TableParser = block(validate('~~~', fmap(
     }
   })));
 
-const parser: TableParser = lazy(() => block(localize(fmap(
+const parser: TableParser = lazy(() => block(fmap(
   some(union([row])),
-  rows => [html('table', format(rows))]))));
+  rows => [html('table', format(rows))])));
 
 const row: RowParser = lazy(() => dup(fmap(
   subsequence([

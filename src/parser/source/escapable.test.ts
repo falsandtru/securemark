@@ -39,7 +39,7 @@ describe('Unit: parser/source/escsource', () => {
       assert.deepStrictEqual(inspect(parser('\\a')), [['\\a'], '']);
       assert.deepStrictEqual(inspect(parser('\\$')), [['\\$'], '']);
       assert.deepStrictEqual(inspect(parser('\\　')), [['\\　'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\n')), [['\\\n'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '\n'], '']);
     });
 
   });

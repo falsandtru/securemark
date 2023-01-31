@@ -3,19 +3,18 @@ import { union, inits, some, creation, state, block, line, validate, rewrite, op
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { State } from '../context';
-import { localize } from '../locale';
 import { visualize, trimBlank } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
+export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~[^\S\n]+(?=\S)/,
   some(inits([
     state(State.annotation | State.reference | State.index | State.label | State.link | State.media,
     some(term)),
     some(desc),
   ]))),
-  es => [html('dl', fillTrailingDescription(es))]))));
+  es => [html('dl', fillTrailingDescription(es))])));
 
 const term: DListParser.TermParser = creation(1, false, line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,

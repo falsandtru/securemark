@@ -3,6 +3,7 @@
 ## 0.264.0
 
 - Change emphasis, strong, and mark syntax to disallow linebreaks.
+- Remove escaped linebreak processing.
 
 ## 0.263.1
 

@@ -3,10 +3,9 @@ import { union, creation, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /[\s\x00-\x7F]|\S[#>]|[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
+export const delimiter = /[\s\x00-\x7F]|\S[#>]/u;
 export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
-const nssb = /^[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creation(1, false, ({ source, context }) => {
@@ -19,23 +18,11 @@ export const text: TextParser = creation(1, false, ({ source, context }) => {
       switch (source[0]) {
         case '\x1B':
         case '\\':
-          if (!nssb.test(source.slice(1))) break;
-          assert(source[0] !== '\x1B');
-          return text({ source: source.slice(1), context });
-        default:
-          const i = source.match(nssb)?.[0].length ?? -1;
-          if (i !== -1) return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
-      }
-      switch (source[0]) {
-        case '\x1B':
-        case '\\':
           switch (source[1]) {
             case undefined:
-              assert(source[0] !== '\x1B');
-              return [[], ''];
             case '\n':
               assert(source[0] !== '\x1B');
-              return [[html('span', { class: 'linebreak' }, ' ')], source.slice(2)];
+              return [[], source.slice(1)];
             default:
               return [[source.slice(1, 2)], source.slice(2)];
           }

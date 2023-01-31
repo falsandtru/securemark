@@ -4,7 +4,6 @@ import { cite } from './reply/cite';
 import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { localize } from '../locale';
 import { visualize } from '../visibility';
 import { push, pop } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -16,7 +15,7 @@ import { html, defrag } from 'typed-dom/dom';
 対象と引用は1:N(分割)、N:1(統合)のみ可能、N:N(混合)は不可能
 */
 
-export const reply: ReplyParser = block(validate('>', localize(fmap(
+export const reply: ReplyParser = block(validate('>', fmap(
   inits([
     some(inits([
       cite,
@@ -30,4 +29,4 @@ export const reply: ReplyParser = block(validate('>', localize(fmap(
         ns => push(ns, [html('br')])),
     ])),
   ]),
-  ns => [html('p', defrag(pop(ns)[0]))]))));
+  ns => [html('p', defrag(pop(ns)[0]))])));

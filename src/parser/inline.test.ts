@@ -51,7 +51,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[]{{a}}')), [['[', ']', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{{a}}')), [['!', '[', ']', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[\n]{a}')), [['[', '<br>', ']', '<a class="url" href="a">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[\\\n]{a}')), [['[', '<span class="linebreak"> </span>', ']', '<a class="url" href="a">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[\\\n]{a}')), [['[', '<br>', ']', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{}')), [['{', '}'], '']);
       assert.deepStrictEqual(inspect(parser('{a}')), [['<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{{a}}')), [['<span class="template">{{a}}</span>'], '']);
@@ -158,7 +158,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('0aあい#b')), [['0a', 'あ', 'い#b'], '']);
       assert.deepStrictEqual(inspect(parser('「#あ」')), [['「', '<a class="hashtag" href="/hashtags/あ">#あ</a>', '」'], '']);
       assert.deepStrictEqual(inspect(parser('a\n#b')), [['a', '<br>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\\\n#b')), [['a', '<span class="linebreak"> </span>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\\\n#b')), [['a', '<br>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_a_#b')), [['<em>a</em>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('*a*#b')), [['<strong>a</strong>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('((a))#b')), [['<sup class="annotation"><span>a</span></sup>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);

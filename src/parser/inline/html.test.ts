@@ -34,7 +34,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<bdi><wbr></bdi>')), [['<span class="invalid">&lt;bdi&gt;<wbr>&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>\n</bdi>')), [['<span class="invalid">&lt;bdi&gt;<br>&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>\na</bdi>')), [['<span class="invalid">&lt;bdi&gt;<br>a&lt;/bdi&gt;</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdi>\\\na</bdi>')), [['<span class="invalid">&lt;bdi&gt;<span class="linebreak"> </span>a&lt;/bdi&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdi>\\\na</bdi>')), [['<span class="invalid">&lt;bdi&gt;<br>a&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>a')), [['<span class="invalid">&lt;bdi&gt;a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>a</BDO>')), [['<span class="invalid">&lt;bdi&gt;a&lt;/BDO&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<BDI>a</BDI>')), [['<span class="invalid">&lt;BDI&gt;a&lt;/BDI&gt;</span>'], '']);

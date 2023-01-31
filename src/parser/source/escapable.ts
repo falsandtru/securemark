@@ -15,7 +15,13 @@ export const escsource: EscapableSourceParser = creation(1, false, ({ source }) 
         case '\x1B':
           return [[source.slice(1, 2)], source.slice(2)];
         case '\\':
-          return [[source.slice(0, 2)], source.slice(2)];
+          switch (source[1]) {
+            case undefined:
+            case '\n':
+              return [[source[0]], source.slice(1)];
+            default:
+              return [[source.slice(0, 2)], source.slice(2)];
+          }
         default:
           const b = source[0] !== '\n' && source[0].trimStart() === '';
           const i = b

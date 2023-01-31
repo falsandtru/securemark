@@ -108,10 +108,7 @@ export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boo
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     if (isVisible(node)) return true;
-    if (typeof node === 'object') {
-      if (node.tagName === 'BR') break;
-      if (node.className === 'linebreak') break;
-    }
+    if (typeof node === 'object' && node.tagName === 'BR') break;
   }
   return false;
 }
@@ -143,8 +140,6 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
         case 'BR':
         case 'WBR':
           return false;
-        case 'SPAN':
-          return node.className !== 'linebreak';
         default:
           return true;
       }

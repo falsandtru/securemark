@@ -126,7 +126,7 @@ describe('Unit: parser/api/bind', () => {
     });
 
     it('normalize', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('a\\\r\nb')), ['<p>a<br>b</p>']);
     });
 
     it('reentrant', () => {
