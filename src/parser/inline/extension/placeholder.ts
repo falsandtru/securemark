@@ -3,7 +3,7 @@ import { union, some, syntax, validate, surround, lazy } from '../../../combinat
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { Syntax, State } from '../../context';
-import { startTight } from '../../visibility';
+import { startTight, trimBlankEnd } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -14,14 +14,14 @@ import { html, defrag } from 'typed-dom/dom';
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate(['[:', '[^'], surround(
   str(/^\[[:^]/),
   syntax(Syntax.placeholder, 2, 1, State.none,
-  startTight(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]]))),
+  startTight(trimBlankEnd(some(union([inline]), ']', [[']', 2]])))),
   str(']'), false,
-  ([as, bs], rest) => [[
+  ([, bs], rest) => [[
     html('span', {
       class: 'invalid',
       'data-invalid-syntax': 'extension',
       'data-invalid-type': 'syntax',
-      'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`,
+      'data-invalid-message': `Invalid start symbol or linebreak`,
     }, defrag(bs)),
   ], rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));
