@@ -1,5 +1,5 @@
 import { hasOwnProperty, ObjectCreate } from 'spica/alias';
-import { Parser, Result, Ctx, Context, eval, exec, Tree } from '../../data/parser';
+import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../../data/parser';
 import { Memo } from './context/memo';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
