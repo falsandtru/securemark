@@ -38,10 +38,11 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
         if (prop in context && !hasOwnProperty(context, prop)) break;
         context[prop as string] = ObjectCreate(change[1]);
         break;
+      // @ts-expect-error
       case 'memo':
         if (!reset) break;
         context.memo = new Memo({ targets: context.memo?.targets });
-        break;
+        // fallthrough
       default:
         values[i] = context[prop];
         context[prop] = change[1];
