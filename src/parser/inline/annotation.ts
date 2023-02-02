@@ -8,7 +8,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const annotation: AnnotationParser = lazy(() => surround(
   '((',
   constraint(State.annotation, false,
-  syntax(Syntax.annotation, 6, 1, State.annotation | State.media,
+  syntax(Syntax.none, 6, 1, State.annotation | State.media,
   startLoose(
   context({ delimiters: undefined },
   some(union([inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))),
