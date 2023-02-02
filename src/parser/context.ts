@@ -11,12 +11,13 @@ export const enum Syntax {
 }
 
 export const enum State {
-  annotation = 1 << 7,
-  reference = 1 << 6,
-  index = 1 << 5,
-  label = 1 << 4,
-  link = 1 << 3,
-  media = 1 << 2,
+  annotation = 1 << 8,
+  reference = 1 << 7,
+  index = 1 << 6,
+  label = 1 << 5,
+  link = 1 << 4,
+  media = 1 << 3,
+  mark = 1 << 2,
   autolink = 1 << 1,
   shortcut = 1 << 0,
   none = 0,
@@ -27,6 +28,7 @@ export const enum State {
     | State.index
     | State.label
     | State.link
+    | State.mark
     | State.autolink,
   backtrackers = 0
     | State.annotation

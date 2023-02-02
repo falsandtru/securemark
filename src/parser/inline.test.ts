@@ -81,6 +81,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[<bdi>]]')), [['<sup class="reference"><span><span class="invalid">&lt;bdi&gt;</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[${]]}$')), [['', '[', '', '[', '<span class="math" translate="no" data-src="${]]}$">${]]}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '<sup class="reference"><span>""</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[==a==]{b}')), [['<a class="link" href="b">==a==</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a](b)]{c}')), [['<a class="link" href="c"><ruby>a<rp>(</rp><rt>b</rt><rp>)</rp></ruby></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[[[[{a}')), [['', '[', '', '[', '', '[', '', '[', '', '[', '', '[', '', '[', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a class="url" href="http://host" target="_blank">http://host</a>', '>'], '']);

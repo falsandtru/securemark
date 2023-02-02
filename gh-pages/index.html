@@ -550,6 +550,18 @@
   .index {
     font-style: italic;
   }
+  mark + a:empty:after {
+    content: "📍";
+    display: inline-block;
+    position: relative;
+    top: -.5em;
+    line-height: 0;
+    vertical-align: baseline;
+    font-size: 75%;
+    font-style: normal;
+    font-weight: normal;
+    transform: rotate(20deg);
+  }
   ins, del {
     position: relative;
     text-decoration: inherit;
