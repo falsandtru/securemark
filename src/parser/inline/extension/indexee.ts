@@ -24,9 +24,9 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
   if (!indexer && optional) return '';
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
-  assert(!source.querySelector('.annotation, br'));
+  assert(!source.querySelector('br'));
   const target = source.cloneNode(true) as typeof source;
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'),
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -39,6 +39,9 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
       case 'OL':
         el.remove();
         continue;
+      case 'BR':
+        el.replaceWith('\n');
+        continue;
     }
     switch (el.className) {
       case 'math':
@@ -46,11 +49,9 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
         continue;
       case 'comment':
       case 'checkbox':
-        el.remove();
-        continue;
+      case 'annotation':
       case 'reference':
-        assert(el.firstElementChild?.hasAttribute('hidden'));
-        el.firstChild!.remove();
+        el.remove();
         continue;
     }
   }
