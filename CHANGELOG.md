@@ -2,6 +2,7 @@
 
 ## 0.264.0
 
+- Change signature syntax.
 - Change emphasis, strong, and mark syntax to disallow linebreaks.
 - Remove escaped linebreak processing.
 
