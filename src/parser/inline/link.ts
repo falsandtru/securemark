@@ -98,22 +98,6 @@ function parse(
   const uri = new ReadonlyURL(
     resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
     context.host?.href || location.href);
-  switch (uri.protocol) {
-    case 'tel:': {
-      const tel = content.length === 0
-        ? INSECURE_URI
-        : content[0];
-      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
-      if (content.length <= 1 &&
-          typeof tel === 'string' &&
-          pattern.test(tel) &&
-          pattern.test(INSECURE_URI) &&
-          tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, '')) {
-        break;
-      }
-      return;
-    }
-  }
   const el = elem(
     INSECURE_URI,
     content,
@@ -135,35 +119,52 @@ function elem(
     case 'http:':
     case 'https:':
       assert(uri.host);
-      if (INSECURE_URI.slice(0, 2) === '^/' &&
-          /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
-        type = 'argument';
-        message = 'Dot-segments cannot be used in subresource paths';
-        break;
+      switch (true) {
+        case INSECURE_URI.slice(0, 2) === '^/'
+          && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
+          type = 'argument';
+          message = 'Dot-segments cannot be used in subresource paths';
+          break;
+        default:
+          return html('a',
+            {
+              class: content.length === 0 ? 'url' : 'link',
+              href: uri.source,
+              target: undefined
+                || uri.origin !== origin
+                || typeof content[0] === 'object' && content[0].classList.contains('media')
+                  ? '_blank'
+                  : undefined,
+            },
+            content.length === 0
+              ? decode(INSECURE_URI)
+              : content);
       }
-      return html('a',
-        {
-          class: content.length === 0 ? 'url' : 'link',
-          href: uri.source,
-          target: undefined
-            || uri.origin !== origin
-            || typeof content[0] === 'object' && content[0].classList.contains('media')
-              ? '_blank'
-              : undefined,
-        },
-        content.length === 0
-          ? decode(INSECURE_URI)
-          : content);
+      break;
     case 'tel:':
       assert(content.length <= 1);
-      return html('a',
-        {
-          class: 'tel',
-          href: uri.source,
-        },
-        content.length === 0
-          ? [INSECURE_URI]
-          : content);
+      const tel = content.length === 0
+        ? INSECURE_URI
+        : content[0];
+      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
+      switch (true) {
+        case content.length <= 1
+          && pattern.test(INSECURE_URI)
+          && typeof tel === 'string'
+          && pattern.test(tel)
+          && tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, ''):
+          return html('a',
+            {
+              class: 'tel',
+              href: uri.source,
+            },
+            content.length === 0
+              ? [INSECURE_URI]
+              : content);
+        default:
+          type = 'content';
+          message = 'Invalid content';
+      }
   }
   return html('a',
     {
