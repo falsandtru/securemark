@@ -514,26 +514,53 @@
   a {
     text-decoration: none;
   }
-  .link {
+  .link,
+  .link .math * {
     text-decoration: underline;
   }
-  :is(.link, .url):is(:hover, :active) {
-    text-decoration: underline;
-    text-decoration-color: limegreen;
-    text-decoration-thickness: 2px;
-    text-decoration-skip-ink: none;
+  :is(.link, .url)::after {
+    content: "†";
+    display: inline-block;
+    position: relative;
+    top: -.2em;
+    line-height: 0;
+    vertical-align: baseline;
+    font-style: normal;
+    font-weight: normal;
   }
-  .index {
-    font-style: italic;
+  .tel::after {
+    content: "℡";
   }
-  .email, .tel {
-    color: coral;
+  .email::after {
+    content: "✉";
+    display: inline-block;
+    position: relative;
+    top: -.2em;
+    line-height: 0;
+    vertical-align: baseline;
+    font-style: normal;
+    font-weight: normal;
   }
   .channel, .account, .hashtag {
     color: goldenrod;
   }
   .anchor {
     color: limegreen;
+  }
+  .index {
+    font-style: italic;
+  }
+  mark + a:empty:after {
+    content: "📍";
+    display: inline-block;
+    position: relative;
+    top: -.5em;
+    line-height: 0;
+    vertical-align: baseline;
+    font-size: 75%;
+    font-style: normal;
+    font-weight: normal;
+    transform: rotate(20deg);
   }
   ins, del {
     position: relative;
@@ -682,6 +709,10 @@
   .references:empty {
     display: none;
   }
+  :target {
+    outline: solid 2px deeppink;
+    border-radius: 2px;
+  }
   @media print {
     #viewer > aside.header {
       display: none;
@@ -777,9 +808,7 @@
     '',
     '# Securemark [#Title]',
     '',
-    'Mark++down++~~up~~ +\\',
-    '[#`Syntax highlight`|#Code] + [#$LaTeX$|#Math]',
-    'and [#Media] embedding.',
+    'Mark++down++~~up~~ + [#`Syntax highlight`|Code] + [#$LaTeX$|Math] and [#Media] embedding.',
     '',
     '## Heading',
     '',

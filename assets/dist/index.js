@@ -21,7 +21,6 @@ return /******/ (() => { // webpackBootstrap
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   var desc = Object.getOwnPropertyDescriptor(m, k);
-
   if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
     desc = {
       enumerable: true,
@@ -30,25 +29,19 @@ var __createBinding = this && this.__createBinding || (Object.create ? function 
       }
     };
   }
-
   Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
 });
-
 var __exportStar = this && this.__exportStar || function (m, exports) {
   for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-
 __exportStar(__webpack_require__(3019), exports);
-
 __exportStar(__webpack_require__(4613), exports);
-
 __exportStar(__webpack_require__(256), exports);
 
 /***/ }),
@@ -62,9 +55,9 @@ __exportStar(__webpack_require__(256), exports);
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports.MIN_VALUE = exports.MIN_SAFE_INTEGER = exports.MAX_VALUE = exports.MAX_SAFE_INTEGER = void 0;
-exports.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER, exports.MAX_VALUE = Number.MAX_VALUE, exports.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER, exports.MIN_VALUE = Number.MIN_VALUE, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.sqrt = Math.sqrt;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log10 = exports.log2 = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.PI = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports.EPSILON = exports.MIN_VALUE = exports.MIN_SAFE_INTEGER = exports.MAX_VALUE = exports.MAX_SAFE_INTEGER = void 0;
+exports.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER, exports.MAX_VALUE = Number.MAX_VALUE, exports.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER, exports.MIN_VALUE = Number.MIN_VALUE, exports.EPSILON = Number.EPSILON, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
+exports.PI = Math.PI, exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.log2 = Math.log2, exports.log10 = Math.log10, exports.sqrt = Math.sqrt;
 exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
@@ -87,43 +80,33 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
-
 function indexOf(as, a) {
   if (as.length === 0) return -1;
   return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
 }
-
 exports.indexOf = indexOf;
-
 function unshift(as, bs) {
   if ('length' in as) {
     if (as.length === 1) return bs.unshift(as[0]), bs;
-    if (Symbol.iterator in as) return bs.unshift(...as), bs;
-
+    if (Array.isArray(as)) return bs.unshift(...as), bs;
     for (let i = as.length; i--;) {
       bs.unshift(as[i]);
     }
   } else {
     bs.unshift(...as);
   }
-
   return bs;
 }
-
 exports.unshift = unshift;
-
 function shift(as, count) {
   if (count < 0) throw new Error('Unexpected negative number');
   return count === undefined ? [as.shift(), as] : [splice(as, 0, count), as];
 }
-
 exports.shift = shift;
-
 function push(as, bs) {
   if ('length' in bs) {
     if (bs.length === 1) return as.push(bs[0]), as;
-    if (Symbol.iterator in bs && bs.length > 50) return as.push(...bs), as;
-
+    if (Array.isArray(bs) && bs.length > 100) return as.push(...bs), as;
     for (let len = bs.length, i = 0; i < len; ++i) {
       as.push(bs[i]);
     }
@@ -132,71 +115,53 @@ function push(as, bs) {
       as.push(b);
     }
   }
-
   return as;
 }
-
 exports.push = push;
-
 function pop(as, count) {
   if (count < 0) throw new Error('Unexpected negative number');
   return count === undefined ? [as, as.pop()] : [as, splice(as, as.length - count, count)];
 }
-
 exports.pop = pop;
-
 function splice(as, index, count, ...values) {
   if (as.length === 0) return push(as, values), [];
-
   if (index > as.length) {
     index = as.length;
   } else if (index < 0) {
     index = -index > as.length ? 0 : as.length + index;
   }
-
   count = count > as.length ? as.length : count;
   if (count === 0 && values.length === 0) return [];
   if (count === 1 && values.length === 1) return [[as[index], as[index] = values[0]][0]];
-
   switch (index) {
     case as.length - 1:
       if (as.length === 0) return push(as, values), [];
       if (count >= 1) return [[as.pop()], push(as, values)][0];
       break;
-
     case 0:
       if (count === 0) return unshift(values, as), [];
       if (count === 1) return [[as.shift()], unshift(values, as)][0];
       break;
-
     case as.length:
       return push(as, values), [];
   }
-
   switch (values.length) {
     case 0:
       return arguments.length > 2 ? as.splice(index, count) : as.splice(index);
-
     case 1:
       return as.splice(index, count, values[0]);
-
     case 2:
       return as.splice(index, count, values[0], values[1]);
-
     case 3:
       return as.splice(index, count, values[0], values[1], values[2]);
-
     case 4:
       return as.splice(index, count, values[0], values[1], values[2], values[3]);
-
     case 5:
       return as.splice(index, count, values[0], values[1], values[2], values[3], values[4]);
-
     default:
       return as.splice(index, count, ...values);
   }
 }
-
 exports.splice = splice;
 
 /***/ }),
@@ -211,28 +176,21 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.template = exports.inherit = exports.merge = exports.extend = exports.overwrite = exports.clone = exports.assign = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
 const type_1 = __webpack_require__(5177);
-
 const array_1 = __webpack_require__(8112);
-
 exports.assign = template((prop, target, source) => target[prop] = source[prop]);
 exports.clone = template((prop, target, source) => {
   switch ((0, type_1.type)(source[prop])) {
     case 'Array':
       return target[prop] = source[prop].slice();
-
     case 'Object':
       switch ((0, type_1.type)(target[prop])) {
         case 'Object':
           return target[prop] = (0, exports.clone)(empty(source[prop]), source[prop]);
-
         default:
           return target[prop] = source[prop];
       }
-
     default:
       return target[prop] = source[prop];
   }
@@ -241,16 +199,13 @@ exports.overwrite = template((prop, target, source) => {
   switch ((0, type_1.type)(source[prop])) {
     case 'Array':
       return target[prop] = source[prop];
-
     case 'Object':
       switch ((0, type_1.type)(target[prop])) {
         case 'Object':
           return (0, exports.overwrite)(target[prop], source[prop]);
-
         default:
           return target[prop] = (0, exports.overwrite)(empty(source[prop]), source[prop]);
       }
-
     default:
       return target[prop] = source[prop];
   }
@@ -259,19 +214,15 @@ exports.extend = template((prop, target, source) => {
   switch ((0, type_1.type)(source[prop])) {
     case 'undefined':
       return;
-
     case 'Array':
       return target[prop] = source[prop];
-
     case 'Object':
       switch ((0, type_1.type)(target[prop])) {
         case 'Object':
           return (0, exports.extend)(target[prop], source[prop]);
-
         default:
           return target[prop] = (0, exports.extend)(empty(source[prop]), source[prop]);
       }
-
     default:
       return target[prop] = source[prop];
   }
@@ -280,25 +231,20 @@ exports.merge = template((prop, target, source) => {
   switch ((0, type_1.type)(source[prop])) {
     case 'undefined':
       return;
-
     case 'Array':
       switch ((0, type_1.type)(target[prop])) {
         case 'Array':
           return target[prop] = (0, array_1.push)(target[prop], source[prop]);
-
         default:
           return target[prop] = source[prop].slice();
       }
-
     case 'Object':
       switch ((0, type_1.type)(target[prop])) {
         case 'Object':
           return (0, exports.merge)(target[prop], source[prop]);
-
         default:
           return target[prop] = (0, exports.merge)(empty(source[prop]), source[prop]);
       }
-
     default:
       return target[prop] = source[prop];
   }
@@ -307,47 +253,36 @@ exports.inherit = template((prop, target, source) => {
   switch ((0, type_1.type)(source[prop])) {
     case 'undefined':
       return;
-
     case 'Array':
       return target[prop] = source[prop].slice();
-
     case 'Object':
       switch ((0, type_1.type)(target[prop])) {
         case 'Object':
-          return (0, alias_1.hasOwnProperty)(target, prop) ? (0, exports.inherit)(target[prop], source[prop]) : target[prop] = (0, exports.inherit)((0, alias_1.ObjectCreate)(target[prop]), source[prop]);
-
+          return (0, exports.inherit)(target[prop], source[prop]);
         default:
           return target[prop] = (0, alias_1.ObjectCreate)(source[prop]);
       }
-
     default:
       return target[prop] = source[prop];
   }
 });
-
 function template(strategy) {
   return walk;
-
   function walk(target, ...sources) {
     if ((0, type_1.isPrimitive)(target)) return target;
-
     for (let i = 0; i < sources.length; ++i) {
       const source = sources[i];
       if (source === target) continue;
       if ((0, type_1.isPrimitive)(source)) continue;
       const keys = Object.keys(source);
-
       for (let i = 0; i < keys.length; ++i) {
         strategy(keys[i], target, source);
       }
     }
-
     return target;
   }
 }
-
 exports.template = template;
-
 function empty(source) {
   return source instanceof Object ? {} : (0, alias_1.ObjectCreate)(null);
 }
@@ -364,516 +299,659 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Cache = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
-const clock_1 = __webpack_require__(7681);
-
-const invlist_1 = __webpack_require__(7452);
-
+const chrono_1 = __webpack_require__(4393);
+const list_1 = __webpack_require__(3667);
 const heap_1 = __webpack_require__(818);
-
 const assign_1 = __webpack_require__(4401);
+// Dual Window Cache
+/*
+LFU論理寿命：
+小容量で小効果のみにつきLRU下限で代替し無効化。
 
+LRU下限：
+小容量で大効果につき採用。
+
+統計解像度：
+効果ないが検証用に残置。
+
+サイクリックスィープ：
+LRU汚染対策。
+大効果につき採用。
+
+履歴標本：
+大効果につき採用。
+
+*/
+/*
+比較検討
+
+LRU/CLOCK:
+性能が低い。
+
+CAR/CDW(CLOCK+DWC)/CLOCK-Pro:
+最悪計算量がO(n)であるため汎用的でない。
+CLOCK-ProはCAR同様合計2倍の履歴を持つ。
+
+ARC:
+キャッシュサイズの2倍のキーを保持する。
+すでにARCに近いヒット率を達成しているため2倍のキーサイズとリスト操作による
+空間効率と速度の低下を正当化できるワークロードでのみ優位性がある。
+Loop耐性が欠如しておりGLIやDS1などLoop耐性を要するワークロードではDWCが大幅に優れている。
+
+DWC:
+時間空間ともに定数計算量かつすべての基本的耐性を持つ。
+情報量(履歴)の不足を補うため全体的に統計精度への依存度が上がっており標本サイズが小さくなるほど
+情報量(標本がシグナルとなる確率)と統計精度の低下により性能低下しやすくなる。
+
+LIRS:
+キャッシュサイズの3倍以上のキーを保持する。
+LIRS論文全著者を共著者とするLIRS2論文筆頭著者の実装によると最大2500倍、事実上無制限。
+にもかかわらずARCより安定して十分に性能が高いとは言えないうえ大幅に性能の劣るケースも散見される。
+履歴に現実的な上限を与えた場合の実際の性能が不明でありまともな比較資料がない。
+キーを無制限に走査するGC的処理があるためキャッシュサイズに比例して大きな遅延が入る可能性が上がり
+遅延が許容できない水準に達する可能性がある。
+まともなアルゴリズムではない。
+
+TinyLFU:
+TinyLFUはキーのポインタのアドレスでブルームフィルタを生成するためJavaScriptでは
+文字列やオブジェクトなどからアドレスを取得または代替値を高速に割り当てる方法がなく汎用的に使用できない。
+乱数を代用する方法は強引で低速だがリモートアクセスなど低速な処理では償却可能と思われる。
+オーバーヘッドが大きくメモ化など同期処理に耐える速度を要件とする用途には適さないと思われる。
+ブルームフィルタが削除操作不可であるため一定期間内のキャッシュの任意または有効期限超過による
+削除数に比例して性能が低下する。
+キャッシュサイズ分の挿入ごとにブルームフィルタがリセットのため全走査されるため
+キャッシュサイズに比例した大きさの遅延が入る。
+W-TinyLFUの性能は非常に高いがTinyLFUの性能は大幅に低くDWCと一長一短かより悪いうえ
+バーストアクセスに脆弱となるためあらかじめワークロードが検証されている場合以外はDWCのほうが優れている。
+メインキャッシュにLRUを使用しているためこれをDWCに置換できる可能性がある。
+
+https://github.com/ben-manes/caffeine/wiki/Efficiency
+
+*/
+/*
+# lru-cacheの最適化分析
+
+最適化前(@6)よりオブジェクト値において50-10%ほど高速化している。
+
+## Map値の数値化
+
+Mapは値が数値の場合setが2倍高速化される。
+getは変わらないため読み取り主体の場合効果が低い。
+
+## インデクスアクセス化
+
+個別の状態を個別のオブジェクトのプロパティに持たせると最適化されていないプロパティアクセスにより
+低速化するためすべての状態を状態別の配列に格納しインデクスアクセスに変換することで高速化している。
+DWCはこの最適化を行っても状態数の多さに比例して増加したオーバーヘッドに相殺され効果を得られない。
+状態をオブジェクトの代わりに配列に入れても最適化されずプロパティ・インデクスとも二段のアクセスは
+最適化されないと思われる。
+
+## TypedArray
+
+インデクスアクセス化にTypedArrayを使うことで配列の書き込みが2倍高速化される。
+これによりリスト操作が高速化されるがもともと高速なため全体的な寄与は小さいと思われる。
+
+*/
+class Entry {
+  constructor(key, value, size, partition, region, expiration) {
+    this.key = key;
+    this.value = value;
+    this.size = size;
+    this.partition = partition;
+    this.region = region;
+    this.expiration = expiration;
+    this.enode = undefined;
+    this.next = undefined;
+    this.prev = undefined;
+  }
+}
+function segment(expiration) {
+  return (0, alias_1.floor)(expiration / 16);
+}
 class Cache {
   constructor(capacity, opts = {}) {
     this.settings = {
       capacity: 0,
-      window: 100,
+      window: 2,
+      sample: 1,
       age: Infinity,
-      earlyExpiring: false,
+      eagerExpiration: false,
       capture: {
         delete: true,
         clear: true
       },
-      resolution: 1,
-      offset: 0,
-      entrance: 5,
-      threshold: 20,
-      sweep: 10,
-      test: false
+      sweep: {
+        threshold: 10,
+        window: 2,
+        range: 1,
+        shift: 2
+      }
     };
-    this.overlap = 0;
-    this.SIZE = 0;
-    this.memory = new Map();
-    this.indexes = {
-      LRU: new invlist_1.List(),
-      LFU: new invlist_1.List()
-    };
-    this.misses = 0;
-    this.sweep = 0;
-    this.ratio = 500;
-
+    this.dict = new Map();
+    this.LRU = new list_1.List();
+    this.LFU = new list_1.List();
+    this.overlapLRU = 0;
+    this.overlapLFU = 0;
+    this.$size = 0;
+    this.injection = 0;
     if (typeof capacity === 'object') {
       opts = capacity;
       capacity = opts.capacity ?? 0;
     }
-
     const settings = (0, assign_1.extend)(this.settings, opts, {
       capacity
     });
     this.capacity = capacity = settings.capacity;
     if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
     if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.window = settings.window * this.capacity / 100 >>> 0 || this.capacity;
-    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% or more of capacity.`);
-    this.threshold = settings.threshold;
-    this.limit = 1000 - settings.entrance * 10;
+    this.window = capacity * settings.window / 100 >>> 0;
+    this.partition = capacity - this.window;
+    this.sample = settings.sample;
+    this.resource = settings.resource ?? capacity;
+    this.expiration = opts.age !== undefined;
     this.age = settings.age;
-
-    if (settings.earlyExpiring) {
-      this.expiries = new heap_1.Heap(heap_1.Heap.min);
+    if (settings.eagerExpiration) {
+      this.expirations = new heap_1.Heap(heap_1.Heap.min, {
+        stable: false
+      });
     }
-
+    this.sweeper = new Sweeper(this.LRU, settings.sweep.threshold, capacity, settings.sweep.window, settings.sweep.range, settings.sweep.shift);
     this.disposer = settings.disposer;
-    this.stats = opts.resolution || opts.offset ? new StatsExperimental(this.window, settings.resolution, settings.offset) : new Stats(this.window);
-    this.test = settings.test;
   }
-
   get length() {
-    return this.indexes.LRU.length + this.indexes.LFU.length;
-  }
-
-  get size() {
-    return this.SIZE;
-  }
-
-  evict(node, callback) {
-    const entry = node.value;
-    entry.region === 'LFU' && node.list === this.indexes.LRU && --this.overlap;
-
-    if (entry.eid !== -1) {
-      this.expiries.delete(entry.eid);
-      entry.eid = -1;
-    }
-
-    node.delete();
-    this.memory.delete(entry.key);
-    this.SIZE -= entry.size;
-    callback && this.disposer?.(node.value.value, entry.key);
-  }
-
-  ensure(margin, skip, capture = false) {
-    let size = skip?.value.size ?? 0;
     const {
       LRU,
       LFU
-    } = this.indexes;
-
-    while (this.size + margin - size > this.capacity) {
-      let victim = this.expiries?.peek();
-
-      if (victim && victim !== skip && victim.value.expiry < (0, clock_1.now)()) {} else if (LRU.length === 0) {
-        victim = LFU.last !== skip ? LFU.last : LFU.last.prev;
-      } else {
-        if (this.misses > LRU.length * this.threshold / 100) {
-          this.sweep ||= (0, alias_1.round)(LRU.length * this.settings.sweep / 100) || 1;
-
-          if (this.sweep > 0) {
-            LRU.head = LRU.head.next.next;
-            --this.sweep;
-            this.sweep ||= -(0, alias_1.round)(LRU.length * this.settings.sweep / 100) || -1;
-          } else {
-            ++this.sweep;
-          }
-        } else if (LFU.length > this.capacity * this.ratio / 1000) {
-          victim = LFU.last !== skip ? LFU.last : LFU.length !== 1 ? LFU.last.prev : undefined;
-
-          if (victim) {
-            LRU.unshiftNode(victim);
-            ++this.overlap;
-          }
-        }
-
-        victim = LRU.last !== skip ? LRU.last : LRU.length !== 1 ? LRU.last.prev : undefined;
-
-        if (capture && !skip && victim) {
-          skip = victim;
-          size = skip?.value.size ?? 0;
-          continue;
-        }
-
-        victim ??= LFU.last;
-      }
-
-      this.evict(victim, true);
-      skip = skip?.list && skip;
-      size = skip?.value.size ?? 0;
-    }
-
-    return skip;
+    } = this;
+    return LRU.length + LFU.length;
   }
+  get size() {
+    return this.$size;
+  }
+  evict$(entry, callback) {
+    //assert(this.dict.size <= this.capacity);
 
+    entry.partition === this.LRU ? entry.region === 'LFU' && --this.overlapLFU : entry.region === 'LRU' && --this.overlapLRU;
+    if (entry.enode !== undefined) {
+      this.expirations.delete(entry.enode);
+      entry.enode = undefined;
+    }
+    entry.partition.delete(entry);
+    this.dict.delete(entry.key);
+    //assert(this.dict.size <= this.capacity);
+    this.$size -= entry.size;
+    callback && this.disposer?.(entry.value, entry.key);
+  }
+  overlap(entry) {
+    if (entry.partition === this.LRU) {
+      if (entry.region === 'LRU') {
+        ++this.overlapLRU;
+      } else {
+        --this.overlapLFU;
+      }
+    } else {
+      if (entry.region === 'LFU') {
+        ++this.overlapLFU;
+      } else {
+        --this.overlapLRU;
+      }
+    }
+    return entry;
+  }
+  // Update and deletion are reentrant but addition is not.
+  ensure(margin, target, capture = false) {
+    let size = target?.size ?? 0;
+    const {
+      LRU,
+      LFU
+    } = this;
+    while (this.size + margin - size > this.resource) {
+      this.injection = (0, alias_1.min)(this.injection + this.sample, 100);
+      let victim = this.expirations?.peek()?.value;
+      if (victim !== undefined && victim !== target && victim.expiration < (0, chrono_1.now)()) {} else if (LRU.length === 0) {
+        victim = LFU.head.prev;
+        victim = victim !== target ? victim : victim.prev;
+      } else {
+        if (LFU.length > this.partition) {
+          let entry = LFU.head.prev;
+          entry = entry !== target ? entry : LFU.length !== 1 ? entry.prev : undefined;
+          if (entry !== undefined) {
+            LFU.delete(entry);
+            LRU.unshift(this.overlap(entry));
+            entry.partition = LRU;
+          }
+        }
+        if (this.injection === 100 && LRU.length >= this.window && this.overlapLRU * 100 / (0, alias_1.min)(LFU.length, this.partition) < this.sample) {
+          const entry = LRU.head.prev;
+          if (entry.region === 'LRU') {
+            LRU.delete(entry);
+            LFU.unshift(this.overlap(entry));
+            entry.partition = LFU;
+            this.injection = 0;
+          }
+        }
+        if (this.sweeper.isActive()) {
+          this.sweeper.sweep();
+        }
+        if (LRU.length !== 0) {
+          victim = LRU.head.prev;
+          victim = victim !== target ? victim : LRU.length !== 1 ? victim.prev : undefined;
+          if (capture && target === undefined && victim !== undefined) {
+            target = victim;
+            size = target.size;
+            continue;
+          }
+          victim ??= LFU.head.prev;
+        } else {
+          victim = LFU.head.prev;
+          victim = victim !== target ? victim : victim.prev;
+        }
+      }
+      this.evict$(victim, true);
+      target = target?.next && target;
+      size = target?.size ?? 0;
+    }
+    return target;
+  }
+  update(entry, key, value, size, expiration) {
+    const key$ = entry.key;
+    const value$ = entry.value;
+    entry.key = key;
+    entry.value = value;
+    this.$size += size - entry.size;
+    entry.size = size;
+    entry.expiration = expiration;
+    if (this.expiration && this.expirations !== undefined && expiration !== Infinity) {
+      entry.enode !== undefined ? this.expirations.update(entry.enode, segment(expiration)) : entry.enode = this.expirations.insert(entry, segment(expiration));
+    } else if (entry.enode !== undefined) {
+      this.expirations.delete(entry.enode);
+      entry.enode = undefined;
+    }
+    this.disposer?.(value$, key$);
+  }
+  replace(entry) {
+    const {
+      LRU,
+      LFU
+    } = this;
+    this.sweeper.hit();
+    if (entry.partition === LRU) {
+      // For memoize.
+      if (entry === LRU.head) return;
+      if (entry.region === 'LRU') {
+        entry.region = 'LFU';
+      } else {
+        const delta = LRU.length > LFU.length && LRU.length >= this.capacity - this.partition ? LRU.length / (LFU.length || 1) * (this.overlapLRU || 1) / this.overlapLFU | 0 || 1 : 1;
+        this.partition = (0, alias_1.min)(this.partition + delta, this.capacity - this.window);
+        --this.overlapLFU;
+      }
+      LRU.delete(entry);
+      LFU.unshift(entry);
+      entry.partition = LFU;
+    } else {
+      // For memoize.
+      if (entry === LFU.head) return;
+      if (entry.region === 'LFU') {} else {
+        const delta = LFU.length > LRU.length && LFU.length >= this.partition ? LFU.length / (LRU.length || 1) * (this.overlapLFU || 1) / this.overlapLRU | 0 || 1 : 1;
+        this.partition = (0, alias_1.max)(this.partition - delta, 0);
+        entry.region = 'LFU';
+        --this.overlapLRU;
+      }
+      LFU.delete(entry);
+      LFU.unshift(entry);
+    }
+  }
+  validate(size, age) {
+    return 1 <= size && size <= this.resource && 1 <= age;
+  }
+  evict() {
+    const victim = this.LRU.last ?? this.LFU.last;
+    if (victim === undefined) return;
+    this.evict$(victim, true);
+    return [victim.key, victim.value];
+  }
+  add(key, value, {
+    size = 1,
+    age = this.age
+  } = {}, victim) {
+    if (!this.validate(size, age)) {
+      this.disposer?.(value, key);
+      return false;
+    }
+    const {
+      LRU
+    } = this;
+    const expiration = age === Infinity ? age : (0, chrono_1.now)() + age;
+    victim = this.ensure(size, victim, true);
+    // Note that the key will be duplicate if the key is evicted and added again in disposing.
+    if (victim !== undefined) {
+      victim.region === 'LFU' && --this.overlapLFU;
+      this.dict.delete(victim.key);
+      this.dict.set(key, victim);
+      victim.region = 'LRU';
+      LRU.head = victim;
+      this.update(victim, key, value, size, expiration);
+      return true;
+    }
+    this.$size += size;
+    const entry = new Entry(key, value, size, LRU, 'LRU', expiration);
+    LRU.unshift(entry);
+    this.dict.set(key, entry);
+    if (this.expiration && this.expirations !== undefined && expiration !== Infinity) {
+      entry.enode = this.expirations.insert(entry, segment(expiration));
+    }
+    return true;
+  }
   put(key, value, {
     size = 1,
     age = this.age
   } = {}) {
-    if (size < 1 || this.capacity < size || age <= 0) {
+    if (!this.validate(size, age)) {
       this.disposer?.(value, key);
       return false;
     }
-
-    const {
-      LRU
-    } = this.indexes;
-
-    if (age === Infinity) {
-      age = 0;
-    }
-
-    const expiry = age ? (0, clock_1.now)() + age : Infinity;
-    let node = this.memory.get(key);
-    const match = !!node;
-    node = this.ensure(size, node, true);
-
-    if (node !== undefined) {
-      const entry = node.value;
-      const key$ = entry.key;
-      const value$ = entry.value;
-
-      if (!match) {
-        entry.region === 'LFU' && --this.overlap;
-        this.memory.delete(key$);
-        this.memory.set(key, node);
-        entry.key = key;
-        entry.region = 'LRU';
-        LRU.head = node;
-      }
-
-      entry.value = value;
-      this.SIZE += size - entry.size;
-      entry.size = size;
-      entry.expiry = expiry;
-
-      if (this.expiries && age) {
-        entry.eid !== -1 ? this.expiries.update(entry.eid, expiry) : entry.eid = this.expiries.insert(node, expiry);
-      } else if (entry.eid !== -1) {
-        this.expiries.delete(entry.eid);
-        entry.eid = -1;
-      }
-
-      this.disposer?.(value$, key$);
+    const entry = this.dict.get(key);
+    const match = entry !== undefined;
+    const victim = this.ensure(size, entry, true);
+    // Note that the key of entry or victim may be changed if the new key is set in disposing.
+    if (match && entry === victim) {
+      const expiration = age === Infinity ? age : (0, chrono_1.now)() + age;
+      this.update(entry, key, value, size, expiration);
       return match;
     }
-
-    this.SIZE += size;
-    this.memory.set(key, LRU.unshift({
-      key,
-      value,
+    this.add(key, value, {
       size,
-      expiry,
-      eid: -1,
-      region: 'LRU'
-    }));
-
-    if (this.expiries && age) {
-      LRU.head.value.eid = this.expiries.insert(LRU.head, expiry);
-    }
-
-    return false;
+      age
+    }, victim);
+    return match;
   }
-
   set(key, value, opts) {
     this.put(key, value, opts);
     return this;
   }
-
   get(key) {
-    const node = this.memory.get(key);
-
-    if (node === undefined) {
-      ++this.misses;
+    const entry = this.dict.get(key);
+    if (entry === undefined) {
+      this.sweeper.miss();
       return;
     }
-
-    const entry = node.value;
-    const expiry = entry.expiry;
-
-    if (expiry !== Infinity && expiry < (0, clock_1.now)()) {
-      ++this.misses;
-      this.evict(node, true);
+    if (this.expiration && entry.expiration !== Infinity && entry.expiration < (0, chrono_1.now)()) {
+      this.sweeper.miss();
+      this.evict$(entry, true);
       return;
     }
-
-    this.misses &&= 0;
-    this.sweep &&= 0; // Optimization for memoize.
-
-    if (!this.test && node === node.list.head) return entry.value;
-    this.access(node);
-    this.adjust();
+    this.replace(entry);
     return entry.value;
   }
-
   has(key) {
-    const node = this.memory.get(key);
-    if (node === undefined) return false;
-    const entry = node.value;
-    const expiry = entry.expiry;
-
-    if (expiry !== Infinity && expiry < (0, clock_1.now)()) {
-      this.evict(node, true);
+    const entry = this.dict.get(key);
+    if (entry === undefined) return false;
+    if (this.expiration && entry.expiration !== Infinity && entry.expiration < (0, chrono_1.now)()) {
+      this.evict$(entry, true);
       return false;
     }
-
     return true;
   }
-
   delete(key) {
-    const node = this.memory.get(key);
-    if (node === undefined) return false;
-    this.evict(node, this.settings.capture.delete === true);
+    const entry = this.dict.get(key);
+    if (entry === undefined) return false;
+    this.evict$(entry, this.settings.capture.delete === true);
     return true;
   }
-
   clear() {
-    this.misses = 0;
-    this.sweep = 0;
-    this.overlap = 0;
-    this.SIZE = 0;
-    this.ratio = 500;
-    this.stats.clear();
-    this.indexes.LRU.clear();
-    this.indexes.LFU.clear();
-    this.expiries?.clear();
-    if (!this.disposer || !this.settings.capture.clear) return void this.memory.clear();
-    const memory = this.memory;
-    this.memory = new Map();
-
-    for (const {
-      0: key,
-      1: {
-        value: {
-          value
-        }
-      }
-    } of memory) {
-      this.disposer(value, key);
-    }
-  }
-
-  resize(capacity) {
-    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
-    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.capacity = capacity;
-    this.window = this.settings.window * this.capacity / 100 >>> 0 || this.capacity;
-    if (this.window * 1000 >= this.capacity === false) throw new Error(`Spica: Cache: Window must be 0.1% or more of capacity.`);
-    this.ensure(0);
-  }
-
-  *[Symbol.iterator]() {
-    for (const {
-      0: key,
-      1: {
-        value: {
-          value
-        }
-      }
-    } of this.memory) {
-      yield [key, value];
-    }
-
-    return;
-  }
-
-  access(node) {
-    const entry = node.value;
-    const {
-      region
-    } = entry;
     const {
       LRU,
       LFU
-    } = this.indexes;
-
-    if (node.list === LRU) {
-      ++this.stats[region][0];
-
-      if (region === 'LFU') {
-        --this.overlap;
-      } else {
-        entry.region = 'LFU';
-      }
-
-      LFU.unshiftNode(node);
-    } else {
-      ++this.stats[region][0];
-      node.moveToHead();
-    }
-  }
-
-  adjust() {
-    const {
-      capacity,
-      ratio,
-      limit,
-      stats,
-      indexes
     } = this;
-    if (stats.subtotal() * 1000 % capacity || !stats.isFull()) return;
-    const lenR = indexes.LRU.length;
-    const lenF = indexes.LFU.length;
-    const lenO = this.overlap;
-    const leverage = (lenF + lenO) * 1000 / (lenR + lenF) | 0;
-    const rateR = stats.rateLRU();
-    const rateF = 10000 - rateR;
-    const rateR0 = rateR * leverage;
-    const rateF0 = rateF * (1000 - leverage);
-    const rateF1 = stats.offset && stats.rateLFU(true) * (1000 - leverage); // 操作頻度を超えてキャッシュ比率を増減させても余剰比率の消化が追いつかず無駄
-    // LRUの下限設定ではLRU拡大の要否を迅速に判定できないためLFUのヒット率低下の検出で代替する
-
-    if (ratio > 0 && (rateR0 > rateF0 || stats.offset && rateF0 * 100 < rateF1 * (100 - stats.offset))) {
-      //rateR0 <= rateF0 && rateF0 * 100 < rateF1 * (100 - stats.offset) && console.debug(0);
-      if (lenR >= capacity * (1000 - ratio) / 1000) {
-        //ratio % 100 || ratio === 1000 || console.debug('-', ratio, LRU, LFU);
-        --this.ratio;
-      }
-    } else if (ratio < limit && rateF0 > rateR0) {
-      if (lenF >= capacity * ratio / 1000) {
-        //ratio % 100 || ratio === 0 || console.debug('+', ratio, LRU, LFU);
-        ++this.ratio;
-      }
+    this.injection = 0;
+    this.$size = 0;
+    this.partition = this.capacity - this.window;
+    this.dict = new Map();
+    this.LRU = new list_1.List();
+    this.LFU = new list_1.List();
+    this.overlapLRU = 0;
+    this.overlapLFU = 0;
+    this.expirations?.clear();
+    this.sweeper.clear();
+    this.sweeper.replace(this.LRU);
+    if (!this.disposer || !this.settings.capture.clear) return;
+    for (const {
+      key,
+      value
+    } of LRU) {
+      this.disposer(value, key);
+    }
+    for (const {
+      key,
+      value
+    } of LFU) {
+      this.disposer(value, key);
     }
   }
-
+  *[Symbol.iterator]() {
+    for (const {
+      key,
+      value
+    } of this.LRU) {
+      yield [key, value];
+    }
+    for (const {
+      key,
+      value
+    } of this.LFU) {
+      yield [key, value];
+    }
+    return;
+  }
+  resize(capacity, resource) {
+    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
+    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
+    this.partition = this.partition / this.capacity * capacity >>> 0;
+    this.capacity = capacity;
+    this.window = capacity * this.settings.window / 100 >>> 0;
+    this.resource = resource ?? this.settings.resource ?? capacity;
+    this.sweeper.resize(capacity, this.settings.sweep.window, this.settings.sweep.range);
+    this.ensure(0);
+  }
 }
-
 exports.Cache = Cache;
-
-class Stats {
-  constructor(window) {
+// Transitive Wide MRU with Cyclic Replacement
+class Sweeper {
+  constructor(target, threshold, capacity, window, range, shift) {
+    this.target = target;
+    this.threshold = threshold;
     this.window = window;
-    this.offset = 0;
-    this.max = 2;
-    this.LRU = [0];
-    this.LFU = [0];
+    this.range = range;
+    this.shift = shift;
+    this.currHits = 0;
+    this.currMisses = 0;
+    this.prevHits = 0;
+    this.prevMisses = 0;
+    this.processing = false;
+    this.direction = true;
+    this.initial = true;
+    this.back = 0;
+    this.advance = 0;
+    this.threshold *= 100;
+    this.window = (0, alias_1.round)(capacity * window / 100) || 1;
+    this.range = capacity * range / 100;
   }
-
-  static rate(window, hits1, hits2, offset) {
-    const currTotal = hits1[0] + hits2[0];
-    const prevTotal = hits1[1] + hits2[1];
-    const currHits = hits1[0];
-    const prevHits = hits1[1];
-    const prevRate = prevHits * 100 / (prevTotal || 1);
-    const currRatio = currTotal * 100 / window - offset;
-    if (currRatio <= 0) return prevRate * 100 | 0;
-    const currRate = currHits * 100 / (currTotal || 1);
-    const prevRatio = 100 - currRatio;
-    return currRate * currRatio + prevRate * prevRatio | 0;
-  }
-
-  get length() {
-    return this.LRU.length;
-  }
-
-  isFull() {
-    return this.length === this.max;
-  }
-
-  rateLRU(offset = false) {
-    return Stats.rate(this.window, this.LRU, this.LFU, +offset & 0);
-  }
-
-  rateLFU(offset = false) {
-    return Stats.rate(this.window, this.LFU, this.LRU, +offset & 0);
-  }
-
-  subtotal() {
-    const {
-      LRU,
-      LFU,
-      window
-    } = this;
-    const subtotal = LRU[0] + LFU[0];
-    subtotal >= window && this.slide();
-    return LRU[0] + LFU[0];
-  }
-
   slide() {
+    this.prevHits = this.currHits;
+    this.prevMisses = this.currMisses;
+    this.currHits = 0;
+    this.currMisses = 0;
+  }
+  hit() {
+    this.active = undefined;
+    ++this.currHits + this.currMisses === this.window && this.slide();
+    this.processing && !this.isActive() && this.reset();
+  }
+  miss() {
+    this.active = undefined;
+    this.currHits + ++this.currMisses === this.window && this.slide();
+  }
+  isActive() {
+    if (this.prevHits === 0 && this.prevMisses === 0) return false;
+    return this.active ??= this.ratio() < this.threshold;
+  }
+  ratio() {
+    return ratio(this.window, [this.currHits, this.prevHits], [this.currMisses, this.prevMisses], 0);
+  }
+  sweep() {
     const {
-      LRU,
-      LFU,
-      max
+      target
     } = this;
-
-    if (LRU.length === max) {
-      LRU.pop();
-      LFU.pop();
-    }
-
-    LRU.unshift(0);
-    LFU.unshift(0);
-  }
-
-  clear() {
-    this.LRU = [0];
-    this.LFU = [0];
-  }
-
-}
-
-class StatsExperimental extends Stats {
-  constructor(window, resolution, offset) {
-    super(window);
-    this.resolution = resolution;
-    this.offset = offset;
-    this.max = (0, alias_1.ceil)(this.resolution * (100 + this.offset) / 100) + 1;
-  }
-
-  static rate(window, hits1, hits2, offset) {
-    let total = 0;
-    let hits = 0;
-    let ratio = 100;
-
-    for (let len = hits1.length, i = 0; i < len; ++i) {
-      const subtotal = hits1[i] + hits2[i];
-      if (subtotal === 0) continue;
-      offset = i + 1 === len ? 0 : offset;
-      const subratio = (0, alias_1.min)(subtotal * 100 / window, ratio) - offset;
-      offset = offset && subratio < 0 ? -subratio : 0;
-      if (subratio <= 0) continue;
-      const rate = window * subratio / subtotal;
-      total += subtotal * rate;
-      hits += hits1[i] * rate;
-      ratio -= subratio;
-      if (ratio <= 0) break;
-    }
-
-    return hits * 10000 / total | 0;
-  }
-
-  rateLRU(offset = false) {
-    return StatsExperimental.rate(this.window, this.LRU, this.LFU, +offset && this.offset);
-  }
-
-  rateLFU(offset = false) {
-    return StatsExperimental.rate(this.window, this.LFU, this.LRU, +offset && this.offset);
-  }
-
-  subtotal() {
-    const {
-      LRU,
-      LFU,
-      window,
-      resolution,
-      offset
-    } = this;
-
-    if (offset && LRU[0] + LFU[0] >= window * offset / 100) {
-      if (this.length === 1) {
-        this.slide();
-      } else {
-        LRU[1] += LRU[0];
-        LFU[1] += LFU[0];
-        LRU[0] = 0;
-        LFU[0] = 0;
+    let lap = false;
+    if (target.length === 0) return lap;
+    this.processing ||= true;
+    if (this.direction) {
+      if (this.back < 1) {
+        this.back += this.range;
+        lap = !this.initial && this.back >= 1;
+      }
+    } else {
+      if (this.advance < 1) {
+        this.advance += this.range * (100 - this.shift) / 100;
       }
     }
-
-    const subtotal = LRU[offset && 1] + LFU[offset && 1] || 0;
-    subtotal >= window / resolution && this.slide();
-    return LRU[0] + LFU[0];
+    if (this.back >= 1) {
+      if (--this.back < 1) {
+        this.direction = false;
+      }
+      if (this.initial) {
+        this.initial = false;
+        target.head = target.head.next;
+      } else {
+        target.head = target.head.next.next;
+      }
+    } else if (this.advance >= 1) {
+      if (--this.advance < 1) {
+        this.direction = true;
+      }
+    } else {
+      this.direction = !this.direction;
+      target.head = target.head.next;
+    }
+    return lap;
   }
+  reset() {
+    if (!this.processing) return;
+    this.processing = false;
+    this.direction = true;
+    this.initial = true;
+    this.back = 0;
+    this.advance = 0;
+  }
+  clear() {
+    this.active = undefined;
+    this.processing = true;
+    this.reset();
+    this.slide();
+    this.slide();
+  }
+  replace(target) {
+    this.target = target;
+  }
+  resize(capacity, window, range) {
+    this.window = (0, alias_1.round)(capacity * window / 100) || 1;
+    this.range = capacity * range / 100;
+    this.currHits + this.currMisses >= this.window && this.slide();
+    this.active = undefined;
+  }
+}
+function ratio(window, targets, remains, offset) {
+  const currHits = targets[0];
+  const prevHits = targets[1];
+  const currTotal = currHits + remains[0];
+  const prevTotal = prevHits + remains[1];
+  const prevRate = prevHits && prevHits * 100 / prevTotal;
+  const currRatio = currTotal * 100 / window - offset;
+  if (currRatio <= 0) return prevRate * 100 | 0;
+  const currRate = currHits && currHits * 100 / currTotal;
+  const prevRatio = 100 - currRatio;
+  return currRate * currRatio + prevRate * prevRatio | 0;
+}
+function ratio2(window, targets, remains, offset) {
+  let total = 0;
+  let hits = 0;
+  let ratio = 100;
+  for (let len = targets.length, i = 0; i < len; ++i) {
+    const subtotal = targets[i] + remains[i];
+    if (subtotal === 0) continue;
+    offset = i + 1 === len ? 0 : offset;
+    const subratio = (0, alias_1.min)(subtotal * 100 / window, ratio) - offset;
+    offset = offset && subratio < 0 ? -subratio : 0;
+    if (subratio <= 0) continue;
+    const r = window * subratio / subtotal;
+    total += subtotal * r;
+    hits += targets[i] * r;
+    ratio -= subratio;
+    if (ratio <= 0) break;
+  }
+  return hits * 10000 / total | 0;
+}
 
+/***/ }),
+
+/***/ 4393:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.clock = exports.now = void 0;
+const queue_1 = __webpack_require__(4934);
+const exception_1 = __webpack_require__(7822);
+let time;
+let count = 0;
+function now(nocache) {
+  if (time === undefined) {
+    exports.clock.now(() => time = undefined);
+  } else if (!nocache && count++ !== 20) {
+    return time;
+  }
+  count = 1;
+  return time = Date.now();
+}
+exports.now = now;
+exports.clock = new class Clock extends Promise {
+  constructor() {
+    super(resolve => resolve(undefined));
+    // Promise subclass is slow.
+    const clock = Promise.resolve();
+    clock.next = this.next;
+    clock.now = this.now;
+    return clock;
+  }
+  next(callback) {
+    scheduled || schedule();
+    exports.clock.then(callback);
+  }
+  now(callback) {
+    scheduled || schedule();
+    queue.push(callback);
+  }
+}();
+const queue = new queue_1.Queue();
+let scheduled = false;
+function schedule() {
+  scheduled = true;
+  exports.clock.then(run);
+}
+function run() {
+  for (let cb; cb = queue.pop();) {
+    try {
+      cb();
+    } catch (reason) {
+      (0, exception_1.causeAsyncException)(reason);
+    }
+  }
+  scheduled = false;
 }
 
 /***/ }),
@@ -887,66 +965,218 @@ class StatsExperimental extends Stats {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.clock = exports.now = void 0;
-
-const queue_1 = __webpack_require__(4934);
-
-const exception_1 = __webpack_require__(7822);
-
-let time;
-let count = 0;
-
-function now(nocache) {
-  if (time === undefined) {
-    exports.clock.now(() => time = undefined);
-  } else if (!nocache && count++ !== 20) {
-    return time;
+exports.Clock = void 0;
+const alias_1 = __webpack_require__(5406);
+const BASE = 32;
+const DIGIT = (0, alias_1.log2)(BASE);
+const MASK = BASE - 1;
+const empty = Symbol('empty');
+class Clock {
+  // Capacity is rounded up to multiples of 32.
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.dict = new Map();
+    this.keys = [];
+    this.values = [];
+    this.hand = 0;
+    this.$length = 0;
+    this.initial = 1;
+    this.capacity = BASE * (0, alias_1.ceil)(capacity / BASE);
+    this.refs = new Uint32Array(this.capacity >>> DIGIT);
   }
-
-  count = 1;
-  return time = Date.now();
-}
-
-exports.now = now;
-exports.clock = new class Clock extends Promise {
-  constructor() {
-    super(resolve => resolve(undefined)); // Promise subclass is slow.
-
-    const clock = Promise.resolve();
-    clock.next = this.next;
-    clock.now = this.now;
-    return clock;
+  get length() {
+    return this.$length;
   }
-
-  next(callback) {
-    scheduled || schedule();
-    exports.clock.then(callback);
+  get size() {
+    return this.$length;
   }
-
-  now(callback) {
-    scheduled || schedule();
-    queue.push(callback);
+  mark(index) {
+    this.refs[index >>> DIGIT] |= 1 << (index & MASK);
   }
-
-}();
-const queue = new queue_1.Queue();
-let scheduled = false;
-
-function schedule() {
-  scheduled = true;
-  exports.clock.then(run);
-}
-
-function run() {
-  for (let cb; cb = queue.pop();) {
-    try {
-      cb();
-    } catch (reason) {
-      (0, exception_1.causeAsyncException)(reason);
+  unmark(index) {
+    this.refs[index >>> DIGIT] &= ~(1 << (index & MASK));
+  }
+  locate(hand, key, value) {
+    const {
+      capacity,
+      dict,
+      keys,
+      values
+    } = this;
+    this.$length === capacity || this.initial === 0 && values[hand] !== empty ? dict.delete(keys[hand]) : ++this.$length;
+    dict.set(key, hand);
+    keys[hand] = key;
+    values[hand] = value;
+    this.hand = ++hand === capacity ? this.initial = 0 : hand;
+  }
+  add(key, value) {
+    const {
+      capacity,
+      refs
+    } = this;
+    let hand = this.hand;
+    for (let i = hand >>> DIGIT, r = hand & MASK, len = refs.length;;) {
+      const b = refs[i];
+      if (b >>> r === ~0 >>> r) {
+        hand += BASE - r;
+        refs[i] = 0;
+        r = 0;
+        if (++i === len) {
+          i = 0;
+        }
+        continue;
+      }
+      const l = search(b, r);
+      refs[i] = b & ~((1 << l) - 1 >>> r << r);
+      hand = (hand + l - r) % capacity;
+      this.locate(hand, key, value);
+      return hand;
     }
   }
-
-  scheduled = false;
+  put(key, value) {
+    const index = this.dict.get(key);
+    if (index === undefined) return this.add(key, value);
+    this.values[index] = value;
+    return index;
+  }
+  set(key, value) {
+    this.put(key, value);
+    return this;
+  }
+  get(key) {
+    const index = this.dict.get(key);
+    if (index === undefined) return;
+    this.mark(index);
+    return this.values[index];
+  }
+  has(key) {
+    return this.dict.has(key);
+  }
+  delete(key) {
+    const index = this.dict.get(key);
+    if (index === undefined) return false;
+    // 末尾と削除対象を交換して削除する。
+    // 次の挿入の前に次の削除が行われると交換できないが稀なため対処しない。
+    const {
+      hand,
+      dict,
+      keys,
+      values,
+      refs
+    } = this;
+    dict.delete(key);
+    --this.$length;
+    const k = keys[index] = keys[hand];
+    const v = values[index] = values[hand];
+    keys[hand] = undefined;
+    values[hand] = empty;
+    this.unmark(index);
+    if (index === hand || v === empty) return true;
+    dict.set(k, index);
+    refs[index >>> DIGIT] |= (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? 0 : 1 << (index & MASK);
+    this.unmark(hand);
+    return true;
+  }
+  clear() {
+    this.dict = new Map();
+    this.keys = [];
+    this.values = [];
+    this.refs = new Uint32Array(this.refs.length);
+    this.hand = 0;
+    this.$length = 0;
+  }
+  *[Symbol.iterator]() {
+    const {
+      keys,
+      values
+    } = this;
+    for (const index of this.dict.values()) {
+      yield [keys[index], values[index]];
+    }
+    return;
+  }
+}
+exports.Clock = Clock;
+function search(b, r) {
+  for (let l = r;; ++l) {
+    if ((b & 1 << l) === 0) return l;
+  }
+}
+function bsearch(b, r) {
+  const n = ~b >>> r << r >>> 0;
+  const l = potision(0x05f66a47 * (n & -n) >>> 27);
+  return l;
+}
+//const potisions = new Uint8Array([
+//  0, 1, 2, 26, 23, 3, 15, 27, 24, 21, 19, 4, 12, 16, 28, 6, 31, 25, 22, 14, 20, 18, 11, 5, 30, 13, 17, 10, 29, 9, 8, 7,
+//]);
+function potision(n) {
+  switch (n) {
+    case 0:
+      return 0;
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 3:
+      return 26;
+    case 4:
+      return 23;
+    case 5:
+      return 3;
+    case 6:
+      return 15;
+    case 7:
+      return 27;
+    case 8:
+      return 24;
+    case 9:
+      return 21;
+    case 10:
+      return 19;
+    case 11:
+      return 4;
+    case 12:
+      return 12;
+    case 13:
+      return 16;
+    case 14:
+      return 28;
+    case 15:
+      return 6;
+    case 16:
+      return 31;
+    case 17:
+      return 25;
+    case 18:
+      return 22;
+    case 19:
+      return 14;
+    case 20:
+      return 20;
+    case 21:
+      return 18;
+    case 22:
+      return 11;
+    case 23:
+      return 5;
+    case 24:
+      return 30;
+    case 25:
+      return 13;
+    case 26:
+      return 17;
+    case 27:
+      return 10;
+    case 28:
+      return 29;
+    case 29:
+      return 9;
+    case 30:
+      return 8;
+    default:
+      return 7;
+  }
 }
 
 /***/ }),
@@ -961,11 +1191,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.equal = void 0;
-
 function equal(a, b) {
   return a === a ? a === b : b !== b;
 }
-
 exports.equal = equal;
 
 /***/ }),
@@ -979,18 +1207,16 @@ exports.equal = equal;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0; // 100,000以上でforより大幅に低速となり実用不可
-
+exports.duffReduce = exports.duffEach = exports.duffbk = exports.duff = void 0;
+// 100,000以上でforより大幅に低速となり実用不可
 function duff(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count & 7,
-        d = (count - m) / 8;
-
+      m = count & 7,
+      d = (count - m) / 8;
     while (m--) {
       proc(i++);
     }
-
     while (d--) {
       proc(i++);
       proc(i++);
@@ -1003,13 +1229,11 @@ function duff(count, proc) {
     }
   } else {
     let i = -count,
-        m = i & 7,
-        d = (i - m) / 8;
-
+      m = i & 7,
+      d = (i - m) / 8;
     while (m--) {
       proc(--i);
     }
-
     while (d--) {
       proc(--i);
       proc(--i);
@@ -1022,19 +1246,16 @@ function duff(count, proc) {
     }
   }
 }
-
-exports.duff = duff; // 100,000以上でforより大幅に低速となり実用不可
-
+exports.duff = duff;
+// 100,000以上でforより大幅に低速となり実用不可
 function duffbk(count, proc) {
   if (count > 0) {
     let i = 0,
-        m = count & 7,
-        d = (count - m) / 8;
-
+      m = count & 7,
+      d = (count - m) / 8;
     while (m--) {
       if (proc(i++) === false) return;
     }
-
     while (d--) {
       switch (false) {
         case proc(i++):
@@ -1050,13 +1271,11 @@ function duffbk(count, proc) {
     }
   } else {
     let i = -count,
-        m = i & 7,
-        d = (i - m) / 8;
-
+      m = i & 7,
+      d = (i - m) / 8;
     while (m--) {
       if (proc(--i) === false) return;
     }
-
     while (d--) {
       switch (false) {
         case proc(--i):
@@ -1072,19 +1291,15 @@ function duffbk(count, proc) {
     }
   }
 }
-
 exports.duffbk = duffbk;
-
 function duffEach(array, proc) {
   let count = array.length;
   let i = 0,
-      m = count & 7,
-      d = (count - m) / 8;
-
+    m = count & 7,
+    d = (count - m) / 8;
   while (m--) {
     proc(array[i], i++, array);
   }
-
   while (d--) {
     proc(array[i], i++, array);
     proc(array[i], i++, array);
@@ -1096,21 +1311,18 @@ function duffEach(array, proc) {
     proc(array[i], i++, array);
   }
 }
-
-exports.duffEach = duffEach; // ベンチマークの10,000以上で急激な速度低下が見られる場合があるがNodeListなどでの
+exports.duffEach = duffEach;
+// ベンチマークの10,000以上で急激な速度低下が見られる場合があるがNodeListなどでの
 // 実際の使用では速度低下は見られない
-
 function duffReduce(array, proc, initial) {
   let count = array.length;
   let i = 0,
-      m = count & 7,
-      d = (count - m) / 8;
+    m = count & 7,
+    d = (count - m) / 8;
   let acc = initial;
-
   while (m--) {
     acc = proc(acc, array[i], i++, array);
   }
-
   while (d--) {
     acc = proc(acc, array[i], i++, array);
     acc = proc(acc, array[i], i++, array);
@@ -1121,10 +1333,8 @@ function duffReduce(array, proc, initial) {
     acc = proc(acc, array[i], i++, array);
     acc = proc(acc, array[i], i++, array);
   }
-
   return acc;
 }
-
 exports.duffReduce = duffReduce;
 
 /***/ }),
@@ -1139,11 +1349,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.suppressAsyncException = exports.causeAsyncException = void 0;
-
 const stack_1 = __webpack_require__(5352);
-
 const stack = new stack_1.Stack();
-
 function causeAsyncException(reason) {
   if (stack.isEmpty()) {
     Promise.reject(reason);
@@ -1151,9 +1358,7 @@ function causeAsyncException(reason) {
     stack.peek().push(reason);
   }
 }
-
 exports.causeAsyncException = causeAsyncException;
-
 function suppressAsyncException(test) {
   return done => {
     stack.push([]);
@@ -1163,7 +1368,6 @@ function suppressAsyncException(test) {
     });
   };
 }
-
 exports.suppressAsyncException = suppressAsyncException;
 
 /***/ }),
@@ -1175,8 +1379,8 @@ exports.suppressAsyncException = suppressAsyncException;
 
 
 __webpack_require__(6921);
-
-const global =  false || typeof globalThis !== 'undefined' && globalThis // @ts-ignore
+const global =  false || typeof globalThis !== 'undefined' && globalThis
+// @ts-ignore
 || typeof self !== 'undefined' && self || Function('return this')();
 global.global = global;
 module.exports = global;
@@ -1187,10 +1391,11 @@ module.exports = global;
 /***/ (() => {
 
 "use strict";
- // @ts-ignore
 
-var globalThis; // @ts-ignore
 
+// @ts-ignore
+var globalThis;
+// @ts-ignore
 var global = (/* unused pure expression or super */ null && (globalThis));
 
 /***/ }),
@@ -1205,378 +1410,234 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.MultiHeap = exports.Heap = void 0;
-
-const alias_1 = __webpack_require__(5406);
-
-const invlist_1 = __webpack_require__(7452);
-
+const list_1 = __webpack_require__(3667);
 const memoize_1 = __webpack_require__(1808);
-
 class Heap {
   constructor(cmp = Heap.max, options) {
     this.cmp = cmp;
+    this.array = {};
+    this.$length = 0;
     this.stable = options?.stable ?? false;
-    this.array = new List();
   }
-
   get length() {
-    return this.array.length;
+    return this.$length;
   }
-
   isEmpty() {
-    return this.array.length === 0;
+    return this.array[0] !== undefined;
   }
-
   peek() {
-    return this.array.value(this.array.index(0));
+    return this.array[0];
   }
-
   insert(value, order) {
-    if (arguments.length < 2) {
+    if (arguments.length === 1) {
       order = value;
     }
-
-    const index = this.array.push(value, order);
-    upHeapify(this.cmp, this.array, this.length);
-    return index;
+    const array = this.array;
+    const node = array[this.$length] = {
+      index: ++this.$length,
+      order,
+      value
+    };
+    upHeapify(this.cmp, array, this.$length);
+    return node;
   }
-
   replace(value, order) {
-    if (arguments.length < 2) {
+    if (arguments.length === 1) {
       order = value;
     }
-
-    if (this.length === 0) return void this.insert(value, order);
-    const replaced = this.peek();
-    const index = this.array.index(0);
-    this.array.setValue(index, value);
-    this.array.setOrder(index, order);
-    downHeapify(this.cmp, this.array, 1, this.length, this.stable);
-    return replaced;
+    if (this.$length === 0) return void this.insert(value, order);
+    const array = this.array;
+    const node = array[0];
+    const val = node.value;
+    node.order = order;
+    node.value = value;
+    downHeapify(this.cmp, array, 1, this.$length, this.stable);
+    return val;
   }
-
   extract() {
-    if (this.length === 0) return;
-    const value = this.peek();
-    this.del(0);
-    return value;
+    if (this.$length === 0) return;
+    const node = this.array[0];
+    this.delete(node);
+    return node.value;
   }
-
-  del(pos) {
-    swap(this.array, pos + 1, this.length);
-    this.array.pop();
-    sort(this.cmp, this.array, pos + 1, this.length, this.stable);
+  delete(node) {
+    const array = this.array;
+    const index = node.index;
+    if (array[index - 1] !== node) throw new Error('Invalid node');
+    swap(array, index, this.$length--);
+    sort(this.cmp, array, index, this.$length, this.stable);
+    array[this.$length] = undefined;
+    return node.value;
   }
-
-  delete(index) {
-    const value = this.array.value(index);
-    this.del(this.array.position(index));
-    return value;
-  }
-
-  update(index, order, value) {
-    const ord = this.array.order(index);
-
-    if (arguments.length < 3) {
-      this.array.setOrder(index, order);
-    } else {
-      this.array.setOrder(index, order);
-      this.array.setValue(index, value);
+  update(node, order, value) {
+    const array = this.array;
+    const index = node.index;
+    if (array[index - 1] !== node) throw new Error('Invalid node');
+    if (arguments.length === 1) {
+      order = node.order;
     }
-
-    if (this.cmp(ord, order) === 0) return;
-    sort(this.cmp, this.array, this.array.position(index) + 1, this.length, this.stable);
+    if (arguments.length >= 3) {
+      node.value = value;
+    }
+    if (this.cmp(node.order, node.order = order) === 0) return;
+    sort(this.cmp, array, index, this.$length, this.stable);
   }
-
   clear() {
-    this.array.clear();
+    this.array = {};
+    this.$length = 0;
   }
-
 }
-
 exports.Heap = Heap;
-
 Heap.max = (a, b) => a > b ? -1 : a < b ? 1 : 0;
-
 Heap.min = (a, b) => a > b ? 1 : a < b ? -1 : 0;
-
 function sort(cmp, array, index, length, stable) {
   if (length === 0) return false;
-
   switch (index) {
     case 1:
       return  false || downHeapify(cmp, array, index, length, stable);
-
     case length:
       return upHeapify(cmp, array, index);
-
     default:
       return upHeapify(cmp, array, index) || downHeapify(cmp, array, index, length, stable);
   }
 }
-
 function upHeapify(cmp, array, index) {
-  const order = array.ord(index - 1);
+  const order = array[index - 1].order;
   let changed = false;
-
   while (index > 1) {
     const parent = index / 2 | 0;
-    if (cmp(array.ord(parent - 1), order) <= 0) break;
+    if (cmp(array[parent - 1].order, order) <= 0) break;
     swap(array, index, parent);
     index = parent;
     changed ||= true;
   }
-
   return changed;
 }
-
 function downHeapify(cmp, array, index, length, stable) {
   let changed = false;
-
   while (index < length) {
     const left = index * 2;
     const right = index * 2 + 1;
     let min = index;
-
     if (left <= length) {
-      const result = cmp(array.ord(left - 1), array.ord(min - 1));
-
+      const result = cmp(array[left - 1].order, array[min - 1].order);
       if (stable ? result <= 0 : result < 0) {
         min = left;
       }
     }
-
     if (right <= length) {
-      const result = cmp(array.ord(right - 1), array.ord(min - 1));
-
+      const result = cmp(array[right - 1].order, array[min - 1].order);
       if (stable ? result <= 0 : result < 0) {
         min = right;
       }
     }
-
     if (min === index) break;
     swap(array, index, min);
     index = min;
     changed ||= true;
   }
-
   return changed;
 }
-
 function swap(array, index1, index2) {
-  array.swap(index1 - 1, index2 - 1);
+  if (index1 === index2) return;
+  const pos1 = index1 - 1;
+  const pos2 = index2 - 1;
+  const node1 = array[pos1];
+  const node2 = array[pos2];
+  array[pos1] = node2;
+  array[pos2] = node1;
+  node1.index = index2;
+  node2.index = index1;
 }
-
-class List {
-  constructor() {
-    this.capacity = 4;
-    this.orders = Array(this.capacity);
-    this.values = Array(this.capacity);
-    this.indexes = new Uint32Array(this.capacity);
-    this.positions = new Uint32Array(this.capacity);
-    this.$length = 0;
+class MList extends list_1.List {
+  constructor(order, heap) {
+    super();
+    this.order = order;
+    this.heap = heap.insert(this, order);
   }
-
-  get length() {
-    return this.$length;
-  }
-
-  index(pos) {
-    return this.indexes[pos];
-  }
-
-  position(index) {
-    return this.positions[index];
-  }
-
-  ord(pos) {
-    return this.orders[this.indexes[pos]];
-  }
-
-  order(index) {
-    return this.orders[index];
-  }
-
-  value(index) {
-    return this.values[index];
-  }
-
-  isFull() {
-    return this.$length === this.capacity;
-  }
-
-  extend() {
-    if (this.capacity === 2 ** 32) throw new Error(`Too large capacity`);
-    const capacity = (0, alias_1.min)(this.capacity * 2, 2 ** 32);
-    this.orders.length = capacity;
-    this.values.length = capacity;
-    const indexes = new Uint32Array(capacity);
-    indexes.set(this.indexes);
-    this.indexes = indexes;
-    const positions = new Uint32Array(capacity);
-    positions.set(this.positions);
-    this.positions = positions;
-    this.capacity = capacity;
-  }
-
-  clear() {
-    this.orders = Array(this.capacity);
-    this.values = Array(this.capacity);
-    this.$length = 0;
-  }
-
-  setValue(index, value) {
-    this.values[index] = value;
-  }
-
-  setOrder(index, order) {
-    this.orders[index] = order;
-  }
-
-  push(value, order) {
-    this.isFull() && this.extend();
-    const pos = this.$length++;
-    this.indexes[pos] = pos;
-    this.positions[pos] = pos;
-    this.values[pos] = value;
-    this.orders[pos] = order;
-    return pos;
-  }
-
-  pop() {
-    if (this.$length === 0) return;
-    const pos = this.indexes[--this.$length];
-    this.values[pos] = undefined;
-    this.orders[pos] = undefined;
-  }
-
-  swap(pos1, pos2) {
-    if (pos1 === pos2) return false;
-    const {
-      indexes,
-      positions
-    } = this;
-    const idx1 = indexes[pos1];
-    const idx2 = indexes[pos2];
-    indexes[pos1] = idx2;
-    indexes[pos2] = idx1;
-    positions[idx1] = pos2;
-    positions[idx2] = pos1;
-    return true;
-  }
-
-  *[Symbol.iterator]() {
-    if (this.$length === 0) return;
-
-    for (let i = 0; i < this.$length; ++i) {
-      const index = this.indexes[i];
-      yield [this.orders[index], this.values[index], i];
-    }
-  }
-
 }
-
+class MNode {
+  constructor(list, order, value) {
+    this.list = list;
+    this.order = order;
+    this.value = value;
+    this.next = undefined;
+    this.prev = undefined;
+  }
+}
 class MultiHeap {
   constructor(cmp = MultiHeap.max, options) {
     this.cmp = cmp;
     this.dict = new Map();
     this.list = (0, memoize_1.memoize)(order => {
-      const list = new invlist_1.List();
-      list[MultiHeap.order] = order;
-      list[MultiHeap.heap] = this.heap.insert(list, order);
-      return list;
+      return new MList(order, this.heap);
     }, this.dict);
     this.$length = 0;
     this.clean = options?.clean ?? true;
     this.heap = new Heap(this.cmp);
   }
-
   get length() {
     return this.$length;
   }
-
   isEmpty() {
     return this.heap.isEmpty();
   }
-
   peek() {
-    return this.heap.peek()?.head.value;
+    return this.heap.peek()?.value.head;
   }
-
   insert(value, order) {
-    if (arguments.length < 2) {
+    if (arguments.length === 1) {
       order = value;
     }
-
     ++this.$length;
-    return this.list(order).push(value);
+    const node = new MNode(this.list(order), order, value);
+    node.list.push(node);
+    return node;
   }
-
   extract() {
     if (this.$length === 0) return;
     --this.$length;
-    const list = this.heap.peek();
-    const value = list.shift();
-
+    const list = this.heap.peek()?.value;
+    const value = list.shift().value;
     if (list.length === 0) {
       this.heap.extract();
-      this.clean && this.dict.delete(list[MultiHeap.order]);
+      this.clean && this.dict.delete(list.order);
     }
-
     return value;
   }
-
   delete(node) {
+    if (node.next === undefined) throw new Error('Invalid node');
     const list = node.list;
-    if (!list) throw new Error('Invalid node');
     --this.$length;
-
     if (list.length === 1) {
-      this.heap.delete(list[MultiHeap.heap]);
-      this.clean && this.dict.delete(list[MultiHeap.order]);
+      this.heap.delete(list.heap);
+      this.clean && this.dict.delete(list.order);
     }
-
-    return node.delete();
+    return list.delete(node).value;
   }
-
   update(node, order, value) {
     const list = node.list;
-    if (!list) throw new Error('Invalid node');
-
-    if (arguments.length < 2) {
-      order = list[MultiHeap.order];
-    }
-
-    if (arguments.length > 2) {
+    if (list === undefined) throw new Error('Invalid node');
+    if (arguments.length >= 3) {
       node.value = value;
     }
-
-    if (this.cmp(list[MultiHeap.order], order) === 0) return node;
+    if (this.cmp(list.order, order) === 0) return node;
     this.delete(node);
     return this.insert(node.value, order);
   }
-
-  find(order) {
-    return this.dict.get(order);
-  }
-
   clear() {
     this.heap.clear();
     this.dict.clear();
     this.$length = 0;
   }
-
 }
-
 exports.MultiHeap = MultiHeap;
-MultiHeap.order = Symbol('order');
-MultiHeap.heap = Symbol('heap');
 MultiHeap.max = Heap.max;
 MultiHeap.min = Heap.min;
 
 /***/ }),
 
-/***/ 7452:
+/***/ 3667:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -1585,7 +1646,6 @@ MultiHeap.min = Heap.min;
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   var desc = Object.getOwnPropertyDescriptor(m, k);
-
   if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
     desc = {
       enumerable: true,
@@ -1594,263 +1654,133 @@ var __createBinding = this && this.__createBinding || (Object.create ? function 
       }
     };
   }
-
   Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
 });
-
 var __exportStar = this && this.__exportStar || function (m, exports) {
   for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-
-__exportStar(__webpack_require__(2310), exports);
+__exportStar(__webpack_require__(5096), exports);
 
 /***/ }),
 
-/***/ 2310:
+/***/ 5096:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
- // Circular Inverse List
 
+
+// Memory-efficient flexible list.
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.List = void 0;
-
 class List {
   constructor() {
-    this.$length = 0;
+    this.length = 0;
     this.head = undefined;
   }
-
-  get length() {
-    return this.$length;
-  }
-
   get tail() {
     return this.head?.next;
   }
-
   get last() {
     return this.head?.prev;
   }
-
-  clear() {
-    this.head = undefined;
-    this.$length = 0;
+  insert(node, before) {
+    if (++this.length === 1) {
+      return this.head = node.next = node.prev = node;
+    }
+    const next = node.next = before ?? this.head;
+    const prev = node.prev = next.prev;
+    return next.prev = prev.next = node;
   }
-
-  unshift(value) {
-    return this.head = this.push(value);
+  delete(node) {
+    if (--this.length === 0) {
+      this.head = undefined;
+    } else {
+      const {
+        next,
+        prev
+      } = node;
+      if (node === this.head) {
+        this.head = next;
+      }
+      // Error if not used.
+      prev.next = next;
+      next.prev = prev;
+    }
+    node.next = node.prev = undefined;
+    return node;
   }
-
-  push(value) {
-    const head = this.head;
-    return new Node(this, value, head, head?.prev);
+  unshift(node) {
+    return this.head = this.insert(node, this.head);
   }
-
-  unshiftNode(node) {
-    return this.head = this.pushNode(node);
-  }
-
-  pushNode(node) {
+  push(node) {
     return this.insert(node, this.head);
   }
-
-  unshiftRotationally(value) {
-    const node = this.last;
-    if (node === undefined) return this.unshift(value);
-    node.value = value;
-    this.head = node;
-    return node;
-  }
-
-  pushRotationally(value) {
-    const node = this.head;
-    if (node === undefined) return this.push(value);
-    node.value = value;
-    this.head = node.next;
-    return node;
-  }
-
   shift() {
-    return this.head?.delete();
+    if (this.length === 0) return;
+    return this.delete(this.head);
   }
-
   pop() {
-    return this.last?.delete();
+    if (this.length === 0) return;
+    return this.delete(this.head.prev);
   }
-
-  insert(node, before = this.head) {
-    if (node.list === this) return node.move(before), node;
-    node.delete();
-
-    if (this.$length++ === 0) {
-      this.head = node;
-    }
-
-    node.list = this;
-    const next = node.next = before ?? node;
-    const prev = node.prev = next.prev ?? node;
-    next.prev = prev.next = node;
-    return node;
+  clear() {
+    this.length = 0;
+    this.head = undefined;
   }
-
-  find(f) {
-    for (let head = this.head, node = head; node;) {
-      if (f(node.value)) return node;
-      node = node.next;
-      if (node === head) break;
-    }
-  }
-
-  toNodes() {
-    const acc = [];
-
-    for (let head = this.head, node = head; node;) {
-      acc.push(node);
-      node = node.next;
-      if (node === head) break;
-    }
-
-    return acc;
-  }
-
-  toArray() {
-    const acc = [];
-
-    for (let head = this.head, node = head; node;) {
-      acc.push(node.value);
-      node = node.next;
-      if (node === head) break;
-    }
-
-    return acc;
-  }
-
   *[Symbol.iterator]() {
-    const head = this.head;
-
-    for (let node = head; node;) {
-      yield node.value;
+    let head = this.head;
+    for (let node = head; node !== undefined;) {
+      yield node;
       node = node.next;
       if (node === head) return;
     }
   }
-
-}
-
-exports.List = List;
-
-class Node {
-  constructor(list, value, next, prev) {
-    this.list = list;
-    this.value = value;
-    this.next = next;
-    this.prev = prev;
-    list.head ??= this;
-
-    if (list['$length']++ === 0) {
-      this.next = this.prev = this;
-    } else {
-      next.prev = prev.next = this;
-    }
-  }
-
-  get alive() {
-    return this.list !== undefined;
-  }
-
-  delete() {
-    const list = this.list;
-    if (list === undefined) return this.value;
-    const {
-      next,
-      prev
-    } = this;
-
-    if (--list['$length'] === 0) {
-      list.head = undefined;
-    } else {
-      next.prev = prev;
-      prev.next = next;
-
-      if (this === list.head) {
-        list.head = next;
+  flatMap(f) {
+    const acc = [];
+    for (let head = this.head, node = head; node;) {
+      const as = f(node);
+      switch (as.length) {
+        case 0:
+          break;
+        case 1:
+          acc.push(as[0]);
+          break;
+        default:
+          for (let len = as.length, i = 0; i < len; ++i) {
+            acc.push(as[i]);
+          }
       }
+      node = node.next;
+      if (node === head) break;
     }
-
-    this.next = this.prev = undefined;
-    this.list = undefined;
-    return this.value;
+    return acc;
   }
-
-  insertBefore(value) {
-    return new Node(this.list, value, this, this.prev);
-  }
-
-  insertAfter(value) {
-    return new Node(this.list, value, this.next, this);
-  }
-
-  move(before) {
-    if (before === undefined) return false;
-    if (this === before) return false;
-    if (before.list !== this.list) return before.list.insert(this, before), true;
-    const a1 = this;
-    const b1 = before;
-    if (a1.next === b1) return false;
-    const b0 = b1.prev;
-    const a0 = a1.prev;
-    const a2 = a1.next;
-    b0.next = a1;
-    a1.next = b1;
-    b1.prev = a1;
-    a1.prev = b0;
-    a0.next = a2;
-    a2.prev = a0;
-    return true;
-  }
-
-  moveToHead() {
-    this.move(this.list.head);
-    this.list.head = this;
-  }
-
-  moveToLast() {
-    this.move(this.list.head);
-  }
-
-  swap(node) {
-    const node1 = this;
-    const node2 = node;
-    if (node1 === node2) return false;
-    const node3 = node2.next;
-    if (node1.list !== node2.list) throw new Error(`Spica: InvList: Cannot swap nodes across lists.`);
-    node2.move(node1);
-    node1.move(node3);
-
-    switch (this.list.head) {
-      case node1:
-        this.list.head = node2;
-        break;
-
-      case node2:
-        this.list.head = node1;
-        break;
+  find(f) {
+    for (let head = this.head, node = head; node;) {
+      if (f(node)) return node;
+      node = node.next;
+      if (node === head) break;
     }
-
-    return true;
   }
-
 }
+exports.List = List;
+(function (List) {
+  class Node {
+    constructor() {
+      this.next = undefined;
+      this.prev = undefined;
+    }
+  }
+  List.Node = Node;
+})(List = exports.List || (exports.List = {}));
 
 /***/ }),
 
@@ -1864,59 +1794,49 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reduce = exports.memoize = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
 const compare_1 = __webpack_require__(5529);
-
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new Map());
+  return (0, alias_1.isArray)(memory) || memory?.constructor === Object ? memoizeRecord(f, identify, memory) : memoizeDict(f, identify, memory ?? new Map());
 }
-
 exports.memoize = memoize;
-
-function memoizeArray(f, identify, memory) {
-  let nullish = false;
+function memoizeRecord(f, identify, memory) {
+  let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory[b];
-    if (z !== undefined || nullish && memory[b] !== undefined) return z;
+    if (z !== undefined || nullable && memory[b] !== undefined) return z;
     z = f(...as);
-    nullish ||= z === undefined;
+    nullable ||= z === undefined;
     memory[b] = z;
     return z;
   };
 }
-
-function memoizeObject(f, identify, memory) {
-  let nullish = false;
+function memoizeDict(f, identify, memory) {
+  let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory.get(b);
-    if (z !== undefined || nullish && memory.has(b)) return z;
+    if (z !== undefined || nullable && memory.has(b)) return z;
     z = f(...as);
-    nullish ||= z === undefined;
-    memory.set(b, z);
+    nullable ||= z === undefined;
+    memory.add?.(b, z) ?? memory.set(b, z);
     return z;
   };
 }
-
 function reduce(f, identify = (...as) => as[0]) {
   let key = {};
   let val;
   return (...as) => {
     const b = identify(...as);
-
     if (!(0, compare_1.equal)(key, b)) {
       key = b;
       val = f(...as);
     }
-
     return val;
   };
 }
-
 exports.reduce = reduce;
 
 /***/ }),
@@ -1931,14 +1851,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.MultiQueue = exports.PriorityQueue = exports.Queue = void 0;
-
 const heap_1 = __webpack_require__(818);
-
 const memoize_1 = __webpack_require__(1808);
-
 const size = 2048;
 const initsize = 16;
-
 class Queue {
   constructor() {
     this.head = new FixedQueue(initsize);
@@ -1946,73 +1862,55 @@ class Queue {
     this.count = 0;
     this.irregular = 0;
   }
-
   get length() {
     return this.count === 0 ? this.head.length : this.head.length + this.tail.length + (size - 1) * (this.count - 2) + (this.irregular || size) - 1;
   }
-
   isEmpty() {
     return this.head.isEmpty();
   }
-
   peek(index = 0) {
     return index === 0 ? this.head.peek(0) : this.tail.peek(-1);
   }
-
   push(value) {
     const tail = this.tail;
-
     if (tail.isFull()) {
       if (tail.next.isEmpty()) {
         this.tail = tail.next;
       } else {
         this.tail = tail.next = new FixedQueue(size, tail.next);
       }
-
       ++this.count;
-
       if (tail.size !== size && tail !== this.head) {
         this.irregular = tail.size;
       }
     }
-
     this.tail.push(value);
   }
-
   pop() {
     const head = this.head;
     const value = head.pop();
-
     if (head.isEmpty() && !head.next.isEmpty()) {
       --this.count;
       this.head = head.next;
-
       if (this.head.size === this.irregular) {
         this.irregular = 0;
       }
     }
-
     return value;
   }
-
   clear() {
     this.head = this.tail = new FixedQueue(initsize);
     this.count = 0;
     this.irregular = 0;
   }
-
   *[Symbol.iterator]() {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-
     return;
   }
-
 }
-
 exports.Queue = Queue;
-
 class FixedQueue {
   constructor(size, next) {
     this.size = size;
@@ -2022,28 +1920,22 @@ class FixedQueue {
     this.tail = 0;
     this.next = next ?? this;
   }
-
   get length() {
     return this.tail >= this.head ? this.tail - this.head : this.array.length - this.head + this.tail;
   }
-
   isEmpty() {
     return this.tail === this.head;
   }
-
   isFull() {
     return (this.tail + 1 & this.mask) === this.head;
   }
-
   peek(index = 0) {
     return index === 0 ? this.array[this.head] : this.array[this.tail - 1 & this.mask];
   }
-
   push(value) {
     this.array[this.tail] = value;
     this.tail = this.tail + 1 & this.mask;
   }
-
   pop() {
     if (this.isEmpty()) return;
     const value = this.array[this.head];
@@ -2051,9 +1943,7 @@ class FixedQueue {
     this.head = this.head + 1 & this.mask;
     return value;
   }
-
 }
-
 class PriorityQueue {
   constructor(cmp = PriorityQueue.max, clean = true) {
     this.clean = clean;
@@ -2067,59 +1957,46 @@ class PriorityQueue {
     this.$length = 0;
     this.heap = new heap_1.Heap(cmp);
   }
-
   get length() {
     return this.$length;
   }
-
   isEmpty() {
     return this.$length === 0;
   }
-
   peek(priority) {
-    return arguments.length === 0 ? this.heap.peek()?.peek() : this.dict.get(priority)?.peek();
+    return arguments.length === 0 ? this.heap.peek()?.value.peek() : this.dict.get(priority)?.peek();
   }
-
   push(priority, value) {
     ++this.$length;
     this.queue(priority).push(value);
   }
-
   pop(priority) {
     if (this.$length === 0) return;
     --this.$length;
-    const queue = arguments.length === 0 ? this.heap.peek() : this.dict.get(priority);
+    const queue = arguments.length === 0 ? this.heap.peek().value : this.dict.get(priority);
     const value = queue?.pop();
-
     if (queue?.isEmpty()) {
       this.heap.extract();
       this.clean && this.dict.delete(queue[PriorityQueue.priority]);
     }
-
     return value;
   }
-
   clear() {
     this.heap.clear();
     this.dict.clear();
     this.$length = 0;
   }
-
   *[Symbol.iterator]() {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-
     return;
   }
-
 }
-
 exports.PriorityQueue = PriorityQueue;
 PriorityQueue.priority = Symbol('priority');
 PriorityQueue.max = heap_1.Heap.max;
 PriorityQueue.min = heap_1.Heap.min;
-
 class MultiQueue {
   constructor(entries) {
     this.dict = new Map();
@@ -2130,19 +2007,15 @@ class MultiQueue {
       this.set(k, v);
     }
   }
-
   get length() {
     return this.dict.size;
   }
-
   isEmpty() {
     return this.dict.size === 0;
   }
-
   peek(key) {
     return this.dict.get(key)?.peek();
   }
-
   push(key, value) {
     let vs = this.dict.get(key);
     if (vs) return void vs.push(value);
@@ -2150,27 +2023,21 @@ class MultiQueue {
     vs.push(value);
     this.dict.set(key, vs);
   }
-
   pop(key) {
     return this.dict.get(key)?.pop();
   }
-
   clear() {
     this.dict = new Map();
   }
-
   take(key, count) {
     if (count === undefined) return this.pop(key);
     const vs = this.dict.get(key);
     const acc = [];
-
     while (vs && !vs.isEmpty() && count--) {
       acc.push(vs.pop());
     }
-
     return acc;
   }
-
   ref(key) {
     let vs = this.dict.get(key);
     if (vs) return vs;
@@ -2178,28 +2045,22 @@ class MultiQueue {
     this.dict.set(key, vs);
     return vs;
   }
-
   get size() {
     return this.length;
   }
-
   get(key) {
     return this.peek(key);
   }
-
   set(key, value) {
     this.push(key, value);
     return this;
   }
-
   has(key) {
     return this.dict.has(key);
   }
-
   delete(key) {
     return this.dict.delete(key);
   }
-
   *[Symbol.iterator]() {
     for (const {
       0: k,
@@ -2209,12 +2070,9 @@ class MultiQueue {
         yield [k, vs.pop()];
       }
     }
-
     return;
   }
-
 }
-
 exports.MultiQueue = MultiQueue;
 
 /***/ }),
@@ -2229,8 +2087,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pcg32 = exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
-const radixes = Object.freeze([...Array(7)].map((_, i) => 1 << i));
-const masks = Object.freeze(radixes.map(radix => radix - 1));
+const bases = Object.freeze([...Array(7)].map((_, i) => 1 << i));
+const masks = Object.freeze(bases.map(radix => radix - 1));
 const dict0_ = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_'].join('');
 const dictAz = [...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), ...[...Array(36)].map((_, i) => i.toString(36)).slice(-26)].join('');
 exports.rnd16 = cons(16);
@@ -2243,8 +2101,7 @@ exports.rnd0Z = conv(exports.rnd62, dict0_);
 exports.rnd0_ = conv(exports.rnd64, dict0_);
 exports.rndAP = conv(exports.rnd16, dictAz);
 exports.rndAf = conv(exports.rnd32, dictAz);
-
-function unique(rnd, len = 1, mem) {
+function unique(rng, len = 1, mem) {
   const independence = !mem;
   mem ??= new Set();
   const trials = 3;
@@ -2252,9 +2109,8 @@ function unique(rnd, len = 1, mem) {
   let prefix = '';
   return function random() {
     for (let i = 0; i < trials; ++i) {
-      const r = rnd(len);
+      const r = rng(len);
       if (mem.has(r)) continue;
-
       try {
         mem.add(r);
       } catch (reason) {
@@ -2262,57 +2118,46 @@ function unique(rnd, len = 1, mem) {
         if (!independence) throw reason;
         prefixes ??= new Set();
         prefix ||= '?';
-
         for (let i = 0; i < trials; ++i) {
-          prefix = rnd(prefix.length);
+          prefix = rng(prefix.length);
           if (prefixes.has(prefix)) continue;
           prefixes.add(prefix);
           mem.clear();
           return random();
         }
-
         prefixes = new Set();
         prefix += '?';
         return random();
       }
-
       return prefix + r;
     }
-
     ++len;
     independence && mem.clear();
     return random();
   };
 }
-
 exports.unique = unique;
-
 function cons(size) {
-  const len = radixes.findIndex(radix => radix >= size);
-  return function rnd() {
+  const len = bases.findIndex(radix => radix >= size);
+  return function rng() {
     const r = random(len);
-    return r < size ? r : rnd();
+    return r < size ? r : rng();
   };
 }
-
-function conv(rnd, dict) {
+function conv(rng, dict) {
   return (len = 1) => {
     let acc = '';
-
     while (len--) {
-      acc += dict[rnd()];
+      acc += dict[rng()];
     }
-
     return acc;
   };
 }
-
 const buffer = new Uint16Array(512);
 const digit = 16;
 let index = 0;
 let buf = 0;
 let offset = 0;
-
 function random(len) {
   if (offset < len) {
     if (index === 0) {
@@ -2325,11 +2170,9 @@ function random(len) {
       offset += digit;
     }
   }
-
   offset -= len;
   return buf >> offset & masks[len];
 }
-
 function xorshift(seed = xorshift.seed()) {
   return () => {
     let x = seed;
@@ -2339,48 +2182,34 @@ function xorshift(seed = xorshift.seed()) {
     return seed = x >>> 0;
   };
 }
-
 exports.xorshift = xorshift;
-
 (function (xorshift) {
   const max = -1 >>> 0;
-
   function seed() {
     return Math.random() * max + 1 >>> 0;
   }
-
   xorshift.seed = seed;
-
   function random(seed) {
-    const rnd = xorshift(seed);
-    return () => rnd() / (max + 1);
+    const rng = xorshift(seed);
+    return () => rng() / (max + 1);
   }
-
   xorshift.random = random;
 })(xorshift = exports.xorshift || (exports.xorshift = {}));
-
 const uint32n = n => n & 2n ** 32n - 1n;
-
-const uint64n = n => n & 2n ** 64n - 1n; // https://www.pcg-random.org/download.html
+const uint64n = n => n & 2n ** 64n - 1n;
+// https://www.pcg-random.org/download.html
 // https://github.com/imneme/pcg-c/blob/master/include/pcg_variants.h
-
-
 function pcg32(seed = pcg32.seed()) {
   return () => pcg32.next(seed);
 }
-
 exports.pcg32 = pcg32;
-
 (function (pcg32) {
   const MULT = 6364136223846793005n;
-
   function random(seed) {
-    const rnd = pcg32(seed);
-    return () => rnd() / 2 ** 32;
+    const rng = pcg32(seed);
+    return () => rng() / 2 ** 32;
   }
-
   pcg32.random = random;
-
   function seed(state = BigInt(xorshift.seed()) << 32n | BigInt(xorshift.seed()), inc = BigInt(xorshift.seed()) << 32n | BigInt(xorshift.seed())) {
     const seed = [0n, uint64n(inc << 1n | 1n)];
     seed[0] = uint64n(seed[0] * MULT + seed[1]);
@@ -2388,9 +2217,7 @@ exports.pcg32 = pcg32;
     seed[0] = uint64n(seed[0] * MULT + seed[1]);
     return seed;
   }
-
   pcg32.seed = seed;
-
   function next(seed) {
     const oldstate = seed[0];
     seed[0] = uint64n(oldstate * MULT + seed[1]);
@@ -2398,31 +2225,25 @@ exports.pcg32 = pcg32;
     const rot = oldstate >> 59n;
     return Number(uint32n(xorshifted >> rot | xorshifted << (-rot & 31n)));
   }
-
   pcg32.next = next;
-
   function advance(seed, delta) {
     delta = uint64n(delta);
     let acc_mult = 1n;
     let acc_plus = 0n;
     let cur_mult = MULT;
     let cur_plus = seed[1];
-
     while (delta > 0) {
       if (delta & 1n) {
         acc_mult = uint64n(acc_mult * cur_mult);
         acc_plus = uint64n(acc_plus * cur_mult + cur_plus);
       }
-
       cur_plus = uint64n((cur_mult + 1n) * cur_plus);
       cur_mult = uint64n(cur_mult * cur_mult);
       delta /= 2n;
     }
-
     seed[0] = uint64n(acc_mult * seed[0] + acc_plus);
     return seed;
   }
-
   pcg32.advance = advance;
 })(pcg32 = exports.pcg32 || (exports.pcg32 = {}));
 
@@ -2438,46 +2259,42 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Stack = void 0;
-
 class Stack {
   constructor() {
     this.array = [];
   }
-
   get length() {
     return this.array.length;
   }
-
   isEmpty() {
-    return this.length === 0;
+    return this.array.length === 0;
   }
-
   peek(index = 0) {
-    return index === 0 ? this.array[this.array.length - 1] : this.array[0];
+    const {
+      array
+    } = this;
+    return index === 0 ? array.at(-1) : array[0];
   }
-
   push(value) {
     this.array.push(value);
   }
-
   pop() {
-    return this.array.pop();
+    const {
+      array
+    } = this;
+    if (array.length === 0) return;
+    return array.pop();
   }
-
   clear() {
     this.array = [];
   }
-
   *[Symbol.iterator]() {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-
     return;
   }
-
 }
-
 exports.Stack = Stack;
 
 /***/ }),
@@ -2492,73 +2309,54 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isPrimitive = exports.is = exports.type = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
 const ObjectPrototype = Object.prototype;
 const ArrayPrototype = Array.prototype;
-
 function type(value) {
   const type = typeof value;
-
   switch (type) {
     case 'function':
       return 'Function';
-
     case 'object':
       if (value === null) return 'null';
       const tag = value[Symbol.toStringTag];
       if (tag) return tag;
-
       switch ((0, alias_1.ObjectGetPrototypeOf)(value)) {
         case ArrayPrototype:
           return 'Array';
-
         case ObjectPrototype:
           return 'Object';
-
         default:
           return value?.constructor?.name || (0, alias_1.toString)(value).slice(8, -1);
       }
-
     default:
       return type;
   }
 }
-
 exports.type = type;
-
 function is(type, value) {
   switch (type) {
     case 'null':
       return value === null;
-
     case 'array':
       return (0, alias_1.isArray)(value);
-
     case 'object':
       return value !== null && typeof value === type;
-
     default:
       return typeof value === type;
   }
 }
-
 exports.is = is;
-
 function isPrimitive(value) {
   switch (typeof value) {
     case 'function':
       return false;
-
     case 'object':
       return value === null;
-
     default:
       return true;
   }
 }
-
 exports.isPrimitive = isPrimitive;
 
 /***/ }),
@@ -2573,112 +2371,85 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
-
 const format_1 = __webpack_require__(137);
-
 var format_2 = __webpack_require__(137);
-
 Object.defineProperty(exports, "standardize", ({
   enumerable: true,
   get: function () {
     return format_2.standardize;
   }
 }));
-
 var format_3 = __webpack_require__(137);
-
 Object.defineProperty(exports, "ReadonlyURL", ({
   enumerable: true,
   get: function () {
     return format_3.ReadonlyURL;
   }
 }));
-
 class URL {
   constructor(source, base) {
     this.source = source;
     this.base = base;
     this.url = new format_1.ReadonlyURL(source, base);
   }
-
   get href() {
     return this.params?.toString().replace(/^(?=.)/, `${this.url.href.slice(0, -this.url.query.length - this.url.fragment.length || this.url.href.length)}?`).concat(this.fragment) ?? this.url.href;
   }
-
   get resource() {
     return this.params?.toString().replace(/^(?=.)/, `${this.url.href.slice(0, -this.url.query.length - this.url.fragment.length || this.url.href.length)}?`) ?? this.url.resource;
   }
-
   get origin() {
     return this.url.origin;
   }
-
   get scheme() {
     return this.url.protocol.slice(0, -1);
   }
-
   get protocol() {
     return this.url.protocol;
   }
-
   get username() {
     return this.url.username;
   }
-
   get password() {
     return this.url.password;
   }
-
   get host() {
     return this.url.host;
   }
-
   get hostname() {
     return this.url.hostname;
   }
-
   get port() {
     return this.url.port;
   }
-
   get path() {
     return this.params?.toString().replace(/^(?=.)/, `${this.pathname}?`) ?? this.url.path;
   }
-
   get pathname() {
     return this.url.pathname;
   }
-
   get search() {
     return this.params?.toString().replace(/^(?=.)/, '?') ?? this.url.search;
   }
-
   get query() {
     return this.params?.toString().replace(/^(?=.)/, '?') ?? this.url.query;
   }
-
   get hash() {
     return this.url.hash;
   }
-
   get fragment() {
     return this.url.fragment;
   }
-
   get searchParams() {
     return this.params ??= new URLSearchParams(this.search);
   }
-
   toString() {
     return this.href;
   }
-
   toJSON() {
     return this.href;
   }
-
 }
-
 exports.URL = URL;
 
 /***/ }),
@@ -2693,142 +2464,108 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ReadonlyURL = exports._encode = exports.standardize = void 0;
-
 __webpack_require__(4128);
-
 const memoize_1 = __webpack_require__(1808);
-
 const cache_1 = __webpack_require__(9210);
-
 function standardize(url, base) {
   const u = new ReadonlyURL(url, base);
   url = u.origin === 'null' ? u.protocol.toLowerCase() + u.href.slice(u.protocol.length) : u.origin.toLowerCase() + u.href.slice(u.origin.length);
   return encode(url);
 }
-
 exports.standardize = standardize;
-
 function encode(url) {
-  return url // Percent-encoding
-  .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : encodeURIComponent(str))) // Use uppercase letters within percent-encoding triplets
+  return url
+  // Percent-encoding
+  .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : encodeURIComponent(str)))
+  // Use uppercase letters within percent-encoding triplets
   .replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')));
 }
-
 exports._encode = encode;
-
 class ReadonlyURL {
   constructor(source, base) {
     this.source = source;
     this.base = base;
-
     switch (source.slice(0, source.lastIndexOf('://', 9) + 1).toLowerCase()) {
       case 'http:':
       case 'https:':
         base = undefined;
         break;
-
       default:
         switch (base?.slice(0, base.lastIndexOf('://', 9) + 1).toLowerCase()) {
           case 'http:':
           case 'https:':
             const i = base.indexOf('#');
-
             if (i > -1) {
               base = base.slice(0, i);
             }
-
             const j = base.indexOf('?');
-
             if (i > -1 && source.indexOf('#') === -1) {
               base = base.slice(0, j);
             }
-
         }
-
     }
-
     this.share = ReadonlyURL.get(source, base);
   }
-
   get href() {
     return this.share.href ??= this.share.url.href;
   }
-
   get resource() {
     return this.share.resource ??= this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search;
   }
-
   get origin() {
     return this.share.origin ??= this.share.url.origin;
   }
-
   get protocol() {
     return this.share.protocol ??= this.share.url.protocol;
   }
-
   get username() {
     return this.share.username ??= this.share.url.username;
   }
-
   get password() {
     return this.share.password ??= this.share.url.password;
   }
-
   get host() {
     return this.share.host ??= this.share.url.host;
   }
-
   get hostname() {
     return this.share.hostname ??= this.share.url.hostname;
   }
-
   get port() {
     return this.share.port ??= this.share.url.port;
   }
-
   get path() {
     return this.share.path ??= `${this.pathname}${this.search}`;
   }
-
   get pathname() {
     return this.share.pathname ??= this.share.url.pathname;
   }
-
   get search() {
     return this.share.search ??= this.share.url.search;
   }
-
   get query() {
     return this.share.query ??= this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
   }
-
   get hash() {
     return this.share.hash ??= this.share.url.hash;
   }
-
   get fragment() {
     return this.share.fragment ??= this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
   }
-
   get searchParams() {
     return this.params ??= new URLSearchParams(this.search);
   }
-
   toString() {
     return this.href;
   }
-
   toJSON() {
     return this.href;
   }
-
 }
-
-exports.ReadonlyURL = ReadonlyURL; // Can't freeze URL object in the Firefox extension environment.
+exports.ReadonlyURL = ReadonlyURL;
+// Can't freeze URL object in the Firefox extension environment.
 // ref: https://github.com/falsandtru/pjax-api/issues/44#issuecomment-633915035
 // Bug: Error in dependents.
 // @ts-ignore
-
 ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
   url: new __webpack_require__.g.URL(url, base)
 }), (url, base = '') => `${base.indexOf('\n') > -1 ? base.replace(/\n+/g, '') : base}\n${url}`, new cache_1.Cache(10000));
@@ -2844,7 +2581,6 @@ ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   var desc = Object.getOwnPropertyDescriptor(m, k);
-
   if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
     desc = {
       enumerable: true,
@@ -2853,67 +2589,40 @@ var __createBinding = this && this.__createBinding || (Object.create ? function 
       }
     };
   }
-
   Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
 });
-
 var __exportStar = this && this.__exportStar || function (m, exports) {
   for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-
 __exportStar(__webpack_require__(6366), exports);
-
 __exportStar(__webpack_require__(2491), exports);
-
 __exportStar(__webpack_require__(960), exports);
-
 __exportStar(__webpack_require__(2287), exports);
-
 __exportStar(__webpack_require__(7005), exports);
-
 __exportStar(__webpack_require__(5418), exports);
-
 __exportStar(__webpack_require__(5684), exports);
-
 __exportStar(__webpack_require__(2804), exports);
-
 __exportStar(__webpack_require__(9315), exports);
-
 __exportStar(__webpack_require__(9705), exports);
-
 __exportStar(__webpack_require__(729), exports);
-
 __exportStar(__webpack_require__(9758), exports);
-
 __exportStar(__webpack_require__(1411), exports);
-
 __exportStar(__webpack_require__(7130), exports);
-
 __exportStar(__webpack_require__(8927), exports);
-
 __exportStar(__webpack_require__(7957), exports);
-
 __exportStar(__webpack_require__(4710), exports);
-
 __exportStar(__webpack_require__(4052), exports);
-
 __exportStar(__webpack_require__(1109), exports);
-
 __exportStar(__webpack_require__(6159), exports);
-
 __exportStar(__webpack_require__(5231), exports);
-
 __exportStar(__webpack_require__(1497), exports);
-
 __exportStar(__webpack_require__(502), exports);
-
 __exportStar(__webpack_require__(1143), exports);
 
 /***/ }),
@@ -2928,13 +2637,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.block = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const memo_1 = __webpack_require__(1090);
-
 const line_1 = __webpack_require__(9315);
-
 function block(parser, separation = true) {
   return ({
     source,
@@ -2952,7 +2657,6 @@ function block(parser, separation = true) {
     return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : undefined;
   };
 }
-
 exports.block = block;
 
 /***/ }),
@@ -2967,13 +2671,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.verify = exports.validate = void 0;
-
 __webpack_require__(4128);
-
 const alias_1 = __webpack_require__(5406);
-
 const parser_1 = __webpack_require__(6728);
-
 function validate(patterns, has, parser) {
   if (typeof has === 'function') return validate(patterns, '', has);
   if (!(0, alias_1.isArray)(patterns)) return validate([patterns], has, parser);
@@ -2992,9 +2692,7 @@ function validate(patterns, has, parser) {
     return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
 }
-
 exports.validate = validate;
-
 function verify(parser, cond) {
   return ({
     source,
@@ -3010,7 +2708,6 @@ function verify(parser, cond) {
     return (0, parser_1.exec)(result).length < source.length ? result : undefined;
   };
 }
-
 exports.verify = verify;
 
 /***/ }),
@@ -3025,11 +2722,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isEmpty = exports.firstline = exports.line = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const memo_1 = __webpack_require__(1090);
-
 function line(parser) {
   return ({
     source,
@@ -3049,30 +2743,22 @@ function line(parser) {
     return isEmpty((0, parser_1.exec)(result)) ? [(0, parser_1.eval)(result), source.slice(line.length)] : undefined;
   };
 }
-
 exports.line = line;
-
 function firstline(source) {
   const i = source.indexOf('\n');
-
   switch (i) {
     case -1:
       return source;
-
     case 0:
       return '\n';
-
     default:
       return source.slice(0, i + 1);
   }
 }
-
 exports.firstline = firstline;
-
 function isEmpty(line) {
   return line === '' || line === '\n' || line.trimStart() === '';
 }
-
 exports.isEmpty = isEmpty;
 
 /***/ }),
@@ -3087,9 +2773,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.convert = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 function convert(conv, parser) {
   return ({
     source,
@@ -3108,7 +2792,6 @@ function convert(conv, parser) {
     return result;
   };
 }
-
 exports.convert = convert;
 
 /***/ }),
@@ -3123,13 +2806,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dup = void 0;
-
 const fmap_1 = __webpack_require__(502);
-
 function dup(parser) {
   return (0, fmap_1.fmap)(parser, nodes => [nodes]);
 }
-
 exports.dup = dup;
 
 /***/ }),
@@ -3144,13 +2824,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fallback = void 0;
-
 const union_1 = __webpack_require__(6366);
-
 function fallback(parser, otherwise) {
   return (0, union_1.union)([parser, otherwise]);
 }
-
 exports.fallback = fallback;
 
 /***/ }),
@@ -3165,11 +2842,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fence = void 0;
-
 const line_1 = __webpack_require__(9315);
-
 const array_1 = __webpack_require__(8112);
-
 function fence(opener, limit, separation = true) {
   return ({
     source
@@ -3179,49 +2853,39 @@ function fence(opener, limit, separation = true) {
     if (!matches) return;
     const delim = matches[1];
     if (matches[0].indexOf(delim, delim.length) !== -1) return;
-    let rest = source.slice(matches[0].length); // Prevent annoying parsing in editing.
-
+    let rest = source.slice(matches[0].length);
+    // Prevent annoying parsing in editing.
     if ((0, line_1.isEmpty)((0, line_1.firstline)(rest)) && (0, line_1.firstline)(rest.slice((0, line_1.firstline)(rest).length)).trimEnd() !== delim) return;
     let block = '';
     let closer = '';
     let overflow = '';
-
     for (let count = 1;; ++count) {
       if (rest === '') break;
       const line = (0, line_1.firstline)(rest);
       if ((closer || count > limit + 1) && (0, line_1.isEmpty)(line)) break;
-
       if (closer) {
         overflow += line;
       }
-
       if (!closer && count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim) {
         closer = line;
-
         if ((0, line_1.isEmpty)((0, line_1.firstline)(rest.slice(line.length)))) {
           rest = rest.slice(line.length);
           break;
         }
-
         if (!separation) {
           rest = rest.slice(line.length);
           break;
         }
-
         overflow = line;
       }
-
       if (!overflow) {
         block += line;
       }
-
       rest = rest.slice(line.length);
     }
-
     return [(0, array_1.unshift)([block, overflow, closer], matches), rest];
   };
 }
-
 exports.fence = fence;
 
 /***/ }),
@@ -3236,23 +2900,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.indent = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const some_1 = __webpack_require__(5418);
-
 const block_1 = __webpack_require__(2804);
-
 const line_1 = __webpack_require__(9315);
-
 const bind_1 = __webpack_require__(1143);
-
 const match_1 = __webpack_require__(8927);
-
 const surround_1 = __webpack_require__(7130);
-
 const memoize_1 = __webpack_require__(1808);
-
 function indent(opener, parser, separation = false) {
   if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, ({
@@ -3268,9 +2923,7 @@ function indent(opener, parser, separation = false) {
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : undefined;
   });
 }
-
 exports.indent = indent;
-
 function trimBlockEnd(block) {
   return block === '' || block[block.length - 1] !== '\n' ? block : block.slice(0, -1);
 }
@@ -3287,12 +2940,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.lazy = void 0;
-
 function lazy(builder) {
   let parser;
   return input => (parser ??= builder())(input);
 }
-
 exports.lazy = lazy;
 
 /***/ }),
@@ -3307,9 +2958,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.match = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 function match(pattern, f) {
   return ({
     source,
@@ -3326,7 +2975,6 @@ function match(pattern, f) {
     return (0, parser_1.exec)(result).length < source.length && (0, parser_1.exec)(result).length <= source.length ? result : undefined;
   };
 }
-
 exports.match = match;
 
 /***/ }),
@@ -3341,7 +2989,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.recover = void 0;
-
 function recover(parser, fallback) {
   return input => {
     try {
@@ -3351,7 +2998,6 @@ function recover(parser, fallback) {
     }
   };
 }
-
 exports.recover = recover;
 
 /***/ }),
@@ -3366,13 +3012,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reverse = void 0;
-
 const fmap_1 = __webpack_require__(502);
-
 function reverse(parser) {
   return (0, fmap_1.fmap)(parser, nodes => nodes.reverse());
 }
-
 exports.reverse = reverse;
 
 /***/ }),
@@ -3387,9 +3030,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.rewrite = exports.focus = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 function focus(scope, parser) {
   const match = typeof scope === 'string' ? source => source.slice(0, scope.length) === scope ? scope : '' : source => source.match(scope)?.[0] ?? '';
   return ({
@@ -3410,9 +3051,7 @@ function focus(scope, parser) {
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : undefined;
   };
 }
-
 exports.focus = focus;
-
 function rewrite(scope, parser) {
   return ({
     source,
@@ -3439,7 +3078,6 @@ function rewrite(scope, parser) {
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : undefined;
   };
 }
-
 exports.rewrite = rewrite;
 
 /***/ }),
@@ -3454,26 +3092,20 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.clear = exports.close = exports.open = exports.surround = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const fmap_1 = __webpack_require__(502);
-
 const array_1 = __webpack_require__(8112);
-
 function surround(opener, parser, closer, optional = false, f, g) {
   switch (typeof opener) {
     case 'string':
     case 'object':
       return surround(match(opener), parser, closer, optional, f, g);
   }
-
   switch (typeof closer) {
     case 'string':
     case 'object':
       return surround(opener, parser, match(closer), optional, f, g);
   }
-
   return ({
     source,
     context
@@ -3504,16 +3136,13 @@ function surround(opener, parser, closer, optional = false, f, g) {
     return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
   };
 }
-
 exports.surround = surround;
-
 function match(pattern) {
   switch (typeof pattern) {
     case 'string':
       return ({
         source
       }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
-
     case 'object':
       return ({
         source
@@ -3523,23 +3152,17 @@ function match(pattern) {
       };
   }
 }
-
 function open(opener, parser, optional = false) {
   return surround(opener, parser, '', optional);
 }
-
 exports.open = open;
-
 function close(parser, closer, optional = false) {
   return surround('', parser, closer, optional);
 }
-
 exports.close = close;
-
 function clear(parser) {
   return (0, fmap_1.fmap)(parser, () => []);
 }
-
 exports.clear = clear;
 
 /***/ }),
@@ -3554,25 +3177,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.trimEnd = exports.trimStart = exports.trim = void 0;
-
 const convert_1 = __webpack_require__(7957);
-
 function trim(parser) {
   return (0, convert_1.convert)(source => source.trim(), parser);
 }
-
 exports.trim = trim;
-
 function trimStart(parser) {
   return (0, convert_1.convert)(source => source.trimStart(), parser);
 }
-
 exports.trimStart = trimStart;
-
 function trimEnd(parser) {
   return (0, convert_1.convert)(source => source.trimEnd(), parser);
 }
-
 exports.trimEnd = trimEnd;
 
 /***/ }),
@@ -3587,9 +3203,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bind = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 function bind(parser, f) {
   return ({
     source,
@@ -3606,7 +3220,6 @@ function bind(parser, f) {
     return (0, parser_1.exec)(res2).length <= (0, parser_1.exec)(res1).length ? res2 : undefined;
   };
 }
-
 exports.bind = bind;
 
 /***/ }),
@@ -3621,13 +3234,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fmap = void 0;
-
 const bind_1 = __webpack_require__(1143);
-
 function fmap(parser, f) {
   return (0, bind_1.bind)(parser, (nodes, rest, context) => [f(nodes, rest, context), rest]);
 }
-
 exports.fmap = fmap;
 
 /***/ }),
@@ -3642,23 +3252,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.check = exports.exec = exports.eval = void 0;
-
 function eval_(result, default_) {
   return result ? result[0] : default_;
 }
-
 exports.eval = eval_;
-
 function exec(result, default_) {
   return result ? result[1] : default_;
 }
-
 exports.exec = exec;
-
 function check(source, result, mustConsume = true) {
   return true;
 }
-
 exports.check = check;
 
 /***/ }),
@@ -3673,18 +3277,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.state = exports.constraint = exports.guard = exports.precedence = exports.creation = exports.syntax = exports.context = exports.reset = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
 const parser_1 = __webpack_require__(6728);
-
 const memo_1 = __webpack_require__(1090);
-
 function reset(base, parser) {
   if (!('memo' in base)) {
     base.memo = undefined;
   }
-
   const changes = Object.entries(base);
   const values = Array(changes.length);
   return ({
@@ -3692,9 +3291,7 @@ function reset(base, parser) {
     context
   }) => apply(parser, source, (0, alias_1.ObjectCreate)(context), changes, values, true);
 }
-
 exports.reset = reset;
-
 function context(base, parser) {
   const changes = Object.entries(base);
   const values = Array(changes.length);
@@ -3703,28 +3300,24 @@ function context(base, parser) {
     context
   }) => apply(parser, source, context, changes, values);
 }
-
 exports.context = context;
-
 function apply(parser, source, context, changes, values, reset = false) {
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
-
     switch (prop) {
       case 'resources':
         if (!reset) break;
         if (prop in context && !(0, alias_1.hasOwnProperty)(context, prop)) break;
         context[prop] = (0, alias_1.ObjectCreate)(change[1]);
         break;
-
+      // @ts-expect-error
       case 'memo':
         if (!reset) break;
         context.memo = new memo_1.Memo({
           targets: context.memo?.targets
         });
-        break;
-
+      // fallthrough
       default:
         values[i] = context[prop];
         context[prop] = change[1];
@@ -3737,14 +3330,12 @@ function apply(parser, source, context, changes, values, reset = false) {
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
-
     switch (prop) {
-      case 'resources': // @ts-expect-error
-
+      case 'resources':
+      // @ts-expect-error
       case 'memo':
         if (!reset) break;
       // fallthrough
-
       default:
         context[prop] = values[i];
         values[i] = undefined;
@@ -3752,7 +3343,6 @@ function apply(parser, source, context, changes, values, reset = false) {
   }
   return result;
 }
-
 function syntax(syntax, prec, cost, state, parser) {
   return creation(cost, precedence(prec, ({
     source,
@@ -3769,22 +3359,17 @@ function syntax(syntax, prec, cost, state, parser) {
       source,
       context
     });
-
     if (syntax && stateOuter & memo.targets) {
       cache ?? memo.set(position, syntax, stateInner, (0, parser_1.eval)(result), source.length - (0, parser_1.exec)(result, '').length);
     }
-
     if (result && !stateOuter && memo.length >= position + 2) {
       memo.clear(position + 2);
     }
-
     context.state = stateOuter;
     return result;
   }));
 }
-
 exports.syntax = syntax;
-
 function creation(cost, recursion, parser) {
   if (typeof cost === 'function') return creation(1, true, cost);
   if (typeof recursion === 'function') return creation(cost, true, recursion);
@@ -3804,17 +3389,13 @@ function creation(cost, recursion, parser) {
       context
     });
     recursion && ++resources.recursion;
-
     if (result) {
       resources.clock -= cost;
     }
-
     return result;
   };
 }
-
 exports.creation = creation;
-
 function precedence(precedence, parser) {
   return ({
     source,
@@ -3830,9 +3411,7 @@ function precedence(precedence, parser) {
     return result;
   };
 }
-
 exports.precedence = precedence;
-
 function guard(f, parser) {
   return ({
     source,
@@ -3842,15 +3421,12 @@ function guard(f, parser) {
     context
   }) : undefined;
 }
-
 exports.guard = guard;
-
 function constraint(state, positive, parser) {
   if (typeof positive === 'function') {
     parser = positive;
     positive = true;
   }
-
   return ({
     source,
     context
@@ -3862,15 +3438,12 @@ function constraint(state, positive, parser) {
     }) : undefined;
   };
 }
-
 exports.constraint = constraint;
-
 function state(state, positive, parser) {
   if (typeof positive === 'function') {
     parser = positive;
     positive = true;
   }
-
   return ({
     source,
     context
@@ -3885,7 +3458,6 @@ function state(state, positive, parser) {
     return result;
   };
 }
-
 exports.state = state;
 
 /***/ }),
@@ -3897,34 +3469,27 @@ exports.state = state;
 
 
 var _a;
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Delimiters = void 0;
-
 const memoize_1 = __webpack_require__(1808);
-
 class Delimiters {
   constructor() {
     this.matchers = [];
     this.registry = {};
     this.length = 0;
   }
-
   static signature(pattern) {
     switch (typeof pattern) {
       case 'undefined':
         return `undefined`;
-
       case 'string':
         return `s:${pattern}`;
-
       case 'object':
         return `r/${pattern.source}/${pattern.flags}`;
     }
   }
-
   push(...delimiters) {
     for (let i = 0; i < delimiters.length; ++i) {
       const delimiter = delimiters[i];
@@ -3933,16 +3498,13 @@ class Delimiters {
         matcher,
         precedence = 1
       } = delimiter;
-
       if (!this.registry[signature]) {
         this.matchers.unshift([this.length, signature, precedence, matcher]);
         this.registry[signature] = true;
       }
-
       ++this.length;
     }
   }
-
   pop(count = 1) {
     for (let i = 0; i < count; ++i) {
       if (--this.length === this.matchers[0][0]) {
@@ -3950,43 +3512,33 @@ class Delimiters {
       }
     }
   }
-
   match(source, precedence = 1) {
     const {
       matchers
     } = this;
-
     for (let i = 0; i < matchers.length; ++i) {
       const matcher = matchers[i];
       if (precedence >= matcher[2]) continue;
-
       switch (matcher[3](source)) {
         case true:
           return true;
-
         case false:
           return false;
-
         default:
           continue;
       }
     }
-
     return false;
   }
-
 }
-
 exports.Delimiters = Delimiters;
 _a = Delimiters;
 Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
   switch (typeof pattern) {
     case 'undefined':
       return () => undefined;
-
     case 'string':
       return source => source.slice(0, pattern.length) === pattern || undefined;
-
     case 'object':
       return (0, memoize_1.reduce)(source => pattern.test(source) || undefined);
   }
@@ -4004,7 +3556,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Memo = void 0;
-
 class Memo {
   constructor({
     targets = ~0
@@ -4012,31 +3563,27 @@ class Memo {
     this.memory = [];
     this.targets = targets;
   }
-
   get length() {
     return this.memory.length;
   }
-
   get(position, syntax, state) {
     //console.log('get', position, syntax, state, this.memory[position - 1]?.[`${syntax}:${state}`]);;
     const cache = this.memory[position - 1]?.[`${syntax}:${state}`];
     return cache?.length === 2 ? [cache[0].slice(), cache[1]] : cache;
   }
-
   set(position, syntax, state, nodes, offset) {
     const record = this.memory[position - 1] ??= {};
-    record[`${syntax}:${state}`] = nodes ? [nodes.slice(), offset] : []; //console.log('set', position, syntax, state, record[`${syntax}:${state}`]);
+    record[`${syntax}:${state}`] = nodes ? [nodes.slice(), offset] : [];
+    //console.log('set', position, syntax, state, record[`${syntax}:${state}`]);
   }
 
   clear(position) {
     const memory = this.memory;
-
     for (let len = memory.length, i = position; i < len; ++i) {
       memory.pop();
-    } //console.log('clear', position + 1);
-
+    }
+    //console.log('clear', position + 1);
   }
-
 }
 
 exports.Memo = Memo;
@@ -4053,11 +3600,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.inits = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const array_1 = __webpack_require__(8112);
-
 function inits(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return ({
@@ -4066,7 +3610,6 @@ function inits(parsers, resume) {
   }) => {
     let rest = source;
     let nodes;
-
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') break;
       if (context.delimiters?.match(rest, context.precedence)) break;
@@ -4079,11 +3622,9 @@ function inits(parsers, resume) {
       rest = (0, parser_1.exec)(result);
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) break;
     }
-
     return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
-
 exports.inits = inits;
 
 /***/ }),
@@ -4098,11 +3639,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sequence = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const array_1 = __webpack_require__(8112);
-
 function sequence(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return ({
@@ -4111,7 +3649,6 @@ function sequence(parsers, resume) {
   }) => {
     let rest = source;
     let nodes;
-
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') return;
       if (context.delimiters?.match(rest, context.precedence)) return;
@@ -4124,11 +3661,9 @@ function sequence(parsers, resume) {
       rest = (0, parser_1.exec)(result);
       if (resume?.((0, parser_1.eval)(result), (0, parser_1.exec)(result)) === false) return;
     }
-
     return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
-
 exports.sequence = sequence;
 
 /***/ }),
@@ -4143,13 +3678,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.some = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const delimiter_1 = __webpack_require__(1435);
-
 const array_1 = __webpack_require__(8112);
-
 function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
@@ -4165,12 +3696,10 @@ function some(parser, end, delimiters = [], limit = -1) {
     if (source === '') return;
     let rest = source;
     let nodes;
-
     if (delims.length > 0) {
       context.delimiters ??= new delimiter_1.Delimiters();
       context.delimiters.push(...delims);
     }
-
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
@@ -4184,15 +3713,12 @@ function some(parser, end, delimiters = [], limit = -1) {
       rest = (0, parser_1.exec)(result);
       if (limit >= 0 && source.length - rest.length > limit) break;
     }
-
     if (delims.length > 0) {
       context.delimiters.pop(delims.length);
     }
-
     return nodes && rest.length < source.length ? [nodes, rest] : undefined;
   };
 }
-
 exports.some = some;
 
 /***/ }),
@@ -4207,15 +3733,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.subsequence = void 0;
-
 const union_1 = __webpack_require__(6366);
-
 const inits_1 = __webpack_require__(2491);
-
 function subsequence(parsers, resume) {
   return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1), resume)], resume) : parsers[i]));
 }
-
 exports.subsequence = subsequence;
 
 /***/ }),
@@ -4230,15 +3752,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.tails = void 0;
-
 const union_1 = __webpack_require__(6366);
-
 const sequence_1 = __webpack_require__(2287);
-
 function tails(parsers, resume) {
   return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i), resume)));
 }
-
 exports.tails = tails;
 
 /***/ }),
@@ -4253,20 +3771,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.union = void 0;
-
 function union(parsers) {
   switch (parsers.length) {
     case 0:
       return () => undefined;
-
     case 1:
       return parsers[0];
-
     default:
       return eval(['input =>', parsers.map((_, i) => `|| parsers[${i}](input)`).join('').slice(2)].join(''));
   }
 }
-
 exports.union = union;
 
 /***/ }),
@@ -4280,7 +3794,6 @@ exports.union = union;
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   var desc = Object.getOwnPropertyDescriptor(m, k);
-
   if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
     desc = {
       enumerable: true,
@@ -4289,21 +3802,17 @@ var __createBinding = this && this.__createBinding || (Object.create ? function 
       }
     };
   }
-
   Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
 });
-
 var __exportStar = this && this.__exportStar || function (m, exports) {
   for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-
 __exportStar(__webpack_require__(8315), exports);
 
 /***/ }),
@@ -4318,36 +3827,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.normalize = exports.body = exports.headers = exports.header = exports.caches = exports.bind = exports.parse = void 0;
-
 var parse_1 = __webpack_require__(5013);
-
 Object.defineProperty(exports, "parse", ({
   enumerable: true,
   get: function () {
     return parse_1.parse;
   }
 }));
-
 var bind_1 = __webpack_require__(9912);
-
 Object.defineProperty(exports, "bind", ({
   enumerable: true,
   get: function () {
     return bind_1.bind;
   }
 }));
-
 var cache_1 = __webpack_require__(6273);
-
 Object.defineProperty(exports, "caches", ({
   enumerable: true,
   get: function () {
     return cache_1.caches;
   }
 }));
-
 var header_1 = __webpack_require__(7790);
-
 Object.defineProperty(exports, "header", ({
   enumerable: true,
   get: function () {
@@ -4360,18 +3861,14 @@ Object.defineProperty(exports, "headers", ({
     return header_1.headers;
   }
 }));
-
 var body_1 = __webpack_require__(168);
-
 Object.defineProperty(exports, "body", ({
   enumerable: true,
   get: function () {
     return body_1.body;
   }
 }));
-
 var normalize_1 = __webpack_require__(185);
-
 Object.defineProperty(exports, "normalize", ({
   enumerable: true,
   get: function () {
@@ -4391,38 +3888,26 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bind = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const memo_1 = __webpack_require__(1090);
-
 const segment_1 = __webpack_require__(9002);
-
 const header_1 = __webpack_require__(5702);
-
 const block_1 = __webpack_require__(4032);
-
 const normalize_1 = __webpack_require__(185);
-
 const header_2 = __webpack_require__(7790);
-
 const figure_1 = __webpack_require__(9123);
-
 const footnote_1 = __webpack_require__(7529);
-
 const url_1 = __webpack_require__(2261);
-
 const array_1 = __webpack_require__(8112);
-
 function bind(target, settings) {
-  let context = { ...settings,
+  let context = {
+    ...settings,
     host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     memo: new memo_1.Memo({
-      targets: 236
-      /* State.backtrackers */
-
+      targets: 472 /* State.backtrackers */
     })
   };
+
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
   const adds = [];
@@ -4434,18 +3919,17 @@ function bind(target, settings) {
     nearest,
     index
   };
-
   function* parse(source) {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-    source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1)); // Change the object identity.
-
-    context = { ...context,
+    source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1));
+    // Change the object identity.
+    context = {
+      ...context,
       url: url ? new url_1.ReadonlyURL(url) : undefined
     };
     const rev = revision = Symbol();
     const sourceSegments = [];
-
     for (const seg of (0, segment_1.segment)(source)) {
       sourceSegments.push(seg);
       yield {
@@ -4453,26 +3937,20 @@ function bind(target, settings) {
         value: seg
       };
     }
-
     const targetSegments = blocks.map(([seg]) => seg);
     let head = 0;
-
     for (; head < targetSegments.length; ++head) {
       if (blocks[head][2] !== url) break;
       if (targetSegments[head] !== sourceSegments[head]) break;
     }
-
     if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
     let last = 0;
-
     for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
       if (blocks[targetSegments.length - last - 1][2] !== url) break;
       if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
     }
-
     const base = next(head);
     let index = head;
-
     for (; index < sourceSegments.length - last; ++index) {
       const seg = sourceSegments[index];
       const es = (0, parser_1.eval)((0, header_1.header)({
@@ -4485,11 +3963,10 @@ function bind(target, settings) {
         context
       }), []);
       blocks.splice(index, 0, [seg, es, url]);
-      if (es.length === 0) continue; // All deletion processes always run after all addition processes have done.
+      if (es.length === 0) continue;
+      // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-
       (0, array_1.push)(adds, es.map(el => [el, base]));
-
       while (adds.length > 0) {
         const [el, base] = adds.shift();
         target.insertBefore(el, base);
@@ -4502,13 +3979,11 @@ function bind(target, settings) {
         };
       }
     }
-
     for (let refuse = (0, array_1.splice)(blocks, index, blocks.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
       const es = refuse[i][1];
       if (es.length === 0) continue;
       (0, array_1.push)(dels, es.map(el => [el]));
     }
-
     while (adds.length > 0) {
       const [el, base] = adds.shift();
       target.insertBefore(el, base);
@@ -4520,7 +3995,6 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
-
     while (dels.length > 0) {
       const [el] = dels.shift();
       el.parentNode?.removeChild(el);
@@ -4532,7 +4006,6 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
-
     for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.footnotes, context)) {
       el ? yield {
         type: 'figure',
@@ -4544,7 +4017,6 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
-
     for (const el of (0, footnote_1.footnote)(next(0)?.parentNode ?? target, settings.footnotes, context, bottom)) {
       el ? yield {
         type: 'footnote',
@@ -4557,40 +4029,32 @@ function bind(target, settings) {
       };
     }
   }
-
   function next(index) {
     for (let i = index; i < blocks.length; ++i) {
       const [, es] = blocks[i];
       if (es.length > 0) return es[0];
     }
-
     return bottom;
   }
-
   function nearest(index) {
     let el;
-
     for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
       el = block[1][0] ?? el;
       if (len >= index) break;
     }
-
     return el;
   }
-
   function index(source) {
     for (let len = 0, i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       if (block[1].includes(source)) return len;
       len += block[0].length;
     }
-
     return -1;
   }
 }
-
 exports.bind = bind;
 
 /***/ }),
@@ -4605,13 +4069,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.body = void 0;
-
 const header_1 = __webpack_require__(7790);
-
 function body(source) {
   return source.slice((0, header_1.header)(source).length);
 }
-
 exports.body = body;
 
 /***/ }),
@@ -4626,10 +4087,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.caches = void 0;
-
-const cache_1 = __webpack_require__(9210); // For rerendering in editing.
-
-
+const cache_1 = __webpack_require__(9210);
+// For rerendering in editing.
 exports.caches = {
   code: new cache_1.Cache(100),
   math: new cache_1.Cache(100),
@@ -4648,25 +4107,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.headers = exports.header = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const header_1 = __webpack_require__(5702);
-
 function header(source) {
   const [, rest = source] = parse(source);
   return source.slice(0, source.length - rest.length);
 }
-
 exports.header = header;
-
 function headers(source) {
   const [el] = parse(source);
   return el?.textContent.trimEnd().slice(el.firstChild.firstChild.textContent.length).split('\n') ?? [];
 }
-
 exports.headers = headers;
-
 function parse(source) {
   const result = (0, header_1.header)({
     source,
@@ -4688,29 +4140,21 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const htmlentity_1 = __webpack_require__(1562);
-
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
-
 function normalize(source) {
   return sanitize(format(source));
 }
-
 exports.normalize = normalize;
-
 function format(source) {
   return source.replace(/\r\n?/g, '\n');
 }
-
 function sanitize(source) {
   return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${UNICODE_REPLACEMENT_CHARACTER}`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
-} // https://dev.w3.org/html5/html-author/charref
+}
+// https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
-
-
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
 const unreadableHTMLEntityNames = exports.invisibleHTMLEntityNames.slice(2);
 const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)({
@@ -4721,27 +4165,39 @@ const unreadableEscapableCharacter = new RegExp(`[${[...new Set(unreadableEscapa
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
 // http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
-const unreadableSpecialCharacters = (/* unused pure expression or super */ null && ([// SIX-PER-EM SPACE
-'\u2006', // ZERO WIDTH SPACE
-'\u200B', // ZERO WIDTH NON-JOINER
-'\u200C', // ZERO WIDTH JOINER
-'\u200D', // LEFT-TO-RIGHT MARK
-'\u200E', // RIGHT-TO-LEFT MARK
-'\u200F', // LEFT-TO-RIGHT EMBEDDING
-'\u202A', // RIGHT-TO-LEFT EMBEDDING
-'\u202B', // POP DIRECTIONAL FORMATTING
-'\u202C', // LEFT-TO-RIGHT OVERRIDE
-'\u202D', // RIGHT-TO-LEFT OVERRIDE
-'\u202E', // NARROW NO-BREAK SPACE
-'\u202F', // WORD JOINER
-'\u2060', // ZERO WIDTH NON-BREAKING SPACE
+const unreadableSpecialCharacters = (/* unused pure expression or super */ null && ([
+// SIX-PER-EM SPACE
+'\u2006',
+// ZERO WIDTH SPACE
+'\u200B',
+// ZERO WIDTH NON-JOINER
+'\u200C',
+// ZERO WIDTH JOINER
+'\u200D',
+// LEFT-TO-RIGHT MARK
+'\u200E',
+// RIGHT-TO-LEFT MARK
+'\u200F',
+// LEFT-TO-RIGHT EMBEDDING
+'\u202A',
+// RIGHT-TO-LEFT EMBEDDING
+'\u202B',
+// POP DIRECTIONAL FORMATTING
+'\u202C',
+// LEFT-TO-RIGHT OVERRIDE
+'\u202D',
+// RIGHT-TO-LEFT OVERRIDE
+'\u202E',
+// NARROW NO-BREAK SPACE
+'\u202F',
+// WORD JOINER
+'\u2060',
+// ZERO WIDTH NON-BREAKING SPACE
 '\uFEFF']));
-
 // 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
 function escape(source) {
   return source.replace(unreadableEscapableCharacter, char => `&${unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)]};`);
 }
-
 exports.escape = escape;
 
 /***/ }),
@@ -4756,29 +4212,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.parse = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const memo_1 = __webpack_require__(1090);
-
 const segment_1 = __webpack_require__(9002);
-
 const header_1 = __webpack_require__(5702);
-
 const block_1 = __webpack_require__(4032);
-
 const normalize_1 = __webpack_require__(185);
-
 const header_2 = __webpack_require__(7790);
-
 const figure_1 = __webpack_require__(9123);
-
 const footnote_1 = __webpack_require__(7529);
-
 const url_1 = __webpack_require__(2261);
-
 const dom_1 = __webpack_require__(3252);
-
 function parse(source, opts = {}, context) {
   if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.`);
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
@@ -4792,15 +4236,13 @@ function parse(source, opts = {}, context) {
       resources: context.resources
     }),
     memo: new memo_1.Memo({
-      targets: 236
-      /* State.backtrackers */
-
+      targets: 472 /* State.backtrackers */
     })
   };
+
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
   let index = 0;
-
   for (const seg of (0, segment_1.segment)(source)) {
     node.append(...(0, parser_1.eval)((0, header_1.header)({
       source: seg,
@@ -4812,16 +4254,11 @@ function parse(source, opts = {}, context) {
       context
     }), []));
   }
-
   if (opts.test) return node;
-
   for (const _ of (0, figure_1.figure)(node, opts.footnotes, context));
-
   for (const _ of (0, footnote_1.footnote)(node, opts.footnotes, context));
-
   return node;
 }
-
 exports.parse = parse;
 
 /***/ }),
@@ -4836,37 +4273,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.autolink = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const autolink_1 = __webpack_require__(6051);
-
 const source_1 = __webpack_require__(6743);
-
 const delimiter = /[@#>0-9A-Za-z\n]|\S[#>]/;
-
 const autolink = ({
   source,
   context
 }) => {
   if (source === '') return;
   const i = source.search(delimiter);
-
   switch (i) {
     case -1:
       return [[source], ''];
-
     case 0:
       return parser({
         source,
         context
       });
-
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }
 };
-
 exports.autolink = autolink;
 const parser = (0, combinator_1.lazy)(() => (0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource]));
 
@@ -4882,50 +4310,30 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.block = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const horizontalrule_1 = __webpack_require__(9967);
-
 const heading_1 = __webpack_require__(4623);
-
 const ulist_1 = __webpack_require__(5425);
-
 const olist_1 = __webpack_require__(7471);
-
 const ilist_1 = __webpack_require__(238);
-
 const dlist_1 = __webpack_require__(9373);
-
 const table_1 = __webpack_require__(8717);
-
 const codeblock_1 = __webpack_require__(1849);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const extension_1 = __webpack_require__(4751);
-
 const sidefence_1 = __webpack_require__(4078);
-
 const blockquote_1 = __webpack_require__(7859);
-
 const reply_1 = __webpack_require__(9978);
-
 const paragraph_1 = __webpack_require__(6457);
-
 const random_1 = __webpack_require__(7325);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.block = (0, combinator_1.creation)(1, false, error((0, combinator_1.reset)({
   resources: {
     clock: 50 * 1000,
     recursion: 20
   }
 }, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
-
 function error(parser) {
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', ({
     source
@@ -4957,24 +4365,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.blockquote = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const autolink_1 = __webpack_require__(6578);
-
 const source_1 = __webpack_require__(6743);
-
 const parse_1 = __webpack_require__(5013);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['!>', '>'], (0, combinator_1.union)([(0, combinator_1.validate)(/^!?>+(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.some)(source_1.contentline))])));
 exports.blockquote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.union)([(0, combinator_1.open)(/^(?=>)/, source), (0, combinator_1.open)(/^!(?=>)/, markdown)]))));
 const opener = /^(?=>>+(?:$|\s))/;
 const indent = (0, combinator_1.block)((0, combinator_1.open)(opener, (0, combinator_1.some)(source_1.contentline, /^>(?:$|\s)/)), false);
-
 const unindent = source => source.replace(/(^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$/g, '$1');
-
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)((0, combinator_1.some)(autolink_1.autolink), ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))])))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, markdown)), (0, combinator_1.creation)(99, false, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, ({
   source,
@@ -5004,44 +4404,34 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.codeblock = exports.segment_ = exports.segment = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const autolink_1 = __webpack_require__(6578);
-
 const dom_1 = __webpack_require__(3252);
-
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
+exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, context) => {
   const params = param.match(/(?:\\.?|\S)+/g)?.reduce((params, value, i) => {
     let name;
-
     switch (true) {
       case i === 0 && value[0] === param[0] && language.test(value):
         name = 'lang';
         value = value.toLowerCase();
         break;
-
       case /^\d+(?:[,-]\d+)*$/.test(value):
         name = 'line';
         break;
-
       default:
         name = 'path';
-
         if (!params.lang) {
           const file = value.split('/').pop() ?? '';
           params.lang = file && file.includes('.', 1) ? file.split('.').pop()?.match(language)?.[0].toLowerCase() : params.lang;
         }
-
     }
-
     name in params ? params.invalid = `Duplicate ${name} attribute` : params[name] = value;
     return params;
   }, {}) ?? {};
@@ -5077,37 +4467,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dlist = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
-const locale_1 = __webpack_require__(5485);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(128
-/* State.annotation */
-| 64
-/* State.reference */
-| 32
-/* State.index */
-| 16
-/* State.label */
-| 8
-/* State.link */
-| 4
-/* State.media */
-, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))]))));
+exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(256 /* State.annotation */ | 128 /* State.reference */ | 64 /* State.index */ | 32 /* State.label */ | 16 /* State.link */ | 8 /* State.media */, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))])));
 const term = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, dom_1.defrag)(ns))]))));
 const desc = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, dom_1.defrag)(ns))]), false));
-
 function fillTrailingDescription(es) {
   return es.length > 0 && es[es.length - 1].tagName === 'DT' ? (0, array_1.push)(es, [(0, dom_1.html)('dd')]) : es;
 }
@@ -5124,25 +4492,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.extension = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const figbase_1 = __webpack_require__(7922);
-
 const fig_1 = __webpack_require__(362);
-
 const figure_1 = __webpack_require__(3790);
-
 const table_1 = __webpack_require__(4511);
-
 const message_1 = __webpack_require__(1467);
-
 const aside_1 = __webpack_require__(7523);
-
 const example_1 = __webpack_require__(230);
-
 const placeholder_1 = __webpack_require__(5198);
-
 exports.segment = (0, combinator_1.validate)(['~~~', '[$', '$'], (0, combinator_1.validate)(/^~{3,}|^\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/, (0, combinator_1.union)([fig_1.segment, figure_1.segment, table_1.segment, placeholder_1.segment])));
 exports.extension = (0, combinator_1.union)([figbase_1.figbase, fig_1.fig, figure_1.figure, table_1.table, message_1.message, aside_1.aside, example_1.example, placeholder_1.placeholder]);
 
@@ -5158,16 +4516,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.aside = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const indexee_1 = __webpack_require__(1269);
-
 const parse_1 = __webpack_require__(5013);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), // Bug: Type mismatch between outer and inner.
+exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -5213,19 +4567,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.example = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const parse_1 = __webpack_require__(5013);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const dom_1 = __webpack_require__(3252);
-
 const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
-exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
+exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type = 'markdown', param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -5234,7 +4583,6 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
     'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
-
   switch (type) {
     case 'markdown':
       {
@@ -5254,7 +4602,6 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
           translate: 'no'
         }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references])])];
       }
-
     case 'math':
       return [(0, dom_1.html)('aside', {
         class: 'example',
@@ -5265,7 +4612,6 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
         source: `$$\n${body}$$`,
         context
       }), [])[0]])];
-
     default:
       return [(0, dom_1.html)('pre', {
         class: 'invalid',
@@ -5289,29 +4635,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fig = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const figure_1 = __webpack_require__(3790);
-
 const label_1 = __webpack_require__(466);
-
 const codeblock_1 = __webpack_require__(1849);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const table_1 = __webpack_require__(4511);
-
 const blockquote_1 = __webpack_require__(7859);
-
 const placeholder_1 = __webpack_require__(5198);
-
 const inline_1 = __webpack_require__(1160);
-
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^(?=\s).*\n/)), (0, combinator_1.union)([codeblock_1.segment, mathblock_1.segment, table_1.segment, blockquote_1.segment, placeholder_1.segment, (0, combinator_1.some)(source_1.contentline)])])));
 exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.verify)((0, combinator_1.convert)((source, context) => {
+  // Bug: TypeScript
   const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
   return parser({
     source,
@@ -5332,13 +4668,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figbase = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const label_1 = __webpack_require__(466);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.figbase = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\[?\$-(?:[0-9]+\.)*0\]?[^\S\n]*(?!\S|\n[^\S\n]*\S)/, (0, combinator_1.line)((0, combinator_1.union)([label_1.label]))), ([el]) => {
   const label = el.getAttribute('data-label');
   const group = label.split('-', 1)[0];
@@ -5361,46 +4693,26 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figure = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const label_1 = __webpack_require__(466);
-
 const ulist_1 = __webpack_require__(5425);
-
 const olist_1 = __webpack_require__(7471);
-
 const table_1 = __webpack_require__(8717);
-
 const codeblock_1 = __webpack_require__(1849);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const example_1 = __webpack_require__(230);
-
 const table_2 = __webpack_require__(4511);
-
 const blockquote_1 = __webpack_require__(7859);
-
 const placeholder_1 = __webpack_require__(5198);
-
 const inline_1 = __webpack_require__(1160);
-
-const locale_1 = __webpack_require__(5485);
-
 const visibility_1 = __webpack_require__(7618);
-
 const memoize_1 = __webpack_require__(1808);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([// All parsers which can include closing terms.
+exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([
+// All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
-exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.state)(4
-/* State.media */
-, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
+exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, combinator_1.state)(8 /* State.media */, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline))))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
   class: 'figindex'
 }), (0, dom_1.html)('span', {
   class: 'figtext'
@@ -5428,40 +4740,32 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
     'data-invalid-message': 'Invalid content'
   })
 }, `${opener}${body}${overflow || closer}`)])));
-
 function attributes(label, param, content, caption) {
   const group = label.split('-', 1)[0];
   let type = content.className.split(/\s/)[0];
-
   switch (type || content.tagName) {
     case 'UL':
     case 'OL':
     case 'checklist':
       type = 'list';
       break;
-
     case 'TABLE':
       type = 'table';
       break;
-
     case 'BLOCKQUOTE':
       type = 'quote';
       break;
-
     case 'A':
       type = 'media';
       break;
-
     case 'text':
     case 'code':
     case 'math':
     case 'example':
     case 'invalid':
       break;
-
     default:
   }
-
   const invalid = param.trimStart() !== '' && {
     'data-invalid-type': 'argument',
     'data-invalid-message': 'Invalid argument'
@@ -5517,38 +4821,23 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.message = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const segment_1 = __webpack_require__(9002);
-
 const source_1 = __webpack_require__(6743);
-
 const ulist_1 = __webpack_require__(5425);
-
 const olist_1 = __webpack_require__(7471);
-
 const ilist_1 = __webpack_require__(238);
-
 const table_1 = __webpack_require__(8717);
-
 const codeblock_1 = __webpack_require__(1849);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const sidefence_1 = __webpack_require__(4078);
-
 const blockquote_1 = __webpack_require__(7859);
-
 const paragraph_1 = __webpack_require__(6457);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300), // Bug: Type mismatch between outer and inner.
+exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -5557,13 +4846,11 @@ exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
     'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
-
   switch (type) {
     case 'note':
     case 'caution':
     case 'warning':
       break;
-
     default:
       return [(0, dom_1.html)('pre', {
         class: 'invalid',
@@ -5573,7 +4860,6 @@ exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
         'data-invalid-message': 'Invalid message type'
       }, `${opener}${body}${closer}`)];
   }
-
   return [(0, dom_1.html)('section', {
     class: `message`,
     'data-type': type
@@ -5582,21 +4868,17 @@ exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
     context
   }), [])), [])))];
 })));
-
 function title(type) {
   switch (type) {
     case 'warning':
       return type.toUpperCase() + '!!';
-
     case 'caution':
       return type[0].toUpperCase() + type.slice(1) + '!';
-
     default:
       return type[0].toUpperCase() + type.slice(1);
   }
-} // Must not have indexed blocks.
-
-
+}
+// Must not have indexed blocks.
 const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olist_1.olist, ilist_1.ilist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, sidefence_1.sidefence, blockquote_1.blockquote, paragraph_1.paragraph]);
 
 /***/ }),
@@ -5611,11 +4893,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.placeholder = exports.segment_ = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
@@ -5637,29 +4916,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.table = exports.segment_ = exports.segment = void 0;
-
 const alias_1 = __webpack_require__(5406);
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
-const locale_1 = __webpack_require__(5485);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
-exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000), // Bug: Type mismatch between outer and inner.
+exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 10000),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type, param], _, context) => {
   if (!closer || overflow || param.trimStart()) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -5668,7 +4937,6 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
     'data-invalid-message': !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument'
   }, `${opener}${body}${overflow || closer}`)];
-
   switch (type) {
     case 'grid':
     case undefined:
@@ -5678,7 +4946,6 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
       })) ?? [(0, dom_1.html)('table')]).map(el => (0, dom_1.define)(el, {
         'data-type': type
       }));
-
     default:
       return [(0, dom_1.html)('pre', {
         class: 'invalid',
@@ -5689,7 +4956,7 @@ exports.table = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
       }, `${opener}${body}${closer}`)];
   }
 })));
-const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => [(0, dom_1.html)('table', format(rows))]))));
+const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => [(0, dom_1.html)('table', format(rows))])));
 const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.union)([align])), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => !(0, alias_1.isArray)(ns[0]) ? (0, array_1.unshift)([[[]]], ns) : ns)));
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
@@ -5697,7 +4964,6 @@ const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!
 const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
 const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
 const dataline = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
-
 function attributes(source) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
   rowspan === '1' ? rowspan = undefined : undefined;
@@ -5719,7 +4985,6 @@ function attributes(source) {
     })
   };
 }
-
 function format(rows) {
   const thead = (0, dom_1.html)('thead');
   const tbody = (0, dom_1.html)('tbody');
@@ -5729,80 +4994,66 @@ function format(rows) {
   let target = thead;
   let ranges = {};
   let verticalHighlights = 0n;
-
   ROW: for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
     const [[[...as], [...vs] = []], ...cells] = rows[i];
     let isBody = target === tfoot ? false : undefined;
     as.length === 0 && as.push('-');
-
     ALIGN_H: for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
       switch (as[j]) {
         case '=':
           update = true;
           aligns[j] = 'center';
           continue;
-
         case '<':
           update = true;
           aligns[j] = 'start';
           continue;
-
         case '>':
           update = true;
           aligns[j] = 'end';
           continue;
-
         case '-':
           update = false;
           aligns[j] ??= j === 0 ? '' : aligns[j - 1];
           continue;
-
         default:
           if (!update) break ALIGN_H;
           aligns[j] = aligns[j - 1];
           continue;
       }
     }
-
     vs.length === 0 && vs.push('-');
-
     ALIGN_V: for (let j = 0, update = false; j < vs.length || j < valigns.length; ++j) {
       switch (vs[j]) {
         case '=':
           update = true;
           valigns[j] = 'middle';
           continue;
-
         case '^':
           update = true;
           valigns[j] = 'top';
           continue;
-
         case 'v':
           update = true;
           valigns[j] = 'bottom';
           continue;
-
         case '-':
           update = false;
           valigns[j] ??= j === 0 ? '' : valigns[j - 1];
           continue;
-
         default:
           if (!update) break ALIGN_V;
           aligns[j] = aligns[j - 1];
           continue;
       }
     }
-
     const row = (0, dom_1.html)('tr');
     let heads = 0n;
     let highlights = 0n;
     let hasDataCell = false;
     let lHeadCellIdx;
     let rHeadCellIdx;
-
     for (let j = 0; j < cells.length; ++j) {
       const jn = BigInt(j);
       const isVirtual = !!ranges[i]?.[j];
@@ -5811,35 +5062,27 @@ function format(rows) {
       heads |= BigInt(isHeadCell) << jn;
       highlights |= BigInt(cell.className === 'highlight') << jn;
       hasDataCell ||= !isHeadCell;
-
       if (isHeadCell && !hasDataCell) {
         lHeadCellIdx = jn;
       }
-
       if (isHeadCell && hasDataCell) {
         rHeadCellIdx ??= jn;
       }
-
       const rowSpan = cell.rowSpan;
-
       if (rowSpan > 1 && !isVirtual) {
         const virtual = cell.cloneNode();
-
         for (let k = i + 1; k < i + rowSpan && k < rows.length; ++k) {
           ranges[k] ??= [];
           ranges[k][j] = virtual;
         }
       }
-
       const colSpan = cell.colSpan;
-
       if (colSpan > 1) {
         (0, array_1.splice)(cells, j + 1, 0, ...Array(colSpan - 1));
         heads |= heads & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         highlights |= highlights & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         j += colSpan - 1;
       }
-
       if (target === thead) {
         if (!isHeadCell && isBody !== false || isBody) {
           isBody = true;
@@ -5849,12 +5092,10 @@ function format(rows) {
           continue ROW;
         }
       }
-
       if (target === tbody) {
         if (!isHeadCell && isBody !== false) {
           isBody = true;
         }
-
         if (j + 1 === cells.length && isBody !== true) {
           isBody = false;
           target = tfoot;
@@ -5863,9 +5104,7 @@ function format(rows) {
           continue ROW;
         }
       }
-
       if (target === tfoot) {}
-
       j === aligns.length && aligns.push(aligns[j - 1]);
       j === valigns.length && valigns.push(valigns[j - 1]);
       if (isVirtual) continue;
@@ -5873,14 +5112,11 @@ function format(rows) {
       aligns[j] && cell.setAttribute('align', aligns[j]);
       valigns[j] && cell.setAttribute('valign', valigns[j]);
     }
-
     target.appendChild(row);
-
     switch (target) {
       case thead:
         verticalHighlights = heads & highlights;
         continue;
-
       case tbody:
         lHeadCellIdx ??= -1n;
         rHeadCellIdx ??= -1n;
@@ -5888,7 +5124,6 @@ function format(rows) {
         const horizontalHighlights = heads & highlights;
         const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1n << lHeadCellIdx;
         const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1n << rHeadCellIdx;
-
         for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
           const cell = cells[i];
           if (!cell) continue;
@@ -5896,14 +5131,11 @@ function format(rows) {
           if (!(lHighlight || rHighlight || tHighlights & m || highlights & m)) continue;
           cell.classList.add('highlight');
         }
-
         continue;
-
       case tfoot:
         continue;
     }
   }
-
   return [thead, tbody, tfoot];
 }
 
@@ -5919,35 +5151,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.heading = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('#', (0, combinator_1.focus)(/^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/, (0, combinator_1.some)((0, combinator_1.line)(({
   source
 }) => [[source], ''])))));
-exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.state)(128
-/* State.annotation */
-| 64
-/* State.reference */
-| 32
-/* State.index */
-| 16
-/* State.label */
-| 8
-/* State.link */
-| 4
-/* State.media */
-, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.state)(2
-/* State.autolink */
-, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
+exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.state)(256 /* State.annotation */ | 128 /* State.reference */ | 64 /* State.index */ | 32 /* State.label */ | 16 /* State.link */ | 8 /* State.media */, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/^##+/), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.state)(2 /* State.autolink */, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), ([h, ...ns]) => [h.length <= 6 ? (0, dom_1.html)(`h${h.length}`, (0, dom_1.defrag)(ns)) : (0, dom_1.html)(`h6`, {
   class: 'invalid',
   'data-invalid-syntax': 'heading',
   'data-invalid-type': 'syntax',
@@ -5966,11 +5178,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.horizontalrule = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.horizontalrule = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/^-{3,}[^\S\n]*(?:$|\n)/, () => [[(0, dom_1.html)('hr')], ''])));
 
 /***/ }),
@@ -5985,20 +5194,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ilist_ = exports.ilist = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const ulist_1 = __webpack_require__(5425);
-
 const olist_1 = __webpack_require__(7471);
-
 const inline_1 = __webpack_require__(1160);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(4
-/* State.media */
-, exports.ilist_))));
+exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(8 /* State.media */, exports.ilist_))));
 exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.some)(inline_1.inline), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
   'data-invalid-syntax': 'list',
@@ -6018,15 +5219,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.mathblock = exports.segment_ = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 const opener = /^(\${2,})(?!\$)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
-exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), // Bug: Type mismatch between outer and inner.
+exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300),
+// Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, {
   caches: {
     math: cache = undefined
@@ -6054,38 +5253,24 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.invalid = exports.olist_ = exports.olist = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const ulist_1 = __webpack_require__(5425);
-
 const ilist_1 = __webpack_require__(238);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const memoize_1 = __webpack_require__(1808);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
-exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(4
-/* State.media */
-, exports.olist_))));
+exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(8 /* State.media */, exports.olist_))));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
-
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0] || undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
-
 const heads = {
   '.': (0, combinator_1.focus)(openers['.'], ({
     source
@@ -6104,89 +5289,68 @@ exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.co
   'data-invalid-type': 'syntax',
   'data-invalid-message': 'Fix the indent or the head of the list item'
 }, source.replace('\n', ''))], '']);
-
 function type(index) {
   switch (index) {
     case 'i':
       return 'i';
-
     case 'a':
       return 'a';
-
     case 'I':
       return 'I';
-
     case 'A':
       return 'A';
-
     default:
       return '';
   }
 }
-
 function style(type) {
   switch (type) {
     case 'i':
       return 'lower-roman';
-
     case 'a':
       return 'lower-alpha';
-
     case 'I':
       return 'upper-roman';
-
     case 'A':
       return 'upper-alpha';
-
     default:
       return '';
   }
 }
-
 function initial(type) {
   switch (type) {
     case 'i':
       return /^\(?i[).]?$/;
-
     case 'a':
       return /^\(?a[).]?$/;
-
     case 'I':
       return /^\(?I[).]?$/;
-
     case 'A':
       return /^\(?A[).]?$/;
-
     default:
       return /^\(?[01][).]?$/;
   }
 }
-
 function format(el, type, form) {
   if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
     el.setAttribute('class', 'checklist');
   }
-
   (0, dom_1.define)(el, {
     type: type || undefined,
     'data-format': form === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined
   });
   const marker = el.firstElementChild?.getAttribute('data-marker').match(initial(type))?.[0] ?? '';
-
   for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-
     switch (el.getAttribute('data-marker')) {
       case '':
       case marker:
         el.removeAttribute('data-marker');
         continue;
     }
-
     break;
   }
-
   return el;
 }
 
@@ -6202,18 +5366,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.paragraph = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
-const locale_1 = __webpack_require__(5485);
-
 const visibility_1 = __webpack_require__(7618);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))])));
+exports.paragraph = (0, combinator_1.block)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)(ns))]));
 
 /***/ }),
 
@@ -6227,23 +5384,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reply = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const cite_1 = __webpack_require__(6315);
-
 const quote_1 = __webpack_require__(6058);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
-const locale_1 = __webpack_require__(5485);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
 /*
 必ず対象指定から始まる
@@ -6251,9 +5398,7 @@ const dom_1 = __webpack_require__(3252);
 対象をURLで指定すべき(引用ツリーにルートを追加する)場合はない
 対象と引用は1:N(分割)、N:1(統合)のみ可能、N:N(混合)は不可能
 */
-
-
-exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))]))));
+exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.some)((0, combinator_1.inits)([cite_1.cite, quote_1.quote])), (0, combinator_1.some)((0, combinator_1.subsequence)([(0, combinator_1.some)(quote_1.quote), (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, visibility_1.visualize)((0, combinator_1.trimEnd)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, dom_1.html)('br')]))]))]), ns => [(0, dom_1.html)('p', (0, dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
 
 /***/ }),
 
@@ -6267,16 +5412,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.cite = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const anchor_1 = __webpack_require__(6495);
-
 const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([(0, source_1.str)(/^>*(?=>>[^>\s]+\s*$)/), (0, combinator_1.union)([anchor_1.anchor, // Subject page representation.
+exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([(0, source_1.str)(/^>*(?=>>[^>\s]+\s*$)/), (0, combinator_1.union)([anchor_1.anchor,
+// Subject page representation.
 // リンクの実装は後で検討
 (0, combinator_1.focus)(/^>>\.(?=\s*$)/, () => [[(0, dom_1.html)('a', {
   class: 'anchor'
@@ -6284,7 +5425,8 @@ exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, c
   source
 }) => [[(0, dom_1.html)('a', {
   class: 'anchor'
-}, source)], '']), // Support all domains, but don't support IP(v6) addresses.
+}, source)], '']),
+// Support all domains, but don't support IP(v6) addresses.
 (0, combinator_1.focus)(/^>>https?:\/\/[^\p{C}\p{S}\p{P}\s]\S*(?=\s*$)/u, ({
   source
 }) => [[(0, dom_1.html)('a', {
@@ -6309,19 +5451,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.quote = exports.syntax = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const math_1 = __webpack_require__(8946);
-
 const source_1 = __webpack_require__(6743);
-
 const autolink_1 = __webpack_require__(6578);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([(0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|')[0]), source_1.anyline)), qblock), (0, combinator_1.rewrite)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|').slice(1).join('|')), source_1.anyline), (0, combinator_1.line)((0, combinator_1.union)([(0, source_1.str)(/^.+/)])))])), ns => [(0, dom_1.html)('span', ns.length > 1 ? {
   class: 'quote'
@@ -6331,7 +5466,6 @@ exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, false
   'data-invalid-type': 'syntax',
   'data-invalid-message': `Missing the whitespace after "${ns[0].split(/[^>]/, 1)[0]}"`
 }, (0, dom_1.defrag)(ns)), (0, dom_1.html)('br')]), false)));
-
 const qblock = ({
   source,
   context
@@ -6345,22 +5479,18 @@ const qblock = ({
     context
   }), []);
   nodes.unshift(quotes.shift());
-
   for (let i = 0; i < nodes.length; ++i) {
     const child = nodes[i];
     if (typeof child === 'string') continue;
-
     if ('wholeText' in child) {
       nodes[i] = child.data;
       continue;
     }
-
     if (child.tagName === 'BR') {
       nodes.splice(i + 1, 0, quotes.shift());
       ++i;
       continue;
     }
-
     if (child.className === 'cite' || child.classList.contains('quote')) {
       context.resources && (context.resources.clock -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes);
@@ -6368,11 +5498,9 @@ const qblock = ({
       continue;
     }
   }
-
   nodes.unshift('');
   return [nodes, ''];
 };
-
 const text = (0, combinator_1.union)([math_1.math, autolink_1.autolink]);
 
 /***/ }),
@@ -6387,15 +5515,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sidefence = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const autolink_1 = __webpack_require__(6578);
-
 const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/^(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/, (0, combinator_1.union)([source])), ([el]) => [(0, dom_1.define)(el, {
   class: 'invalid',
   'data-invalid-syntax': 'sidefence',
@@ -6403,9 +5526,7 @@ exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, com
   'data-invalid-message': 'Reserved syntax'
 })])));
 const opener = /^(?=\|\|+(?:$|\s))/;
-
 const unindent = source => source.replace(/(^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '$1');
-
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.focus)(/^(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)((0, combinator_1.some)(autolink_1.autolink), ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))])))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 
 /***/ }),
@@ -6420,23 +5541,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.table = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const duff_1 = __webpack_require__(8099);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\|[^\n]*(?:\n\|[^\n]*){2}/, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => [(0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift()]), (0, dom_1.html)('tbody', format(rows))])])));
-
 const row = (parser, optional) => (0, combinator_1.creation)(1, false, (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/^(?=\|)/, (0, combinator_1.some)((0, combinator_1.union)([parser])), /^[|\\]?\s*$/, optional)), es => [(0, dom_1.html)('tr', es)]), (0, combinator_1.rewrite)(source_1.contentline, ({
   source
 }) => [[(0, dom_1.html)('tr', {
@@ -6445,26 +5557,21 @@ const row = (parser, optional) => (0, combinator_1.creation)(1, false, (0, combi
   'data-invalid-type': 'syntax',
   'data-invalid-message': 'Missing the start symbol of the table row'
 }, [(0, dom_1.html)('td', source.replace('\n', ''))])], ''])));
-
 const align = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:/, () => [['center'], '']), (0, combinator_1.focus)(/^:-+/, () => [['start'], '']), (0, combinator_1.focus)(/^-+:/, () => [['end'], '']), (0, combinator_1.focus)(/^-+/, () => [[''], ''])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
 const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]), /^[^|]*/, true);
 const head = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
 const data = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
-
 function format(rows) {
   const aligns = rows[0].className === 'invalid' ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
-
   for (let i = 0; i < rows.length; ++i) {
     for (let cols = rows[i].children, len = cols.length, j = 0; j < len; ++j) {
       if (j > 0 && !aligns[j]) {
         aligns[j] = aligns[j - 1];
       }
-
       if (!aligns[j]) continue;
       cols[j].setAttribute('align', aligns[j]);
     }
   }
-
   return rows;
 }
 
@@ -6480,42 +5587,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fillFirstLine = exports.checkbox = exports.ulist_ = exports.ulist = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const olist_1 = __webpack_require__(7471);
-
 const ilist_1 = __webpack_require__(238);
-
 const inline_1 = __webpack_require__(1160);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(4
-/* State.media */
-, exports.ulist_))));
+exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(8 /* State.media */, exports.ulist_))));
 exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.creation)(1, false, (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, ({
   source
 }) => [[(0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[1].trimStart() ? '☑' : '☐')], '']));
-
 function fillFirstLine(ns) {
   return ns.length === 1 && typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName) ? (0, array_1.unshift)([(0, dom_1.html)('br')], ns) : ns;
 }
-
 exports.fillFirstLine = fillFirstLine;
-
 function format(el) {
   if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
     el.setAttribute('class', 'checklist');
   }
-
   return el;
 }
 
@@ -6531,17 +5624,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.header = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const segment_1 = __webpack_require__(9002);
-
 const source_1 = __webpack_require__(6743);
-
 const normalize_1 = __webpack_require__(185);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([(0, combinator_1.rewrite)(({
   source,
   context
@@ -6586,82 +5673,51 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.shortmedia = exports.media = exports.indexer = exports.indexee = exports.inline = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const annotation_1 = __webpack_require__(2736);
-
 const reference_1 = __webpack_require__(3555);
-
 const template_1 = __webpack_require__(4695);
-
 const comment_1 = __webpack_require__(8657);
-
 const math_1 = __webpack_require__(8946);
-
 const extension_1 = __webpack_require__(8053);
-
 const ruby_1 = __webpack_require__(6705);
-
 const link_1 = __webpack_require__(9628);
-
 const html_1 = __webpack_require__(5994);
-
 const insertion_1 = __webpack_require__(2945);
-
 const deletion_1 = __webpack_require__(7501);
-
 const mark_1 = __webpack_require__(2480);
-
 const emphasis_1 = __webpack_require__(3867);
-
 const strong_1 = __webpack_require__(8072);
-
 const code_1 = __webpack_require__(5771);
-
 const media_1 = __webpack_require__(1303);
-
 const htmlentity_1 = __webpack_require__(1562);
-
 const shortmedia_1 = __webpack_require__(4189);
-
 const autolink_1 = __webpack_require__(6051);
-
 const bracket_1 = __webpack_require__(5196);
-
 const source_1 = __webpack_require__(6743);
-
 exports.inline = (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, math_1.math, extension_1.extension, ruby_1.ruby, link_1.link, media_1.media, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.shortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]);
-
 var indexee_1 = __webpack_require__(1269);
-
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
   get: function () {
     return indexee_1.indexee;
   }
 }));
-
 var indexer_1 = __webpack_require__(1047);
-
 Object.defineProperty(exports, "indexer", ({
   enumerable: true,
   get: function () {
     return indexer_1.indexer;
   }
 }));
-
 var media_2 = __webpack_require__(1303);
-
 Object.defineProperty(exports, "media", ({
   enumerable: true,
   get: function () {
     return media_2.media;
   }
 }));
-
 var shortmedia_2 = __webpack_require__(4189);
-
 Object.defineProperty(exports, "shortmedia", ({
   enumerable: true,
   get: function () {
@@ -6681,24 +5737,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.annotation = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const visibility_1 = __webpack_require__(7618);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(128
-/* State.annotation */
-, false, (0, combinator_1.syntax)(32
-/* Syntax.annotation */
-, 6, 1, 128
-/* State.annotation */
-| 4
-/* State.media */
-, (0, visibility_1.startLoose)((0, combinator_1.context)({
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 6, 1, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: undefined
 }, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
@@ -6716,34 +5759,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.autolink = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const url_1 = __webpack_require__(4318);
-
 const email_1 = __webpack_require__(4701);
-
 const channel_1 = __webpack_require__(4954);
-
 const account_1 = __webpack_require__(7806);
-
 const hashtag_1 = __webpack_require__(5491);
-
 const hashnum_1 = __webpack_require__(5631);
-
 const anchor_1 = __webpack_require__(6495);
-
 const source_1 = __webpack_require__(6743);
-
 const util_1 = __webpack_require__(9437);
-
-exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9a-z]|\S[#>])/i, (0, combinator_1.constraint)(2
-/* State.autolink */
-, false, (0, combinator_1.syntax)(2
-/* Syntax.autolink */
-, 1, 1, ~1
-/* State.shortcut */
-, (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email, // Escape unmatched email-like strings.
+exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-9a-z]|\S[#>])/i, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, 1, ~1 /* State.shortcut */, (0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
+// Escape unmatched email-like strings.
 (0, combinator_1.focus)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z])*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i, ({
   source
 }) => {
@@ -6751,10 +5778,14 @@ exports.autolink = (0, combinator_1.fmap)((0, combinator_1.validate)(/^(?:[@#>0-
   const i = source.indexOf('_');
   if (i === -1) return [[source], ''];
   return [[source.slice(0, i)], source.slice(i)];
-}), channel_1.channel, account_1.account, // Escape unmatched account-like strings.
-(0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i), // Escape invalid leading characters.
-(0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum, // Escape unmatched hashtag-like strings.
-(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|')*/u.source.replace('emoji', hashtag_1.emoji), 'u')), // Escape invalid leading characters.
+}), channel_1.channel, account_1.account,
+// Escape unmatched account-like strings.
+(0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i),
+// Escape invalid leading characters.
+(0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum,
+// Escape unmatched hashtag-like strings.
+(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|')*/u.source.replace('emoji', hashtag_1.emoji), 'u')),
+// Escape invalid leading characters.
 (0, source_1.str)(/^[0-9\p{Sc}](?=>)/u), anchor_1.anchor]))))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
 
 /***/ }),
@@ -6769,19 +5800,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.account = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
 const source_1 = __webpack_require__(6743);
-
-const dom_1 = __webpack_require__(3252); // https://example/@user must be a user page or a redirect page going there.
-
-
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1
-/* State.shortcut */
-, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, source_1.str)(/^[a-z](?:-(?=[0-9a-z])|[0-9a-z]){0,63}/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+const dom_1 = __webpack_require__(3252);
+// https://example/@user must be a user page or a redirect page going there.
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, source_1.str)(/^[a-z](?:-(?=[0-9a-z])|[0-9a-z]){0,63}/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]));
 
@@ -6797,22 +5821,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.anchor = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
-const dom_1 = __webpack_require__(3252); // Timeline(pseudonym): user/tid
+const dom_1 = __webpack_require__(3252);
+// Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
 // tid: YYYY-MM-DD-HH-MM-SS-TMZ
 // cid: YYYY-MM-DD-HH-MM-SS-mmm-TMZ
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-
-
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.constraint)(1
-/* State.shortcut */
-, false, (0, combinator_1.focus)(/^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.focus)(/^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
   class: 'anchor'
 })])));
 
@@ -6828,18 +5846,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.channel = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const account_1 = __webpack_require__(7806);
-
 const hashtag_1 = __webpack_require__(5491);
-
 const util_1 = __webpack_require__(9437);
-
-const dom_1 = __webpack_require__(3252); // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-
-
+const dom_1 = __webpack_require__(3252);
+// https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 exports.channel = (0, combinator_1.validate)('@', (0, combinator_1.bind)((0, combinator_1.sequence)([account_1.account, (0, combinator_1.some)(hashtag_1.hashtag)]), (es, rest) => {
   const source = (0, util_1.stringify)(es);
   if (source.includes('/', source.indexOf('#'))) return;
@@ -6863,14 +5875,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.email = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
-const dom_1 = __webpack_require__(3252); // https://html.spec.whatwg.org/multipage/input.html
-
-
+const dom_1 = __webpack_require__(3252);
+// https://html.spec.whatwg.org/multipage/input.html
 exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*(?![0-9a-z])/i), ([source]) => source.length <= 255), ({
   source
 }) => [[(0, dom_1.html)('a', {
@@ -6890,20 +5898,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.hashnum = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
 const hashtag_1 = __webpack_require__(5491);
-
 const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1
-/* State.shortcut */
-, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|')/u.source.replace(/emoji/, hashtag_1.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|')/u.source.replace(/emoji/, hashtag_1.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashnum',
   href: null
 })]));
@@ -6920,21 +5920,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.hashtag = exports.emoji = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
 const source_1 = __webpack_require__(6743);
-
-const dom_1 = __webpack_require__(3252); // https://example/hashtags/a must be a hashtag page or a redirect page going there.
+const dom_1 = __webpack_require__(3252);
+// https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
-
-
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1
-/* State.shortcut */
-, false, (0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'))/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'))/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
 }, el.innerText)]));
 
@@ -6950,13 +5943,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.url = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
 const source_1 = __webpack_require__(6743);
-
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink])))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.precedence)(2, (0, combinator_1.union)([(0, combinator_1.surround)('(', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')'), ')', true), (0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']'), ']', true), (0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}'), '}', true), (0, combinator_1.surround)('"', (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.unescsource, '"')), '"', true)]))));
@@ -6973,52 +5962,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bracket = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 2, 1, 0
-/* State.none */
-, (0, source_1.str)(index)), (0, source_1.str)(')')), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(128
-/* Syntax.bracket */
-, 2, 1, 0
-/* State.none */
-, (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]])), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(0 /* Syntax.none */, 2, 1, 0 /* State.none */, (0, source_1.str)(index)), (0, source_1.str)(')')), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 2]])), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 2, 1, 0
-/* State.none */
-, (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0))))), (0, source_1.str)('）')), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(128
-/* Syntax.bracket */
-, 2, 1, 0
-/* State.none */
-, (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]])), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(0 /* Syntax.none */, 2, 1, 0 /* State.none */, (0, source_1.str)(new RegExp(index.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => c.trimStart() && String.fromCharCode(c.charCodeAt(0) + 0xFEE0))))), (0, source_1.str)('）')), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 2]])), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.syntax)(128
-/* Syntax.bracket */
-, 2, 1, 0
-/* State.none */
-, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(128
-/* Syntax.bracket */
-, 2, 1, 0
-/* State.none */
-, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), // Control media blinking in editing rather than control confusion of pairs of quote marks.
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(1
-/* Syntax.quote */
-, 8, 1, 0
-/* State.none */
-, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
+// Control media blinking in editing rather than control confusion of pairs of quote marks.
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(0 /* Syntax.none */, 8, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
 
 /***/ }),
 
@@ -7032,17 +5988,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.code = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 exports.code = (0, combinator_1.creation)((0, combinator_1.validate)('`', (0, combinator_1.match)(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole,, body]) => ({
   source
 }) => [[(0, dom_1.html)('code', {
   'data-src': whole
 }, format(body))], source.slice(whole.length)])));
-
 function format(text) {
   return `${text[0]}${text[text.length - 1]}` === '  ' && text.trimStart() ? text.slice(1, -1) : text;
 }
@@ -7059,24 +6011,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.comment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const memoize_1 = __webpack_require__(1808);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 4, 1, 0
-/* State.none */
-, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0 /* Syntax.none */, 4, 1, 0 /* State.none */, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'comment'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
@@ -7094,24 +6035,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.deletion = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('~~', '~'), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 1, 1, 0
-/* State.none */
-, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)]))), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('~~', '~'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)]))), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -7125,24 +6055,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.emphasis = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('_', '_'), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 1, 1, 0
-/* State.none */
-, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('_')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '_'), exports.emphasis)])))), (0, source_1.str)('_'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('_', '_'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('_'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '_', [[/^\\?\n/, 9]]), exports.emphasis)])))), (0, source_1.str)('_'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -7156,15 +6075,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.extension = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const index_1 = __webpack_require__(4479);
-
 const label_1 = __webpack_require__(466);
-
 const placeholder_1 = __webpack_require__(5534);
-
 exports.extension = (0, combinator_1.validate)(['[', '$'], (0, combinator_1.union)([index_1.index, label_1.label, placeholder_1.placeholder]));
 
 /***/ }),
@@ -7179,33 +6093,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.index = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const indexee_1 = __webpack_require__(1269);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(32
-/* State.index */
-, false, (0, combinator_1.syntax)(2048
-/* Syntax.index */
-, 2, 1, 250
-/* State.linkers */
-| 4
-/* State.media */
-, (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(64 /* State.index */, false, (0, combinator_1.syntax)(128 /* Syntax.index */, 2, 1, 502 /* State.linkers */ | 8 /* State.media */, (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)(/^\|?/), (0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, dom_1.defrag)(ns))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : undefined
 }, el.childNodes)])));
-const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
+const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': (0, indexee_1.identity)(ns.join('')).slice(6)
 })])));
@@ -7223,11 +6122,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.text = exports.identity = exports.indexee = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
@@ -7235,60 +6131,56 @@ function indexee(parser, optional) {
     id: id !== '' && identity(text(el, optional)) || undefined
   })]);
 }
-
 exports.indexee = indexee;
-
-function identity(text) {
-  text &&= text.trim();
-  return text && `index:${text.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`;
+function identity(text, name = 'index') {
+  text &&= text.trim().replace(/\s+/g, '_');
+  if (text.length <= 100) return text && `${name}:${text}`;
+  switch (name) {
+    case 'index':
+      return `${name}:${text.slice(0, 97)}...`;
+    case 'mark':
+      return `${name}:${text.slice(0, 50)}...${text.slice(-47)}`;
+  }
 }
-
 exports.identity = identity;
-
 function text(source, optional = false) {
   const indexer = source.querySelector(':scope > .indexer');
   if (!indexer && optional) return '';
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   const target = source.cloneNode(true);
-
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-
     switch (el.tagName) {
       case 'CODE':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
         continue;
-
       case 'RT':
       case 'RP':
       case 'UL':
       case 'OL':
         el.remove();
         continue;
+      case 'BR':
+        el.replaceWith('\n');
+        continue;
     }
-
     switch (el.className) {
       case 'math':
         (0, dom_1.define)(el, el.getAttribute('data-src'));
         continue;
-
       case 'comment':
       case 'checkbox':
+      case 'annotation':
+      case 'reference':
         el.remove();
         continue;
-
-      case 'reference':
-        el.firstChild.remove();
-        continue;
     }
-  } // Better:
+  }
+  // Better:
   //return target.innerText;
-
-
   return target.textContent;
 }
-
 exports.text = text;
 
 /***/ }),
@@ -7303,18 +6195,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.indexer = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const index_1 = __webpack_require__(4479);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.indexer = (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, combinator_1.state)(32
-/* State.index */
-, false, (0, combinator_1.union)([(0, combinator_1.focus)('[#]', () => [[(0, dom_1.html)('a', {
+exports.indexer = (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, combinator_1.state)(64 /* State.index */, false, (0, combinator_1.union)([(0, combinator_1.focus)('[#]', () => [[(0, dom_1.html)('a', {
   href: '#'
-})], '']), index_1.index])), /^\s*$/), // Indexer is invisible but invalids must be visible.
+})], '']), index_1.index])), /^\s*$/),
+// Indexer is invisible but invalids must be visible.
 ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': el.getAttribute('href').slice(7)
@@ -7332,43 +6219,30 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isFixed = exports.number = exports.label = exports.segment = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
-
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])));
-exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.constraint)(16
-/* State.label */
-, false, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
+exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.constraint)(32 /* State.label */, false, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
   class: 'label',
   'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
 }, text)])));
-
 function number(label, base) {
   return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, base.split('.').length);
 }
-
 exports.number = number;
-
 function isFixed(label) {
   return /^[^-]+-[0-9]+(?:\.[0-9]+)*$/.test(label);
 }
-
 exports.isFixed = isFixed;
-
 function increment(number, position) {
   if (number === '0' && position > 1) return increment('1', position);
   const ns = number.split('.');
   const ms = Array(position);
-
   for (let i = 0; i < position; ++i) {
     ms[i] = i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1;
   }
-
   return ms.join('.');
 }
 
@@ -7384,30 +6258,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.placeholder = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
-const dom_1 = __webpack_require__(3252); // Don't use the symbols already used: !#$%@&*+~=
+const dom_1 = __webpack_require__(3252);
+// Don't use the symbols already used: !#$%@&*+~=|
 // All syntax surrounded by square brackets shouldn't contain line breaks.
-
-
-exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[:', '[^'], (0, combinator_1.surround)((0, source_1.str)(/^\[[:^]/), (0, combinator_1.syntax)(1024
-/* Syntax.placeholder */
-, 2, 1, 0
-/* State.none */
-, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]))), (0, source_1.str)(']'), false, ([as, bs], rest) => [[(0, dom_1.html)('span', {
+exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.surround)((0, source_1.str)(/^\[[:^|]/), (0, combinator_1.syntax)(64 /* Syntax.placeholder */, 2, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 2]])))), (0, source_1.str)(']'), false, ([, bs], rest) => [[(0, dom_1.html)('span', {
   class: 'invalid',
   'data-invalid-syntax': 'extension',
   'data-invalid-type': 'syntax',
-  'data-invalid-message': `Reserved start symbol "${as[0][1]}" cannot be used in "[]"`
+  'data-invalid-message': `Invalid start symbol or linebreak`
 }, (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
@@ -7422,23 +6285,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.attributes = exports.attribute = exports.html = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const memoize_1 = __webpack_require__(1808);
-
-const cache_1 = __webpack_require__(9210);
-
+const clock_1 = __webpack_require__(7681);
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const tags = Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
   bdo: {
@@ -7447,17 +6301,13 @@ const attrspecs = {
 };
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/i, (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 5, 1, 0
-/* State.none */
-, (0, combinator_1.union)([(0, combinator_1.focus)(/^<wbr[^\S\n]*>/i, () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.surround)( // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, source_1.str)(/^[^\S\n]*>/), true, ([as, bs = [], cs], rest) => [[elem(as[0].slice(1), (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [])], rest]), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/i, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new cache_1.Cache(10000)))])))));
-exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i)]); // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, combinator_1.validate)(/^<[a-z]+(?=[^\S\n]|>)/i, (0, combinator_1.syntax)(0 /* Syntax.none */, 5, 1, 0 /* State.none */, (0, combinator_1.union)([(0, combinator_1.focus)(/^<wbr[^\S\n]*>/i, () => [[(0, dom_1.html)('wbr')], '']), (0, combinator_1.surround)(
+// https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+(0, source_1.str)(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, source_1.str)(/^[^\S\n]*>/), true, ([as, bs = [], cs], rest) => [[elem(as[0].slice(1), (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [])], rest]), (0, combinator_1.match)(new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)((0, combinator_1.open)(/^\n?/, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`), [[(0, visibility_1.blankWith)('\n', `</${tag}>`), 5]]), true))]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => TAGS.indexOf(tag), [])), (0, combinator_1.match)(/^<([a-z]+)(?=[^\S\n]|>)/i, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)(/^[^\S\n]*>/), true), (0, combinator_1.subsequence)([(0, combinator_1.focus)(/^[^\S\n]*\n/, (0, combinator_1.some)(inline_1.inline)), (0, combinator_1.some)(inline_1.inline, `</${tag}>`, [[`</${tag}>`, 5]])]), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], rest) => [[elem(tag, as, bs, cs)], rest], ([as, bs = []], rest) => [[elem(tag, as, bs, [])], rest]), ([, tag]) => tag, new clock_1.Clock(10000)))])))));
+exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i)]);
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
-
 const TAGS = Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "basefont", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "hgroup", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
-
 function elem(tag, as, bs, cs) {
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
   if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
@@ -7466,7 +6316,6 @@ function elem(tag, as, bs, cs) {
   const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs) : (0, dom_1.html)(tag, attrs, (0, dom_1.defrag)(bs));
 }
-
 function invalid(type, message, as, bs, cs) {
   return (0, dom_1.html)('span', {
     class: 'invalid',
@@ -7475,13 +6324,10 @@ function invalid(type, message, as, bs, cs) {
     'data-invalid-message': message
   }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)));
 }
-
 const requiredAttributes = (0, memoize_1.memoize)(spec => Object.entries(spec).flatMap(([k, v]) => v && Object.isFrozen(v) ? [k] : []), new WeakMap());
-
 function attributes(syntax, classes, spec, params) {
   let invalid = false;
   const attrs = {};
-
   for (let i = 0; i < params.length; ++i) {
     const param = params[i].trim();
     const name = param.split('=', 1)[0];
@@ -7491,19 +6337,15 @@ function attributes(syntax, classes, spec, params) {
     spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0 ? attrs[name] = value ?? '' : invalid ||= !!spec;
     (0, array_1.splice)(params, i--, 1);
   }
-
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
-
   if (invalid) {
     attrs['class'] = (classes.includes('invalid') ? classes : (0, array_1.unshift)(classes, ['invalid'])).join(' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
     attrs['data-invalid-message'] = 'Invalid argument';
   }
-
   return attrs;
 }
-
 exports.attributes = attributes;
 
 /***/ }),
@@ -7518,13 +6360,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.htmlentity = exports.unsafehtmlentity = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const dom_1 = __webpack_require__(3252);
-
 const memoize_1 = __webpack_require__(1808);
-
 exports.unsafehtmlentity = (0, combinator_1.creation)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, ({
   source
 }) => [[parse(source) ?? `\x1B${source}`], ''])));
@@ -7553,24 +6391,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.insertion = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('++', '+'), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 1, 1, 0
-/* State.none */
-, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)]))), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('++', '+'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)]))), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -7584,65 +6411,32 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.link = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const html_1 = __webpack_require__(5994);
-
 const autolink_1 = __webpack_require__(6578);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const util_1 = __webpack_require__(9437);
-
 const url_1 = __webpack_require__(2261);
-
 const dom_1 = __webpack_require__(3252);
-
 const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
 exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.union)([medialink, textlink])));
-const textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
-/* State.link */
-, false, (0, combinator_1.syntax)(256
-/* Syntax.link */
-, 2, 10, 250
-/* State.linkers */
-| 4
-/* State.media */
-, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
+const textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */ | 8 /* State.media */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
   return parse(content, params, rest, context);
 }))));
-const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8
-/* State.link */
-| 4
-/* State.media */
-, false, (0, combinator_1.syntax)(256
-/* Syntax.link */
-, 2, 10, 250
-/* State.linkers */
-, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
+const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */ | 8 /* State.media */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
-const autolink = (0, combinator_1.state)(2
-/* State.autolink */
-, false, (0, combinator_1.state)(1
-/* State.shortcut */
-, autolink_1.autolink));
-
+const autolink = (0, combinator_1.state)(2 /* State.autolink */, false, (0, combinator_1.state)(1 /* State.shortcut */, autolink_1.autolink));
 function parse(content, params, rest, context) {
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
   content = (0, dom_1.defrag)(content);
-
   for (let source = (0, util_1.stringify)(content); source;) {
     if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(source)) return;
     const result = autolink({
@@ -7652,55 +6446,45 @@ function parse(content, params, rest, context) {
     if (typeof (0, parser_1.eval)(result, [])[0] === 'object') return;
     source = (0, parser_1.exec)(result, '');
   }
-
   const INSECURE_URI = params.shift();
   const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
-
-  switch (uri.protocol) {
-    case 'tel:':
-      {
-        const tel = content.length === 0 ? INSECURE_URI : content[0];
-        const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
-
-        if (content.length <= 1 && typeof tel === 'string' && pattern.test(tel) && pattern.test(INSECURE_URI) && tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, '')) {
-          break;
-        }
-
-        return;
-      }
-  }
-
   const el = elem(INSECURE_URI, content, uri, context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }
-
 function elem(INSECURE_URI, content, uri, origin) {
   let type;
   let message;
-
   switch (uri.protocol) {
     case 'http:':
     case 'https:':
-      if (INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
-        type = 'argument';
-        message = 'Dot-segments cannot be used in subresource paths';
-        break;
+      switch (true) {
+        case INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
+          type = 'argument';
+          message = 'Dot-segments cannot be used in subresource paths';
+          break;
+        default:
+          return (0, dom_1.html)('a', {
+            class: content.length === 0 ? 'url' : 'link',
+            href: uri.source,
+            target:  false || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
+          }, content.length === 0 ? decode(INSECURE_URI) : content);
       }
-
-      return (0, dom_1.html)('a', {
-        class: content.length === 0 ? 'url' : 'link',
-        href: uri.source,
-        target:  false || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
-      }, content.length === 0 ? decode(INSECURE_URI) : content);
-
+      break;
     case 'tel:':
-      return (0, dom_1.html)('a', {
-        class: 'tel',
-        href: uri.source
-      }, content.length === 0 ? [INSECURE_URI] : content);
+      const tel = content.length === 0 ? INSECURE_URI : content[0];
+      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
+      switch (true) {
+        case content.length <= 1 && pattern.test(INSECURE_URI) && typeof tel === 'string' && pattern.test(tel) && tel.replace(/[^+\d]/g, '') === INSECURE_URI.replace(/[^+\d]/g, ''):
+          return (0, dom_1.html)('a', {
+            class: 'tel',
+            href: uri.source
+          }, content.length === 0 ? [INSECURE_URI] : content);
+        default:
+          type = 'content';
+          message = 'Invalid content';
+      }
   }
-
   return (0, dom_1.html)('a', {
     class: 'invalid',
     'data-invalid-syntax': 'link',
@@ -7708,37 +6492,29 @@ function elem(INSECURE_URI, content, uri, origin) {
     'data-invalid-message': message ??= 'Invalid protocol'
   }, content.length === 0 ? INSECURE_URI : content);
 }
-
 function resolve(uri, host, source) {
   switch (true) {
     case uri.slice(0, 2) === '^/':
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
       && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
-
     case host.origin === source.origin && host.pathname === source.pathname:
     case uri.slice(0, 2) === '//':
       return uri;
-
     default:
       const target = new url_1.ReadonlyURL(uri, source.href);
       return target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
   }
 }
-
 exports.resolve = resolve;
-
 function decode(uri) {
   if (!uri.includes('%')) return uri;
   const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
-
   try {
     let path = decodeURI(uri.slice(origin.length));
-
     if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
       path = uri.slice(origin.length);
     }
-
     uri = origin + path;
   } finally {
     return uri.replace(/\s+/g, encodeURI);
@@ -7757,24 +6533,24 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.mark = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
+const indexee_1 = __webpack_require__(1269);
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 1, 1, 0
-/* State.none */
-, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('==')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '='), exports.mark)])))), (0, source_1.str)('=='), false, ([, bs], rest) => [[(0, dom_1.html)('mark', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.constraint)(4 /* State.mark */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('=='), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '=', [[/^\\?\n/, 9]]), exports.mark)]))))), (0, source_1.str)('=='), false, ([, bs], rest, {
+  id
+}) => {
+  const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
+  (0, dom_1.define)(el, {
+    id: id !== '' && (0, indexee_1.identity)((0, indexee_1.text)(el), 'mark') || undefined
+  });
+  return [[el, (0, dom_1.html)('a', {
+    href: el.id ? `#${el.id}` : undefined
+  })], rest];
+}, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -7788,13 +6564,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.math = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const dom_1 = __webpack_require__(3252);
-
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)('$', (0, combinator_1.precedence)(6, bracket), '$'), (0, combinator_1.surround)(/^\$(?![\s{}])/, (0, combinator_1.precedence)(3, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.focus)(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, (0, combinator_1.some)(source_1.unescsource))]))), /^\$(?![0-9A-Za-z])/)]), ({
   source,
@@ -7828,23 +6600,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.media = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const link_1 = __webpack_require__(9628);
-
 const html_1 = __webpack_require__(5994);
-
 const htmlentity_1 = __webpack_require__(1562);
-
 const source_1 = __webpack_require__(6743);
-
 const url_1 = __webpack_require__(2261);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const optspec = {
   'width': [],
   'height': [],
@@ -7852,13 +6615,7 @@ const optspec = {
   rel: undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.open)('!', (0, combinator_1.constraint)(4
-/* State.media */
-, false, (0, combinator_1.syntax)(64
-/* Syntax.media */
-, 2, 10, ~8
-/* State.link */
-, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.open)('!', (0, combinator_1.constraint)(8 /* State.media */, false, (0, combinator_1.syntax)(4 /* Syntax.media */, 2, 10, ~16 /* State.link */, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']', [[/^\\?\n/, 9]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
   let cache;
@@ -7870,15 +6627,11 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
   cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
   if (!sanitize(el, url, text)) return [[el], rest];
   (0, dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
-
   // Awaiting the generic support for attr().
   if (el.hasAttribute('aspect-ratio')) {
     el.style.aspectRatio = el.getAttribute('aspect-ratio');
   }
-
-  if (context.state & 8
-  /* State.link */
-  ) return [[el], rest];
+  if (context.state & 16 /* State.link */) return [[el], rest];
   if (cache && cache.tagName !== 'IMG') return (0, combinator_1.creation)(10, _ => [[el], rest])({
     source: '!',
     context
@@ -7893,7 +6646,6 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
 }))))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
 const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
-
 function sanitize(target, uri, alt) {
   switch (uri.protocol) {
     case 'http:':
@@ -7907,9 +6659,7 @@ function sanitize(target, uri, alt) {
         });
         return false;
       }
-
       break;
-
     default:
       (0, dom_1.define)(target, {
         class: void target.classList.add('invalid'),
@@ -7919,7 +6669,6 @@ function sanitize(target, uri, alt) {
       });
       return false;
   }
-
   if (alt.includes('\x1B')) {
     (0, dom_1.define)(target, {
       class: void target.classList.add('invalid'),
@@ -7930,7 +6679,6 @@ function sanitize(target, uri, alt) {
     });
     return false;
   }
-
   return true;
 }
 
@@ -7946,34 +6694,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reference = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const util_1 = __webpack_require__(9437);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(64
-/* State.reference */
-, false, (0, combinator_1.syntax)(8192
-/* Syntax.reference */
-, 6, 1, 128
-/* State.annotation */
-| 64
-/* State.reference */
-| 4
-/* State.media */
-, (0, visibility_1.startLoose)((0, combinator_1.context)({
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.context)({
   delimiters: undefined
 }, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
 const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
-
 function attributes(ns) {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
     class: 'reference',
@@ -8000,26 +6730,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ruby = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const htmlentity_1 = __webpack_require__(1562);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(512
-/* Syntax.ruby */
-, 2, 1, -1
-/* State.all */
-, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'), (0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')')]), ([texts, rubies], _, context) => [(0, parser_1.eval)(text({
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.syntax)(32 /* Syntax.ruby */, 2, 1, -1 /* State.all */, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'), (0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')')]), ([texts, rubies], _, context) => [(0, parser_1.eval)(text({
   source: texts,
   context
 }), [])[0] ?? '', (0, parser_1.eval)(text({
@@ -8027,14 +6745,11 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, 
   context
 }), [])[0] ?? '']), ([texts, rubies]) => texts && rubies && (0, visibility_1.isStartTightNodes)(texts)), ([texts, rubies]) => {
   texts[texts.length - 1] === '' && texts.pop();
-
   switch (true) {
     case rubies.length <= texts.length:
       return [(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)(texts.reduce((acc, _, i) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies[i]), (0, dom_1.html)('rp', ')')] : [(0, dom_1.html)('rt')])), [])))];
-
     case texts.length === 1 && [...texts[0]].length >= rubies.length:
       return [(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)([...texts[0]].reduce((acc, _, i, texts) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies[i]), (0, dom_1.html)('rp', ')')] : [(0, dom_1.html)('rt')])), [])))];
-
     default:
       return [(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)((0, array_1.unshift)([texts.join(' ')], [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies.join(' ').trim()), (0, dom_1.html)('rp', ')')])))];
   }
@@ -8044,7 +6759,6 @@ const text = (0, combinator_1.creation)(1, false, ({
   context
 }) => {
   const acc = [''];
-
   while (source !== '') {
     switch (source[0]) {
       // @ts-expect-error
@@ -8054,13 +6768,12 @@ const text = (0, combinator_1.creation)(1, false, ({
             source,
             context
           });
-
           if (result) {
             acc[acc.length - 1] += (0, parser_1.eval)(result)[0];
             source = (0, parser_1.exec)(result, source.slice(1));
             continue;
-          } // fallthrough
-
+          }
+          // fallthrough
         }
 
       default:
@@ -8070,7 +6783,6 @@ const text = (0, combinator_1.creation)(1, false, ({
             source = source.slice(1);
             continue;
           }
-
           const result = (0, source_1.text)({
             source,
             context
@@ -8081,13 +6793,10 @@ const text = (0, combinator_1.creation)(1, false, ({
         }
     }
   }
-
   return acc.join('').trimStart() ? [[acc], ''] : undefined;
 });
-
 function attributes(texts, rubies) {
   let attrs;
-
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
       if (ss[i].indexOf('\x1B') === -1) continue;
@@ -8100,7 +6809,6 @@ function attributes(texts, rubies) {
       };
     }
   }
-
   return attrs ?? {};
 }
 
@@ -8116,16 +6824,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.shortmedia = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const url_1 = __webpack_require__(4318);
-
 const media_1 = __webpack_require__(1303);
-
-exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.constraint)(4
-/* State.media */
-, false, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
+exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.constraint)(8 /* State.media */, false, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
 
 /***/ }),
 
@@ -8139,24 +6841,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.strong = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const inline_1 = __webpack_require__(1160);
-
 const source_1 = __webpack_require__(6743);
-
 const visibility_1 = __webpack_require__(7618);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 1, 1, 0
-/* State.none */
-, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), exports.strong)])))), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), exports.strong)])))), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -8170,121 +6861,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.template = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const source_1 = __webpack_require__(6743);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.syntax)(0
-/* Syntax.none */
-, 2, 1, -1
-/* State.all */
-, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
+exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.syntax)(0 /* Syntax.none */, 2, 1, -1 /* State.all */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
 }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest]));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true)])));
-
-/***/ }),
-
-/***/ 5485:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.localize = void 0;
-
-const combinator_1 = __webpack_require__(2087);
-
-const ja_1 = __webpack_require__(1499);
-
-const dom_1 = __webpack_require__(3252);
-
-function localize(parser) {
-  return (0, combinator_1.fmap)(parser, ns => {
-    if (ns.length === 0) return ns;
-    const el = ns.length === 1 && typeof ns[0] === 'object' ? ns[0] : (0, dom_1.html)('div', ns);
-
-    for (let es = el.querySelectorAll('.linebreak:not(:empty)'), len = es.length, i = 0; i < len; ++i) {
-      const el = es[i];
-      if (!check(el)) continue;
-      el.firstChild.remove();
-    }
-
-    return ns;
-  });
-}
-
-exports.localize = localize;
-
-function check(el) {
-  const char = lastChar(el);
-  if (!char) return false;
-  return (0, ja_1.japanese)(char);
-}
-
-function lastChar(node) {
-  while (node = node?.previousSibling) {
-    if (!('id' in node)) return [...node.data.slice(-2)].pop() ?? '';
-    if (node.firstChild) return [...text(node).slice(-2)].pop() ?? '';
-
-    switch (node.tagName) {
-      case 'BR':
-        return '';
-
-      case 'SPAN':
-        switch (node.className) {
-          case 'linebreak':
-            return '';
-        }
-
-    }
-  }
-
-  return '';
-}
-
-function text(el) {
-  switch (el.tagName) {
-    case 'RUBY':
-      for (let ns = el.childNodes, i = ns.length; i--;) {
-        const child = ns[i];
-        if ('id' in child) continue;
-        return child.data;
-      }
-
-      return '';
-
-    default:
-      return el.textContent;
-  }
-}
-
-/***/ }),
-
-/***/ 1499:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.japanese = void 0;
-
-function japanese(char) {
-  return /^[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？]/u.test(char);
-}
-
-exports.japanese = japanese;
 
 /***/ }),
 
@@ -8298,26 +6882,20 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figure = void 0;
-
 const label_1 = __webpack_require__(466);
-
 const queue_1 = __webpack_require__(4934);
-
 const array_1 = __webpack_require__(8112);
-
 const dom_1 = __webpack_require__(3252);
-
 const query_1 = __webpack_require__(6120);
-
 function* figure(target, footnotes, opts = {}) {
   const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new Set();
   const numbers = new Map();
   let base = '0';
   let bases = base.split('.');
-  let index = bases; // Bug: Firefox
+  let index = bases;
+  // Bug: Firefox
   //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
-
   for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
@@ -8328,7 +6906,6 @@ function* figure(target, footnotes, opts = {}) {
     if (bases.length === 1 && tagName[0] === 'H') continue;
     const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${increment(index, def)}`;
     if (label.endsWith('-')) continue;
-
     if (label.endsWith('-0')) {
       (0, dom_1.define)(def, {
         class: void def.classList.add('invalid'),
@@ -8339,7 +6916,6 @@ function* figure(target, footnotes, opts = {}) {
       });
       continue;
     }
-
     if (tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.x.0 is disabled.
       if (label.lastIndexOf('.', label.length - 3) !== -1) {
@@ -8351,9 +6927,8 @@ function* figure(target, footnotes, opts = {}) {
           hidden: null
         });
         continue;
-      } // $-x.0 after h1-h6.
-
-
+      }
+      // $-x.0 after h1-h6.
       if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
         (0, dom_1.define)(def, {
           class: void def.classList.add('invalid'),
@@ -8373,30 +6948,24 @@ function* figure(target, footnotes, opts = {}) {
         });
       }
     }
-
     const group = label.split('-', 1)[0];
     let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? numbers.get(group).split('.').slice(0, bases.length).join('.') : base);
-
     if (number.endsWith('.0')) {
       if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
-
       if (number.startsWith('0.')) {
         number = index.slice(0).reduce((ns, _, i, xs) => {
           i === ns.length ? xs.length = i : ns[i] = +ns[i] > +xs[i] ? ns[i] : +ns[i] === 0 ? xs[i] : `${+xs[i] + 1}`;
           return ns;
         }, number.split('.')).join('.');
       }
-
       base = number;
       bases = index = base.split('.');
       tagName !== 'FIGURE' && numbers.clear();
       continue;
     }
-
     !(0, label_1.isFixed)(label) && numbers.set(group, number);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}${group === 'fig' ? '.' : ''} ${number}`;
     (0, dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${figindex}. `);
-
     if (labels.has(label)) {
       if (def.classList.contains('invalid')) continue;
       (0, dom_1.define)(def, {
@@ -8415,13 +6984,10 @@ function* figure(target, footnotes, opts = {}) {
         'data-invalid-message': null
       });
     }
-
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
-
     for (let rs = refs.take(label, Infinity), i = 0; i < rs.length; ++i) {
       const ref = rs[i];
-
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
         (0, dom_1.define)(ref, {
           class: void ref.classList.remove('invalid'),
@@ -8430,7 +6996,6 @@ function* figure(target, footnotes, opts = {}) {
           'data-invalid-message': null
         });
       }
-
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield (0, dom_1.define)(ref, opts.id !== '' ? {
         href: `#${def.id}`
@@ -8439,7 +7004,6 @@ function* figure(target, footnotes, opts = {}) {
       }, figindex);
     }
   }
-
   for (const [, ref] of refs) {
     if (opts.id !== '' && !ref.classList.contains('invalid')) {
       (0, dom_1.define)(ref, {
@@ -8449,36 +7013,29 @@ function* figure(target, footnotes, opts = {}) {
         'data-invalid-message': messages.reference
       });
     }
-
     yield ref;
   }
-
   return;
 }
-
 exports.figure = figure;
 const messages = {
   declaration: 'Base index declarations must be after level 1 to 6 headings',
   duplicate: 'Duplicate label',
   reference: 'Missing the target figure'
 };
-
 function increment(bases, el) {
   const index = (+el.tagName[1] - 1 || 1) - 1;
   return index + 1 < bases.length ? bases.slice(0, index + 2).map((v, i) => {
     switch (true) {
       case i < index:
         return v;
-
       case i === index:
         return +v + 1;
-
       default:
         return 0;
     }
   }).join('.') : '';
 }
-
 function capitalize(label) {
   return label[0].toUpperCase() + label.slice(1);
 }
@@ -8495,13 +7052,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reference = exports.annotation = exports.footnote = void 0;
-
 const indexee_1 = __webpack_require__(1269);
-
 const queue_1 = __webpack_require__(4934);
-
 const dom_1 = __webpack_require__(3252);
-
 function* footnote(target, footnotes, opts = {}, bottom = null) {
   // Bug: Firefox
   //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
@@ -8509,40 +7062,33 @@ function* footnote(target, footnotes, opts = {}, bottom = null) {
     const el = es[i];
     el.parentNode === target && el.remove();
   }
-
   yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
   return;
 }
-
 exports.footnote = footnote;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
-
 function build(syntax, marker, splitter) {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   return function* (target, footnote, opts = {}, bottom = null) {
     const defs = new Map();
     const buffer = new queue_1.MultiQueue();
-    const titles = new Map(); // Bug: Firefox
+    const titles = new Map();
+    // Bug: Firefox
     //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
-
     const splitters = [];
-
     for (let es = target.querySelectorAll(splitter ?? '_'), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
-
     let count = 0;
     let total = 0;
     let style;
-
     for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
-
       while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
           total += defs.size;
@@ -8550,15 +7096,12 @@ function build(syntax, marker, splitter) {
             class: `${syntax}s`
           }), splitters[0] ?? null));
         }
-
         splitters.shift();
       }
-
       const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
-
       if (style === 'count' ? abbr : !abbr) {
         (0, dom_1.define)(ref, {
           class: void ref.classList.add('invalid'),
@@ -8574,13 +7117,11 @@ function build(syntax, marker, splitter) {
           'data-invalid-message': null
         });
       }
-
       if (!ref.firstElementChild.hasAttribute('hidden')) {
         ref.firstElementChild.setAttribute('hidden', '');
       } else {
         ref.lastChild?.remove();
       }
-
       const title =  false || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || undefined;
       title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
       const blank = !!abbr && !content.firstChild;
@@ -8590,10 +7131,8 @@ function build(syntax, marker, splitter) {
         id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : undefined,
         'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
       }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
-
       if (title && !blank && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
-
         for (let refs = buffer.take(identifier, Infinity), i = 0; i < refs.length; ++i) {
           const ref = refs[i];
           if (ref.getAttribute('data-invalid-type') !== 'content') continue;
@@ -8606,7 +7145,6 @@ function build(syntax, marker, splitter) {
           });
         }
       }
-
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
       const defId = def.id || undefined;
       (0, dom_1.define)(ref, {
@@ -8629,16 +7167,13 @@ function build(syntax, marker, splitter) {
         title: abbr && !blank ? title : undefined
       }, `^${refIndex}`));
     }
-
     if (defs.size > 0 || footnote) {
       yield* proc(defs, footnote ?? target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
       }), splitters[0] ?? bottom));
     }
-
     return;
   };
-
   function* proc(defs, footnote) {
     const {
       children
@@ -8646,33 +7181,27 @@ function build(syntax, marker, splitter) {
     const size = defs.size;
     let count = 0;
     let length = children.length;
-
     I: for (const [key, def] of defs) {
       defs.delete(key);
       ++count;
-
       while (length > size) {
         const node = children[count - 1];
         if (equal(node, def)) continue I;
         yield footnote.removeChild(node);
         --length;
       }
-
       const node = count <= length ? children[count - 1] : null;
       if (node && equal(node, def)) continue;
       yield footnote.insertBefore(def, node);
       ++length;
     }
-
     while (length > size) {
       yield footnote.removeChild(children[size]);
       --length;
     }
-
     return;
   }
 }
-
 function equal(a, b) {
   return a.id === b.id && a.innerHTML === b.innerHTML;
 }
@@ -8689,29 +7218,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const heading_1 = __webpack_require__(4623);
-
 const codeblock_1 = __webpack_require__(1849);
-
 const mathblock_1 = __webpack_require__(3754);
-
 const extension_1 = __webpack_require__(4751);
-
 const source_1 = __webpack_require__(6743);
-
 exports.MAX_SEGMENT_SIZE = 100000; // 100,000 bytes (Max value size of FDB)
-
 exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE * 10;
 const parser = (0, combinator_1.union)([heading_1.segment, codeblock_1.segment, mathblock_1.segment, extension_1.segment, (0, combinator_1.some)(source_1.contentline, exports.MAX_SEGMENT_SIZE * 2), (0, combinator_1.some)(source_1.emptyline, exports.MAX_SEGMENT_SIZE * 2)]);
-
 function* segment(source) {
   if (!validate(source, exports.MAX_INPUT_SIZE)) return yield `\x07Too large input over ${exports.MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
-
   while (source !== '') {
     const result = parser({
       source,
@@ -8719,22 +7237,17 @@ function* segment(source) {
     });
     const rest = (0, parser_1.exec)(result);
     const segs = (0, parser_1.eval)(result).length ? (0, parser_1.eval)(result) : [source.slice(0, source.length - rest.length)];
-
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
       validate(seg, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\x07Too large segment over ${exports.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`;
     }
-
     source = rest;
   }
 }
-
 exports.segment = segment;
-
 function validate(source, size) {
   return source.length <= size / 4 || source.length <= size && new Blob([source]).size <= size;
 }
-
 exports.validate = validate;
 
 /***/ }),
@@ -8749,9 +7262,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.anyline = exports.emptyline = exports.contentline = exports.stropt = exports.str = exports.unescsource = exports.escsource = exports.linebreak = exports.txt = exports.text = void 0;
-
 var text_1 = __webpack_require__(7763);
-
 Object.defineProperty(exports, "text", ({
   enumerable: true,
   get: function () {
@@ -8770,27 +7281,21 @@ Object.defineProperty(exports, "linebreak", ({
     return text_1.linebreak;
   }
 }));
-
 var escapable_1 = __webpack_require__(8431);
-
 Object.defineProperty(exports, "escsource", ({
   enumerable: true,
   get: function () {
     return escapable_1.escsource;
   }
 }));
-
 var unescapable_1 = __webpack_require__(8380);
-
 Object.defineProperty(exports, "unescsource", ({
   enumerable: true,
   get: function () {
     return unescapable_1.unescsource;
   }
 }));
-
 var str_1 = __webpack_require__(2790);
-
 Object.defineProperty(exports, "str", ({
   enumerable: true,
   get: function () {
@@ -8803,9 +7308,7 @@ Object.defineProperty(exports, "stropt", ({
     return str_1.stropt;
   }
 }));
-
 var line_1 = __webpack_require__(5034);
-
 Object.defineProperty(exports, "contentline", ({
   enumerable: true,
   get: function () {
@@ -8837,36 +7340,34 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.escsource = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const text_1 = __webpack_require__(7763);
-
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 exports.escsource = (0, combinator_1.creation)(1, false, ({
   source
 }) => {
   if (source === '') return;
   const i = source.search(delimiter);
-
   switch (i) {
     case -1:
       return [[source], ''];
-
     case 0:
       switch (source[0]) {
         case '\x1B':
           return [[source.slice(1, 2)], source.slice(2)];
-
         case '\\':
-          return [[source.slice(0, 2)], source.slice(2)];
-
+          switch (source[1]) {
+            case undefined:
+            case '\n':
+              return [[source[0]], source.slice(1)];
+            default:
+              return [[source.slice(0, 2)], source.slice(2)];
+          }
         default:
           const b = source[0] !== '\n' && source[0].trimStart() === '';
           const i = b ? source.search(text_1.nonWhitespace) : 1;
           return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
-
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }
@@ -8884,9 +7385,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.contentline = exports.emptyline = exports.anyline = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 exports.anyline = (0, combinator_1.line)(() => [[], '']);
 exports.emptyline = (0, combinator_1.line)(i => (0, combinator_1.isEmpty)(i.source) ? [[], ''] : undefined);
 exports.contentline = (0, combinator_1.line)(i => !(0, combinator_1.isEmpty)(i.source) ? [[], ''] : undefined);
@@ -8903,9 +7402,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.stropt = exports.str = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 function str(pattern, not) {
   return typeof pattern === 'string' ? (0, combinator_1.creation)(1, false, ({
     source
@@ -8922,9 +7419,7 @@ function str(pattern, not) {
     return m && m[0].length > 0 ? [[m[0]], source.slice(m[0].length)] : undefined;
   });
 }
-
 exports.str = str;
-
 function stropt(pattern) {
   return typeof pattern === 'string' ? (0, combinator_1.creation)(1, false, ({
     source
@@ -8939,7 +7434,6 @@ function stropt(pattern) {
     return m ? [[m[0]], source.slice(m[0].length)] : undefined;
   });
 }
-
 exports.stropt = stropt;
 
 /***/ }),
@@ -8954,17 +7448,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.delimiter = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const str_1 = __webpack_require__(2790);
-
 const dom_1 = __webpack_require__(3252);
-
-exports.delimiter = /[\s\x00-\x7F]|\S[#>]|[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
+exports.delimiter = /[\s\x00-\x7F]|\S[#>]/u;
 exports.nonWhitespace = /[\S\n]|$/;
 exports.nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
-const nssb = /^[\p{Ideo}\p{scx=Hiragana}\p{scx=Katakana}～！？][^\S\n]*(?=\\\n)/u;
 const repeat = (0, str_1.str)(/^(.)\1*/);
 exports.text = (0, combinator_1.creation)(1, false, ({
   source,
@@ -8972,47 +7461,22 @@ exports.text = (0, combinator_1.creation)(1, false, ({
 }) => {
   if (source === '') return;
   const i = source.search(exports.delimiter);
-
   switch (i) {
     case -1:
       return [[source], ''];
-
     case 0:
-      switch (source[0]) {
-        case '\x1B':
-        case '\\':
-          if (!nssb.test(source.slice(1))) break;
-          return (0, exports.text)({
-            source: source.slice(1),
-            context
-          });
-
-        default:
-          const i = source.match(nssb)?.[0].length ?? -1;
-          if (i !== -1) return [[source[0], (0, dom_1.html)('span', {
-            class: 'linebreak'
-          })], source.slice(i + 2)];
-      }
-
       switch (source[0]) {
         case '\x1B':
         case '\\':
           switch (source[1]) {
             case undefined:
-              return [[], ''];
-
             case '\n':
-              return [[(0, dom_1.html)('span', {
-                class: 'linebreak'
-              }, ' ')], source.slice(2)];
-
+              return [[], source.slice(1)];
             default:
               return [[source.slice(1, 2)], source.slice(2)];
           }
-
         case '\n':
           return [[(0, dom_1.html)('br')], source.slice(1)];
-
         case '_':
         case '*':
         case '+':
@@ -9023,25 +7487,21 @@ exports.text = (0, combinator_1.creation)(1, false, ({
             source,
             context
           }) : [[source[0]], source.slice(1)];
-
         default:
           const b = source[0].trimStart() === '';
           const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) || 1 : 1;
           return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [[], source.slice(i)] : [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
-
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }
 });
 exports.txt = (0, combinator_1.union)([exports.text]);
 exports.linebreak = (0, combinator_1.focus)('\n', (0, combinator_1.union)([exports.text]));
-
 function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
 }
-
 exports.isAlphanumeric = isAlphanumeric;
 
 /***/ }),
@@ -9056,28 +7516,22 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.unescsource = void 0;
-
 const combinator_1 = __webpack_require__(2087);
-
 const text_1 = __webpack_require__(7763);
-
 exports.unescsource = (0, combinator_1.creation)(1, false, ({
   source
 }) => {
   if (source === '') return;
   const i = source.search(text_1.delimiter);
-
   switch (i) {
     case -1:
       return [[source], ''];
-
     case 0:
       {
         const b = source[0] !== '\n' && source[0].trimStart() === '';
         const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) || 1 : 1;
         return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
-
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }
@@ -9095,13 +7549,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.stringify = void 0;
-
 function stringify(nodes) {
   let acc = '';
-
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
-
     if (typeof node === 'string') {
       acc += node;
     } else {
@@ -9109,10 +7560,8 @@ function stringify(nodes) {
       acc += node.innerText;
     }
   }
-
   return acc;
 }
-
 exports.stringify = stringify;
 
 /***/ }),
@@ -9127,62 +7576,41 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.trimNode = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.startLoose = exports.blankWith = exports.regBlankStart = exports.visualize = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const combinator_1 = __webpack_require__(2087);
-
 const htmlentity_1 = __webpack_require__(1562);
-
 const source_1 = __webpack_require__(6743);
-
 const normalize_1 = __webpack_require__(185);
-
 const memoize_1 = __webpack_require__(1808);
-
 const array_1 = __webpack_require__(8112);
-
 function visualize(parser) {
   const blankline = new RegExp(/^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
   return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
 }
-
 exports.visualize = visualize;
-
 function hasVisible(nodes, {
   state = 0
 } = {}) {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
-
     if (typeof node === 'string') {
       if (node && node.trimStart()) return true;
     } else {
       if (node.innerText.trimStart()) return true;
-      if (state & 4
-      /* State.media */
-      ^ 4
-      /* State.media */
-      && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
+      if (state & 8 /* State.media */ ^ 8 /* State.media */ && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }
   }
-
   return false;
 }
-
 exports.regBlankStart = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
-
 function blankWith(starting, delimiter) {
   if (delimiter === undefined) return blankWith('', starting);
   return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
 }
-
 exports.blankWith = blankWith;
-
 function startLoose(parser, except) {
   return input => isStartLoose(input, except) ? parser(input) : undefined;
 }
-
 exports.startLoose = startLoose;
 const isStartLoose = (0, memoize_1.reduce)(({
   source,
@@ -9195,11 +7623,9 @@ const isStartLoose = (0, memoize_1.reduce)(({
 }, ({
   source
 }, except = '') => `${source}\x1E${except}`);
-
 function startTight(parser, except) {
   return input => isStartTight(input, except) ? parser(input) : undefined;
 }
-
 exports.startTight = startTight;
 const isStartTight = (0, memoize_1.reduce)(({
   source,
@@ -9207,17 +7633,14 @@ const isStartTight = (0, memoize_1.reduce)(({
 }, except) => {
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
-
   switch (source[0]) {
     case ' ':
     case '　':
     case '\t':
     case '\n':
       return false;
-
     case '\\':
       return source[1]?.trimStart() !== '';
-
     case '&':
       switch (true) {
         case source.length > 2 && source[1] !== ' ' && (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)({
@@ -9226,143 +7649,103 @@ const isStartTight = (0, memoize_1.reduce)(({
         }))?.[0]?.trimStart() === '':
           return false;
       }
-
       return true;
-
     case '<':
       switch (true) {
         case source.length >= 5 && source.slice(0, 4) === '<wbr' && (source[5] === '>' || /^<wbr[^\S\n]*>/.test(source)):
           return false;
       }
-
       return true;
-
     default:
       return source[0].trimStart() !== '';
   }
 }, ({
   source
 }, except = '') => `${source}\x1E${except}`);
-
 function isStartLooseNodes(nodes) {
   if (nodes.length === 0) return true;
-
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     if (isVisible(node)) return true;
-
-    if (typeof node === 'object') {
-      if (node.tagName === 'BR') break;
-      if (node.className === 'linebreak') break;
-    }
+    if (typeof node === 'object' && node.tagName === 'BR') break;
   }
-
   return false;
 }
-
 exports.isStartLooseNodes = isStartLooseNodes;
-
 function isStartTightNodes(nodes) {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
 }
-
-exports.isStartTightNodes = isStartTightNodes; //export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+exports.isStartTightNodes = isStartTightNodes;
+//export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
 //  if (nodes.length === 0) return true;
 //  return isVisible(nodes[nodes.length - 1], -1);
 //}
-
 function isVisible(node, strpos) {
   switch (typeof node) {
     case 'string':
       const char = node && strpos !== undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
-
       switch (char) {
         case '':
         case ' ':
         case '\t':
         case '\n':
           return false;
-
         default:
           return char.trimStart() !== '';
       }
-
     default:
       switch (node.tagName) {
         case 'BR':
         case 'WBR':
           return false;
-
-        case 'SPAN':
-          return node.className !== 'linebreak';
-
         default:
           return true;
       }
-
   }
 }
-
 function trimBlank(parser) {
   return trimBlankStart(trimBlankEnd(parser));
 }
-
 exports.trimBlank = trimBlank;
-
 function trimBlankStart(parser) {
   return (0, combinator_1.convert)((0, memoize_1.reduce)(source => source.replace(exports.regBlankStart, '')), parser);
 }
-
 exports.trimBlankStart = trimBlankStart;
-
 function trimBlankEnd(parser) {
   return (0, combinator_1.fmap)(parser, trimNodeEnd);
 }
-
 exports.trimBlankEnd = trimBlankEnd;
-
 function trimNode(nodes) {
   return trimNodeStart(trimNodeEnd(nodes));
 }
-
 exports.trimNode = trimNode;
-
 function trimNodeStart(nodes) {
   for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
     if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
-
     if (typeof node === 'string') {
       const pos = node.trimStart().length;
-
       if (pos > 0) {
         nodes[0] = node.slice(-pos);
         break;
       }
     }
-
     nodes.shift();
   }
-
   return nodes;
 }
-
 function trimNodeEnd(nodes) {
   const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
-
   for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
     if (typeof node === 'string') {
       const pos = node.trimEnd().length;
-
       if (pos > 0) {
         nodes[nodes.length - 1] = node.slice(0, pos);
         break;
       }
     }
-
     nodes.pop();
   }
-
   return (0, array_1.push)(nodes, skip);
 }
 
@@ -9378,9 +7761,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.render = void 0;
-
 var render_1 = __webpack_require__(3378);
-
 Object.defineProperty(exports, "render", ({
   enumerable: true,
   get: function () {
@@ -9400,17 +7781,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.render = void 0;
-
 const code_1 = __webpack_require__(7686);
-
 const math_1 = __webpack_require__(611);
-
 const media_1 = __webpack_require__(2233);
-
 const memoize_1 = __webpack_require__(1808);
-
 const query_1 = __webpack_require__(6120);
-
 const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
 const extend = (0, memoize_1.reduce)(opts => ({
   code: code_1.code,
@@ -9418,32 +7793,24 @@ const extend = (0, memoize_1.reduce)(opts => ({
   media: {},
   ...opts
 }));
-
 function render(source, opts = {}) {
   opts = extend(opts);
   const base = location.href;
-
   for (let es = (0, query_1.querySelectorAllWith)(source, selector), i = 0; i < es.length; ++i) {
     render_(base, es[i], opts);
   }
 }
-
 exports.render = render;
-
 function render_(base, source, opts) {
   if (source.classList.contains('invalid')) return;
-
   try {
     switch (true) {
       case !!opts.code && !source.firstElementChild && source.matches('pre.code'):
         return void opts.code(source, opts.caches?.code);
-
       case !!opts.math && !source.firstElementChild && source.matches('.math'):
         return void opts.math(source, opts.caches?.math);
-
       case source.matches('.media:not(img)'):
         return void source.parentElement.parentElement.replaceChild(source, source.parentElement);
-
       case !!opts.media && source.matches('img.media:not([src])[data-src]'):
         {
           const el = (0, media_1.media)(base, source, opts.media, opts.caches?.media);
@@ -9452,7 +7819,6 @@ function render_(base, source, opts) {
           const scope = el.matches('img') ? source : source.parentElement;
           return void scope.parentElement.replaceChild(el, scope);
         }
-
       default:
         return;
     }
@@ -9474,19 +7840,15 @@ var __importDefault = this && this.__importDefault || function (mod) {
     "default": mod
   };
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.code = void 0;
-
 const prismjs_1 = __importDefault(__webpack_require__(9450));
-
 function code(target, cache) {
   const source = target.textContent;
   prismjs_1.default.highlightElement(target, false, () => void cache?.set(`${target.getAttribute('data-lang') ?? ''}\n${source}`, target.cloneNode(true)));
 }
-
 exports.code = code;
 
 /***/ }),
@@ -9501,9 +7863,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.math = void 0;
-
 const dom_1 = __webpack_require__(3252);
-
 function math(target, cache) {
   const source = target.textContent;
   queue(target, () => {
@@ -9511,13 +7871,11 @@ function math(target, cache) {
     return void cache?.set(source, target.cloneNode(true));
   });
 }
-
 exports.math = math;
-
 async function queue(target, callback = () => undefined) {
   // @ts-ignore
-  !MathJax.typesetPromise && (await MathJax.startup.promise); // @ts-ignore
-
+  !MathJax.typesetPromise && (await MathJax.startup.promise);
+  // @ts-ignore
   MathJax.typesetPromise([target]).then(callback);
 }
 
@@ -9533,23 +7891,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.media = void 0;
-
 const twitter_1 = __webpack_require__(4366);
-
 const youtube_1 = __webpack_require__(5052);
-
 const pdf_1 = __webpack_require__(9973);
-
 const video_1 = __webpack_require__(1699);
-
 const audio_1 = __webpack_require__(7281);
-
 const image_1 = __webpack_require__(1472);
-
 const url_1 = __webpack_require__(2261);
-
 const memoize_1 = __webpack_require__(1808);
-
 const extend = (0, memoize_1.reduce)(opts => ({
   twitter: twitter_1.twitter,
   youtube: youtube_1.youtube,
@@ -9559,13 +7908,11 @@ const extend = (0, memoize_1.reduce)(opts => ({
   image: image_1.image,
   ...opts
 }));
-
 function media(base, source, opts, cache) {
   opts = extend(opts);
   const url = new url_1.ReadonlyURL(source.getAttribute('data-src'), base);
   return opts.twitter?.(source, url) || opts.youtube?.(source, url) || opts.pdf?.(source, url) || opts.video?.(source, url) || opts.audio?.(source, url) || opts.image?.(source, url, cache);
 }
-
 exports.media = media;
 
 /***/ }),
@@ -9580,11 +7927,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.audio = void 0;
-
 const dom_1 = __webpack_require__(3252);
-
 const extensions = ['.oga', '.ogg'];
-
 function audio(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
   return (0, dom_1.html)('audio', {
@@ -9595,7 +7939,6 @@ function audio(source, url) {
     controls: ''
   });
 }
-
 exports.audio = audio;
 
 /***/ }),
@@ -9610,9 +7953,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.image = void 0;
-
 const dom_1 = __webpack_require__(3252);
-
 function image(source, url, cache) {
   if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])));
   (0, dom_1.define)(source, {
@@ -9623,7 +7964,6 @@ function image(source, url, cache) {
   cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
   return source;
 }
-
 exports.image = image;
 
 /***/ }),
@@ -9638,13 +7978,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pdf = void 0;
-
 const parser_1 = __webpack_require__(3019);
-
 const dom_1 = __webpack_require__(3252);
-
 const extensions = ['.pdf'];
-
 function pdf(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
   return (0, dom_1.html)('div', {
@@ -9658,7 +7994,6 @@ function pdf(source, url) {
     target: '_blank'
   })])]);
 }
-
 exports.pdf = pdf;
 
 /***/ }),
@@ -9674,20 +8009,14 @@ var __importDefault = this && this.__importDefault || function (mod) {
     "default": mod
   };
 };
-
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.twitter = void 0;
-
 const parser_1 = __webpack_require__(3019);
-
 const dom_1 = __webpack_require__(3252);
-
 const dompurify_1 = __importDefault(__webpack_require__(6231));
-
 const origins = ['https://twitter.com'];
-
 function twitter(source, url) {
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop().includes('.')) return;
@@ -9700,7 +8029,6 @@ function twitter(source, url) {
     dataType: 'jsonp',
     timeout: 10 * 1e3,
     cache: true,
-
     success({
       html
     }) {
@@ -9713,7 +8041,6 @@ function twitter(source, url) {
         src: 'https://platform.twitter.com/widgets.js'
       }));
     },
-
     error({
       status,
       statusText
@@ -9723,11 +8050,9 @@ function twitter(source, url) {
         target: '_blank'
       }), (0, dom_1.html)('pre', `${status}\n${statusText}`)]);
     }
-
   });
   return el;
 }
-
 exports.twitter = twitter;
 
 /***/ }),
@@ -9742,11 +8067,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.video = void 0;
-
 const dom_1 = __webpack_require__(3252);
-
 const extensions = ['.webm', '.ogv'];
-
 function video(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
   return (0, dom_1.html)('video', {
@@ -9758,7 +8080,6 @@ function video(source, url) {
     controls: ''
   });
 }
-
 exports.video = video;
 
 /***/ }),
@@ -9773,9 +8094,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.youtube = void 0;
-
 const dom_1 = __webpack_require__(3252);
-
 function youtube(source, url) {
   const id = resolve(url);
   if (!id) return;
@@ -9788,17 +8107,13 @@ function youtube(source, url) {
     loading: 'lazy'
   })]);
 }
-
 exports.youtube = youtube;
-
 function resolve(url) {
   switch (url.origin) {
     case 'https://www.youtube.com':
       return url.pathname.match(/^\/watch\/?$/) ? url.searchParams.get('v')?.concat(url.search.replace(/([?&])v=[^&#]*&?/g, '$1'), url.hash) : undefined;
-
     case 'https://youtu.be':
       return url.pathname.match(/^\/[\w-]+\/?$/) ? url.href.slice(url.origin.length) : undefined;
-
     default:
       return;
   }
@@ -9816,36 +8131,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.scope = exports.info = exports.toc = exports.quote = void 0;
-
 var quote_1 = __webpack_require__(423);
-
 Object.defineProperty(exports, "quote", ({
   enumerable: true,
   get: function () {
     return quote_1.quote;
   }
 }));
-
 var toc_1 = __webpack_require__(9391);
-
 Object.defineProperty(exports, "toc", ({
   enumerable: true,
   get: function () {
     return toc_1.toc;
   }
 }));
-
 var info_1 = __webpack_require__(2569);
-
 Object.defineProperty(exports, "info", ({
   enumerable: true,
   get: function () {
     return info_1.info;
   }
 }));
-
 var scope_1 = __webpack_require__(5202);
-
 Object.defineProperty(exports, "scope", ({
   enumerable: true,
   get: function () {
@@ -9865,9 +8172,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.info = void 0;
-
 const scope_1 = __webpack_require__(5202);
-
 function info(source) {
   const match = (0, scope_1.scope)(source, '.invalid');
   return {
@@ -9882,19 +8187,15 @@ function info(source) {
     anchor: find(':not(.cite) > a.anchor'),
     media: find('.media[data-src]')
   };
-
   function find(selector) {
     const acc = [];
-
     for (let es = source.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       match(el) && acc.push(el);
     }
-
     return acc;
   }
 }
-
 exports.info = info;
 
 /***/ }),
@@ -9909,13 +8210,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.quote = void 0;
-
 const parser_1 = __webpack_require__(6728);
-
 const cite_1 = __webpack_require__(6315);
-
 const dom_1 = __webpack_require__(3252);
-
 function quote(anchor, range) {
   if ((0, parser_1.exec)((0, cite_1.cite)({
     source: `>>${anchor}`,
@@ -9924,46 +8221,37 @@ function quote(anchor, range) {
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';
-
   for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         (0, dom_1.define)(el, el.getAttribute('data-src'));
         continue;
-
       case el.matches('.media'):
         el.replaceWith(/[\s{}]/.test(el.getAttribute('data-src')) ? `!{ ${el.getAttribute('data-src')} }` : `!{${el.getAttribute('data-src')}}`);
         continue;
-
       case el.matches('rt, rp'):
         el.remove();
         continue;
     }
   }
-
   if (range.startOffset === 0 && range.startContainer.parentElement?.matches('.cite, .quote') && (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
     node.prepend(`>${range.startContainer.parentElement.matches('.quote.invalid') ? ' ' : ''}`);
   } else {
     node.prepend(`>>${anchor}\n> `);
     anchor = '';
   }
-
   for (let es = node.querySelectorAll('br'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-
     if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
       el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
       continue;
     }
-
     if (anchor && el.parentElement?.closest('.cite, .quote')) {
       el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
       continue;
     }
-
     if (anchor) {
       el.replaceWith(`\n>>${anchor}\n> `);
       anchor = '';
@@ -9973,37 +8261,28 @@ function quote(anchor, range) {
       continue;
     }
   }
-
   anchor && node.append(`\n>>${anchor}`);
   return node.textContent;
 }
-
 exports.quote = quote;
-
 function fit(range) {
   const node = range.startContainer;
-
   if (node.parentElement?.matches('.cite > .anchor')) {
     return void range.setStart(node.parentElement.previousSibling, 0);
   }
-
   if (node.nodeName === 'BR' && node.nextSibling instanceof Element && node.nextSibling.matches('.cite, .quote')) {
     return void range.setStart(node.nextSibling.firstChild, 0);
   }
-
   const offset = range.startOffset;
-
   if (node.parentElement?.matches('.cite, .quote') && node.textContent.slice(0, offset) === '>'.repeat(offset) && (!node.previousSibling || node.previousSibling.nodeName === 'BR')) {
     return void range.setStart(node, 0);
   }
 }
-
 function trim(node) {
   for (let child; child = node.firstChild;) {
     if (child.textContent) break;
     child.remove();
   }
-
   return node;
 }
 
@@ -10019,7 +8298,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.scope = void 0;
-
 function scope(base, filter = '', bound = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote, pre, .quote, .math, .media`) {
   bound += filter && `, ${filter}`;
   const memory = new WeakMap();
@@ -10030,16 +8308,13 @@ function scope(base, filter = '', bound = `${'id' in base && base.id ? `#${base.
     } = el;
     const node = memory.has(parentNode) ? parentNode : parentNode.parentNode;
     let result = memory.get(node);
-
     if (result === undefined) {
       result = el.closest(bound) === context;
       memory.set(node, result);
     }
-
     return result;
   };
 }
-
 exports.scope = scope;
 
 /***/ }),
@@ -10054,21 +8329,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.toc = void 0;
-
 const array_1 = __webpack_require__(8112);
-
-const dom_1 = __webpack_require__(3252); // Bug: Firefox
+const dom_1 = __webpack_require__(3252);
+// Bug: Firefox
 //const selector = `:scope > :is(h1, h2, h3, h4, h5, h6, aside.aside)[id]`;
-
-
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
-
 function toc(source) {
   const hs = [];
-
   for (let es = source.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-
     switch (el.tagName) {
       case 'ASIDE':
         hs.push((0, dom_1.html)(el.firstElementChild.tagName.toLowerCase(), {
@@ -10076,18 +8345,14 @@ function toc(source) {
           class: 'aside'
         }, el.firstElementChild.cloneNode(true).childNodes));
         continue;
-
       default:
         hs.push(el);
         continue;
     }
   }
-
   return parse(cons(hs));
 }
-
 exports.toc = toc;
-
 function parse(node, index = '') {
   let i = 0;
   return (0, dom_1.html)('ul', node.map(([el, cs]) => {
@@ -10099,24 +8364,20 @@ function parse(node, index = '') {
     }, unlink(el.cloneNode(true)))], cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
-
 function cons(hs) {
   return hs.reduce((hss, h) => {
     const hs = hss.pop() ?? [];
     return hs.length === 0 || level(h) > level(hs[0]) ? (0, array_1.push)(hss, [(0, array_1.push)(hs, [h])]) : (0, array_1.push)(hss, [hs, [h]]);
   }, []).map(hs => [hs.shift(), cons(hs)]);
 }
-
 function level(h) {
   return +h.tagName[1];
 }
-
 function unlink(h) {
   for (let es = h.getElementsByTagName('a'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     el.replaceWith(...el.childNodes);
   }
-
   return h.childNodes;
 }
 
@@ -10125,7 +8386,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.312 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.315 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10143,9 +8404,9 @@ return /******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports[NaN] = void 0;
-exports[NaN] = Number.NaN, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
-exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.sqrt = Math.sqrt;
+exports.ObjectSetPrototypeOf = exports.ObjectGetPrototypeOf = exports.ObjectCreate = exports.ObjectAssign = exports.toString = exports.isEnumerable = exports.isPrototypeOf = exports.hasOwnProperty = exports.isArray = exports.sqrt = exports.log10 = exports.log2 = exports.log = exports.tan = exports.cos = exports.sign = exports.round = exports.random = exports.min = exports.max = exports.floor = exports.ceil = exports.abs = exports.PI = exports.parseInt = exports.parseFloat = exports.isSafeInteger = exports.isNaN = exports.isInteger = exports.isFinite = exports.EPSILON = exports.MIN_VALUE = exports.MIN_SAFE_INTEGER = exports.MAX_VALUE = exports.MAX_SAFE_INTEGER = void 0;
+exports.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER, exports.MAX_VALUE = Number.MAX_VALUE, exports.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER, exports.MIN_VALUE = Number.MIN_VALUE, exports.EPSILON = Number.EPSILON, exports.isFinite = Number.isFinite, exports.isInteger = Number.isInteger, exports.isNaN = Number.isNaN, exports.isSafeInteger = Number.isSafeInteger, exports.parseFloat = Number.parseFloat, exports.parseInt = Number.parseInt;
+exports.PI = Math.PI, exports.abs = Math.abs, exports.ceil = Math.ceil, exports.floor = Math.floor, exports.max = Math.max, exports.min = Math.min, exports.random = Math.random, exports.round = Math.round, exports.sign = Math.sign, exports.cos = Math.cos, exports.tan = Math.tan, exports.log = Math.log, exports.log2 = Math.log2, exports.log10 = Math.log10, exports.sqrt = Math.sqrt;
 exports.isArray = Array.isArray;
 exports.hasOwnProperty = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
 exports.isPrototypeOf = Object.prototype.isPrototypeOf.call.bind(Object.prototype.isPrototypeOf);
@@ -10167,17 +8428,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.equal = void 0;
-
 function equal(a, b) {
   return a === a ? a === b : b !== b;
 }
-
 exports.equal = equal;
 
 /***/ }),
 
 /***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_2745__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3147__) => {
 
 
 
@@ -10185,65 +8444,55 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reduce = exports.memoize = void 0;
-
-const alias_1 = __nested_webpack_require_2745__(406);
-
-const compare_1 = __nested_webpack_require_2745__(529);
-
+const alias_1 = __nested_webpack_require_3147__(406);
+const compare_1 = __nested_webpack_require_3147__(529);
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) ? memoizeArray(f, identify, memory) : memoizeObject(f, identify, memory ?? new Map());
+  return (0, alias_1.isArray)(memory) || memory?.constructor === Object ? memoizeRecord(f, identify, memory) : memoizeDict(f, identify, memory ?? new Map());
 }
-
 exports.memoize = memoize;
-
-function memoizeArray(f, identify, memory) {
-  let nullish = false;
+function memoizeRecord(f, identify, memory) {
+  let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory[b];
-    if (z !== undefined || nullish && memory[b] !== undefined) return z;
+    if (z !== undefined || nullable && memory[b] !== undefined) return z;
     z = f(...as);
-    nullish ||= z === undefined;
+    nullable ||= z === undefined;
     memory[b] = z;
     return z;
   };
 }
-
-function memoizeObject(f, identify, memory) {
-  let nullish = false;
+function memoizeDict(f, identify, memory) {
+  let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory.get(b);
-    if (z !== undefined || nullish && memory.has(b)) return z;
+    if (z !== undefined || nullable && memory.has(b)) return z;
     z = f(...as);
-    nullish ||= z === undefined;
-    memory.set(b, z);
+    nullable ||= z === undefined;
+    memory.add?.(b, z) ?? memory.set(b, z);
     return z;
   };
 }
-
 function reduce(f, identify = (...as) => as[0]) {
   let key = {};
   let val;
   return (...as) => {
     const b = identify(...as);
-
     if (!(0, compare_1.equal)(key, b)) {
       key = b;
       val = f(...as);
     }
-
     return val;
   };
 }
-
 exports.reduce = reduce;
 
 /***/ }),
 
 /***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4210__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4662__) => {
 
 
 
@@ -10251,19 +8500,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
-
-const alias_1 = __nested_webpack_require_4210__(406);
-
-const memoize_1 = __nested_webpack_require_4210__(808);
-
+const alias_1 = __nested_webpack_require_4662__(406);
+const memoize_1 = __nested_webpack_require_4662__(808);
 var caches;
-
 (function (caches) {
   caches.shadows = new WeakMap();
   caches.shadow = (0, memoize_1.memoize)((el, opts) => el.attachShadow(opts), caches.shadows);
   caches.fragment = document.createDocumentFragment();
 })(caches || (caches = {}));
-
 function shadow(el, opts, children, factory = exports.html) {
   if (typeof el === 'string') return shadow(factory(el), opts, children, factory);
   if (typeof opts === 'function') return shadow(el, undefined, children, opts);
@@ -10273,57 +8517,35 @@ function shadow(el, opts, children, factory = exports.html) {
     mode: 'open'
   }) : opts.mode === 'open' ? el.shadowRoot ?? el.attachShadow(opts) : caches.shadows.get(el) ?? caches.shadow(el, opts), children);
 }
-
 exports.shadow = shadow;
-
 function frag(children) {
   return defineChildren(caches.fragment.cloneNode(true), children);
 }
-
 exports.frag = frag;
-exports.html = element(document, "HTML"
-/* NS.HTML */
-);
-exports.svg = element(document, "SVG"
-/* NS.SVG */
-);
-
+exports.html = element(document, "HTML" /* NS.HTML */);
+exports.svg = element(document, "SVG" /* NS.SVG */);
 function text(source) {
   return document.createTextNode(source);
 }
-
 exports.text = text;
-
 function element(context, ns) {
   return (tag, attrs, children) => {
     const el = elem(context, ns, tag);
     return !attrs || isChildren(attrs) ? defineChildren(el, attrs ?? children) : defineChildren(defineAttrs(el, attrs), children);
   };
 }
-
 exports.element = element;
-
 function elem(context, ns, tag) {
   if (!('createElement' in context)) throw new Error(`TypedDOM: Scoped custom elements are not supported on this browser.`);
-
   switch (ns) {
-    case "HTML"
-    /* NS.HTML */
-    :
+    case "HTML" /* NS.HTML */:
       return context.createElement(tag);
-
-    case "SVG"
-    /* NS.SVG */
-    :
+    case "SVG" /* NS.SVG */:
       return context.createElementNS('http://www.w3.org/2000/svg', tag);
-
-    case "MathML"
-    /* NS.MathML */
-    :
+    case "MathML" /* NS.MathML */:
       return context.createElementNS('http://www.w3.org/1998/Math/MathML', tag);
   }
 }
-
 function define(node, attrs, children) {
   // Bug: TypeScript
   // Need the next type assertions to suppress an impossible type error on dependent projects.
@@ -10334,21 +8556,16 @@ function define(node, attrs, children) {
   //
   return !attrs || isChildren(attrs) ? defineChildren(node, attrs ?? children) : defineChildren(defineAttrs(node, attrs), children);
 }
-
 exports.define = define;
-
 function defineAttrs(el, attrs) {
   for (const name in attrs) {
     if (!(0, alias_1.hasOwnProperty)(attrs, name)) continue;
     const value = attrs[name];
-
     switch (typeof value) {
       case 'string':
         el.setAttribute(name, value);
-
         if (name.startsWith('on')) {
           const type = name.slice(2).toLowerCase();
-
           switch (type) {
             case 'mutate':
             case 'connect':
@@ -10362,20 +8579,16 @@ function defineAttrs(el, attrs) {
               });
           }
         }
-
         continue;
-
       case 'function':
         if (name.length < 3) throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${name}".`);
         const names = name.split(/\s+/);
-
         for (const name of names) {
           if (!name.startsWith('on')) throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${name}".`);
           const type = name.slice(2).toLowerCase();
           el.addEventListener(type, value, {
             passive: ['wheel', 'mousewheel', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].includes(type)
           });
-
           switch (type) {
             case 'mutate':
             case 'connect':
@@ -10389,24 +8602,18 @@ function defineAttrs(el, attrs) {
               });
           }
         }
-
         continue;
-
       case 'object':
         el.removeAttribute(name);
         continue;
-
       default:
         continue;
     }
   }
-
   return el;
 }
-
 function defineChildren(node, children) {
   if (children === undefined) return node;
-
   if (typeof children === 'string') {
     node.textContent = children;
   } else if ((0, alias_1.isArray)(children) && !node.firstChild) {
@@ -10417,19 +8624,14 @@ function defineChildren(node, children) {
   } else {
     node.replaceChildren(...children);
   }
-
   return node;
 }
-
 function isChildren(value) {
   return !!value?.[Symbol.iterator];
 }
-
 exports.isChildren = isChildren;
-
 function append(node, children) {
   if (children === undefined) return node;
-
   if (typeof children === 'string') {
     node.append(children);
   } else {
@@ -10437,15 +8639,11 @@ function append(node, children) {
       typeof child === 'object' ? node.appendChild(child) : node.append(child);
     }
   }
-
   return node;
 }
-
 exports.append = append;
-
 function prepend(node, children) {
   if (children === undefined) return node;
-
   if (typeof children === 'string') {
     node.prepend(children);
   } else {
@@ -10453,20 +8651,15 @@ function prepend(node, children) {
       typeof child === 'object' ? node.insertBefore(child, null) : node.prepend(child);
     }
   }
-
   return node;
 }
-
 exports.prepend = prepend;
-
 function defrag(nodes) {
   const acc = [];
   let appendable = false;
-
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     if (node === '') continue;
-
     if (typeof node === 'string') {
       appendable ? acc[acc.length - 1] += node : acc.push(node);
       appendable = true;
@@ -10475,10 +8668,8 @@ function defrag(nodes) {
       appendable = false;
     }
   }
-
   return acc;
 }
-
 exports.defrag = defrag;
 
 /***/ })
@@ -10489,7 +8680,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11074__(moduleId) {
+/******/ 	function __nested_webpack_require_11449__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -10503,7 +8694,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11074__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11449__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -10514,7 +8705,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_11074__(521);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_11449__(521);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -10526,7 +8717,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.312 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.315 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -10544,39 +8735,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.querySelectorAll = exports.querySelectorAllWith = exports.querySelectorWith = void 0;
-
 function querySelectorWith(node, selector) {
   return 'matches' in node && node.matches(selector) ? node : node.querySelector(selector);
 }
-
 exports.querySelectorWith = querySelectorWith;
-
 function querySelectorAllWith(node, selector) {
   const acc = [];
-
   if ('matches' in node && node.matches(selector)) {
     acc.push(node);
   }
-
   for (let es = node.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
     acc.push(es[i]);
   }
-
   return acc;
 }
-
 exports.querySelectorAllWith = querySelectorAllWith;
-
 function querySelectorAll(node, selector) {
   const acc = [];
-
   for (let es = node.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
     acc.push(es[i]);
   }
-
   return acc;
 }
-
 exports.querySelectorAll = querySelectorAll;
 })();
 
