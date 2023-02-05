@@ -4,7 +4,8 @@ import { unshift, push } from 'spica/array';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
 
-export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp | number, delimiters?: readonly DelimiterOption[], limit?: number): P;
+export function some<P extends Parser<unknown>>(parser: P, limit?: number): P;
+export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp, delimiters?: readonly DelimiterOption[], limit?: number): P;
 export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = -1): Parser<T> {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   assert(parser);
