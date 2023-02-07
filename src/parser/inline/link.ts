@@ -1,10 +1,9 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { Result, eval, exec } from '../../combinator/data/parser';
-import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { Result } from '../../combinator/data/parser';
+import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
-import { autolink as autolink_ } from '../autolink';
 import { unescsource, str } from '../source';
 import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
@@ -74,8 +73,6 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
 
-const autolink = state(State.autolink, false, state(State.shortcut, autolink_));
-
 function parse(
   content: (string | HTMLElement)[],
   params: string[],
@@ -85,13 +82,6 @@ function parse(
   assert(params.length > 0);
   assert(params.every(p => typeof p === 'string'));
   if (content.length !== 0 && trimNode(content).length === 0) return;
-  content = defrag(content);
-  for (let source = stringify(content); source;) {
-    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(source)) return;
-    const result = autolink({ source, context });
-    if (typeof eval(result, [])[0] === 'object') return;
-    source = exec(result, '');
-  }
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
@@ -100,7 +90,7 @@ function parse(
     context.host?.href || location.href);
   const el = elem(
     INSECURE_URI,
-    content,
+    defrag(content),
     uri,
     context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
@@ -120,6 +110,10 @@ function elem(
     case 'https:':
       assert(uri.host);
       switch (true) {
+        case /[a-z][0-9]*:\/{0,2}\S/i.test(stringify(content)):
+          type = 'content';
+          message = 'URI must not be contained';
+          break;
         case INSECURE_URI.slice(0, 2) === '^/'
           && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
           type = 'argument';
@@ -165,6 +159,7 @@ function elem(
           type = 'content';
           message = 'Invalid content';
       }
+      break;
   }
   return html('a',
     {
@@ -205,7 +200,7 @@ function decode(uri: string): string {
   const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;

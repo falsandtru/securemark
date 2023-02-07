@@ -47,8 +47,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[#-1]a](b)')), [['[', '<a class="index" href="#index:-1">-1</a>', 'a', ']', '(', 'b', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[#a]{b}')), [['<a class="index" href="#index:a">a</a>', '<a class="url" href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[http://host]{http://evil}')), [['[', '<a class="url" href="http://host" target="_blank">http://host</a>', ']', '<a class="url" href="http://evil" target="_blank">http://evil</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), [['[', '<a class="url" href="http://host" target="_blank">http://host</a>', ']', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[http://host]{http://evil}')), [['<a class="invalid">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), [['<a class="invalid">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{{a}}')), [['[', ']', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{{a}}')), [['!', '[', ']', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[\n]{a}')), [['[', '<br>', ']', '<a class="url" href="a">a</a>'], '']);

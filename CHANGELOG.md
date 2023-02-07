@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.265.0
+
+- Change link parser to accept autolinks.
+
 ## 0.264.0
 
 - Change signature syntax.
