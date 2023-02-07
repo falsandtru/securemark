@@ -17,7 +17,7 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
   ])));
 
 const opener = /^(?=\|\|+(?:$|\s))/;
-const unindent = (source: string) => source.replace(/(^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '$1');
+const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   some(creation(1, false, union([
