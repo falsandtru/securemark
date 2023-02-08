@@ -4539,8 +4539,6 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
       references
     }
   }, context);
-  // Bug: Firefox
-  //const heading = document.querySelector(':scope > h1:first-child');
   const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName) && document.firstElementChild;
   if (!heading) return [(0, dom_1.html)('pre', {
     class: 'invalid',
@@ -6145,29 +6143,27 @@ function identity(text, name = 'index') {
 exports.identity = identity;
 function text(source, optional = false) {
   const indexer = source.querySelector(':scope > .indexer');
-  if (!indexer && optional) return '';
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
+  if (index === '' && optional) return '';
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':
-        (0, dom_1.define)(el, el.getAttribute('data-src'));
+        el.replaceWith(el.getAttribute('data-src'));
         continue;
       case 'RT':
       case 'RP':
+      case 'BR':
       case 'UL':
       case 'OL':
         el.remove();
         continue;
-      case 'BR':
-        el.replaceWith('\n');
-        continue;
     }
     switch (el.className) {
       case 'math':
-        (0, dom_1.define)(el, el.getAttribute('data-src'));
+        el.replaceWith(el.getAttribute('data-src'));
         continue;
       case 'comment':
       case 'checkbox':
@@ -6886,8 +6882,6 @@ function* figure(target, footnotes, opts = {}) {
   let base = '0';
   let bases = base.split('.');
   let index = bases;
-  // Bug: Firefox
-  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1, :scope > h2'), len = defs.length, i = 0; i < len; ++i) {
   for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
@@ -7048,8 +7042,6 @@ const indexee_1 = __webpack_require__(1269);
 const queue_1 = __webpack_require__(4934);
 const dom_1 = __webpack_require__(3252);
 function* footnote(target, footnotes, opts = {}, bottom = null) {
-  // Bug: Firefox
-  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
   for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     el.parentNode === target && el.remove();
@@ -7068,8 +7060,6 @@ function build(syntax, marker, splitter) {
     const defs = new Map();
     const buffer = new queue_1.MultiQueue();
     const titles = new Map();
-    // Bug: Firefox
-    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
     const splitters = [];
     for (let es = target.querySelectorAll(splitter ?? '_'), len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
@@ -8323,8 +8313,6 @@ Object.defineProperty(exports, "__esModule", ({
 exports.toc = void 0;
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
-// Bug: Firefox
-//const selector = `:scope > :is(h1, h2, h3, h4, h5, h6, aside.aside)[id]`;
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 function toc(source) {
   const hs = [];
