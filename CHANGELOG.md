@@ -2,6 +2,7 @@
 
 ## 0.265.0
 
+- Change ulist and olist parsers to index list items.
 - Change link parser to accept autolinks.
 
 ## 0.264.0

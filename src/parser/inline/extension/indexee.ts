@@ -30,10 +30,10 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   const indexer = source.querySelector(':scope > .indexer');
-  if (!indexer && optional) return '';
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
-  assert(!source.querySelector('br'));
+  if (index === '' && optional) return '';
+  assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
@@ -44,12 +44,10 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
         continue;
       case 'RT':
       case 'RP':
+      case 'BR':
       case 'UL':
       case 'OL':
         el.remove();
-        continue;
-      case 'BR':
-        el.replaceWith('\n');
         continue;
     }
     switch (el.className) {
