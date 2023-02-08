@@ -1,8 +1,6 @@
 import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
-// Bug: Firefox
-//const selector = `:scope > :is(h1, h2, h3, h4, h5, h6, aside.aside)[id]`;
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {

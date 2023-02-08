@@ -26,8 +26,6 @@ export const aside: ExtensionParser.AsideParser = block(validate('~~~', fmap(
       },
     }, context);
     assert(!document.querySelector('[id]'));
-    // Bug: Firefox
-    //const heading = document.querySelector(':scope > h1:first-child');
     const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName!) && document.firstElementChild as HTMLHeadingElement;
     if (!heading) return [html('pre', {
       class: 'invalid',

@@ -8,8 +8,6 @@ export function* footnote(
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  // Bug: Firefox
-  //target.querySelectorAll(`:scope > .annotations`).forEach(el => el.remove());
   for (let es = target.querySelectorAll(`.annotations`),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
@@ -40,8 +38,6 @@ function build(
     const defs = new Map<string, HTMLLIElement>();
     const buffer = new MultiQueue<string, HTMLElement>();
     const titles = new Map<string, string>();
-    // Bug: Firefox
-    //const splitters = push([], target.querySelectorAll(`:scope > :is(${splitter ?? '_'})`));
     const splitters: Element[] = [];
     for (let es = target.querySelectorAll(splitter ?? '_'),
              len = es.length, i = 0; i < len; ++i) {
