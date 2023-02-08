@@ -40,7 +40,7 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':
-        define(el, el.getAttribute('data-src')!);
+        el.replaceWith(el.getAttribute('data-src')!);
         continue;
       case 'RT':
       case 'RP':
@@ -54,7 +54,7 @@ export function text(source: HTMLElement | DocumentFragment, optional = false): 
     }
     switch (el.className) {
       case 'math':
-        define(el, el.getAttribute('data-src')!);
+        el.replaceWith(el.getAttribute('data-src')!);
         continue;
       case 'comment':
       case 'checkbox':
