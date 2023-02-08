@@ -4151,7 +4151,7 @@ function format(source) {
   return source.replace(/\r\n?/g, '\n');
 }
 function sanitize(source) {
-  return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${UNICODE_REPLACEMENT_CHARACTER}`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
+  return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
 }
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
@@ -4263,7 +4263,7 @@ exports.parse = parse;
 
 /***/ }),
 
-/***/ 6578:
+/***/ 7185:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4366,7 +4366,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.blockquote = exports.segment = void 0;
 const combinator_1 = __webpack_require__(2087);
-const autolink_1 = __webpack_require__(6578);
+const autolink_1 = __webpack_require__(7185);
 const source_1 = __webpack_require__(6743);
 const parse_1 = __webpack_require__(5013);
 const dom_1 = __webpack_require__(3252);
@@ -4374,7 +4374,7 @@ exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['!>', '>']
 exports.blockquote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.union)([(0, combinator_1.open)(/^(?=>)/, source), (0, combinator_1.open)(/^!(?=>)/, markdown)]))));
 const opener = /^(?=>>+(?:$|\s))/;
 const indent = (0, combinator_1.block)((0, combinator_1.open)(opener, (0, combinator_1.some)(source_1.contentline, /^>(?:$|\s)/)), false);
-const unindent = source => source.replace(/(^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$/g, '$1');
+const unindent = source => source.replace(/(?<=^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$/g, '');
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)((0, combinator_1.some)(autolink_1.autolink), ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))])))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, markdown)), (0, combinator_1.creation)(99, false, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, ({
   source,
@@ -4406,7 +4406,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.codeblock = exports.segment_ = exports.segment = void 0;
 const parser_1 = __webpack_require__(6728);
 const combinator_1 = __webpack_require__(2087);
-const autolink_1 = __webpack_require__(6578);
+const autolink_1 = __webpack_require__(7185);
 const dom_1 = __webpack_require__(3252);
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
@@ -5455,7 +5455,7 @@ const parser_1 = __webpack_require__(6728);
 const combinator_1 = __webpack_require__(2087);
 const math_1 = __webpack_require__(8946);
 const source_1 = __webpack_require__(6743);
-const autolink_1 = __webpack_require__(6578);
+const autolink_1 = __webpack_require__(7185);
 const dom_1 = __webpack_require__(3252);
 exports.syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([(0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|')[0]), source_1.anyline)), qblock), (0, combinator_1.rewrite)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|').slice(1).join('|')), source_1.anyline), (0, combinator_1.line)((0, combinator_1.union)([(0, source_1.str)(/^.+/)])))])), ns => [(0, dom_1.html)('span', ns.length > 1 ? {
@@ -5516,7 +5516,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.sidefence = void 0;
 const combinator_1 = __webpack_require__(2087);
-const autolink_1 = __webpack_require__(6578);
+const autolink_1 = __webpack_require__(7185);
 const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
 exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/^(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/, (0, combinator_1.union)([source])), ([el]) => [(0, dom_1.define)(el, {
@@ -5526,7 +5526,7 @@ exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, com
   'data-invalid-message': 'Reserved syntax'
 })])));
 const opener = /^(?=\|\|+(?:$|\s))/;
-const unindent = source => source.replace(/(^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '$1');
+const unindent = source => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.focus)(/^(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)((0, combinator_1.some)(autolink_1.autolink), ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))])))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 
 /***/ }),
@@ -5687,7 +5687,7 @@ const insertion_1 = __webpack_require__(2945);
 const deletion_1 = __webpack_require__(7501);
 const mark_1 = __webpack_require__(2480);
 const emphasis_1 = __webpack_require__(3867);
-const strong_1 = __webpack_require__(8072);
+const strong_1 = __webpack_require__(6578);
 const code_1 = __webpack_require__(5771);
 const media_1 = __webpack_require__(1303);
 const htmlentity_1 = __webpack_require__(1562);
@@ -6411,11 +6411,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.link = void 0;
-const parser_1 = __webpack_require__(6728);
 const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
 const html_1 = __webpack_require__(5994);
-const autolink_1 = __webpack_require__(6578);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const util_1 = __webpack_require__(9437);
@@ -6433,22 +6431,11 @@ const medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /
 exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
-const autolink = (0, combinator_1.state)(2 /* State.autolink */, false, (0, combinator_1.state)(1 /* State.shortcut */, autolink_1.autolink));
 function parse(content, params, rest, context) {
   if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
-  content = (0, dom_1.defrag)(content);
-  for (let source = (0, util_1.stringify)(content); source;) {
-    if (/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(source)) return;
-    const result = autolink({
-      source,
-      context
-    });
-    if (typeof (0, parser_1.eval)(result, [])[0] === 'object') return;
-    source = (0, parser_1.exec)(result, '');
-  }
   const INSECURE_URI = params.shift();
   const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
-  const el = elem(INSECURE_URI, content, uri, context.host?.origin || location.origin);
+  const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), uri, context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
   return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
 }
@@ -6459,6 +6446,10 @@ function elem(INSECURE_URI, content, uri, origin) {
     case 'http:':
     case 'https:':
       switch (true) {
+        case /[a-z][0-9]*:\/{0,2}\S/i.test((0, util_1.stringify)(content)):
+          type = 'content';
+          message = 'URI must not be contained';
+          break;
         case INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
           type = 'argument';
           message = 'Dot-segments cannot be used in subresource paths';
@@ -6484,6 +6475,7 @@ function elem(INSECURE_URI, content, uri, origin) {
           type = 'content';
           message = 'Invalid content';
       }
+      break;
   }
   return (0, dom_1.html)('a', {
     class: 'invalid',
@@ -6512,7 +6504,7 @@ function decode(uri) {
   const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;
@@ -6831,7 +6823,7 @@ exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.constraint)(8 /*
 
 /***/ }),
 
-/***/ 8072:
+/***/ 6578:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
