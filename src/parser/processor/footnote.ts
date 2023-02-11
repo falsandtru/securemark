@@ -59,7 +59,7 @@ function build(
         }
         splitters.shift();
       }
-      const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild!.innerHTML}`;
+      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
@@ -85,12 +85,8 @@ function build(
       else {
         ref.lastChild?.remove();
       }
-      const title = undefined
-        || titles.get(identifier)
-        || +identifier[0] && ref.title
-        || text(content).trim()
-        || content.textContent!.trim()
-        || undefined;
+      const title = titles.get(identifier) || text(content).trim() || undefined;
+      assert(title !== '');
       assert(syntax !== 'annotation' || title);
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
