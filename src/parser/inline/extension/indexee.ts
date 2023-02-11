@@ -5,13 +5,15 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(text(el, optional)) || undefined })]);
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, text(el, optional)) })]);
 }
 
-export function identity(text: string, name: 'index' | 'mark' = 'index'): string {
+export function identity(id: string | undefined, text: string, name: 'index' | 'mark' = 'index'): string | undefined {
   assert(!text.includes('\n'));
+  if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
-  if (text.length <= 100) return text && `${name}:${text}`;
+  if (text === '') return undefined;
+  if (text.length <= 100) return `${name}:${text}`;
   switch (name) {
     case 'index':
       return `${name}:${text.slice(0, 97)}...`;
@@ -19,12 +21,12 @@ export function identity(text: string, name: 'index' | 'mark' = 'index'): string
       return `${name}:${text.slice(0, 50)}...${text.slice(-47)}`;
   }
 }
-assert(identity('0'.repeat(100 - 1) + 1).slice(6) === '0'.repeat(100 - 1) + 1);
-assert(identity('0'.repeat(100) + 1).slice(6) === '0'.repeat(97) + '...');
-assert(identity('0'.repeat(200) + 1).slice(6) === '0'.repeat(97) + '...');
-assert(identity('0'.repeat(100 - 1) + 1, 'mark').slice(5) === '0'.repeat(100 - 1) + 1);
-assert(identity('0'.repeat(100) + 1, 'mark').slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
-assert(identity('0'.repeat(200) + 1, 'mark').slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100 - 1) + 1)?.slice(6) === '0'.repeat(100 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100) + 1)?.slice(6) === '0'.repeat(97) + '...');
+assert(identity(undefined, '0'.repeat(200) + 1)?.slice(6) === '0'.repeat(97) + '...');
+assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')?.slice(5) === '0'.repeat(100 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100) + 1, 'mark')?.slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
+assert(identity(undefined, '0'.repeat(200) + 1, 'mark')?.slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 
 export function text(source: HTMLElement | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));

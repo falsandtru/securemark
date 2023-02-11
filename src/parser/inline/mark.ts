@@ -19,7 +19,7 @@ export const mark: MarkParser = lazy(() => surround(
   str('=='), false,
   ([, bs], rest, { id }) => {
     const el = html('mark', defrag(bs));
-    define(el, { id: id !== '' && identity(text(el), 'mark') || undefined });
+    define(el, { id: identity(id, text(el), 'mark') });
     return [[el, html('a', { href: el.id ? `#${el.id}` : undefined })], rest];
   },
   ([as, bs], rest) => [unshift(as, bs), rest]));
