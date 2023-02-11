@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.265.1
+## 0.266.0
 
+- Change index schemas.
 - Fix footnote processing.
 
 ## 0.265.0

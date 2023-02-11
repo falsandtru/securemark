@@ -99,13 +99,13 @@ function build(
       const blank = !!abbr && !content.firstChild;
       const refIndex = ++count;
       const refId = opts.id !== ''
-        ? `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}`
+        ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}`
         : undefined;
       const def = undefined
         || defs.get(identifier)
         || defs.set(identifier, html('li',
             {
-              id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : undefined,
+              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
               'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined,
             },
             [content.cloneNode(true), html('sup')]))

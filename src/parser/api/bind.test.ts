@@ -192,38 +192,38 @@ describe('Unit: parser/api/bind', () => {
         [...el.children].map(el => el.outerHTML),
         [
           html('p', [
-            html('sup', { class: "reference", id: "reference:ref:1", title: "1" }, [
+            html('sup', { class: "reference", id: "reference::ref:1", title: "1" }, [
               html('span', { hidden: '' }, '1'),
-              html('a', { href: "#reference:def:1" }, '[1]'),
+              html('a', { href: "#reference::def:1" }, '[1]'),
             ]),
           ]).outerHTML,
           html('p', [
-            html('sup', { class: "reference", id: "reference:ref:2", title: "2" }, [
+            html('sup', { class: "reference", id: "reference::ref:2", title: "2" }, [
               html('span', { hidden: '' }, '2'),
-              html('a', { href: "#reference:def:2" }, '[2]'),
+              html('a', { href: "#reference::def:2" }, '[2]'),
             ]),
           ]).outerHTML,
           html('p', [
-            html('sup', { class: "reference", id: "reference:ref:3", title: "3" }, [
+            html('sup', { class: "reference", id: "reference::ref:3", title: "3" }, [
               html('span', { hidden: '' }, '3'),
-              html('a', { href: "#reference:def:3" }, '[3]'),
+              html('a', { href: "#reference::def:3" }, '[3]'),
             ]),
           ]).outerHTML,
         ]);
       assert.deepStrictEqual(
         cfgs.footnotes.references?.outerHTML,
         html('ol', [
-          html('li', { id: 'reference:def:1' }, [
+          html('li', { id: 'reference::def:1' }, [
             '1',
-            html('sup', [html('a', { href: '#reference:ref:1' }, '^1')]),
+            html('sup', [html('a', { href: '#reference::ref:1' }, '^1')]),
           ]),
-          html('li', { id: 'reference:def:2' }, [
+          html('li', { id: 'reference::def:2' }, [
             '2',
-            html('sup', [html('a', { href: '#reference:ref:2' }, '^2')]),
+            html('sup', [html('a', { href: '#reference::ref:2' }, '^2')]),
           ]),
-          html('li', { id: 'reference:def:3' }, [
+          html('li', { id: 'reference::def:3' }, [
             '3',
-            html('sup', [html('a', { href: '#reference:ref:3' }, '^3')]),
+            html('sup', [html('a', { href: '#reference::ref:3' }, '^3')]),
           ]),
         ]).outerHTML);
       assert.throws(() => update('').next());
