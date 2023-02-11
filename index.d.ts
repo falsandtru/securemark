@@ -40,12 +40,12 @@ export interface ParserSettings {
 }
 
 export type Progress =
-  | { type: 'segment', value: string; }
-  | { type: 'block', value: HTMLElement }
-  | { type: 'figure', value: HTMLAnchorElement }
-  | { type: 'footnote', value: HTMLLIElement | HTMLElement }
-  | { type: 'break' }
-  | { type: 'cancel' };
+  | { readonly type: 'segment'; readonly value: string; }
+  | { readonly type: 'block'; readonly value: HTMLElement; }
+  | { readonly type: 'figure'; readonly value: HTMLAnchorElement; }
+  | { readonly type: 'footnote'; readonly value: HTMLLIElement | HTMLElement; }
+  | { readonly type: 'break'; }
+  | { readonly type: 'cancel'; };
 
 export interface RenderingOptions {
   readonly code?: (target: HTMLElement, cache?: Dict<string, HTMLElement>) => void;
