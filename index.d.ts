@@ -28,7 +28,8 @@ export type ParserOptions = Omit<Partial<ParserSettings>, 'chunk'>;
 export interface ParserSettings {
   // Host URL.
   readonly host?: URL;
-  // Id of comments and timelines.
+  // ID of comments and timelines.
+  // Must not contain ":".
   readonly id?: string;
   // For editing.
   readonly caches?: Partial<Caches>;

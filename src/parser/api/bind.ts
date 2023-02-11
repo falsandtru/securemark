@@ -26,6 +26,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
     memo: new Memo({ targets: State.backtrackers }),
   };
+  if (context.id?.includes(':')) throw new Error('ID must not contain ":"');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
