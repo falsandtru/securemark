@@ -99,7 +99,7 @@ function build(
       const blank = !!abbr && !content.firstChild;
       const refIndex = ++count;
       const refId = opts.id !== ''
-        ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}`
+        ? `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}`
         : undefined;
       const def = undefined
         || defs.get(identifier)

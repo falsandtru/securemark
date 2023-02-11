@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.265.1
+
+- Fix footnote processing.
+
 ## 0.265.0
 
 - Change ulist and olist parsers to index list items.
