@@ -3908,6 +3908,7 @@ function bind(target, settings) {
     })
   };
 
+  if (context.id?.includes(':')) throw new Error('ID must not contain ":"');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
   const adds = [];
@@ -4224,7 +4225,8 @@ const footnote_1 = __webpack_require__(7529);
 const url_1 = __webpack_require__(2261);
 const dom_1 = __webpack_require__(3252);
 function parse(source, opts = {}, context) {
-  if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.`);
+  if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
+  if (context?.id?.includes(':')) throw new Error('ID must not contain ":"');
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
@@ -4548,7 +4550,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-message': 'Missing the title at the first line'
   }, `${opener}${body}${closer}`)];
   return [(0, dom_1.html)('aside', {
-    id: (0, indexee_1.identity)((0, indexee_1.text)(heading)),
+    id: (0, indexee_1.identity)(context.id, (0, indexee_1.text)(heading)),
     class: 'aside'
   }, [document, (0, dom_1.html)('h2', 'References'), references])];
 })));
@@ -6104,7 +6106,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0
 }, el.childNodes)])));
 const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': (0, indexee_1.identity)(ns.join('')).slice(6)
+  'data-index': (0, indexee_1.identity)(undefined, ns.join('')).slice(7)
 })])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.txt, '"')), (0, source_1.str)('"'), true)])));
 
@@ -6126,18 +6128,20 @@ function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
   }) => [(0, dom_1.define)(el, {
-    id: id !== '' && identity(text(el, optional)) || undefined
+    id: identity(id, text(el, optional))
   })]);
 }
 exports.indexee = indexee;
-function identity(text, name = 'index') {
+function identity(id, text, name = 'index') {
+  if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
-  if (text.length <= 100) return text && `${name}:${text}`;
+  if (text === '') return undefined;
+  if (text.length <= 100) return `${name}:${id ?? ''}:${text}`;
   switch (name) {
     case 'index':
-      return `${name}:${text.slice(0, 97)}...`;
+      return `${name}:${id ?? ''}:${text.slice(0, 97)}...`;
     case 'mark':
-      return `${name}:${text.slice(0, 50)}...${text.slice(-47)}`;
+      return `${name}:${id ?? ''}:${text.slice(0, 50)}...${text.slice(-47)}`;
   }
 }
 exports.identity = identity;
@@ -6200,7 +6204,7 @@ exports.indexer = (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinat
 // Indexer is invisible but invalids must be visible.
 ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': el.getAttribute('href').slice(7)
+  'data-index': el.getAttribute('href').slice(1).replace(/^\w+:\w*:/, '')
 })]));
 
 /***/ }),
@@ -6533,7 +6537,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, sourc
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
   (0, dom_1.define)(el, {
-    id: id !== '' && (0, indexee_1.identity)((0, indexee_1.text)(el), 'mark') || undefined
+    id: (0, indexee_1.identity)(id, (0, indexee_1.text)(el), 'mark')
   });
   return [[el, (0, dom_1.html)('a', {
     href: el.id ? `#${el.id}` : undefined
@@ -7071,16 +7075,18 @@ function build(syntax, marker, splitter) {
     for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
-      while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      while (splitters.length > 0 && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
           total += defs.size;
           yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
             class: `${syntax}s`
-          }), splitters[0] ?? null));
+          }), splitters[0]));
+        } else if (splitters.length % 100 === 0) {
+          yield;
         }
         splitters.shift();
       }
-      const identifier = `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.firstElementChild.innerHTML}`;
+      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
@@ -7104,13 +7110,13 @@ function build(syntax, marker, splitter) {
       } else {
         ref.lastChild?.remove();
       }
-      const title =  false || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(content).trim() || content.textContent.trim() || undefined;
+      const title = titles.get(identifier) || (0, indexee_1.text)(content).trim() || undefined;
       title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
       const blank = !!abbr && !content.firstChild;
       const refIndex = ++count;
-      const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}` : undefined;
+      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
       const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${total + defs.size + 1}` : undefined,
+        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
         'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
       }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
       if (title && !blank && def.childNodes.length === 1) {
