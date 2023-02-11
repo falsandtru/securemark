@@ -9,6 +9,7 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
 }
 
 export function identity(id: string | undefined, text: string, name: 'index' | 'mark' = 'index'): string | undefined {
+  assert(!id?.match(/[^0-9a-z-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
