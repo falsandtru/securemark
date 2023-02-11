@@ -52,10 +52,14 @@ function build(
           len = refs.length, i = 0; i < len; ++i) {
       yield;
       const ref = refs[i];
-      while (+splitters[0]?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      while (splitters.length > 0
+          && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
           total += defs.size;
-          yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? null));
+          yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0]));
+        }
+        else if (splitters.length % 100 === 0) {
+          yield;
         }
         splitters.shift();
       }
