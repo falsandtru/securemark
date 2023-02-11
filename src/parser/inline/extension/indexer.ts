@@ -15,5 +15,5 @@ export const indexer: ExtensionParser.IndexerParser = creation(fmap(verify(surro
   // Indexer is invisible but invalids must be visible.
   ([el]) => el.getElementsByClassName('invalid').length === 0),
   ([el]) => [
-    html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(7) }),
+    html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(1).replace(/^\w+:\w*:/, '') }),
   ]));

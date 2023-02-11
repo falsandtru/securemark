@@ -123,7 +123,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a class="channel" href="https://domain/@a?ch=b" target="_blank">@domain/a#b</a></p>',
           '<p><a class="hashtag" href="https://source/hashtags/a" target="_blank">#a</a></p>',
           '<p><a class="hashtag" href="https://domain/hashtags/a" target="_blank">#domain/a</a></p>',
-          '<p><a class="index" href="#index:a">a</a></p>',
+          '<p><a class="index" href="#index::a">a</a></p>',
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
           '<p><sup class="annotation" id="annotation::ref:1" title="a"><span hidden="">a</span><a href="#annotation::def:1">*1</a></sup></p>',

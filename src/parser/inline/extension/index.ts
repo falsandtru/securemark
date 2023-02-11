@@ -35,7 +35,7 @@ const signature: IndexParser.SignatureParser = lazy(() => creation(fmap(open(
   '|',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
-    html('span', { class: 'indexer', 'data-index': identity(undefined, ns.join(''))!.slice(6) }),
+    html('span', { class: 'indexer', 'data-index': identity(undefined, ns.join(''))!.slice(7) }),
   ])));
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(union([

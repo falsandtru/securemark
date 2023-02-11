@@ -13,20 +13,21 @@ export function identity(id: string | undefined, text: string, name: 'index' | '
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
   if (text === '') return undefined;
-  if (text.length <= 100) return `${name}:${text}`;
+  if (text.length <= 100) return `${name}:${id ?? ''}:${text}`;
   switch (name) {
     case 'index':
-      return `${name}:${text.slice(0, 97)}...`;
+      return `${name}:${id ?? ''}:${text.slice(0, 97)}...`;
     case 'mark':
-      return `${name}:${text.slice(0, 50)}...${text.slice(-47)}`;
+      return `${name}:${id ?? ''}:${text.slice(0, 50)}...${text.slice(-47)}`;
   }
+  assert(false);
 }
-assert(identity(undefined, '0'.repeat(100 - 1) + 1)?.slice(6) === '0'.repeat(100 - 1) + 1);
-assert(identity(undefined, '0'.repeat(100) + 1)?.slice(6) === '0'.repeat(97) + '...');
-assert(identity(undefined, '0'.repeat(200) + 1)?.slice(6) === '0'.repeat(97) + '...');
-assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')?.slice(5) === '0'.repeat(100 - 1) + 1);
-assert(identity(undefined, '0'.repeat(100) + 1, 'mark')?.slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
-assert(identity(undefined, '0'.repeat(200) + 1, 'mark')?.slice(5) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100 - 1) + 1)!.slice(7) === '0'.repeat(100 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100) + 1)!.slice(7) === '0'.repeat(97) + '...');
+assert(identity(undefined, '0'.repeat(200) + 1)!.slice(7) === '0'.repeat(97) + '...');
+assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.repeat(100 - 1) + 1);
+assert(identity(undefined, '0'.repeat(100) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
+assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 
 export function text(source: HTMLElement | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));

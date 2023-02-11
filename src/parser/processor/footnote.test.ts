@@ -206,8 +206,8 @@ describe('Unit: parser/processor/footnote', () => {
                 html('sup', [html('a', { href: '#annotation::ref:1' }, '^1')])
               ]),
             ]).outerHTML,
-            html('h2', { id: 'index:a' }, 'a').outerHTML,
-            html('h2', { id: 'index:b' }, 'b').outerHTML,
+            html('h2', { id: 'index::a' }, 'a').outerHTML,
+            html('h2', { id: 'index::b' }, 'b').outerHTML,
             html('p', [
               html('sup', { class: "annotation", id: "annotation::ref:2", title: "2" }, [
                 html('span', { hidden: '' }, '2'),
@@ -228,7 +228,7 @@ describe('Unit: parser/processor/footnote', () => {
                 html('sup', [html('a', { href: '#annotation::ref:3' }, '^3')])
               ]),
             ]).outerHTML,
-            html('h2', { id: 'index:c' }, 'c').outerHTML,
+            html('h2', { id: 'index::c' }, 'c').outerHTML,
             html('p', [
               html('sup', { class: "annotation", id: "annotation::ref:4", title: "4" }, [
                 html('span', { hidden: '' }, '4'),

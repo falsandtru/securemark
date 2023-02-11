@@ -122,7 +122,7 @@ describe('Unit: parser/api/bind', () => {
     });
 
     it('complex', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('# a\n# b')), ['<h1 id="index:a">a</h1>', '<h1 id="index:b">b</h1>']);
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('# a\n# b')), ['<h1 id="index::a">a</h1>', '<h1 id="index::b">b</h1>']);
     });
 
     it('normalize', () => {
@@ -158,10 +158,10 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
       [...update('')];
       assert(el.innerHTML === '');
-      assert.deepStrictEqual(inspect(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
-      assert(el.innerHTML === '<h1 id="index:a">a</h1>');
-      assert.deepStrictEqual(inspect(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>']);
-      assert(el.innerHTML === '<h1 id="index:a">a</h1><h1 id="index:b">b</h1>');
+      assert.deepStrictEqual(inspect(update('# a\n# b'), 1), ['<h1 id="index::a">a</h1>']);
+      assert(el.innerHTML === '<h1 id="index::a">a</h1>');
+      assert.deepStrictEqual(inspect(update('# a\n# b'), 2), ['<h1 id="index::b">b</h1>']);
+      assert(el.innerHTML === '<h1 id="index::a">a</h1><h1 id="index::b">b</h1>');
     });
 
     it('chunk', () => {
