@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.267.0
+
+- Change horizontalrule syntax to pagebreak syntax.
+
 ## 0.266.0
 
 - Change index schemas.

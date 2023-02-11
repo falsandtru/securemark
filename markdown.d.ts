@@ -59,7 +59,7 @@ export namespace MarkdownParser {
     Markdown<'block'>,
     Parser<HTMLElement, Context, [
       SourceParser.EmptyLineParser,
-      BlockParser.HorizontalRuleParser,
+      BlockParser.PagebreakParser,
       BlockParser.HeadingParser,
       BlockParser.UListParser,
       BlockParser.OListParser,
@@ -77,9 +77,9 @@ export namespace MarkdownParser {
   }
   export namespace BlockParser {
     interface Block<T extends string> extends Markdown<`block/${T}`> { }
-    export interface HorizontalRuleParser extends
-      // ---
-      Block<'horizontalrule'>,
+    export interface PagebreakParser extends
+      // ===
+      Block<'pagebreak'>,
       Parser<HTMLHRElement, Context, [
         SourceParser.StrParser,
       ]> {

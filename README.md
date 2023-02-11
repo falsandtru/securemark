@@ -50,7 +50,7 @@ https://falsandtru.github.io/securemark/
 - Table (| |)
 - Blockquote (>, !>)
 - Preformattedtext (```)
-- HorizontalRule (---)
+- Pagebreak (===)
 - Inline markups (_, *, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
 - Inline HTML tags (\<bdi>, \<bdo>)
 - Autolink (https://host, user@host, @user)

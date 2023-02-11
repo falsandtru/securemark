@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../markdown';
 import { union, reset, creation, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';
-import { horizontalrule } from './block/horizontalrule';
+import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
 import { olist } from './block/olist';
@@ -19,7 +19,7 @@ import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom/dom';
 
 export import BlockParser = MarkdownParser.BlockParser;
-export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
+export import PagebreakParser = BlockParser.PagebreakParser;
 export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
 export import OListParser = BlockParser.OListParser;
@@ -38,7 +38,7 @@ export const block: BlockParser = creation(1, false, error(
   reset({ resources: { clock: 50 * 1000, recursion: 20 } },
   union([
     emptyline,
-    horizontalrule,
+    pagebreak,
     heading,
     ulist,
     olist,
