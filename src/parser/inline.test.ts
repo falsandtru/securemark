@@ -130,9 +130,7 @@ describe('Unit: parser/inline', () => {
 
     it('channel', () => {
       assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" href="/@a?ch=b">@a#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a#domain/b')), [['@a#domain/b'], '']);
       assert.deepStrictEqual(inspect(parser('@domain/a#b')), [['<a class="channel" href="https://domain/@a?ch=b" target="_blank">@domain/a#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@domain/a#domain/b')), [['@domain/a#domain/b'], '']);
       assert.deepStrictEqual(inspect(parser('_@a#b')), [['_', '<a class="channel" href="/@a?ch=b">@a#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' @a#b')), [[' ', '<a class="channel" href="/@a?ch=b">@a#b</a>'], '']);
     });

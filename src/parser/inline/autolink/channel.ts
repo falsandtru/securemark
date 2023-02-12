@@ -14,7 +14,6 @@ export const channel: AutolinkParser.ChannelParser = validate('@', bind(
   ]),
   (es, rest) => {
     const source = stringify(es);
-    if (source.includes('/', source.indexOf('#'))) return;
     const el = es[0];
     const url = `${el.getAttribute('href')}?ch=${source.slice(source.indexOf('#') + 1).replace(/#/g, '+')}`;
     return [[define(el, { class: 'channel', href: url }, source)], rest];

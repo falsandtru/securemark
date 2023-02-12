@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, tails, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { State } from '../../context';
@@ -14,24 +14,14 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
   constraint(State.shortcut, false,
   open(
     '#',
-    tails([
-      verify(
-        str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i),
-        ([source]) => source.length <= 253 + 1),
       verify(
         str(new RegExp([
           /^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source,
           /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')){1,128}/u.source,
           /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'))/u.source,
         ].join('').replace(/emoji/g, emoji), 'u')),
-        ([source]) => source.length <= 128),
-    ]))),
+        ([source]) => source.length <= 128))),
   convert(
-    source =>
-      `[${source}]{ ${
-      source.includes('/')
-        ? `https://${source.slice(1).replace('/', '/hashtags/')}`
-        : `/hashtags/${source.slice(1)}`
-      } }`,
+    source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
     union([unsafelink]))),
   ([el]) => [define(el, { class: 'hashtag' })]));

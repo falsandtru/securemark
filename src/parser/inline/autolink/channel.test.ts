@@ -16,8 +16,6 @@ describe('Unit: parser/inline/autolink/channel', () => {
       assert.deepStrictEqual(inspect(parser('@a#1@b')), [['@a#1@b'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b#')), [['@a#b#'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b#1')), [['@a#b#1'], '']);
-      assert.deepStrictEqual(inspect(parser('@a#domain/b')), [['@a#domain/b'], '']);
-      assert.deepStrictEqual(inspect(parser('@domain/a#domain/b')), [['@domain/a#domain/b'], '']);
       assert.deepStrictEqual(inspect(parser(' @a#b')), undefined);
     });
 
