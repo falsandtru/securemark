@@ -1,6 +1,5 @@
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
-import { define } from 'typed-dom/dom';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite({ source: `>>${anchor}`, context: {} })) !== '') throw new Error(`Invalid anchor: ${anchor}`);
@@ -13,7 +12,7 @@ export function quote(anchor: string, range: Range): string {
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
-        define(el, el.getAttribute('data-src')!);
+        el.replaceWith(el.getAttribute('data-src')!);
         continue;
       case el.matches('.media'):
         el.replaceWith(
