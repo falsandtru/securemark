@@ -3908,7 +3908,7 @@ function bind(target, settings) {
     })
   };
 
-  if (context.id?.includes(':')) throw new Error('ID must not contain ":"');
+  if (context.id?.match(/[^0-9a-z-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
   const adds = [];
@@ -4226,7 +4226,6 @@ const url_1 = __webpack_require__(2261);
 const dom_1 = __webpack_require__(3252);
 function parse(source, opts = {}, context) {
   if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
-  if (context?.id?.includes(':')) throw new Error('ID must not contain ":"');
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
@@ -4242,6 +4241,7 @@ function parse(source, opts = {}, context) {
     })
   };
 
+  if (context.id?.match(/[^0-9a-z-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
   let index = 0;
@@ -4314,7 +4314,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.block = void 0;
 const combinator_1 = __webpack_require__(2087);
 const source_1 = __webpack_require__(6743);
-const horizontalrule_1 = __webpack_require__(9967);
+const pagebreak_1 = __webpack_require__(4107);
 const heading_1 = __webpack_require__(4623);
 const ulist_1 = __webpack_require__(5425);
 const olist_1 = __webpack_require__(7471);
@@ -4335,7 +4335,7 @@ exports.block = (0, combinator_1.creation)(1, false, error((0, combinator_1.rese
     clock: 50 * 1000,
     recursion: 20
   }
-}, (0, combinator_1.union)([source_1.emptyline, horizontalrule_1.horizontalrule, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
+}, (0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
 function error(parser) {
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', ({
     source
@@ -5168,22 +5168,6 @@ exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segm
 
 /***/ }),
 
-/***/ 9967:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.horizontalrule = void 0;
-const combinator_1 = __webpack_require__(2087);
-const dom_1 = __webpack_require__(3252);
-exports.horizontalrule = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/^-{3,}[^\S\n]*(?:$|\n)/, () => [[(0, dom_1.html)('hr')], ''])));
-
-/***/ }),
-
 /***/ 238:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -5353,6 +5337,22 @@ function format(el, type, form) {
   }
   return el;
 }
+
+/***/ }),
+
+/***/ 4107:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.pagebreak = void 0;
+const combinator_1 = __webpack_require__(2087);
+const dom_1 = __webpack_require__(3252);
+exports.pagebreak = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/^={3,}[^\S\n]*(?:$|\n)/, () => [[(0, dom_1.html)('hr')], ''])));
 
 /***/ }),
 
@@ -5805,7 +5805,7 @@ const link_1 = __webpack_require__(9628);
 const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
 // https://example/@user must be a user page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, source_1.str)(/^[a-z](?:-(?=[0-9a-z])|[0-9a-z]){0,63}/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), (0, source_1.str)(/^[a-z][0-9a-z]*(?:-[0-9a-z]+)*/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]));
 
@@ -5826,11 +5826,12 @@ const link_1 = __webpack_require__(9628);
 const dom_1 = __webpack_require__(3252);
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
-// tid: YYYY-MM-DD-HH-MM-SS-TMZ
-// cid: YYYY-MM-DD-HH-MM-SS-mmm-TMZ
+// UTC
+// tid: YYYY-MMDD-HHMM-SS
+// cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.focus)(/^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline/')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.focus)(/^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i, (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink])))), ([el]) => [(0, dom_1.define)(el, {
   class: 'anchor'
 })])));
 
@@ -5854,7 +5855,6 @@ const dom_1 = __webpack_require__(3252);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 exports.channel = (0, combinator_1.validate)('@', (0, combinator_1.bind)((0, combinator_1.sequence)([account_1.account, (0, combinator_1.some)(hashtag_1.hashtag)]), (es, rest) => {
   const source = (0, util_1.stringify)(es);
-  if (source.includes('/', source.indexOf('#'))) return;
   const el = es[0];
   const url = `${el.getAttribute('href')}?ch=${source.slice(source.indexOf('#') + 1).replace(/#/g, '+')}`;
   return [[(0, dom_1.define)(el, {
@@ -5927,9 +5927,9 @@ const dom_1 = __webpack_require__(3252);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, combinator_1.tails)([(0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), ([source]) => source.length <= 253 + 1), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')){1,128}/u.source, /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'))/u.source].join('').replace(/emoji/g, exports.emoji), 'u')), ([source]) => source.length <= 128)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/hashtags/')}` : `/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp([/^(?=(?:[0-9]{1,15})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source].join('').replace(/emoji/g, exports.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
-}, el.innerText)]));
+})]));
 
 /***/ }),
 
@@ -6489,6 +6489,7 @@ function resolve(uri, host, source) {
     case uri.slice(0, 2) === '^/':
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
+      // Exclude ISO 6709.
       && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
     case host.origin === source.origin && host.pathname === source.pathname:
     case uri.slice(0, 2) === '//':
