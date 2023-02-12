@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { State } from '../../context';
@@ -14,13 +14,10 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
   constraint(State.shortcut, false,
   open(
     '#',
-      verify(
-        str(new RegExp([
-          /^(?=(?:[0-9]{1,127}_?)?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source,
-          /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')){1,128}/u.source,
-          /(?!_?(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'))/u.source,
-        ].join('').replace(/emoji/g, emoji), 'u')),
-        ([source]) => source.length <= 128))),
+    str(new RegExp([
+      /^(?=(?:[0-9]{1,15})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source,
+      /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
+    ].join('').replace(/emoji/g, emoji), 'u')))),
   convert(
     source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
     union([unsafelink]))),

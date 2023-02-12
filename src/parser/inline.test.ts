@@ -122,6 +122,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('a@b')), [['<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_a@b')), [['_', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_a@b_')), [['<em><a class="email" href="mailto:a@b">a@b</a></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('_a_b@c_')), [['<em><a class="email" href="mailto:a_b@c">a_b@c</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a@b*')), [['<strong><a class="email" href="mailto:a@b">a@b</a></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('(a@b)')), [['<span class="paren">(<a class="email" href="mailto:a@b">a@b</a>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser(' a@b')), [[' ', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
@@ -150,6 +151,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]')), [['<a class="hashtag" href="/hashtags/a">#a</a>', '<br>', 'b', '<br>', '<a class="hashtag" href="/hashtags/c">#c</a>', '<br>', '<a class="index" href="#index::d">d</a>'], '']);
       assert.deepStrictEqual(inspect(parser('##a')), [['##a'], '']);
+      assert.deepStrictEqual(inspect(parser('_#a')), [['_', '<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('_#a_')), [['<em><a class="hashtag" href="/hashtags/a">#a</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('a#b')), [['a#b'], '']);
       assert.deepStrictEqual(inspect(parser('0a#b')), [['0a#b'], '']);
       assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#b'], '']);
@@ -171,6 +174,8 @@ describe('Unit: parser/inline', () => {
     it('hashnum', () => {
       assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashnum">#1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#12345678901234567@a')), [['#12345678901234567@a'], '']);
+      assert.deepStrictEqual(inspect(parser('_#1_')), [['<em><a class="hashnum">#1</a></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('_#1_0')), [['<em><a class="hashnum">#1</a></em>', '0'], '']);
       assert.deepStrictEqual(inspect(parser('「#1」')), [['「', '<a class="hashnum">#1</a>', '」'], '']);
     });
 

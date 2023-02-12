@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, constraint, tails, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, constraint, tails, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { State } from '../../context';
@@ -12,10 +12,8 @@ export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
   open(
     '@',
     tails([
-      verify(
-        str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i),
-        ([source]) => source.length <= 253 + 1),
-      str(/^[a-z](?:-(?=[0-9a-z])|[0-9a-z]){0,63}/i),
+      str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i),
+      str(/^[a-z][0-9a-z]*(?:-[0-9a-z]+)*/i),
     ]))),
   convert(
     source =>

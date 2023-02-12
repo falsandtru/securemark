@@ -33,7 +33,7 @@ describe('Unit: parser/inline/autolink/hashnum', () => {
       assert.deepStrictEqual(inspect(parser('あ#1')), [['あ#1'], '']);
       assert.deepStrictEqual(inspect(parser(' #1')), undefined);
       assert.deepStrictEqual(inspect(parser('#12345678901234567')), [['#12345678901234567'], '']);
-      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(128)}a`)), [[`#${'1'.repeat(128)}a`], '']);
+      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(16)}a`)), [[`#${'1'.repeat(16)}a`], '']);
     });
 
     it('valid', () => {
