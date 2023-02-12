@@ -7,8 +7,9 @@ import { define } from 'typed-dom/dom';
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
 
-// tid: YYYY-MM-DD-HH-MM-SS-TMZ
-// cid: YYYY-MM-DD-HH-MM-SS-mmm-TMZ
+// UTC
+// tid: YYYY-MMDD-HHMM-SS
+// cid: YYYY-MMDD-HHMM-SSmmm
 
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
