@@ -1,5 +1,6 @@
 import { exec } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
+//import { url } from '../parser/inline/autolink/url';
 
 export function quote(anchor: string, range: Range): string {
   if (exec(cite({ source: `>>${anchor}`, context: {} })) !== '') throw new Error(`Invalid anchor: ${anchor}`);
@@ -14,6 +15,13 @@ export function quote(anchor: string, range: Range): string {
       case el.matches('.math'):
         el.replaceWith(el.getAttribute('data-src')!);
         continue;
+      //case el.matches('.url'):
+      //  if (exec(url({ source: el.getAttribute('href')!, context: {} })) === '') continue;
+      //  el.replaceWith(
+      //    /[\s{}]/.test(el.getAttribute('href')!)
+      //      ? `{ ${el.getAttribute('href')} }`
+      //      : `{${el.getAttribute('href')}}`);
+      //  continue;
       case el.matches('.media'):
         el.replaceWith(
           /[\s{}]/.test(el.getAttribute('data-src')!)
