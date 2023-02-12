@@ -29,7 +29,7 @@ describe('Unit: parser/inline/autolink/anchor', () => {
       assert.deepStrictEqual(inspect(parser('>>0-A')), [['<a class="anchor" href="?at=0-A">&gt;&gt;0-A</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a class="anchor" href="?at=0">&gt;&gt;0</a>'], '--a']);
       assert.deepStrictEqual(inspect(parser('>>2000-0131-2359-59999')), [['<a class="anchor" href="?at=2000-0131-2359-59999">&gt;&gt;2000-0131-2359-59999</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>A/2000-0131-2359-59')), [['<a class="anchor" href="/@A/timeline/2000-0131-2359-59">&gt;&gt;A/2000-0131-2359-59</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>A/2000-0131-2359-59')), [['<a class="anchor" href="/@A/timeline?at=2000-0131-2359-59">&gt;&gt;A/2000-0131-2359-59</a>'], '']);
     });
 
   });

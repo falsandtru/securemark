@@ -22,7 +22,7 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fma
       source =>
         `[${source}]{ ${
         source.includes('/')
-          ? `/@${source.slice(2).replace('/', '/timeline/')}`
+          ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
           : `?at=${source.slice(2)}`
         } }`,
       union([unsafelink])))),
