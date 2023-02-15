@@ -32,7 +32,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     },
     memo: new Memo({ targets: State.backtrackers }),
   };
-  if (context.id?.match(/[^0-9a-z-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
+  if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
   let index = 0;
