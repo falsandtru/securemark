@@ -6,7 +6,7 @@ import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { contentline } from '../source';
 import { State } from '../context';
-import { trimBlank } from '../visibility';
+import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -37,7 +37,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], subsequence([checkbox, trimBlank(some(union([indexer, inline])))]), true)),
+        line(open(heads[form], subsequence([checkbox, trimBlank(visualize(some(union([indexer, inline]))))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),

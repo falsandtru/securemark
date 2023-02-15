@@ -37,8 +37,8 @@ describe('Unit: parser/block/olist', () => {
       // pending
       assert.deepStrictEqual(inspect(parser('1. ')), [['<ol><li></li></ol>'], '']);
       // filled
-      assert.deepStrictEqual(inspect(parser('1. \\')), [['<ol><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. \\\n')), [['<ol><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. \\')), [['<ol><li id="index::\\">\\</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. \\\n')), [['<ol><li id="index::\\">\\</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. -')), [['<ol><li id="index::-">-</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. -\n')), [['<ol><li id="index::-">-</li></ol>'], '']);
       // pending

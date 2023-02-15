@@ -26,8 +26,8 @@ describe('Unit: parser/block/ulist', () => {
       // pending
       assert.deepStrictEqual(inspect(parser('- ')), [['<ul><li></li></ul>'], '']);
       // filled
-      assert.deepStrictEqual(inspect(parser('- \\')), [['<ul><li></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- \\\n')), [['<ul><li></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \\')), [['<ul><li id="index::\\">\\</li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \\\n')), [['<ul><li id="index::\\">\\</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- -')), [['<ul><li id="index::-">-</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- -\n')), [['<ul><li id="index::-">-</li></ul>'], '']);
     });
