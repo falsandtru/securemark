@@ -1,6 +1,6 @@
 import { CodeBlockParser } from '../block';
 import { eval } from '../../combinator/data/parser';
-import { some, block, validate, fence, clear, fmap } from '../../combinator';
+import { block, validate, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -69,6 +69,6 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       params.lang
         ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
           body.slice(0, -1) || undefined
-        : defrag(eval(some(autolink)({ source: body.slice(0, -1), context }), [])));
+        : defrag(eval(autolink({ source: body.slice(0, -1), context }), [])));
     return [el];
   })));

@@ -7,14 +7,14 @@ import { format } from './util';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
-export const autolink: AutolinkParser = lazy(() => line(subsequence([
+export const autolink: AutolinkParser = lazy(() => some(line(subsequence([
   lineurl,
   some(union([
     autolink_,
     linebreak,
     unescsource,
   ])),
-])));
+]))));
 
 export const lineurl: AutolinkParser.LineUrlParser = lazy(() => focus(
   /^!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,

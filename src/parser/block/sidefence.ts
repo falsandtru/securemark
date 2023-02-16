@@ -26,6 +26,6 @@ const source: SidefenceParser.SourceParser = lazy(() => fmap(
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
+      convert(unindent, fmap(autolink, ns => [html('pre', defrag(ns))]))),
   ]))),
   ns => [html('blockquote', ns)]));
