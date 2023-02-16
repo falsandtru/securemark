@@ -14,7 +14,7 @@ export function line<T>(parser: Parser<T>): Parser<T> {
     assert(check(line, result));
     context.offset -= source.length - line.length;
     if (result === undefined) return;
-    return isEmpty(exec(result))
+    return isBlank(exec(result))
       ? [eval(result), source.slice(line.length)]
       : undefined;
   };
@@ -32,7 +32,7 @@ export function firstline(source: string): string {
   }
 }
 
-export function isEmpty(line: string): boolean {
+export function isBlank(line: string): boolean {
   return line === ''
       || line === '\n'
       || line.trimStart() === '';

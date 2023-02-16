@@ -1,6 +1,6 @@
 import { Parser, exec } from '../../data/parser';
 import { Memo } from '../../data/parser/context/memo';
-import { firstline, isEmpty } from './line';
+import { firstline, isBlank } from './line';
 
 export function block<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
 export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
@@ -11,7 +11,7 @@ export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
     const result = parser({ source, context });
     if (result === undefined) return;
     const rest = exec(result);
-    if (separation && !isEmpty(firstline(rest))) return;
+    if (separation && !isBlank(firstline(rest))) return;
     assert(rest === '' || source[source.length - rest.length - 1] === '\n');
     return rest === '' || source[source.length - rest.length - 1] === '\n'
       ? result
