@@ -14,7 +14,7 @@ export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surroun
   constraint(State.index, false,
   syntax(Syntax.index, 2, 1, State.linkers | State.media,
   startTight(
-  open(stropt(/^\|?/), trimBlankEnd(some(union([
+  open(stropt('|'), trimBlankEnd(some(union([
     signature,
     inline,
   ]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))),

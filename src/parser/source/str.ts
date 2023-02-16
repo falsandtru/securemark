@@ -31,7 +31,7 @@ export function stropt(pattern: string | RegExp): Parser<string, Context<StrPars
         if (source === '') return;
         return source.slice(0, pattern.length) === pattern
           ? [[pattern], source.slice(pattern.length)]
-          : undefined;
+          : [[''], source];
       })
     : creation(1, false, ({ source }) => {
         if (source === '') return;
