@@ -598,8 +598,13 @@ export namespace MarkdownParser {
         export interface TextParser extends
           Block<'reply/quote/text'>,
           Parser<string | HTMLElement, Context, [
-            InlineParser.MathParser,
-            AutolinkParser,
+            AutolinkParser.LineUrlParser,
+            Parser<string | HTMLElement, Context, [
+              InlineParser.MathParser,
+              InlineParser.AutolinkParser,
+              SourceParser.LinebreakParser,
+              SourceParser.UnescapableSourceParser,
+            ]>,
           ]> {
         }
         export interface PlaceholderParser extends
@@ -1171,10 +1176,22 @@ export namespace MarkdownParser {
   export interface AutolinkParser extends
     Markdown<'autolink'>,
     Parser<string | HTMLElement, Context, [
-      InlineParser.AutolinkParser,
-      SourceParser.LinebreakParser,
-      SourceParser.UnescapableSourceParser,
+      AutolinkParser.LineUrlParser,
+      Parser<string | HTMLElement, Context, [
+        InlineParser.AutolinkParser,
+        SourceParser.LinebreakParser,
+        SourceParser.UnescapableSourceParser,
+      ]>,
     ]> {
+  }
+  export namespace AutolinkParser {
+    export interface LineUrlParser extends
+      Markdown<'autolink/lineurl'>,
+      Parser<string | HTMLElement, Context, [
+        SourceParser.StrParser,
+        InlineParser.LinkParser,
+      ]> {
+    }
   }
   export namespace SourceParser {
     interface Source<T extends string> extends Markdown<`source/${T}`> { }

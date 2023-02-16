@@ -1,28 +1,21 @@
 import { MarkdownParser } from '../../markdown';
-import { union, lazy } from '../combinator';
+import { union, tails, subsequence, some, line, focus, lazy } from '../combinator';
+import { link } from './inline/link';
 import { autolink as autolink_ } from './inline/autolink';
-import { linebreak, unescsource } from './source';
+import { linebreak, unescsource, str } from './source';
+import { format } from './util';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
-const delimiter = /[@#>0-9A-Za-z\n]|\S[#>]/;
+export const autolink: AutolinkParser = lazy(() => line(subsequence([
+  lineurl,
+  some(union([
+    autolink_,
+    linebreak,
+    unescsource,
+  ])),
+])));
 
-export const autolink: AutolinkParser = ({ source, context }) => {
-  if (source === '') return;
-  assert(source[0] !== '\x1B');
-  const i = source.search(delimiter);
-  switch (i) {
-    case -1:
-      return [[source], ''];
-    case 0:
-      return parser({ source, context });
-    default:
-      return [[source.slice(0, i)], source.slice(i)];
-  }
-};
-
-const parser: AutolinkParser = lazy(() => union([
-  autolink_,
-  linebreak,
-  unescsource
-]));
+export const lineurl: AutolinkParser.LineUrlParser = lazy(() => focus(
+  /^!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,
+  format(tails([str('!'), link]))));

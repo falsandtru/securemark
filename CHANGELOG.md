@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.268.0
+
+- Add lineurl syntax.
+
 ## 0.267.0
 
 - Change horizontalrule syntax to pagebreak syntax.

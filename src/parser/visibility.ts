@@ -4,6 +4,7 @@ import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { State } from './context';
+import { format } from './util';
 import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
@@ -16,7 +17,7 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Pa
   return union([
     convert(
       source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')),
-      verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
+      verify(format(parser), (ns, rest, context) => !rest && hasVisible(ns, context))),
     some(union([linebreak, unescsource])),
   ]);
 }
