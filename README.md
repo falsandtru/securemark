@@ -31,10 +31,6 @@ Secure markdown renderer working on browsers for user input data.
 - Audio (.oga, .ogg)
 - Images
 
-## Demos
-
-https://falsandtru.github.io/securemark/
-
 ## APIs
 
 [index.d.ts](index.d.ts)
