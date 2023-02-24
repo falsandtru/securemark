@@ -17,7 +17,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-[ ]')), undefined);
       assert.deepStrictEqual(inspect(parser('-[x]')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n')), undefined);
-      assert.deepStrictEqual(inspect(parser(' -')), undefined);
+      assert.deepStrictEqual(inspect(parser(' - ')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('*')), undefined);
     });

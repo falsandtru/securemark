@@ -30,7 +30,7 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('(1)\n')), undefined);
       assert.deepStrictEqual(inspect(parser('(I) ')), undefined);
       assert.deepStrictEqual(inspect(parser('(A) ')), undefined);
-      assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
+      assert.deepStrictEqual(inspect(parser(' 1. ')), undefined);
     });
 
     it('single', () => {
