@@ -40,9 +40,9 @@ export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | stri
     : ns;
 }
 
-function format(el: HTMLUListElement): HTMLUListElement {
-  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    el.setAttribute('class', 'checklist');
+function format(list: HTMLUListElement): HTMLUListElement {
+  if (list.firstElementChild?.firstElementChild?.className === 'checkbox') {
+    list.setAttribute('class', 'checklist');
   }
-  return el;
+  return list;
 }

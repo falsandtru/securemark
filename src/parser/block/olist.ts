@@ -112,21 +112,21 @@ function initial(type: string): RegExp {
   }
 }
 
-function format(el: HTMLOListElement, type: string, form: string): HTMLOListElement {
-  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    el.setAttribute('class', 'checklist');
+function format(list: HTMLOListElement, type: string, form: string): HTMLOListElement {
+  if (list.firstElementChild?.firstElementChild?.className === 'checkbox') {
+    list.setAttribute('class', 'checklist');
   }
-  define(el, {
+  define(list, {
     type: type || undefined,
     'data-format': form === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined,
   });
-  const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
-  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
-    const el = es[i];
-    assert(el.getAttribute('data-marker') !== '');
-    if (el.getAttribute('data-marker') !== marker) break;
-    el.removeAttribute('data-marker');
+  const marker = list.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
+  for (let es = list.children, len = es.length, i = 0; i < len; ++i) {
+    const item = es[i];
+    assert(item.getAttribute('data-marker') !== '');
+    if (item.getAttribute('data-marker') !== marker) break;
+    item.removeAttribute('data-marker');
   }
-  return el;
+  return list;
 }
