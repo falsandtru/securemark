@@ -124,13 +124,9 @@ function format(el: HTMLOListElement, type: string, form: string): HTMLOListElem
   const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
   for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    switch (el.getAttribute('data-marker')) {
-      case '':
-      case marker:
-        el.removeAttribute('data-marker');
-        continue;
-    }
-    break;
+    assert(el.getAttribute('data-marker') !== '');
+    if (el.getAttribute('data-marker') !== marker) break;
+    el.removeAttribute('data-marker');
   }
   return el;
 }
