@@ -164,6 +164,11 @@
     display: table;
     width: 100%;
   }
+  /*
+  ol[start] {
+    counter-reset: counter attr(start);
+  }
+  */
   ol > li {
     counter-increment: counter;
     display: table-row;
@@ -650,7 +655,7 @@
     white-space: pre-wrap;
   }
   .invalid[data-invalid-syntax][data-invalid-message]::before {
-    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": ";
+    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": " !important;
     font-style: normal;
     font-weight: bold;
     font-size: initial;

@@ -91,7 +91,7 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('01. ')), [['<ol><li data-marker="01."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0.\n1')), [['<ol><li></li><li data-marker="1."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('8.\n9')), [['<ol><li data-marker="8."></li><li data-marker="9."></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('9.\n9')), [['<ol><li data-marker="9."></li><li data-marker="9."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('9.\n9')), [['<ol><li data-marker="9."></li><li data-marker="9." class="invalid"></li></ol>'], '']);
     });
 
     it('branch', () => {

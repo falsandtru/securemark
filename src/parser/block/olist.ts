@@ -61,7 +61,7 @@ export const invalid = rewrite(
     '',
     html('span', {
       class: 'invalid',
-      'data-invalid-syntax': 'listitem',
+      'data-invalid-syntax': 'list',
       'data-invalid-type': 'syntax',
       'data-invalid-message': 'Fix the indent or the head of the list item',
     }, source.replace('\n', ''))
@@ -112,7 +112,7 @@ function style(type: string): string {
   }
 }
 
-function initial(type: string): RegExp {
+function pattern(type: string): RegExp {
   switch (type) {
     case 'i':
       return /^\(?i[).]?$/;
@@ -136,12 +136,28 @@ function format(list: HTMLOListElement, type: string, form: string): HTMLOListEl
     'data-format': form === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined,
   });
-  const marker = list.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
+  const marker = list.firstElementChild?.getAttribute('data-marker') ?? '';
+  // TODO: CSSカウンターをattr(start)でリセットできるようになればstart値からのオートインクリメントに対応させる。
+  const start = marker.match(pattern(type))?.[0] ?? '';
   for (let es = list.children, len = es.length, i = 0; i < len; ++i) {
     const item = es[i];
     assert(item.getAttribute('data-marker') !== '');
-    if (item.getAttribute('data-marker') !== marker) break;
-    item.removeAttribute('data-marker');
+    switch (item.getAttribute('data-marker')) {
+      case null:
+        continue;
+      case start:
+        item.removeAttribute('data-marker');
+        continue;
+      case marker:
+        if (i === 0 || item.classList.contains('invalid')) continue;
+        define(item, {
+          class: 'invalid',
+          'data-invalid-syntax': 'list',
+          'data-invalid-type': 'index',
+          'data-invalid-message': 'Fix the duplicate index',
+        });
+    }
+    break;
   }
   return list;
 }
