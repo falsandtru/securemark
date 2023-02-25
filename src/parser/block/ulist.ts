@@ -41,8 +41,8 @@ export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | stri
 }
 
 function format(list: HTMLUListElement): HTMLUListElement {
-  if (list.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    list.setAttribute('class', 'checklist');
+  if (list.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    list.classList.add('checklist');
   }
   return list;
 }

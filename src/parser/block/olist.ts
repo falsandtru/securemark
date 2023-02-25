@@ -128,8 +128,8 @@ function initial(type: string): RegExp {
 }
 
 function format(list: HTMLOListElement, type: string, form: string): HTMLOListElement {
-  if (list.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    list.setAttribute('class', 'checklist');
+  if (list.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    list.classList.add('checklist');
   }
   define(list, {
     type: type || undefined,
