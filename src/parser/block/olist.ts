@@ -27,10 +27,10 @@ export const olist: OListParser = lazy(() => block(validate(
 export const olist_: OListParser = lazy(() => block(union([
   match(
     openers['.'],
-    memoize(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])),
+    memoize(ms => list(type(ms[1]), '.'), ms => index(ms[1]), [])),
   match(
     openers['('],
-    memoize(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, [])),
+    memoize(ms => list(type(ms[1]), '('), ms => index(ms[1]), [])),
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
@@ -67,8 +67,23 @@ export const invalid = rewrite(
     }, source.replace('\n', ''))
   ], '']);
 
-function type(index: string): string {
-  switch (index) {
+function index(value: string): number {
+  switch (value) {
+    case 'i':
+      return 1;
+    case 'a':
+      return 2;
+    case 'I':
+      return 3;
+    case 'A':
+      return 4;
+    default:
+      return 0;
+  }
+}
+
+function type(value: string): string {
+  switch (value) {
     case 'i':
       return 'i';
     case 'a':
