@@ -5234,7 +5234,7 @@ const openers = {
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
 exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(8 /* State.media */, exports.olist_))));
-exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => type(ms[1]).charCodeAt(0) || 0, [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => type(ms[1]).charCodeAt(0) || 0, []))])));
+exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => index(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => index(ms[1]), []))])));
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0] || undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
@@ -5252,12 +5252,26 @@ exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.co
   source
 }) => [['', (0, dom_1.html)('span', {
   class: 'invalid',
-  'data-invalid-syntax': 'listitem',
+  'data-invalid-syntax': 'list',
   'data-invalid-type': 'syntax',
   'data-invalid-message': 'Fix the indent or the head of the list item'
 }, source.replace('\n', ''))], '']);
-function type(index) {
-  switch (index) {
+function index(value) {
+  switch (value) {
+    case 'i':
+      return 1;
+    case 'a':
+      return 2;
+    case 'I':
+      return 3;
+    case 'A':
+      return 4;
+    default:
+      return 0;
+  }
+}
+function type(value) {
+  switch (value) {
     case 'i':
       return 'i';
     case 'a':
@@ -5284,7 +5298,7 @@ function style(type) {
       return '';
   }
 }
-function initial(type) {
+function pattern(type) {
   switch (type) {
     case 'i':
       return /^\(?i[).]?$/;
@@ -5298,27 +5312,38 @@ function initial(type) {
       return /^\(?[01][).]?$/;
   }
 }
-function format(el, type, form) {
-  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    el.setAttribute('class', 'checklist');
+function format(list, type, form) {
+  if (list.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    list.classList.add('checklist');
   }
-  (0, dom_1.define)(el, {
+  (0, dom_1.define)(list, {
     type: type || undefined,
     'data-format': form === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined
   });
-  const marker = el.firstElementChild?.getAttribute('data-marker').match(initial(type))?.[0] ?? '';
-  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
-    const el = es[i];
-    switch (el.getAttribute('data-marker')) {
-      case '':
-      case marker:
-        el.removeAttribute('data-marker');
+  const marker = list.firstElementChild?.getAttribute('data-marker') ?? '';
+  // TODO: CSSカウンターをattr(start)でリセットできるようになればstart値からのオートインクリメントに対応させる。
+  const start = marker.match(pattern(type))?.[0] ?? '';
+  for (let es = list.children, len = es.length, i = 0; i < len; ++i) {
+    const item = es[i];
+    switch (item.getAttribute('data-marker')) {
+      case null:
         continue;
+      case start:
+        item.removeAttribute('data-marker');
+        continue;
+      case marker:
+        if (i === 0 || item.classList.contains('invalid')) continue;
+        (0, dom_1.define)(item, {
+          class: 'invalid',
+          'data-invalid-syntax': 'list',
+          'data-invalid-type': 'index',
+          'data-invalid-message': 'Fix the duplicate index'
+        });
     }
     break;
   }
-  return el;
+  return list;
 }
 
 /***/ }),
@@ -5587,11 +5612,11 @@ function fillFirstLine(ns) {
   return ns.length === 1 && typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName) ? (0, array_1.unshift)([(0, dom_1.html)('br')], ns) : ns;
 }
 exports.fillFirstLine = fillFirstLine;
-function format(el) {
-  if (el.firstElementChild?.firstElementChild?.className === 'checkbox') {
-    el.setAttribute('class', 'checklist');
+function format(list) {
+  if (list.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    list.classList.add('checklist');
   }
-  return el;
+  return list;
 }
 
 /***/ }),
@@ -6128,6 +6153,7 @@ function identity(id, text, name = 'index') {
 }
 exports.identity = identity;
 function text(source, optional = false) {
+  if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
@@ -6959,8 +6985,7 @@ function* figure(target, footnotes, opts = {}) {
     }
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
-    for (let rs = refs.take(label, Infinity), i = 0; i < rs.length; ++i) {
-      const ref = rs[i];
+    for (const ref of refs.take(label, Infinity)) {
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
         (0, dom_1.define)(ref, {
           class: void ref.classList.remove('invalid'),
@@ -7026,7 +7051,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reference = exports.annotation = exports.footnote = void 0;
 const indexee_1 = __webpack_require__(1269);
-const queue_1 = __webpack_require__(4934);
 const dom_1 = __webpack_require__(3252);
 function* footnote(target, footnotes, opts = {}, bottom = null) {
   for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
@@ -7040,23 +7064,35 @@ function* footnote(target, footnotes, opts = {}, bottom = null) {
 exports.footnote = footnote;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
-function build(syntax, marker, splitter) {
+function build(syntax, marker, splitter = '_') {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   return function* (target, footnote, opts = {}, bottom = null) {
     const defs = new Map();
-    const buffer = new queue_1.MultiQueue();
-    const titles = new Map();
     const splitters = [];
-    for (let es = target.querySelectorAll(splitter ?? '_'), len = es.length, i = 0; i < len; ++i) {
+    for (let es = target.querySelectorAll(splitter), len = es.length, i = 0; i < len; ++i) {
+      if (i % 100 === 0) yield;
       const el = es[i];
       el.parentNode === target && splitters.push(el);
+    }
+    const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
+    const titles = new Map();
+    const contents = new Map();
+    for (let len = refs.length, i = 0; i < len; ++i) {
+      if (i % 10 === 9) yield;
+      const ref = refs[i];
+      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
+      if (titles.has(identifier)) continue;
+      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
+      const title = (0, indexee_1.text)(content).trim();
+      if (!title) continue;
+      titles.set(identifier, title);
+      contents.set(identifier, content);
     }
     let count = 0;
     let total = 0;
     let style;
-    for (let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`), len = refs.length, i = 0; i < len; ++i) {
-      yield;
+    for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       while (splitters.length > 0 && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
@@ -7071,7 +7107,6 @@ function build(syntax, marker, splitter) {
       }
       const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
-      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         (0, dom_1.define)(ref, {
@@ -7093,29 +7128,14 @@ function build(syntax, marker, splitter) {
       } else {
         ref.lastChild?.remove();
       }
-      const title = titles.get(identifier) || (0, indexee_1.text)(content).trim() || undefined;
-      title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
-      const blank = !!abbr && !content.firstChild;
+      const title = titles.get(identifier);
+      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       const refIndex = ++count;
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
       const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
         id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
         'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
-      }, [content.cloneNode(true), (0, dom_1.html)('sup')])).get(identifier);
-      if (title && !blank && def.childNodes.length === 1) {
-        def.insertBefore(content.cloneNode(true), def.lastChild);
-        for (let refs = buffer.take(identifier, Infinity), i = 0; i < refs.length; ++i) {
-          const ref = refs[i];
-          if (ref.getAttribute('data-invalid-type') !== 'content') continue;
-          (0, dom_1.define)(ref, {
-            title,
-            class: void ref.classList.remove('invalid'),
-            'data-invalid-syntax': null,
-            'data-invalid-type': null,
-            'data-invalid-message': null
-          });
-        }
-      }
+      }, [contents.get(identifier) ?? (0, dom_1.frag)(), (0, dom_1.html)('sup')])).get(identifier);
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
       const defId = def.id || undefined;
       (0, dom_1.define)(ref, {
@@ -7135,7 +7155,7 @@ function build(syntax, marker, splitter) {
       }, marker(defIndex, abbr)));
       def.lastChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
-        title: abbr && !blank ? title : undefined
+        title: abbr && (0, indexee_1.text)(content).trim() || undefined
       }, `^${refIndex}`));
     }
     if (defs.size > 0 || footnote) {
@@ -8368,7 +8388,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.315 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.316 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8699,7 +8719,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.315 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.316 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
