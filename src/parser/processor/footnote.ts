@@ -24,7 +24,7 @@ export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(
   syntax: 'annotation' | 'reference',
   marker: (index: number, abbr: string | undefined) => string,
-  splitter?: string,
+  splitter: string = '_',
 ) {
   assert(syntax.match(/^[a-z]+$/));
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
@@ -39,7 +39,7 @@ function build(
     const buffer = new MultiQueue<string, HTMLElement>();
     const titles = new Map<string, string>();
     const splitters: Element[] = [];
-    for (let es = target.querySelectorAll(splitter ?? '_'),
+    for (let es = target.querySelectorAll(splitter),
              len = es.length, i = 0; i < len; ++i) {
       if (i % 100 === 0) yield;
       const el = es[i];
