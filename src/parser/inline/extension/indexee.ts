@@ -33,6 +33,7 @@ assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat
 export function text(source: HTMLElement | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
+  if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
   const index = indexer?.getAttribute('data-index');
   if (index) return index;

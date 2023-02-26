@@ -134,7 +134,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && content.firstChild && text(content).trim() || undefined,
+            title: abbr && text(content).trim() || undefined,
           },
           `^${refIndex}`));
     }
