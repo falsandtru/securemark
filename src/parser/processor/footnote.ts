@@ -1,5 +1,4 @@
 import { text } from '../inline/extension/indexee';
-import { MultiQueue } from 'spica/queue';
 import { frag, html, define } from 'typed-dom/dom';
 
 export function* footnote(
@@ -36,8 +35,6 @@ function build(
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
-    const buffer = new MultiQueue<string, HTMLElement>();
-    const titles = new Map<string, string>();
     const splitters: Element[] = [];
     for (let es = target.querySelectorAll(splitter),
              len = es.length, i = 0; i < len; ++i) {
@@ -45,12 +42,24 @@ function build(
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
+    const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
+    const titles = new Map<string, string>();
+    const contents = new Map<string, DocumentFragment>();
+    for (let len = refs.length, i = 0; i < len; ++i) {
+      if (i % 10 === 9) yield;
+      const ref = refs[i];
+      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
+      if (titles.has(identifier)) continue;
+      const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
+      const title = text(content).trim();
+      if (!title) continue;
+      titles.set(identifier, title);
+      contents.set(identifier, content);
+    }
     let count = 0;
     let total = 0;
     let style: 'count' | 'abbr';
-    for (
-      let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
-          len = refs.length, i = 0; i < len; ++i) {
+    for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       while (splitters.length > 0
           && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
@@ -65,7 +74,6 @@ function build(
       }
       const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
-      const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         define(ref, {
@@ -89,14 +97,10 @@ function build(
       else {
         ref.lastChild?.remove();
       }
-      const title = titles.get(identifier) || text(content).trim() || undefined;
+      const title = titles.get(identifier);
       assert(title !== '');
       assert(syntax !== 'annotation' || title);
-      title
-        ? !titles.has(identifier) && titles.set(identifier, title)
-        : buffer.set(identifier, ref);
-      assert(syntax !== 'annotation' || !buffer.has(identifier));
-      const blank = !!abbr && !content.firstChild;
+      const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
       const refIndex = ++count;
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}`
@@ -108,23 +112,9 @@ function build(
               id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
               'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined,
             },
-            [content.cloneNode(true), html('sup')]))
+            [contents.get(identifier) ?? frag(), html('sup')]))
             .get(identifier)!;
       assert(def.lastChild);
-      if (title && !blank && def.childNodes.length === 1) {
-        def.insertBefore(content.cloneNode(true), def.lastChild);
-        assert(def.childNodes.length > 1);
-        for (const ref of buffer.take(identifier, Infinity)) {
-          if (ref.getAttribute('data-invalid-type') !== 'content') continue;
-          define(ref, {
-            title,
-            class: void ref.classList.remove('invalid'),
-            'data-invalid-syntax': null,
-            'data-invalid-type': null,
-            'data-invalid-message': null,
-          });
-        }
-      }
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
       const defId = def.id || undefined;
       define(ref, {
@@ -144,9 +134,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && !blank
-              ? title
-              : undefined,
+            title: abbr && content.firstChild && text(content).trim() || undefined,
           },
           `^${refIndex}`));
     }
