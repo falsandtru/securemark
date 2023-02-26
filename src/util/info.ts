@@ -1,3 +1,4 @@
+import type { ParseSelector } from 'typed-query-selector/parser';
 import { Info } from '../..';
 import { scope } from './scope';
 
@@ -16,9 +17,10 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
     media: find('.media[data-src]'),
   };
 
-  function find<T extends HTMLElement>(selector: string): T[] {
-    const acc: T[] = [];
-    for (let es = source.querySelectorAll<T>(selector),
+  function find<T extends string>(selector: T): ParseSelector<T, HTMLElement>[];
+  function find(selector: string): HTMLElement[] {
+    const acc = [];
+    for (let es = source.querySelectorAll<HTMLElement>(selector),
              len = es.length, i = 0; i < len; ++i) {
       const el = es[i];
       match(el) && acc.push(el);
