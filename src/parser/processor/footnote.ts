@@ -41,6 +41,7 @@ function build(
     const splitters: Element[] = [];
     for (let es = target.querySelectorAll(splitter ?? '_'),
              len = es.length, i = 0; i < len; ++i) {
+      if (i % 100 === 0) yield;
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
