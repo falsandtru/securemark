@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.268.1
+
+- Refactoring.
+
 ## 0.268.0
 
 - Add lineurl syntax.
