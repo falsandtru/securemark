@@ -50,7 +50,6 @@ function build(
     for (
       let refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`),
           len = refs.length, i = 0; i < len; ++i) {
-      yield;
       const ref = refs[i];
       while (splitters.length > 0
           && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {

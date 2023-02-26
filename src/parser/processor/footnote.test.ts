@@ -22,7 +22,7 @@ describe('Unit: parser/processor/footnote', () => {
       const target = parse('((a b))');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 3 : 2);
+        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 2 : 1);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -48,7 +48,7 @@ describe('Unit: parser/processor/footnote', () => {
       const target = parse('((1))((12345678901234567890))');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 6 : 4);
+        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 4 : 2);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -165,7 +165,7 @@ describe('Unit: parser/processor/footnote', () => {
       const target = parse('((a b))');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 3 : 2);
+        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 2 : 1);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
