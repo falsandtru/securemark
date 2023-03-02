@@ -14,12 +14,13 @@ export function identity(id: string | undefined, text: string, name: 'index' | '
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
   if (text === '') return undefined;
-  if (text.length <= 100) return `${name}:${id ?? ''}:${text}`;
+  const cs = [...text];
+  if (cs.length <= 100) return `${name}:${id ?? ''}:${text}`;
   switch (name) {
     case 'index':
-      return `${name}:${id ?? ''}:${text.slice(0, 97)}...`;
+      return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-      return `${name}:${id ?? ''}:${text.slice(0, 50)}...${text.slice(-47)}`;
+      return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
   assert(false);
 }
