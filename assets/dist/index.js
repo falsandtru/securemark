@@ -6143,12 +6143,13 @@ function identity(id, text, name = 'index') {
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
   if (text === '') return undefined;
-  if (text.length <= 100) return `${name}:${id ?? ''}:${text}`;
+  const cs = [...text];
+  if (cs.length <= 100) return `${name}:${id ?? ''}:${text}`;
   switch (name) {
     case 'index':
-      return `${name}:${id ?? ''}:${text.slice(0, 97)}...`;
+      return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-      return `${name}:${id ?? ''}:${text.slice(0, 50)}...${text.slice(-47)}`;
+      return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
 }
 exports.identity = identity;
@@ -8388,7 +8389,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.316 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.317 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8719,7 +8720,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.316 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.317 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
