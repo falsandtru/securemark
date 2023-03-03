@@ -55,9 +55,9 @@ describe('Unit: parser/block/reply/quote', () => {
       assert.deepStrictEqual(inspect(parser('> $-a, $-b')), [['<span class="quote">&gt; $-a, $-b</span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> $a=b$')), [['<span class="quote">&gt; <span class="math" translate="no" data-src="$a=b$">$a=b$</span></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> ${a}$')), [['<span class="quote">&gt; <span class="math" translate="no" data-src="${a}$">${a}$</span></span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('> http://host#!')), [['<span class="quote">&gt; <a class="url" href="http://host#!" target="_blank">http://host#!</a></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('> http://host#\\')), [['<span class="quote">&gt; <a class="url" href="http://host#\\" target="_blank">http://host#\\</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n> http://host#\\ \n> b')), [['<span class="quote">&gt; a<br>&gt; <a class="url" href="http://host#\\" target="_blank">http://host#\\</a> <br>&gt; b</span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('> !http://host#!')), [['<span class="quote">&gt; !<a class="url" href="http://host#!" target="_blank">http://host#!</a></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('> !http://host#\\')), [['<span class="quote">&gt; !<a class="url" href="http://host#\\" target="_blank">http://host#\\</a></span>', '<br>'], '']);
     });
 
   });
