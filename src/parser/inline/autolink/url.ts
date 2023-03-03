@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, creation, precedence, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
+import { union, tails, some, creation, precedence, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
-import { unescsource } from '../../source';
+import { linebreak, unescsource, str } from '../../source';
 
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 
@@ -12,6 +12,17 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
   convert(
     url => `{ ${url} }`,
     union([unsafelink])))));
+
+export const lineurl: AutolinkParser.UrlParser.LineUrlParser = open(
+  linebreak,
+  tails([
+    str('!'),
+    focus(
+      /^https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,
+      convert(
+        url => `{ ${url} }`,
+        unsafelink)),
+  ]));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(precedence(2, union([
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),

@@ -33,6 +33,8 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('http://host#\\')), [['<p><a class="url" href="http://host#\\" target="_blank">http://host#\\</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\nhttp://host#\\ \nb')), [['<p>a<br><a class="url" href="http://host#\\" target="_blank">http://host#\\</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('!http://host#\\')), [['<p><a href="http://host#\\" target="_blank"><img class="media" data-src="http://host#\\" alt=""></a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('!http://host#\\ a')), [['<p>!<a class="url" href="http://host#" target="_blank">http://host#</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' !http://host#\\')), [['<p> !<a class="url" href="http://host#" target="_blank">http://host#</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('\ta')), [['<p>\ta</p>'], '']);
     });
 

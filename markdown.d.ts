@@ -346,7 +346,7 @@ export namespace MarkdownParser {
               BlockquoteParser,
               PlaceholderParser,
               InlineParser.MediaParser,
-              InlineParser.ShortmediaParser,
+              InlineParser.ShortMediaParser,
             ]>,
             SourceParser.EmptyLineParser,
             InlineParser,
@@ -598,13 +598,10 @@ export namespace MarkdownParser {
         export interface TextParser extends
           Block<'reply/quote/text'>,
           Parser<string | HTMLElement, Context, [
-            AutolinkParser.LineUrlParser,
-            Parser<string | HTMLElement, Context, [
-              InlineParser.MathParser,
-              InlineParser.AutolinkParser,
-              SourceParser.LinebreakParser,
-              SourceParser.UnescapableSourceParser,
-            ]>,
+            InlineParser.MathParser,
+            InlineParser.AutolinkParser,
+            SourceParser.LinebreakParser,
+            SourceParser.UnescapableSourceParser,
           ]> {
         }
         export interface PlaceholderParser extends
@@ -633,8 +630,9 @@ export namespace MarkdownParser {
       InlineParser.MathParser,
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
-      InlineParser.LinkParser,
-      InlineParser.MediaParser,
+      InlineParser.LinkParser.TextLinkParser,
+      InlineParser.LinkParser.LineMediaLinkParser,
+      InlineParser.MediaParser.LineMediaParser,
       InlineParser.HTMLParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
@@ -643,7 +641,7 @@ export namespace MarkdownParser {
       InlineParser.EmphasisParser,
       InlineParser.CodeParser,
       InlineParser.HTMLEntityParser,
-      InlineParser.ShortmediaParser,
+      InlineParser.ShortMediaParser.LineShortMediaParser,
       InlineParser.AutolinkParser,
       InlineParser.BracketParser,
       SourceParser.TextParser,
@@ -842,6 +840,12 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace LinkParser {
+      export interface LineMediaLinkParser extends
+        Inline<'link/linemedialink'>,
+        Parser<HTMLElement, Context, [
+          LinkParser.MediaLinkParser,
+        ]> {
+      }
       export interface TextLinkParser extends
         Inline<'link/textlink'>,
         Parser<HTMLAnchorElement, Context, [
@@ -856,7 +860,7 @@ export namespace MarkdownParser {
         Parser<HTMLAnchorElement, Context, [
           Parser<HTMLElement[], Context, [
             MediaParser,
-            ShortmediaParser,
+            ShortMediaParser,
           ]>,
           LinkParser.ParameterParser,
         ]> {
@@ -872,7 +876,7 @@ export namespace MarkdownParser {
         Inline<'link/content'>,
         Parser<(HTMLElement | string)[], Context, [
           MediaParser,
-          ShortmediaParser,
+          ShortMediaParser,
           InlineParser,
         ]> {
       }
@@ -917,6 +921,12 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace MediaParser {
+      export interface LineMediaParser extends
+        Inline<'media/linemedia'>,
+        Parser<HTMLElement, Context, [
+          MediaParser,
+        ]> {
+      }
       export interface TextParser extends
         Inline<'media/text'>,
         Parser<string[], Context, [
@@ -1060,28 +1070,41 @@ export namespace MarkdownParser {
       Inline<'unsafehtmlentity'>,
       Parser<string, Context, []> {
     }
-    export interface ShortmediaParser extends
+    export interface ShortMediaParser extends
       // !https://host
       Inline<'shortmedia'>,
       Parser<HTMLElement, Context, [
         MediaParser,
       ]> {
     }
+    export namespace ShortMediaParser {
+      export interface LineShortMediaParser extends
+        Inline<'shortmedia/lineshortmedia'>,
+        Parser<HTMLElement, Context, [
+          MediaParser,
+        ]> {
+      }
+    }
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLElement | string, Context, [
-        AutolinkParser.UrlParser,
-        AutolinkParser.EmailParser,
-        SourceParser.StrParser,
-        AutolinkParser.ChannelParser,
-        AutolinkParser.AccountParser,
-        SourceParser.StrParser,
-        SourceParser.StrParser,
-        AutolinkParser.HashtagParser,
-        AutolinkParser.HashnumParser,
-        SourceParser.StrParser,
-        SourceParser.StrParser,
-        AutolinkParser.AnchorParser,
+        Parser<HTMLElement | string, Context, [
+          AutolinkParser.UrlParser.LineUrlParser,
+        ]>,
+        Parser<HTMLElement | string, Context, [
+          AutolinkParser.UrlParser,
+          AutolinkParser.EmailParser,
+          SourceParser.StrParser,
+          AutolinkParser.ChannelParser,
+          AutolinkParser.AccountParser,
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+          AutolinkParser.HashtagParser,
+          AutolinkParser.HashnumParser,
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+          AutolinkParser.AnchorParser,
+        ]>,
       ]> {
     }
     export namespace AutolinkParser {
@@ -1093,6 +1116,13 @@ export namespace MarkdownParser {
         ]> {
       }
       export namespace UrlParser {
+        export interface LineUrlParser extends
+          Inline<'url/lineurl'>,
+          Parser<string | HTMLElement, Context, [
+            SourceParser.StrParser,
+            InlineParser.LinkParser.UnsafeLinkParser,
+          ]> {
+        }
         export interface BracketParser extends
           Inline<'url/bracket'>,
           Parser<string, Context, [
@@ -1176,22 +1206,10 @@ export namespace MarkdownParser {
   export interface AutolinkParser extends
     Markdown<'autolink'>,
     Parser<string | HTMLElement, Context, [
-      AutolinkParser.LineUrlParser,
-      Parser<string | HTMLElement, Context, [
-        InlineParser.AutolinkParser,
-        SourceParser.LinebreakParser,
-        SourceParser.UnescapableSourceParser,
-      ]>,
+      InlineParser.AutolinkParser,
+      SourceParser.LinebreakParser,
+      SourceParser.UnescapableSourceParser,
     ]> {
-  }
-  export namespace AutolinkParser {
-    export interface LineUrlParser extends
-      Markdown<'autolink/lineurl'>,
-      Parser<string | HTMLElement, Context, [
-        SourceParser.StrParser,
-        InlineParser.LinkParser,
-      ]> {
-    }
   }
   export namespace SourceParser {
     interface Source<T extends string> extends Markdown<`source/${T}`> { }

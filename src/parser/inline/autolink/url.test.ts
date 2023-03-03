@@ -28,6 +28,8 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser('http://a#( )')), [['<a class="url" href="http://a#" target="_blank">http://a#</a>'], '( )']);
       assert.deepStrictEqual(inspect(parser('http://a#(\n)')), [['<a class="url" href="http://a#" target="_blank">http://a#</a>'], '(\n)']);
       assert.deepStrictEqual(inspect(parser('http://[::]')), [['<a class="url" href="http://[::]" target="_blank">http://[::]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\rhttp://a#\\')), [['<a class="url" href="http://a#\\" target="_blank">http://a#\\</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\rhttp://a#\\\nhttp://b#\\')), [['<a class="url" href="http://a#\\" target="_blank">http://a#\\</a>', '<br>', '<a class="url" href="http://b#\\" target="_blank">http://b#\\</a>'], '']);
     });
 
     it('trailing symbols', () => {

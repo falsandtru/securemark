@@ -7,7 +7,7 @@ import { comment } from './inline/comment';
 import { math } from './inline/math';
 import { extension } from './inline/extension';
 import { ruby } from './inline/ruby';
-import { link } from './inline/link';
+import { textlink, linemedialink } from './inline/link';
 import { html } from './inline/html';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
@@ -15,9 +15,9 @@ import { mark } from './inline/mark';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
-import { media } from './inline/media';
+import { linemedia } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
-import { shortmedia } from './inline/shortmedia';
+import { lineshortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
 import { text } from './source';
@@ -41,7 +41,7 @@ export import CodeParser = InlineParser.CodeParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import UnsafeHTMLEntityParser = InlineParser.UnsafeHTMLEntityParser;
-export import ShortmediaParser = InlineParser.ShortmediaParser;
+export import ShortMediaParser = InlineParser.ShortMediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;
 
@@ -53,8 +53,9 @@ export const inline: InlineParser = union([
   math,
   extension,
   ruby,
-  link,
-  media,
+  textlink,
+  linemedialink,
+  linemedia,
   html,
   insertion,
   deletion,
@@ -63,7 +64,7 @@ export const inline: InlineParser = union([
   emphasis,
   code,
   htmlentity,
-  shortmedia,
+  lineshortmedia,
   autolink,
   bracket,
   text

@@ -4,7 +4,7 @@ import { Result } from '../../combinator/data/parser';
 import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
-import { unescsource, str } from '../source';
+import { linebreak, unescsource, str } from '../source';
 import { Syntax, State } from '../context';
 import { trimNode } from '../visibility';
 import { stringify } from '../util';
@@ -21,7 +21,7 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
   textlink,
 ])));
 
-const textlink: LinkParser.TextLinkParser = lazy(() =>
+export const textlink: LinkParser.TextLinkParser = lazy(() =>
   constraint(State.link, false,
   syntax(Syntax.link, 2, 10, State.linkers | State.media,
   bind(reverse(tails([
@@ -37,7 +37,7 @@ const textlink: LinkParser.TextLinkParser = lazy(() =>
     return parse(content, params, rest, context);
   }))));
 
-const medialink: LinkParser.MediaLinkParser = lazy(() =>
+export const medialink: LinkParser.MediaLinkParser = lazy(() =>
   constraint(State.link | State.media, false,
   syntax(Syntax.link, 2, 10, State.linkers,
   bind(reverse(sequence([
@@ -49,6 +49,11 @@ const medialink: LinkParser.MediaLinkParser = lazy(() =>
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
     parse(content, params, rest, context)))));
+
+export const linemedialink: LinkParser.LineMediaLinkParser = surround(
+  linebreak,
+  union([medialink]),
+  /^(?=[^\S\n]*(?:$|\n))/);
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10, precedence(2,

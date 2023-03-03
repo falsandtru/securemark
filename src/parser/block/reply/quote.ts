@@ -1,10 +1,9 @@
 import { ReplyParser } from '../../block';
 import { eval } from '../../../combinator/data/parser';
-import { union, subsequence, some, creation, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
+import { union, some, creation, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
 import { linebreak, unescsource, str, anyline } from '../../source';
-import { lineurl } from '../../autolink';
 import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
@@ -42,7 +41,7 @@ const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
   assert(quotes);
   assert(quotes.length > 0);
   const content = lines.reduce((acc, line, i) => acc + line.slice(quotes[i].length), '');
-  const nodes = eval(text({ source: content, context }), []);
+  const nodes = eval(text({ source: `\r${content}`, context }), []);
   nodes.unshift(quotes.shift()!);
   for (let i = 0; i < nodes.length; ++i) {
     const child = nodes[i] as string | Text | Element;
@@ -72,12 +71,9 @@ const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
   return [nodes, ''];
 };
 
-const text: ReplyParser.QuoteParser.TextParser = some(line(subsequence([
-  lineurl,
-  some(union([
-    math, // quote補助関数が残した数式をパースする。他の構文で数式を残す場合はソーステキストを直接使用する。
-    autolink,
-    linebreak,
-    unescsource,
-  ])),
-])));
+const text: ReplyParser.QuoteParser.TextParser = some(union([
+  math, // quote補助関数が残した数式をパースする。他の構文で数式を残す場合はソーステキストを直接使用する。
+  autolink,
+  linebreak,
+  unescsource,
+]));

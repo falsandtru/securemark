@@ -1,21 +1,14 @@
 import { MarkdownParser } from '../../markdown';
-import { union, tails, subsequence, some, line, focus, lazy } from '../combinator';
-import { link } from './inline/link';
+import { union, some, convert, lazy } from '../combinator';
 import { autolink as autolink_ } from './inline/autolink';
-import { linebreak, unescsource, str } from './source';
-import { format } from './util';
+import { linebreak, unescsource } from './source';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
-export const autolink: AutolinkParser = lazy(() => some(line(subsequence([
-  lineurl,
+export const autolink: AutolinkParser = lazy(() =>
+  convert(source => `\r${source}`,
   some(union([
     autolink_,
     linebreak,
     unescsource,
-  ])),
-]))));
-
-export const lineurl: AutolinkParser.LineUrlParser = lazy(() => focus(
-  /^!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,
-  format(tails([str('!'), link]))));
+  ]))));

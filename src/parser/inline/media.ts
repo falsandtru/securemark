@@ -3,7 +3,7 @@ import { union, inits, tails, some, syntax, creation, precedence, constraint, va
 import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
-import { txt, str } from '../source';
+import { txt, linebreak, str } from '../source';
 import { Syntax, State } from '../context';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
@@ -60,6 +60,11 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
       ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
       ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
   }))))));
+
+export const linemedia: MediaParser.LineMediaParser = surround(
+  linebreak,
+  union([media]),
+  /^(?=[^\S\n]*(?:$|\n))/);
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),

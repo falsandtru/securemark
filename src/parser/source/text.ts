@@ -16,6 +16,10 @@ export const text: TextParser = creation(1, false, ({ source, context }) => {
       return [[source], ''];
     case 0:
       switch (source[0]) {
+        case '\r':
+          assert(!source.includes('\r', 1));
+          context.resources && ++context.resources.clock;
+          return [[], source.slice(1)];
         case '\x1B':
         case '\\':
           switch (source[1]) {
@@ -60,7 +64,7 @@ export const txt: TxtParser = union([
   text,
 ]) as TxtParser;
 
-export const linebreak: LinebreakParser = focus('\n', union([
+export const linebreak: LinebreakParser = focus(/^[\r\n]/, union([
   text,
 ])) as LinebreakParser;
 
