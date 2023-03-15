@@ -100,7 +100,6 @@ function build(
       const title = titles.get(identifier);
       assert(title !== '');
       assert(syntax !== 'annotation' || title);
-      const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
       const refIndex = ++count;
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}`
@@ -134,7 +133,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && text(content).trim() || undefined,
+            title: abbr && text(frag(ref.firstElementChild!.cloneNode(true).childNodes)).trim() || undefined,
           },
           `^${refIndex}`));
     }
