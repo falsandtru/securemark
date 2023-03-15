@@ -288,9 +288,6 @@
   tbody > tr > td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
-  table .media {
-    min-width: 2rem;
-  }
   table:not([data-type]) > :is(thead, tfoot) {
     border-width: 1px 0;
   }
@@ -470,6 +467,7 @@
     font-weight: normal;
   }
   .media {
+    display: block;
     max-width: 100%;
     min-width: 10%;
     min-height: 2rem;
@@ -506,6 +504,15 @@
   }
   .media[data-type="twitter"] + br {
     display: none;
+  }
+  table .media {
+    min-width: 2rem;
+  }
+  ins .media {
+    border-block-end: solid 2px #acf2bd;
+  }
+  del .media {
+    border-block-end: solid 2px #b8e4fd;
   }
   a {
     text-decoration: none;
@@ -585,12 +592,6 @@
   del::before {
     content: "del";
     color: blue;
-  }
-  ins :is(ins, del) {
-    border-block-end: solid 0.15em #00f200;
-  }
-  del :is(ins, del) {
-    border-block-end: solid 0.15em #6666fd;
   }
   mark {
     background-color: initial;

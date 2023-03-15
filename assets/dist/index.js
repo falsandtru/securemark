@@ -6146,6 +6146,7 @@ function identity(id, text, name = 'index') {
     case 'index':
       return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
+    case 'note':
       return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
 }
@@ -7085,7 +7086,9 @@ function build(syntax, marker, splitter = '_') {
       const ref = refs[i];
       const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
       if (titles.has(identifier)) continue;
-      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
+      const content = (0, dom_1.html)('span', {
+        id: (0, indexee_1.identity)(opts.id, (0, indexee_1.text)(ref.firstElementChild), 'note')
+      }, ref.firstElementChild.cloneNode(true).childNodes);
       const title = (0, indexee_1.text)(content).trim();
       if (!title) continue;
       titles.set(identifier, title);
@@ -7131,7 +7134,6 @@ function build(syntax, marker, splitter = '_') {
         ref.lastChild?.remove();
       }
       const title = titles.get(identifier);
-      const content = (0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes);
       const refIndex = ++count;
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
       const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
@@ -7157,7 +7159,7 @@ function build(syntax, marker, splitter = '_') {
       }, marker(defIndex, abbr)));
       def.lastChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
-        title: abbr && (0, indexee_1.text)(content).trim() || undefined
+        title: abbr && (0, indexee_1.text)((0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes)).trim() || undefined
       }, `^${refIndex}`));
     }
     if (defs.size > 0 || footnote) {
