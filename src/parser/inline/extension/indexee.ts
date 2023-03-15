@@ -8,7 +8,7 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, text(el, optional)) })]);
 }
 
-export function identity(id: string | undefined, text: string, name: 'index' | 'mark' = 'index'): string | undefined {
+export function identity(id: string | undefined, text: string, name: 'index' | 'mark' | 'note' = 'index'): string | undefined {
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
@@ -20,6 +20,7 @@ export function identity(id: string | undefined, text: string, name: 'index' | '
     case 'index':
       return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
+    case 'note':
       return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
   assert(false);
@@ -31,7 +32,7 @@ assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.re
 assert(identity(undefined, '0'.repeat(100) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 
-export function text(source: HTMLElement | DocumentFragment, optional = false): string {
+export function text(source: Element | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   if (!source.firstChild) return '';

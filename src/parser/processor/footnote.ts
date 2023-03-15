@@ -1,4 +1,4 @@
-import { text } from '../inline/extension/indexee';
+import { identity, text } from '../inline/extension/indexee';
 import { frag, html, define } from 'typed-dom/dom';
 
 export function* footnote(
@@ -44,13 +44,15 @@ function build(
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map<string, string>();
-    const contents = new Map<string, DocumentFragment>();
+    const contents = new Map<string, HTMLSpanElement>();
     for (let len = refs.length, i = 0; i < len; ++i) {
       if (i % 10 === 9) yield;
       const ref = refs[i];
       const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
       if (titles.has(identifier)) continue;
-      const content = frag(ref.firstElementChild!.cloneNode(true).childNodes);
+      const content = html('span',
+        { id: identity(opts.id, text(ref.firstElementChild!), 'note') },
+        ref.firstElementChild!.cloneNode(true).childNodes);
       const title = text(content).trim();
       if (!title) continue;
       titles.set(identifier, title);
