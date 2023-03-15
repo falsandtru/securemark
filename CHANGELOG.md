@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.269.1
+
+- Refactoring.
+
 ## 0.269.0
 
 - Change media syntax to line-level syntax.
