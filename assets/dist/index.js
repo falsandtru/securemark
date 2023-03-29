@@ -5744,9 +5744,7 @@ const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
 const visibility_1 = __webpack_require__(7618);
 const dom_1 = __webpack_require__(3252);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 6, 1, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.context)({
-  delimiters: undefined
-}, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 6, 1, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]]), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
 
@@ -5978,7 +5976,7 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, comb
   class: 'paren'
 }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 2]])), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)([''], (0, array_1.unshift)(as, bs)), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.syntax)(8 /* Syntax.bracket */, 2, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 2]])), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
 // Control media blinking in editing rather than control confusion of pairs of quote marks.
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(0 /* Syntax.none */, 8, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 8]])), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.syntax)(0 /* Syntax.none */, 3, 1, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 3]])), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
 
 /***/ }),
 
@@ -6702,9 +6700,7 @@ const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const util_1 = __webpack_require__(9437);
 const dom_1 = __webpack_require__(3252);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.context)({
-  delimiters: undefined
-}, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])])), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.subsequence)([abbr, (0, combinator_1.open)((0, source_1.stropt)(/^(?=\^)/), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])]), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
 const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
 function attributes(ns) {
   return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
