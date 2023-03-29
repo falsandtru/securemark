@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, context, syntax, creation, constraint, surround, open, lazy, bind } from '../../combinator';
+import { union, subsequence, some, syntax, creation, constraint, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str, stropt } from '../source';
 import { Syntax, State } from '../context';
@@ -12,12 +12,11 @@ export const reference: ReferenceParser = lazy(() => surround(
   constraint(State.reference, false,
   syntax(Syntax.reference, 6, 1, State.annotation | State.reference | State.media,
   startLoose(
-  context({ delimiters: undefined },
   subsequence([
     abbr,
     open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])),
     some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]]),
-  ])), ']'))),
+  ]), ']'))),
   ']]',
   false,
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest]));

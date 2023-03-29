@@ -24,7 +24,7 @@ export const bracket: BracketParser = lazy(() => union([
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // Control media blinking in editing rather than control confusion of pairs of quote marks.
-  surround(str('"'), syntax(Syntax.none, 8, 1, State.none, some(inline, '"', [['"', 8]])), str('"'), true,
+  surround(str('"'), syntax(Syntax.none, 3, 1, State.none, some(inline, '"', [['"', 3]])), str('"'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ]));

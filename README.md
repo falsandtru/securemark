@@ -68,11 +68,11 @@ Secure markdown renderer working on browsers for user input data.
 |P| Operators        |
 |-|------------------|
 |9| \n, \\\n         |
-|8| `, "             |
+|8| `                |
 |6| (()), [[]], ${}$ |
 |5| \<tag>\</tag>    |
 |4| [% %]            |
-|3| $                |
+|3| $, "             |
 |2| (), [], {}       |
 |1| _, *, ==, ++, ~~ |
 

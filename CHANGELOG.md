@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.270.0
+
+- Change the operator precedence of double quotation to 3.
+
 ## 0.269.1
 
 - Refactoring.
