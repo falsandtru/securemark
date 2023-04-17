@@ -1,9 +1,9 @@
 import { DListParser } from '../block';
-import { union, inits, some, creation, state, block, line, validate, rewrite, open, trimEnd, lazy, fmap } from '../../combinator';
+import { union, inits, some, creation, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer } from '../inline';
 import { anyline } from '../source';
 import { State } from '../context';
-import { visualize, trimBlank } from '../visibility';
+import { visualize, trimBlankStart, trimNodeEnd } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -18,17 +18,17 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 
 const term: DListParser.TermParser = creation(1, false, line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
-  visualize(trimBlank(some(union([indexer, inline])))),
+  visualize(trimBlankStart(some(union([indexer, inline])))),
   true),
-  ns => [html('dt', defrag(ns))]))));
+  ns => [html('dt', trimNodeEnd(defrag(ns)))]))));
 
 const desc: DListParser.DescriptionParser = creation(1, false, block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    visualize(trimEnd(some(union([inline]))))),
+    visualize(some(union([inline])))),
   true),
-  ns => [html('dd', defrag(ns))]),
+  ns => [html('dd', trimNodeEnd(defrag(ns)))]),
   false));
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {

@@ -146,12 +146,13 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
+// デフラグ前の非効率な後方トリムを避けるため必要のない限りtrimBlankStart+trimNodeEndで処理する。
 export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return trimBlankStart(trimBlankEnd(parser));
 }
-function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
-function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
+export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
+export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
     reduce(source => source.replace(regBlankStart, '')),
     parser);
