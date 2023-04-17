@@ -1,7 +1,7 @@
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, syntax, creation, constraint, surround, open, lazy, bind } from '../../combinator';
+import { union, subsequence, some, syntax, creation, constraint, surround, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
-import { str, stropt } from '../source';
+import { str } from '../source';
 import { Syntax, State } from '../context';
 import { regBlankStart, startLoose, trimNode } from '../visibility';
 import { stringify } from '../util';
@@ -14,7 +14,7 @@ export const reference: ReferenceParser = lazy(() => surround(
   startLoose(
   subsequence([
     abbr,
-    open(stropt(/^(?=\^)/), some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])),
+    fmap(str('^'), ns => ['', ...ns]),
     some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]]),
   ]), ']'))),
   ']]',
