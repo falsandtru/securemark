@@ -3,7 +3,7 @@ import { union, some, syntax, validate, surround, lazy } from '../../../combinat
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { Syntax, State } from '../../context';
-import { startTight, trimBlankEnd } from '../../visibility';
+import { startTight } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -14,7 +14,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', surround(
   str(/^\[[:^|]/),
   syntax(Syntax.placeholder, 2, 1, State.none,
-  startTight(trimBlankEnd(some(union([inline]), ']', [[']', 2]])))),
+  startTight(some(union([inline]), ']', [[']', 2]]))),
   str(']'), false,
   ([, bs], rest) => [[
     html('span', {
