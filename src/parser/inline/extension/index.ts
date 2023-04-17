@@ -4,7 +4,7 @@ import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str, stropt } from '../../source';
 import { Syntax, State } from '../../context';
-import { startTight, trimBlankEnd } from '../../visibility';
+import { startTight, trimNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -14,13 +14,13 @@ export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surroun
   constraint(State.index, false,
   syntax(Syntax.index, 2, 1, State.linkers | State.media,
   startTight(
-  open(stropt('|'), trimBlankEnd(some(union([
+  open(stropt('|'), some(union([
     signature,
     inline,
-  ]), ']', [[/^\\?\n/, 9], [']', 2]])), true)))),
+  ]), ']', [[/^\\?\n/, 9], [']', 2]]), true)))),
   ']',
   false,
-  ([, ns], rest) => [[html('a', defrag(ns))], rest])),
+  ([, ns], rest) => [[html('a', trimNodeEnd(defrag(ns)))], rest])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
