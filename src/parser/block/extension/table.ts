@@ -299,7 +299,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
           if (!cell) continue;
           if (heads & m) continue;
           assert(cell.tagName === 'TD');
-          if (!(lHighlight || rHighlight || tHighlights & m || highlights & m)) continue;
+          //if (!(lHighlight || rHighlight || tHighlights & m || highlights & m)) continue;
+          if (!(tHighlights & m || highlights & m)) continue;
           cell.classList.add('highlight');
           assert(!+cell.setAttribute('highlight', [
             '',

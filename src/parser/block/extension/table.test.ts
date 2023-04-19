@@ -296,7 +296,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody', [
             html('tr', [
               html('th', { class: 'highlight' }, '1.1'),
-              html('td', { class: 'highlight', highlight: 'h' }, '1.2'),
+              html('td', '1.2'),
             ]),
           ]),
           html('tfoot'),
@@ -307,7 +307,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('td', { class: 'highlight', highlight: 'h' }, '1.1'),
+              html('td', '1.1'),
               html('th', { class: 'highlight' }, '1.2'),
             ]),
           ]),
@@ -369,7 +369,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody', [
             html('tr', [
               html('th', { class: 'highlight', colspan: '2' }, '1.1'),
-              html('td', { class: 'highlight', highlight: 'h' }, '1.3'),
+              html('td', '1.3'),
             ]),
           ]),
           html('tfoot'),
@@ -436,7 +436,7 @@ describe('Unit: parser/block/extension/table', () => {
             ]),
             html('tr', [
               html('th', { class: 'highlight' }, '3.1'),
-              html('td', { class: 'highlight', highlight: 'h' }, '3.4'),
+              html('td', '3.4'),
             ]),
             html('tr', [
               html('th', '4.1'),
@@ -482,7 +482,7 @@ describe('Unit: parser/block/extension/table', () => {
             ]),
             html('tr', [
               html('th', { class: 'highlight' }, '1'),
-              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 2}`)),
+              ...[...Array(32)].map((_, i) => html('td', `${i + 2}`)),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
@@ -501,7 +501,7 @@ describe('Unit: parser/block/extension/table', () => {
               html('th', '33'),
             ]),
             html('tr', [
-              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 1}`)),
+              ...[...Array(32)].map((_, i) => html('td', `${i + 1}`)),
               html('th', { class: 'highlight' }, '33'),
             ]),
           ]),
@@ -567,7 +567,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody', [
             html('tr', [
               html('th', { class: 'highlight' }, '1'),
-              html('td', { class: 'highlight', highlight: 'h' }, '2'),
+              html('td', '2'),
               html('td', { class: 'highlight', highlight: 'h c' }, '3'),
             ]),
           ]),

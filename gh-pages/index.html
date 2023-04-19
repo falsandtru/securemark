@@ -273,6 +273,11 @@
   :is(th, td).highlight mark {
     background-image: none;
   }
+  th.highlight:has(+ td) ~ td,
+  td:has(+ th.highlight),
+  td:has(~ td + th.highlight) {
+    background-color: yellow;
+  }
   tbody > tr > td.highlight[data-highlight-level="2"] {
     background-color: gold;
   }
