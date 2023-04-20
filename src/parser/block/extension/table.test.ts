@@ -320,17 +320,39 @@ describe('Unit: parser/block/extension/table', () => {
             html('tr', [html('th', { class: 'highlight' }, '1.1')]),
           ]),
           html('tbody', [
+            html('tr', [html('td', '2.1')]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n#! 1.1\n-\n:!+ 2.1\n~~~')),
+        [[html('table', [
+          html('thead', [
+            html('tr', [html('th', { class: 'highlight' }, '1.1')]),
+          ]),
+          html('tbody', [
+            html('tr', [html('td', { class: 'invalid' }, '2.1')]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n#!+ 1.1\n-\n: 2.1\n~~~')),
+        [[html('table', [
+          html('thead', [
+            html('tr', [html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.1')]),
+          ]),
+          html('tbody', [
             html('tr', [html('td', { class: 'highlight', highlight: 'v' }, '2.1')]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#! 1.1\n# 1.2\n: 1.3\n~~~')),
+        inspect(parser('~~~table\n#!+ 1.1\n# 1.2\n: 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight' }, '1.1'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.1'),
               html('th', '1.2'),
               html('td', '1.3'),
             ]),
@@ -338,23 +360,23 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n: 1.1\n# 1.2\n#! 1.3\n~~~')),
+        inspect(parser('~~~table\n: 1.1\n# 1.2\n#!+ 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
               html('td', '1.1'),
               html('th', '1.2'),
-              html('th', { class: 'highlight' }, '1.3'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.3'),
             ]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#! 1.1\n-\n# 2.1\n-\n: 3.1\n~~~')),
+        inspect(parser('~~~table\n#!+ 1.1\n-\n# 2.1\n-\n: 3.1\n~~~')),
         [[html('table', [
           html('thead', [
-            html('tr', [html('th', { class: 'highlight' }, '1.1')]),
+            html('tr', [html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.1')]),
             html('tr', [html('th', '2.1')]),
           ]),
           html('tbody', [
@@ -363,22 +385,22 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#:2! 1.1\n: 1.3\n~~~')),
+        inspect(parser('~~~table\n#:2!+ 1.1\n: 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight', colspan: '2' }, '1.1'),
-              html('td', '1.3'),
+              html('th', { class: 'highlight', colspan: '2', 'data-highlight-extension': '+' }, '1.1'),
+              html('td', { class: 'highlight', highlight: 'h' }, '1.3'),
             ]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#2:! 1.1\n-\n: 3.1\n~~~')),
+        inspect(parser('~~~table\n#2:!+ 1.1\n-\n: 3.1\n~~~')),
         [[html('table', [
           html('thead', [
-            html('tr', [html('th', { class: 'highlight', rowspan: '2' }, '1.1')]),
+            html('tr', [html('th', { class: 'highlight', rowspan: '2', 'data-highlight-extension': '+' }, '1.1')]),
           ]),
           html('tbody', [
             html('tr', [html('td', { class: 'highlight', highlight: 'v' }, '3.1')]),
@@ -386,46 +408,46 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n-\n# \n#! 1.2\n-\n#! 2.1\n: 2.2\n~~~')),
+        inspect(parser('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n: 2.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
               html('th'),
-              html('th', { class: 'highlight' }, '1.2'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.2'),
             ]),
           ]),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight' }, '2.1'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '2.1'),
               html('td', { class: 'highlight', highlight: 'v h' }, '2.2'),
             ]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n-\n# \n#! 1.2\n-\n#! 2.1\n:! 2.2\n~~~')),
+        inspect(parser('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n:! 2.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
               html('th'),
-              html('th', { class: 'highlight' }, '1.2'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.2'),
             ]),
           ]),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight' }, '2.1'),
-              html('td', { class: 'highlight', highlight: 'v h c' }, '2.2'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '2.1'),
+              html('td', { class: 'highlight', 'data-highlight-level': '1', highlight: 'v h c' }, '2.2'),
             ]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n-\n# 1.1\n#! 1.2\n-\n# 2.1\n:2:2 2.2\n: 2.4\n-\n#! 3.1\n: 3.4\n-\n# 4.1\n: 4.2\n~~~')),
+        inspect(parser('~~~table\n-\n# 1.1\n#!+ 1.2\n-\n# 2.1\n:2:2 2.2\n: 2.4\n-\n#!+ 3.1\n: 3.4\n-\n# 4.1\n: 4.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
               html('th', '1.1'),
-              html('th', { class: 'highlight' }, '1.2'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.2'),
             ]),
           ]),
           html('tbody', [
@@ -435,8 +457,8 @@ describe('Unit: parser/block/extension/table', () => {
               html('td', '2.4'),
             ]),
             html('tr', [
-              html('th', { class: 'highlight' }, '3.1'),
-              html('td', '3.4'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '3.1'),
+              html('td', { class: 'highlight', highlight: 'h' }, '3.4'),
             ]),
             html('tr', [
               html('th', '4.1'),
@@ -446,17 +468,17 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n-\n# 1.1\n#:2! 1.2\n-\n#2:! 2.1\n: 2.2\n-\n3.2\n3.3\n~~~')),
+        inspect(parser('~~~table\n-\n# 1.1\n#:2!+ 1.2\n-\n#2:!+ 2.1\n: 2.2\n-\n3.2\n3.3\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
               html('th', '1.1'),
-              html('th', { class: 'highlight', colspan: '2' }, '1.2'),
+              html('th', { class: 'highlight', colspan: '2', 'data-highlight-extension': '+' }, '1.2'),
             ]),
           ]),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight', rowspan: '2' }, '2.1'),
+              html('th', { class: 'highlight', rowspan: '2', 'data-highlight-extension': '+' }, '2.1'),
               html('td', { class: 'highlight', highlight: 'v h' }, '2.2'),
             ]),
             html('tr', [
@@ -470,7 +492,7 @@ describe('Unit: parser/block/extension/table', () => {
         inspect(parser([
           '~~~table',
           `-\n#  1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
-          `-\n#! 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
+          `-\n#!+ 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
         [[html('table', [
@@ -481,8 +503,8 @@ describe('Unit: parser/block/extension/table', () => {
               ...[...Array(32)].map((_, i) => html('td', `${i + 2}`)),
             ]),
             html('tr', [
-              html('th', { class: 'highlight' }, '1'),
-              ...[...Array(32)].map((_, i) => html('td', `${i + 2}`)),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1'),
+              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 2}`)),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
@@ -490,7 +512,7 @@ describe('Unit: parser/block/extension/table', () => {
         inspect(parser([
           '~~~table',
           `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  33`,
-          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#! 33`,
+          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#!+ 33`,
           '~~~'
         ].join('\n'))),
         [[html('table', [
@@ -501,15 +523,15 @@ describe('Unit: parser/block/extension/table', () => {
               html('th', '33'),
             ]),
             html('tr', [
-              ...[...Array(32)].map((_, i) => html('td', `${i + 1}`)),
-              html('th', { class: 'highlight' }, '33'),
+              ...[...Array(32)].map((_, i) => html('td', { class: 'highlight', highlight: 'h' }, `${i + 1}`)),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '33'),
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n${[...Array(32)].map((_, i) => `# ${i + 1}`).join('\n')}\n#! 33`,
+          `-\n${[...Array(32)].map((_, i) => `# ${i + 1}`).join('\n')}\n#!+ 33`,
           `-\n${[...Array(33)].map((_, i) => `: ${i + 1}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
@@ -517,7 +539,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('thead', [
             html('tr', [
               ...[...Array(32)].map((_, i) => html('th', `${i + 1}`)),
-              html('th', { class: 'highlight' }, '33'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '33'),
             ]),
           ]),
           html('tbody', [
@@ -537,7 +559,8 @@ describe('Unit: parser/block/extension/table', () => {
           html('thead', [
             html('tr', [
               html('th', { class: 'highlight' }, '1'),
-              ...[...Array(6)].map((_, i) => html('th', { class: 'invalid' }, `${i + 2}`)),
+              ...[...Array(5)].map((_, i) => html('th', { class: 'highlight', 'data-highlight-level': `${i + 2}` }, `${i + 2}`)),
+              html('th', { class: 'invalid' }, '7'),
             ]),
           ]),
           html('tbody'),
@@ -561,14 +584,14 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#! 1\n: 2\n:! 3\n~~~')),
+        inspect(parser('~~~table\n#!+ 1\n: 2\n:! 3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight' }, '1'),
-              html('td', '2'),
-              html('td', { class: 'highlight', highlight: 'h c' }, '3'),
+              html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1'),
+              html('td', { class: 'highlight', highlight: 'h' }, '2'),
+              html('td', { class: 'highlight', 'data-highlight-level': '1', highlight: 'h c' }, '3'),
             ]),
           ]),
           html('tfoot'),

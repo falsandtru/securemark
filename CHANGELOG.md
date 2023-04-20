@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.271.0
+
+- Extend table highlight syntax.
+
 ## 0.270.2
 
 - Refactoring.

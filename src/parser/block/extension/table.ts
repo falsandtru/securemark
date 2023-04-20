@@ -75,10 +75,10 @@ const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/;
+const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
 
 const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
-  str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
+  str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
   rewrite(
     inits([
       anyline,
@@ -90,7 +90,7 @@ const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
   false));
 
 const data: CellParser.DataParser = creation(1, false, block(fmap(open(
-  str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/),
+  str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
   rewrite(
     inits([
       anyline,
@@ -110,28 +110,40 @@ const dataline: CellParser.DatalineParser = creation(1, false, line(
     ]))));
 
 function attributes(source: string) {
-  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
+  let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] =
+    source.match(/^[#:](?:(\d+)?:(\d+)?)?(?:(!+)([+]?))?$/) ?? [];
   assert(rowspan?.[0] !== '0');
   assert(colspan?.[0] !== '0');
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= `${max(0, min(+rowspan, 65534))}`;
   colspan &&= `${max(0, min(+colspan, 1000))}`;
+  extension ||= undefined;
   const level = highlight?.length ?? 0;
-  const valid = !highlight
-    || source[0] === '#' && level <= 1
+  const validH = !highlight
+    || source[0] === '#' && level <= 6
     || source[0] === ':' && level <= 6;
+  const validE = source[0] === '#' || extension !== '+';
+  const valid = validH && validE;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
-    ...valid
-      ? { 'data-highlight-level': level > 1 ? `${level}` : undefined }
-      : {
-          'data-invalid-syntax': 'table',
-          'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Too much highlight level',
-        },
+    ...
+    !validH && {
+      'data-invalid-syntax': 'table',
+      'data-invalid-type': 'syntax',
+      'data-invalid-message': 'Too much highlight level',
+    } ||
+    !validE && {
+      'data-invalid-syntax': 'table',
+      'data-invalid-type': 'syntax',
+      'data-invalid-message': 'Extensible cells are only head cells',
+    } ||
+    {
+      'data-highlight-level': level > 1 ? `${level}` : undefined,
+      'data-highlight-extension': extension,
+    },
   };
 }
 
@@ -143,7 +155,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
   const valigns: ('middle' | 'top' | 'bottom' | '')[] = [];
   let target = thead;
   let ranges: Record<number, Record<number, HTMLTableCellElement>> = {};
-  let verticalHighlights = 0n;
+  let verticalHighlightExtensions = 0n;
+  let verticalHighlightLevels: string[] = [];
   ROW:
   for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
@@ -215,6 +228,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     const row = html('tr');
     let heads = 0n;
     let highlights = 0n;
+    let highlightExtensions = 0n;
+    let highlightLevels: string[] = [];
     let hasDataCell = false;
     let lHeadCellIndex: bigint;
     let rHeadCellIndex: bigint;
@@ -227,6 +242,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       const isHeadCell = cell.tagName === 'TH';
       heads |= isHeadCell ? 1n << jn : 0n;
       highlights |= cell.className === 'highlight' ? 1n << jn : 0n;
+      highlightExtensions |= cell.getAttribute('data-highlight-extension') ? 1n << jn : 0n;
+      highlightLevels[j] = cell.getAttribute('data-highlight-level') ?? '1';
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
         lHeadCellIndex = jn;
@@ -249,6 +266,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
         splice(cells, j + 1, 0, ...Array(colSpan - 1));
         heads |= heads & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         highlights |= highlights & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        highlightExtensions |= highlightExtensions & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        splice(highlightLevels, j + 1, 0, ...Array(colSpan - 1));
         j += colSpan - 1;
       }
       if (target === thead) {
@@ -285,13 +304,15 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     target.appendChild(row);
     switch (target) {
       case thead:
-        verticalHighlights = heads & highlights;
+        verticalHighlightExtensions = highlightExtensions;
+        verticalHighlightLevels = highlightLevels;
         continue;
       case tbody:
         lHeadCellIndex ??= -1n;
         rHeadCellIndex ??= -1n;
-        const tHighlights = verticalHighlights;
-        const horizontalHighlights = heads & highlights;
+        const tHighlights = verticalHighlightExtensions;
+        const horizontalHighlights = highlightExtensions;
+        const horizontalHighlightLevels = highlightLevels;
         const lHighlight = ~lHeadCellIndex && horizontalHighlights & 1n << lHeadCellIndex;
         const rHighlight = ~rHeadCellIndex && horizontalHighlights & 1n << rHeadCellIndex;
         for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
@@ -299,9 +320,23 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
           if (!cell) continue;
           if (heads & m) continue;
           assert(cell.tagName === 'TD');
-          //if (!(lHighlight || rHighlight || tHighlights & m || highlights & m)) continue;
-          if (!(tHighlights & m || highlights & m)) continue;
-          cell.classList.add('highlight');
+          switch (m) {
+            case highlights & m:
+              assert(cell.className === 'highlight');
+              assert(horizontalHighlightLevels[i]);
+              (lHighlight || rHighlight) && cell.setAttribute('data-highlight-level', horizontalHighlightLevels[i]);
+              break;
+            case lHighlight && m:
+            case rHighlight && m:
+              cell.classList.add('highlight');
+              break;
+            case tHighlights & m:
+              cell.classList.add('highlight');
+              +verticalHighlightLevels[i] > 1 && cell.setAttribute('data-highlight-level', verticalHighlightLevels[i]);
+              break;
+            default:
+              continue;
+          }
           assert(!+cell.setAttribute('highlight', [
             '',
             'c',
