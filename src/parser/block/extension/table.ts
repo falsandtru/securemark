@@ -110,7 +110,7 @@ const dataline: CellParser.DatalineParser = creation(1, false, line(
     ]))));
 
 function attributes(source: string) {
-  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
+  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
   assert(rowspan?.[0] !== '0');
   assert(colspan?.[0] !== '0');
   rowspan === '1' ? rowspan = undefined : undefined;
