@@ -216,8 +216,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
     let heads = 0n;
     let highlights = 0n;
     let hasDataCell = false;
-    let lHeadCellIdx: bigint;
-    let rHeadCellIdx: bigint;
+    let lHeadCellIndex: bigint;
+    let rHeadCellIndex: bigint;
     for (let j = 0; j < cells.length; ++j) {
       const jn = BigInt(j);
       const isVirtual = !!ranges[i]?.[j];
@@ -229,10 +229,10 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
       highlights |= cell.className === 'highlight' ? 1n << jn : 0n;
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
-        lHeadCellIdx = jn;
+        lHeadCellIndex = jn;
       }
       if (isHeadCell && hasDataCell) {
-        rHeadCellIdx ??= jn;
+        rHeadCellIndex ??= jn;
       }
       const rowSpan = cell.rowSpan;
       assert(rowSpan > 0);
@@ -288,12 +288,12 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
         verticalHighlights = heads & highlights;
         continue;
       case tbody:
-        lHeadCellIdx ??= -1n;
-        rHeadCellIdx ??= -1n;
+        lHeadCellIndex ??= -1n;
+        rHeadCellIndex ??= -1n;
         const tHighlights = verticalHighlights;
         const horizontalHighlights = heads & highlights;
-        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1n << lHeadCellIdx;
-        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1n << rHeadCellIdx;
+        const lHighlight = ~lHeadCellIndex && horizontalHighlights & 1n << lHeadCellIndex;
+        const rHighlight = ~rHeadCellIndex && horizontalHighlights & 1n << rHeadCellIndex;
         for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
           const cell = cells[i];
           if (!cell) continue;
