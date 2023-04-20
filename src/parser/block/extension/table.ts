@@ -117,16 +117,16 @@ function attributes(source: string) {
   colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= `${max(0, min(+rowspan, 65534))}`;
   colspan &&= `${max(0, min(+colspan, 1000))}`;
-  highlight &&= highlight.length > 0 ? `${highlight.length}` : undefined;
+  const level = highlight?.length ?? 0;
   const valid = !highlight
-    || source[0] === '#' && +highlight <= 1
-    || source[0] === ':' && +highlight <= 6;
+    || source[0] === '#' && level <= 1
+    || source[0] === ':' && level <= 6;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
     ...valid
-      ? { 'data-highlight-level': +highlight! > 1 ? highlight : undefined }
+      ? { 'data-highlight-level': level > 1 ? `${level}` : undefined }
       : {
           'data-invalid-syntax': 'table',
           'data-invalid-type': 'syntax',
