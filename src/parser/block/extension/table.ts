@@ -225,8 +225,8 @@ function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
         ? splice(cells, j, 0, undefined) && ranges[i][j]
         : cells[j];
       const isHeadCell = cell.tagName === 'TH';
-      heads |= BigInt(isHeadCell) << jn;
-      highlights |= BigInt(cell.className === 'highlight') << jn;
+      heads |= isHeadCell ? 1n << jn : 0n;
+      highlights |= cell.className === 'highlight' ? 1n << jn : 0n;
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
         lHeadCellIdx = jn;
