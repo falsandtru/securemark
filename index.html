@@ -266,26 +266,47 @@
   :is(th, td)[align="middle"] {
     vertical-align: middle;
   }
-  :is(th, td).highlight,
-  tbody > tr > td.highlight[data-highlight-level="1"] {
+  :is(th, td):where(.highlight) {
     background-color: yellow;
   }
   :is(th, td).highlight mark {
+    background-color: #fe0;
     background-image: none;
   }
-  tbody > tr > td.highlight[data-highlight-level="2"] {
+  :is(th, td).highlight[data-highlight-level="1"],
+  :where(th.highlight[data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-extension="+"])) {
+    background-color: yellow;
+  }
+  :is(th, td).highlight[data-highlight-level="2"],
+  :where(th.highlight[data-highlight-level="2"][data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-level="2"][data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-level="2"][data-highlight-extension="+"])) {
     background-color: gold;
   }
-  tbody > tr > td.highlight[data-highlight-level="3"] {
+  :is(th, td).highlight[data-highlight-level="3"],
+  :where(th.highlight[data-highlight-level="3"][data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-level="3"][data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-level="3"][data-highlight-extension="+"])) {
     background-color: orange;
   }
-  tbody > tr > td.highlight[data-highlight-level="4"] {
+  :is(th, td).highlight[data-highlight-level="4"],
+  :where(th.highlight[data-highlight-level="4"][data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-level="4"][data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-level="4"][data-highlight-extension="+"])) {
     background-color: #f60;
   }
-  tbody > tr > td.highlight[data-highlight-level="5"] {
+  :is(th, td).highlight[data-highlight-level="5"],
+  :where(th.highlight[data-highlight-level="5"][data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-level="5"][data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-level="5"][data-highlight-extension="+"])) {
     background-color: #f33;
   }
-  tbody > tr > td.highlight[data-highlight-level="6"] {
+  :is(th, td).highlight[data-highlight-level="6"],
+  :where(th.highlight[data-highlight-level="6"][data-highlight-extension="+"]:has(+ td)) ~ td.highlight,
+  td.highlight:where(:has(+ th.highlight[data-highlight-level="6"][data-highlight-extension="+"])),
+  td.highlight:where(:has(~ td + th.highlight[data-highlight-level="6"][data-highlight-extension="+"])) {
     background-color: gray;
   }
   table:not([data-type]) > :is(thead, tfoot) {
@@ -330,10 +351,10 @@
     top: -1px;
     border-block-start-width: 1px;
   }
-  table:where([data-type="grid"]) > * > tr > * {
+  table[data-type="grid"] > * > tr > * {
     border-width: 1px;
   }
-  table:where([data-type="grid"]) > * > tr > th {
+  :where(table[data-type="grid"] > * > tr > th) {
     background-color: #fafafa;
   }
   blockquote {
@@ -1082,7 +1103,7 @@
     '5,243',
     '8.9',
     '-',
-    '#! Earth',
+    '#!+ Earth',
     '',
     '5.97',
     '12,756',

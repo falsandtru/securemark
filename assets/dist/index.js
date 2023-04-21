@@ -4949,28 +4949,36 @@ const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinat
 const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.union)([align])), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => !(0, alias_1.isArray)(ns[0]) ? (0, array_1.unshift)([[[]]], ns) : ns)));
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
-const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/;
-const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
-const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?!*(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
+const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
+const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
+const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.trim)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false));
 const dataline = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
 function attributes(source) {
-  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
+  let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(?:(!+)([+]?))?$/) ?? [];
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= `${(0, alias_1.max)(0, (0, alias_1.min)(+rowspan, 65534))}`;
   colspan &&= `${(0, alias_1.max)(0, (0, alias_1.min)(+colspan, 1000))}`;
-  highlight &&= highlight.length > 0 ? `${highlight.length}` : undefined;
-  const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 6;
+  extension ||= undefined;
+  const level = highlight?.length ?? 0;
+  const validH = !highlight || source[0] === '#' && level <= 6 || source[0] === ':' && level <= 6;
+  const validE = source[0] === '#' || extension !== '+';
+  const valid = validH && validE;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
-    ...(valid ? {
-      'data-highlight-level': +highlight > 1 ? highlight : undefined
-    } : {
+    ...(!validH && {
       'data-invalid-syntax': 'table',
       'data-invalid-type': 'syntax',
       'data-invalid-message': 'Too much highlight level'
+    } || !validE && {
+      'data-invalid-syntax': 'table',
+      'data-invalid-type': 'syntax',
+      'data-invalid-message': 'Extensible cells are only head cells'
+    } || {
+      'data-highlight-level': level > 1 ? `${level}` : undefined,
+      'data-highlight-extension': extension
     })
   };
 }
@@ -4982,7 +4990,8 @@ function format(rows) {
   const valigns = [];
   let target = thead;
   let ranges = {};
-  let verticalHighlights = 0n;
+  let verticalHighlightExtensions = 0n;
+  let verticalHighlightLevels = [];
   ROW: for (let i = 0; i < rows.length; ++i) {
     // Copy to make them retryable.
     const [[[...as], [...vs] = []], ...cells] = rows[i];
@@ -5040,22 +5049,26 @@ function format(rows) {
     const row = (0, dom_1.html)('tr');
     let heads = 0n;
     let highlights = 0n;
+    let highlightExtensions = 0n;
+    let highlightLevels = [];
     let hasDataCell = false;
-    let lHeadCellIdx;
-    let rHeadCellIdx;
+    let lHeadCellIndex;
+    let rHeadCellIndex;
     for (let j = 0; j < cells.length; ++j) {
       const jn = BigInt(j);
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual ? (0, array_1.splice)(cells, j, 0, undefined) && ranges[i][j] : cells[j];
       const isHeadCell = cell.tagName === 'TH';
-      heads |= BigInt(isHeadCell) << jn;
-      highlights |= BigInt(cell.className === 'highlight') << jn;
+      heads |= isHeadCell ? 1n << jn : 0n;
+      highlights |= cell.className === 'highlight' ? 1n << jn : 0n;
+      highlightExtensions |= cell.getAttribute('data-highlight-extension') ? 1n << jn : 0n;
+      highlightLevels[j] = cell.getAttribute('data-highlight-level') ?? '1';
       hasDataCell ||= !isHeadCell;
       if (isHeadCell && !hasDataCell) {
-        lHeadCellIdx = jn;
+        lHeadCellIndex = jn;
       }
       if (isHeadCell && hasDataCell) {
-        rHeadCellIdx ??= jn;
+        rHeadCellIndex ??= jn;
       }
       const rowSpan = cell.rowSpan;
       if (rowSpan > 1 && !isVirtual) {
@@ -5070,6 +5083,8 @@ function format(rows) {
         (0, array_1.splice)(cells, j + 1, 0, ...Array(colSpan - 1));
         heads |= heads & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
         highlights |= highlights & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        highlightExtensions |= highlightExtensions & 1n << jn && ~(~0n << BigInt(colSpan)) << jn;
+        (0, array_1.splice)(highlightLevels, j + 1, 0, ...Array(colSpan - 1));
         j += colSpan - 1;
       }
       if (target === thead) {
@@ -5104,21 +5119,36 @@ function format(rows) {
     target.appendChild(row);
     switch (target) {
       case thead:
-        verticalHighlights = heads & highlights;
+        verticalHighlightExtensions = highlightExtensions;
+        verticalHighlightLevels = highlightLevels;
         continue;
       case tbody:
-        lHeadCellIdx ??= -1n;
-        rHeadCellIdx ??= -1n;
-        const tHighlights = verticalHighlights;
-        const horizontalHighlights = heads & highlights;
-        const lHighlight = ~lHeadCellIdx && horizontalHighlights & 1n << lHeadCellIdx;
-        const rHighlight = ~rHeadCellIdx && horizontalHighlights & 1n << rHeadCellIdx;
+        lHeadCellIndex ??= -1n;
+        rHeadCellIndex ??= -1n;
+        const tHighlights = verticalHighlightExtensions;
+        const horizontalHighlights = highlightExtensions;
+        const horizontalHighlightLevels = highlightLevels;
+        const lHighlight = ~lHeadCellIndex && horizontalHighlights & 1n << lHeadCellIndex;
+        const rHighlight = ~rHeadCellIndex && horizontalHighlights & 1n << rHeadCellIndex;
         for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
           const cell = cells[i];
           if (!cell) continue;
           if (heads & m) continue;
-          if (!(lHighlight || rHighlight || tHighlights & m || highlights & m)) continue;
-          cell.classList.add('highlight');
+          switch (m) {
+            case highlights & m:
+              (lHighlight || rHighlight) && cell.setAttribute('data-highlight-level', horizontalHighlightLevels[i]);
+              break;
+            case lHighlight && m:
+            case rHighlight && m:
+              cell.classList.add('highlight');
+              break;
+            case tHighlights & m:
+              cell.classList.add('highlight');
+              +verticalHighlightLevels[i] > 1 && cell.setAttribute('data-highlight-level', verticalHighlightLevels[i]);
+              break;
+            default:
+              continue;
+          }
         }
         continue;
       case tfoot:
