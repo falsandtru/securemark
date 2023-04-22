@@ -13,7 +13,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     url => `{ ${url} }`,
     union([unsafelink])))));
 
-export const lineurl: AutolinkParser.UrlParser.LineUrlParser = open(
+export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
   linebreak,
   tails([
     str('!'),
@@ -22,7 +22,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = open(
       convert(
         url => `{ ${url} }`,
         unsafelink)),
-  ]));
+  ])));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(precedence(2, union([
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),

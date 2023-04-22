@@ -73,11 +73,11 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union(
   surround(str('"'), precedence(8, some(union([unsafehtmlentity, txt]), '"')), str('"'), true),
 ])));
 
-const option: MediaParser.ParameterParser.OptionParser = union([
+const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
   fmap(str(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),
   fmap(str(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
   linkoption,
-]);
+]));
 
 function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
   assert(target.tagName === 'IMG');

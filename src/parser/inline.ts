@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { union } from '../combinator';
+import { union, lazy } from '../combinator';
 import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
@@ -45,7 +45,7 @@ export import ShortMediaParser = InlineParser.ShortMediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;
 
-export const inline: InlineParser = union([
+export const inline: InlineParser = lazy(() => union([
   annotation,
   reference,
   template,
@@ -68,7 +68,7 @@ export const inline: InlineParser = union([
   autolink,
   bracket,
   text
-]);
+]));
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';
