@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.272.0
+
+- Change footnote identifiers.
+
 ## 0.271.0
 
 - Extend table highlight syntax.

@@ -1,6 +1,7 @@
 import { MarkdownParser } from '../../../../markdown';
 import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
+import { reduce } from 'spica/memoize';
 import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
@@ -8,7 +9,7 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
-export function identity(id: string | undefined, text: string, name: 'index' | 'mark' | 'note' = 'index'): string | undefined {
+export function identity(id: string | undefined, text: string, name: 'index' | 'mark' = 'index'): string | undefined {
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
@@ -20,7 +21,6 @@ export function identity(id: string | undefined, text: string, name: 'index' | '
     case 'index':
       return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-    case 'note':
       return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
   assert(false);
@@ -43,7 +43,7 @@ export function index(source: Element | DocumentFragment, optional = false): str
   return text(source);
 }
 
-export function text(source: Element | DocumentFragment): string {
+export const text = reduce((source: Element | DocumentFragment): string => {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
@@ -76,4 +76,4 @@ export function text(source: Element | DocumentFragment): string {
   // Better:
   //return target.innerText;
   return target.textContent!;
-}
+});

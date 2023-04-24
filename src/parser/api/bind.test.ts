@@ -214,15 +214,15 @@ describe('Unit: parser/api/bind', () => {
         cfgs.footnotes.references?.outerHTML,
         html('ol', [
           html('li', { id: 'reference::def:1' }, [
-            html('span', { id: 'note::1' }, '1'),
+            html('span', '1'),
             html('sup', [html('a', { href: '#reference::ref:1' }, '^1')]),
           ]),
           html('li', { id: 'reference::def:2' }, [
-            html('span', { id: 'note::2' }, '2'),
+            html('span', '2'),
             html('sup', [html('a', { href: '#reference::ref:2' }, '^2')]),
           ]),
           html('li', { id: 'reference::def:3' }, [
-            html('span', { id: 'note::3' }, '3'),
+            html('span', '3'),
             html('sup', [html('a', { href: '#reference::ref:3' }, '^3')]),
           ]),
         ]).outerHTML);

@@ -12,8 +12,8 @@ export function* footnote(
     const el = es[i];
     el.parentNode === target && el.remove();
   }
-  yield* reference(target, footnotes?.references, opts, bottom);
   yield* annotation(target, footnotes?.annotations, opts, bottom);
+  yield* reference(target, footnotes?.references, opts, bottom);
   return;
 }
 
@@ -44,25 +44,16 @@ function build(
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map<string, string>();
-    const contents = new Map<string, HTMLSpanElement>();
-    for (let len = refs.length, i = 0; i < len; ++i) {
-      if (i % 10 === 9) yield;
-      const ref = refs[i];
-      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
-      if (titles.has(identifier)) continue;
-      const content = html('span',
-        { id: identity(opts.id, text(ref.firstElementChild!), 'note') },
-        ref.firstElementChild!.cloneNode(true).childNodes);
-      const title = text(content).trim();
-      if (!title) continue;
-      titles.set(identifier, title);
-      contents.set(identifier, content);
-    }
+    const indexes = new Map<HTMLLIElement, number>();
     let count = 0;
     let total = 0;
     let style: 'count' | 'abbr';
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
+      if (ref.closest('[hidden]')) {
+        yield;
+        continue;
+      }
       while (splitters.length > 0
           && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
@@ -74,8 +65,13 @@ function build(
         }
         splitters.shift();
       }
-      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild!.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
+      const identifier = abbr || identity(undefined, text(ref.firstElementChild!), 'mark')?.slice(6) || '';
+      const title = undefined
+        || titles.get(identifier)
+        || titles.set(identifier, text(ref.firstElementChild!)).get(identifier)!
+        || null;
+      assert(syntax !== 'annotation' || title);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         define(ref, {
@@ -99,9 +95,6 @@ function build(
       else {
         ref.lastChild?.remove();
       }
-      const title = titles.get(identifier);
-      assert(title !== '');
-      assert(syntax !== 'annotation' || title);
       const refIndex = ++count;
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}`
@@ -110,24 +103,26 @@ function build(
         || defs.get(identifier)
         || defs.set(identifier, html('li',
             {
-              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
+              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
               'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined,
             },
-            [contents.get(identifier) ?? frag(), html('sup')]))
+            [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')]))
             .get(identifier)!;
       assert(def.lastChild);
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
+      const defIndex = undefined
+        || indexes.get(def)
+        || indexes.set(def, total + defs.size).get(def)!;
       const defId = def.id || undefined;
       define(ref, {
         id: refId,
-        class: opts.id !== '' ? undefined : `${ref.className} disabled`,
-        ...title
-          ? { title }
-          : { class: void ref.classList.add('invalid'),
-              'data-invalid-syntax': syntax,
-              'data-invalid-type': 'content',
-              'data-invalid-message': 'Missing the content',
-            },
+        class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
+        title,
+        ...!title && {
+          class: void ref.classList.add('invalid'),
+          'data-invalid-syntax': syntax,
+          'data-invalid-type': 'content',
+          'data-invalid-message': 'Missing the content',
+        },
       });
       yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
       assert(ref.title || ref.matches('.invalid'));
