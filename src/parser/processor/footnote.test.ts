@@ -161,32 +161,6 @@ describe('Unit: parser/processor/footnote', () => {
       }
     });
 
-    it('id', () => {
-      const target = parse('((a b))');
-      const footnote = html('ol');
-      for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 2 : 1);
-        assert.deepStrictEqual(
-          [...target.children].map(el => el.outerHTML),
-          [
-            html('p', [
-              html('sup', { class: "annotation", id: "annotation:0:ref:1", title: "a b" }, [
-                html('span', { hidden: '' }, 'a b'),
-                html('a', { href: "#annotation:0:def:a_b" }, '*1')
-              ]),
-            ]).outerHTML,
-          ]);
-        assert.deepStrictEqual(
-          footnote.outerHTML,
-          html('ol', [
-            html('li', { id: 'annotation:0:def:a_b' }, [
-              html('span', 'a b'),
-              html('sup', [html('a', { href: '#annotation:0:ref:1' }, '^1')])
-            ]),
-          ]).outerHTML);
-      }
-    });
-
     it('split', () => {
       const target = parse('((1))\n\n## a\n\n## b\n\n((2))((3))\n\n## c\n\n((4))');
       for (let i = 0; i < 3; ++i) {
@@ -242,6 +216,32 @@ describe('Unit: parser/processor/footnote', () => {
               ]),
             ]).outerHTML,
           ]);
+      }
+    });
+
+    it('id', () => {
+      const target = parse('((a b))');
+      const footnote = html('ol');
+      for (let i = 0; i < 3; ++i) {
+        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 2 : 1);
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            html('p', [
+              html('sup', { class: "annotation", id: "annotation:0:ref:1", title: "a b" }, [
+                html('span', { hidden: '' }, 'a b'),
+                html('a', { href: "#annotation:0:def:a_b" }, '*1')
+              ]),
+            ]).outerHTML,
+          ]);
+        assert.deepStrictEqual(
+          footnote.outerHTML,
+          html('ol', [
+            html('li', { id: 'annotation:0:def:a_b' }, [
+              html('span', 'a b'),
+              html('sup', [html('a', { href: '#annotation:0:ref:1' }, '^1')])
+            ]),
+          ]).outerHTML);
       }
     });
 
