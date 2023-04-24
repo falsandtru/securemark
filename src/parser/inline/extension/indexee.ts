@@ -5,7 +5,7 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, text(el, optional)) })]);
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
 export function identity(id: string | undefined, text: string, name: 'index' | 'mark' | 'note' = 'index'): string | undefined {
@@ -32,7 +32,7 @@ assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.re
 assert(identity(undefined, '0'.repeat(100) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 
-export function text(source: Element | DocumentFragment, optional = false): string {
+export function index(source: Element | DocumentFragment, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   if (!source.firstChild) return '';
@@ -40,6 +40,10 @@ export function text(source: Element | DocumentFragment, optional = false): stri
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   if (index === '' && optional) return '';
+  return text(source);
+}
+
+export function text(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
