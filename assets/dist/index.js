@@ -1373,17 +1373,18 @@ exports.suppressAsyncException = suppressAsyncException;
 /***/ }),
 
 /***/ 4128:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
 __webpack_require__(6921);
-const global =  false || typeof globalThis !== 'undefined' && globalThis
-// @ts-ignore
-|| typeof self !== 'undefined' && self || Function('return this')();
+const global = globalThis;
 global.global = global;
-module.exports = global;
+exports["default"] = global;
 
 /***/ }),
 
@@ -1394,9 +1395,7 @@ module.exports = global;
 
 
 // @ts-ignore
-var globalThis;
-// @ts-ignore
-var global = (/* unused pure expression or super */ null && (globalThis));
+var global = globalThis;
 
 /***/ }),
 
@@ -1487,9 +1486,9 @@ class Heap {
     this.$length = 0;
   }
 }
-exports.Heap = Heap;
 Heap.max = (a, b) => a > b ? -1 : a < b ? 1 : 0;
 Heap.min = (a, b) => a > b ? 1 : a < b ? -1 : 0;
+exports.Heap = Heap;
 function sort(cmp, array, index, length, stable) {
   if (length === 0) return false;
   switch (index) {
@@ -1631,9 +1630,9 @@ class MultiHeap {
     this.$length = 0;
   }
 }
-exports.MultiHeap = MultiHeap;
 MultiHeap.max = Heap.max;
 MultiHeap.min = Heap.min;
+exports.MultiHeap = MultiHeap;
 
 /***/ }),
 
@@ -1993,10 +1992,10 @@ class PriorityQueue {
     return;
   }
 }
-exports.PriorityQueue = PriorityQueue;
 PriorityQueue.priority = Symbol('priority');
 PriorityQueue.max = heap_1.Heap.max;
 PriorityQueue.min = heap_1.Heap.min;
+exports.PriorityQueue = PriorityQueue;
 class MultiQueue {
   constructor(entries) {
     this.dict = new Map();
@@ -2570,7 +2569,6 @@ class ReadonlyURL {
     return this.href;
   }
 }
-exports.ReadonlyURL = ReadonlyURL;
 // Can't freeze URL object in the Firefox extension environment.
 // ref: https://github.com/falsandtru/pjax-api/issues/44#issuecomment-633915035
 // Bug: Error in dependents.
@@ -2578,6 +2576,7 @@ exports.ReadonlyURL = ReadonlyURL;
 ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
   url: new __webpack_require__.g.URL(url, base)
 }), (url, base = '') => `${base.indexOf('\n') > -1 ? base.replace(/\n+/g, '') : base}\n${url}`, new cache_1.Cache(10000));
+exports.ReadonlyURL = ReadonlyURL;
 
 /***/ }),
 
@@ -3540,7 +3539,6 @@ class Delimiters {
     return false;
   }
 }
-exports.Delimiters = Delimiters;
 _a = Delimiters;
 Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
   switch (typeof pattern) {
@@ -3552,6 +3550,7 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
       return (0, memoize_1.reduce)(source => pattern.test(source) || undefined);
   }
 }, _a.signature);
+exports.Delimiters = Delimiters;
 
 /***/ }),
 
@@ -4539,7 +4538,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-message': 'Missing the title at the first line'
   }, `${opener}${body}${closer}`)];
   return [(0, dom_1.html)('aside', {
-    id: (0, indexee_1.identity)(context.id, (0, indexee_1.text)(heading)),
+    id: (0, indexee_1.identity)(context.id, (0, indexee_1.index)(heading)),
     class: 'aside'
   }, [document, (0, dom_1.html)('h2', 'References'), references])];
 })));
@@ -5737,7 +5736,7 @@ const shortmedia_1 = __webpack_require__(4189);
 const autolink_1 = __webpack_require__(6051);
 const bracket_1 = __webpack_require__(5196);
 const source_1 = __webpack_require__(6743);
-exports.inline = (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, link_1.linemedialink, media_1.linemedia, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.lineshortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]);
+exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, link_1.linemedialink, media_1.linemedia, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.lineshortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]));
 var indexee_1 = __webpack_require__(1269);
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
@@ -5809,7 +5808,7 @@ const hashnum_1 = __webpack_require__(5631);
 const anchor_1 = __webpack_require__(6495);
 const source_1 = __webpack_require__(6743);
 const util_1 = __webpack_require__(9437);
-exports.autolink = (0, combinator_1.validate)(/^(?:[@#>0-9a-z\r\n]|\S[#>])/i, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, 1, ~1 /* State.shortcut */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:[@#>0-9a-z\r\n]|\S[#>])/i, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, 1, ~1 /* State.shortcut */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
 // Escape unmatched email-like strings.
 (0, combinator_1.focus)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z])*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i, ({
   source
@@ -5826,7 +5825,7 @@ exports.autolink = (0, combinator_1.validate)(/^(?:[@#>0-9a-z\r\n]|\S[#>])/i, (0
 // Escape unmatched hashtag-like strings.
 (0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|')*/u.source.replace('emoji', hashtag_1.emoji), 'u')),
 // Escape invalid leading characters.
-(0, source_1.str)(/^[0-9\p{Sc}](?=>)/u), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])]))));
+(0, source_1.str)(/^[0-9\p{Sc}](?=>)/u), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])])))));
 
 /***/ }),
 
@@ -5988,7 +5987,7 @@ const link_1 = __webpack_require__(9628);
 const source_1 = __webpack_require__(6743);
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink])))));
-exports.lineurl = (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.focus)(/^https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink))]));
+exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.focus)(/^https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink))])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.precedence)(2, (0, combinator_1.union)([(0, combinator_1.surround)('(', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')'), ')', true), (0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']'), ']', true), (0, combinator_1.surround)('{', (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}'), '}', true), (0, combinator_1.surround)('"', (0, combinator_1.precedence)(8, (0, combinator_1.some)(source_1.unescsource, '"')), '"', true)]))));
 
 /***/ }),
@@ -6162,14 +6161,15 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.text = exports.identity = exports.indexee = void 0;
+exports.text = exports.index = exports.identity = exports.indexee = void 0;
 const combinator_1 = __webpack_require__(2087);
+const memoize_1 = __webpack_require__(1808);
 const dom_1 = __webpack_require__(3252);
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
   }) => [(0, dom_1.define)(el, {
-    id: identity(id, text(el, optional))
+    id: identity(id, index(el, optional))
   })]);
 }
 exports.indexee = indexee;
@@ -6183,17 +6183,20 @@ function identity(id, text, name = 'index') {
     case 'index':
       return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-    case 'note':
       return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
 }
 exports.identity = identity;
-function text(source, optional = false) {
+function index(source, optional = false) {
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   if (index === '' && optional) return '';
+  return (0, exports.text)(source);
+}
+exports.index = index;
+exports.text = (0, memoize_1.reduce)(source => {
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
@@ -6224,8 +6227,7 @@ function text(source, optional = false) {
   // Better:
   //return target.innerText;
   return target.textContent;
-}
-exports.text = text;
+});
 
 /***/ }),
 
@@ -6684,7 +6686,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['![', '
 }))))));
 exports.linemedia = (0, combinator_1.surround)(source_1.linebreak, (0, combinator_1.union)([exports.media]), /^(?=[^\S\n]*(?:$|\n))/);
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(8, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true)])));
-const option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]);
+const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]));
 function sanitize(target, uri, alt) {
   switch (uri.protocol) {
     case 'http:':
@@ -7095,8 +7097,8 @@ function* footnote(target, footnotes, opts = {}, bottom = null) {
     const el = es[i];
     el.parentNode === target && el.remove();
   }
-  yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
+  yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
   return;
 }
 exports.footnote = footnote;
@@ -7115,25 +7117,16 @@ function build(syntax, marker, splitter = '_') {
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map();
-    const contents = new Map();
-    for (let len = refs.length, i = 0; i < len; ++i) {
-      if (i % 10 === 9) yield;
-      const ref = refs[i];
-      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
-      if (titles.has(identifier)) continue;
-      const content = (0, dom_1.html)('span', {
-        id: (0, indexee_1.identity)(opts.id, (0, indexee_1.text)(ref.firstElementChild), 'note')
-      }, ref.firstElementChild.cloneNode(true).childNodes);
-      const title = (0, indexee_1.text)(content).trim();
-      if (!title) continue;
-      titles.set(identifier, title);
-      contents.set(identifier, content);
-    }
+    const indexes = new Map();
     let count = 0;
     let total = 0;
     let style;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
+      if (ref.closest('[hidden]')) {
+        yield;
+        continue;
+      }
       while (splitters.length > 0 && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (defs.size > 0) {
           total += defs.size;
@@ -7145,8 +7138,9 @@ function build(syntax, marker, splitter = '_') {
         }
         splitters.shift();
       }
-      const identifier = ref.getAttribute('data-abbr') || ` ${ref.firstElementChild.innerHTML}`;
       const abbr = ref.getAttribute('data-abbr') || undefined;
+      const identifier = abbr || (0, indexee_1.identity)(undefined, (0, indexee_1.text)(ref.firstElementChild), 'mark')?.slice(6) || '';
+      const title =  false || titles.get(identifier) || titles.set(identifier, (0, indexee_1.text)(ref.firstElementChild)).get(identifier) || null;
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         (0, dom_1.define)(ref, {
@@ -7168,21 +7162,21 @@ function build(syntax, marker, splitter = '_') {
       } else {
         ref.lastChild?.remove();
       }
-      const title = titles.get(identifier);
       const refIndex = ++count;
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
       const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${total + defs.size + 1}` : undefined,
+        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
         'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
-      }, [contents.get(identifier) ?? (0, dom_1.frag)(), (0, dom_1.html)('sup')])).get(identifier);
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || total + defs.size;
+      }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
+        hidden: null
+      }), (0, dom_1.html)('sup')])).get(identifier);
+      const defIndex =  false || indexes.get(def) || indexes.set(def, total + defs.size).get(def);
       const defId = def.id || undefined;
       (0, dom_1.define)(ref, {
         id: refId,
-        class: opts.id !== '' ? undefined : `${ref.className} disabled`,
-        ...(title ? {
-          title
-        } : {
+        class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
+        title,
+        ...(!title && {
           class: void ref.classList.add('invalid'),
           'data-invalid-syntax': syntax,
           'data-invalid-type': 'content',
@@ -8434,7 +8428,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.317 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.330 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8444,7 +8438,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 406:
+/***/ 5406:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -8467,7 +8461,7 @@ exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
 
 /***/ }),
 
-/***/ 529:
+/***/ 5529:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -8483,8 +8477,8 @@ exports.equal = equal;
 
 /***/ }),
 
-/***/ 808:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3147__) => {
+/***/ 1808:
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_3150__) => {
 
 
 
@@ -8492,8 +8486,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reduce = exports.memoize = void 0;
-const alias_1 = __nested_webpack_require_3147__(406);
-const compare_1 = __nested_webpack_require_3147__(529);
+const alias_1 = __nested_webpack_require_3150__(5406);
+const compare_1 = __nested_webpack_require_3150__(5529);
 function memoize(f, identify = (...as) => as[0], memory) {
   if (typeof identify === 'object') return memoize(f, undefined, identify);
   return (0, alias_1.isArray)(memory) || memory?.constructor === Object ? memoizeRecord(f, identify, memory) : memoizeDict(f, identify, memory ?? new Map());
@@ -8539,8 +8533,8 @@ exports.reduce = reduce;
 
 /***/ }),
 
-/***/ 521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4662__) => {
+/***/ 7521:
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4668__) => {
 
 
 
@@ -8548,8 +8542,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
-const alias_1 = __nested_webpack_require_4662__(406);
-const memoize_1 = __nested_webpack_require_4662__(808);
+const alias_1 = __nested_webpack_require_4668__(5406);
+const memoize_1 = __nested_webpack_require_4668__(1808);
 var caches;
 (function (caches) {
   caches.shadows = new WeakMap();
@@ -8578,20 +8572,22 @@ function text(source) {
 exports.text = text;
 function element(context, ns) {
   return (tag, attrs, children) => {
-    const el = elem(context, ns, tag);
-    return !attrs || isChildren(attrs) ? defineChildren(el, attrs ?? children) : defineChildren(defineAttrs(el, attrs), children);
+    return !attrs || isChildren(attrs) ? defineChildren(elem(context, ns, tag, {}), attrs ?? children) : defineChildren(defineAttrs(elem(context, ns, tag, attrs), attrs), children);
   };
 }
 exports.element = element;
-function elem(context, ns, tag) {
+function elem(context, ns, tag, attrs) {
   if (!('createElement' in context)) throw new Error(`TypedDOM: Scoped custom elements are not supported on this browser.`);
+  const opts = 'is' in attrs ? {
+    is: attrs['is']
+  } : undefined;
   switch (ns) {
     case "HTML" /* NS.HTML */:
-      return context.createElement(tag);
+      return context.createElement(tag, opts);
     case "SVG" /* NS.SVG */:
-      return context.createElementNS('http://www.w3.org/2000/svg', tag);
+      return context.createElementNS('http://www.w3.org/2000/svg', tag, opts);
     case "MathML" /* NS.MathML */:
-      return context.createElementNS('http://www.w3.org/1998/Math/MathML', tag);
+      return context.createElementNS('http://www.w3.org/1998/Math/MathML', tag, opts);
   }
 }
 function define(node, attrs, children) {
@@ -8606,8 +8602,11 @@ function define(node, attrs, children) {
 }
 exports.define = define;
 function defineAttrs(el, attrs) {
-  for (const name in attrs) {
-    if (!(0, alias_1.hasOwnProperty)(attrs, name)) continue;
+  for (const name of Object.keys(attrs)) {
+    switch (name) {
+      case 'is':
+        continue;
+    }
     const value = attrs[name];
     switch (typeof value) {
       case 'string':
@@ -8675,7 +8674,7 @@ function defineChildren(node, children) {
   return node;
 }
 function isChildren(value) {
-  return !!value?.[Symbol.iterator];
+  return value?.[Symbol.iterator] !== undefined;
 }
 exports.isChildren = isChildren;
 function append(node, children) {
@@ -8728,7 +8727,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11449__(moduleId) {
+/******/ 	function __nested_webpack_require_11589__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -8742,7 +8741,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11449__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11589__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -8753,7 +8752,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11449__(521);
+/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11589__(7521);
 /******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
@@ -8765,7 +8764,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.317 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.330 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
