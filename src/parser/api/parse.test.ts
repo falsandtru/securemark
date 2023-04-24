@@ -124,7 +124,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a class="index" href="#index::a">a</a></p>',
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
-          '<p><sup class="annotation" id="annotation::ref:1" title="a"><span hidden="">a</span><a href="#annotation::def:a">*1</a></sup></p>',
+          '<p><sup class="annotation" id="annotation::ref:a:1" title="a"><span hidden="">a</span><a href="#annotation::def:a">*1</a></sup></p>',
           '<p><a class="url" href="https://source/x/a" target="_blank">a</a></p>',
           '<p><a class="url" href="https://source/a" target="_blank">/a</a></p>',
           '<p><a class="url" href="/z/a">^/a</a></p>',
@@ -135,7 +135,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
           '<p><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
           '<p><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
-          '<ol class="annotations"><li id="annotation::def:a" data-marker="*1"><span>a</span><sup><a href="#annotation::ref:1">^1</a></sup></li></ol>',
+          '<ol class="annotations"><li id="annotation::def:a" data-marker="*1"><span>a</span><sup><a href="#annotation::ref:a:1">^1</a></sup></li></ol>',
         ]);
       assert.deepStrictEqual(
         [...parse([
@@ -207,12 +207,12 @@ describe('Unit: parser/api/parse', () => {
         [...parse('$-a\n$$\n$$\n\n(($-a[[^b]]))[[^b|$-a]]', { notes }).children].map(el => el.outerHTML),
         [
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
-          '<p><sup class="annotation" id="annotation::ref:1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b"><span></span></sup></span><a href="#annotation::def:(1)">*1</a></sup><sup class="reference" data-abbr="b" id="reference::ref:1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><a href="#reference::def:b">[b]</a></sup></p>',
-          '<ol class="annotations"><li id="annotation::def:(1)" data-marker="*1"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b" id="reference::ref:2" title="(1)"><span hidden=""></span><a href="#reference::def:b">[b]</a></sup></span><sup><a href="#annotation::ref:1">^1</a></sup></li></ol>',
+          '<p><sup class="annotation" id="annotation::ref:(1):1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b"><span></span></sup></span><a href="#annotation::def:(1)">*1</a></sup><sup class="reference" data-abbr="b" id="reference::ref:b:1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><a href="#reference::def:b">[b]</a></sup></p>',
+          '<ol class="annotations"><li id="annotation::def:(1)" data-marker="*1"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b" id="reference::ref:b:2" title="(1)"><span hidden=""></span><a href="#reference::def:b">[b]</a></sup></span><sup><a href="#annotation::ref:(1):1">^1</a></sup></li></ol>',
         ]);
       assert.deepStrictEqual(
         notes.references.outerHTML,
-        '<ol><li id="reference::def:b"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><sup><a href="#reference::ref:1" title="(1)">^1</a><a href="#reference::ref:2">^2</a></sup></li></ol>');
+        '<ol><li id="reference::def:b"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><sup><a href="#reference::ref:b:1" title="(1)">^1</a><a href="#reference::ref:b:2">^2</a></sup></li></ol>');
     });
 
     it('normalize', () => {
