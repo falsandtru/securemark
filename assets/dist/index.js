@@ -7117,7 +7117,8 @@ function build(syntax, marker, splitter = '_') {
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map();
-    const indexes = new Map();
+    const rixs = new Map();
+    const dixs = new Map();
     let count = 0;
     let total = 0;
     let style;
@@ -7138,9 +7139,24 @@ function build(syntax, marker, splitter = '_') {
         }
         splitters.shift();
       }
+      ++count;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const identifier = abbr || (0, indexee_1.identity)(undefined, (0, indexee_1.text)(ref.firstElementChild), 'mark')?.slice(6) || '';
-      const title =  false || titles.get(identifier) || titles.set(identifier, (0, indexee_1.text)(ref.firstElementChild)).get(identifier) || null;
+      const refIndex = rixs.get(identifier) + 1 || 1;
+      rixs.set(identifier, refIndex);
+      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refIndex}` : undefined;
+      const def = refIndex === 1 ? (0, dom_1.html)('li', {
+        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
+        'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined
+      }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
+        hidden: null
+      }), (0, dom_1.html)('sup')]) : defs.get(identifier);
+      refIndex === 1 && defs.set(identifier, def);
+      const defIndex = refIndex === 1 ? total + defs.size : dixs.get(def);
+      refIndex === 1 && dixs.set(def, defIndex);
+      const defId = def.id || undefined;
+      const title = refIndex === 1 ? (0, indexee_1.text)(ref.firstElementChild) : titles.get(identifier);
+      refIndex === 1 && titles.set(identifier, title);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         (0, dom_1.define)(ref, {
@@ -7162,16 +7178,6 @@ function build(syntax, marker, splitter = '_') {
       } else {
         ref.lastChild?.remove();
       }
-      const refIndex = ++count;
-      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
-      const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
-        'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined
-      }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
-        hidden: null
-      }), (0, dom_1.html)('sup')])).get(identifier);
-      const defIndex =  false || indexes.get(def) || indexes.set(def, total + defs.size).get(def);
-      const defId = def.id || undefined;
       (0, dom_1.define)(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
@@ -7189,7 +7195,7 @@ function build(syntax, marker, splitter = '_') {
       def.lastChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
         title: abbr && (0, indexee_1.text)((0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes)).trim() || undefined
-      }, `^${refIndex}`));
+      }, `^${count}`));
     }
     if (defs.size > 0 || note) {
       yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
