@@ -312,6 +312,58 @@ describe('Unit: parser/processor/note', () => {
       }
     });
 
+    it('nest', () => {
+      const target = parse('((a[[^b]]))[[^b|c]]');
+      const note = html('ol');
+      for (let i = 0; i < 3; ++i) {
+        [...annotation(target)];
+        [...reference(target, note)];
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            html('p', [
+              html('sup', { class: 'annotation', id: 'annotation::ref:1', title: 'a' }, [
+                html('span', { hidden: '' }, [
+                  'a',
+                  html('sup', { class: 'reference', 'data-abbr': 'b' }, [
+                    html('span'),
+                  ]),
+                ]),
+                html('a', { href: '#annotation::def:a' }, '*1')
+              ]),
+              html('sup', { class: 'reference', 'data-abbr': 'b', id: 'reference::ref:1', title: 'c' }, [
+                html('span', { hidden: '' }, 'c'),
+                html('a', { href: '#reference::def:b' }, '[b]')
+              ]),
+            ]).outerHTML,
+            html('ol', { class: 'annotations' }, [
+              html('li', { id: 'annotation::def:a', 'data-marker': '*1' }, [
+                html('span', [
+                  'a',
+                  html('sup', { class: 'reference', 'data-abbr': 'b', id: 'reference::ref:2', title: 'c' }, [
+                    html('span', { hidden: '' }),
+                    html('a', { href: '#reference::def:b' }, '[b]')
+                  ]),
+                ]),
+                html('sup', [html('a', { href: '#annotation::ref:1' }, '^1')])
+              ]),
+            ]).outerHTML,
+          ]);
+        assert.deepStrictEqual(
+          note.outerHTML,
+          html('ol', [
+            html('li', { id: 'reference::def:b' }, [
+              html('span', 'c'),
+              html('sup', [
+                html('a', { href: '#reference::ref:1', title: 'c' }, '^1'),
+                html('a', { href: '#reference::ref:2' }, '^2'),
+              ]),
+            ]),
+          ]).outerHTML);
+        target.lastChild?.remove();
+      }
+    });
+
   });
 
 });
