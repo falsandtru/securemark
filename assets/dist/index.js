@@ -3904,7 +3904,7 @@ const block_1 = __webpack_require__(4032);
 const normalize_1 = __webpack_require__(185);
 const header_2 = __webpack_require__(7790);
 const figure_1 = __webpack_require__(9123);
-const footnote_1 = __webpack_require__(7529);
+const note_1 = __webpack_require__(6745);
 const url_1 = __webpack_require__(2261);
 const array_1 = __webpack_require__(8112);
 function bind(target, settings) {
@@ -4015,7 +4015,7 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
-    for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.footnotes, context)) {
+    for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.notes, context)) {
       el ? yield {
         type: 'figure',
         value: el
@@ -4026,9 +4026,9 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
-    for (const el of (0, footnote_1.footnote)(next(0)?.parentNode ?? target, settings.footnotes, context, bottom)) {
+    for (const el of (0, note_1.note)(next(0)?.parentNode ?? target, settings.notes, context, bottom)) {
       el ? yield {
-        type: 'footnote',
+        type: 'note',
         value: el
       } : yield {
         type: 'break'
@@ -4229,7 +4229,7 @@ const block_1 = __webpack_require__(4032);
 const normalize_1 = __webpack_require__(185);
 const header_2 = __webpack_require__(7790);
 const figure_1 = __webpack_require__(9123);
-const footnote_1 = __webpack_require__(7529);
+const note_1 = __webpack_require__(6745);
 const url_1 = __webpack_require__(2261);
 const dom_1 = __webpack_require__(3252);
 function parse(source, opts = {}, context) {
@@ -4265,8 +4265,8 @@ function parse(source, opts = {}, context) {
     }), []));
   }
   if (opts.test) return node;
-  for (const _ of (0, figure_1.figure)(node, opts.footnotes, context));
-  for (const _ of (0, footnote_1.footnote)(node, opts.footnotes, context));
+  for (const _ of (0, figure_1.figure)(node, opts.notes, context));
+  for (const _ of (0, note_1.note)(node, opts.notes, context));
   return node;
 }
 exports.parse = parse;
@@ -4375,7 +4375,7 @@ const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combina
   });
   const document = (0, parse_1.parse)(source, {
     id: '',
-    footnotes: {
+    notes: {
       references
     }
   }, context);
@@ -4525,7 +4525,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
   });
   const document = (0, parse_1.parse)(body.slice(0, -1), {
     id: '',
-    footnotes: {
+    notes: {
       references
     }
   }, context);
@@ -4579,7 +4579,7 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
         });
         const document = (0, parse_1.parse)(body.slice(0, -1), {
           id: '',
-          footnotes: {
+          notes: {
             references
           }
         }, context);
@@ -6928,8 +6928,8 @@ const queue_1 = __webpack_require__(4934);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
 const query_1 = __webpack_require__(6120);
-function* figure(target, footnotes, opts = {}) {
-  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), footnotes && (0, query_1.querySelectorAll)(footnotes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
+function* figure(target, notes, opts = {}) {
+  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new Set();
   const numbers = new Map();
   let base = '0';
@@ -7080,7 +7080,7 @@ function capitalize(label) {
 
 /***/ }),
 
-/***/ 7529:
+/***/ 6745:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7089,25 +7089,25 @@ function capitalize(label) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.reference = exports.annotation = exports.footnote = void 0;
+exports.reference = exports.annotation = exports.note = void 0;
 const indexee_1 = __webpack_require__(1269);
 const dom_1 = __webpack_require__(3252);
-function* footnote(target, footnotes, opts = {}, bottom = null) {
+function* note(target, notes, opts = {}, bottom = null) {
   for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     el.parentNode === target && el.remove();
   }
-  yield* (0, exports.annotation)(target, footnotes?.annotations, opts, bottom);
-  yield* (0, exports.reference)(target, footnotes?.references, opts, bottom);
+  yield* (0, exports.annotation)(target, notes?.annotations, opts, bottom);
+  yield* (0, exports.reference)(target, notes?.references, opts, bottom);
   return;
 }
-exports.footnote = footnote;
+exports.note = note;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(syntax, marker, splitter = '_') {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
-  return function* (target, footnote, opts = {}, bottom = null) {
+  return function* (target, note, opts = {}, bottom = null) {
     const defs = new Map();
     const splitters = [];
     for (let es = target.querySelectorAll(splitter), len = es.length, i = 0; i < len; ++i) {
@@ -7166,7 +7166,7 @@ function build(syntax, marker, splitter = '_') {
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${refIndex}` : undefined;
       const def =  false || defs.get(identifier) || defs.set(identifier, (0, dom_1.html)('li', {
         id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
-        'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined
+        'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined
       }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
         hidden: null
       }), (0, dom_1.html)('sup')])).get(identifier);
@@ -7191,17 +7191,17 @@ function build(syntax, marker, splitter = '_') {
         title: abbr && (0, indexee_1.text)((0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes)).trim() || undefined
       }, `^${refIndex}`));
     }
-    if (defs.size > 0 || footnote) {
-      yield* proc(defs, footnote ?? target.insertBefore((0, dom_1.html)('ol', {
+    if (defs.size > 0 || note) {
+      yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
       }), splitters[0] ?? bottom));
     }
     return;
   };
-  function* proc(defs, footnote) {
+  function* proc(defs, note) {
     const {
       children
-    } = footnote;
+    } = note;
     const size = defs.size;
     let count = 0;
     let length = children.length;
@@ -7211,16 +7211,16 @@ function build(syntax, marker, splitter = '_') {
       while (length > size) {
         const node = children[count - 1];
         if (equal(node, def)) continue I;
-        yield footnote.removeChild(node);
+        yield note.removeChild(node);
         --length;
       }
       const node = count <= length ? children[count - 1] : null;
       if (node && equal(node, def)) continue;
-      yield footnote.insertBefore(def, node);
+      yield note.insertBefore(def, node);
       ++length;
     }
     while (length > size) {
-      yield footnote.removeChild(children[size]);
+      yield note.removeChild(children[size]);
       --length;
     }
     return;
