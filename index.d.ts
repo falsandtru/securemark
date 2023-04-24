@@ -32,7 +32,7 @@ export interface ParserSettings {
   readonly id?: string;
   // For editing.
   readonly caches?: Partial<Caches>;
-  readonly footnotes: {
+  readonly notes: {
     readonly references: HTMLOListElement;
   };
   readonly chunk?: boolean;
@@ -42,7 +42,7 @@ export type Progress =
   | { readonly type: 'segment'; readonly value: string; }
   | { readonly type: 'block'; readonly value: HTMLElement; }
   | { readonly type: 'figure'; readonly value: HTMLAnchorElement; }
-  | { readonly type: 'footnote'; readonly value: HTMLLIElement | HTMLElement; }
+  | { readonly type: 'note'; readonly value: HTMLLIElement | HTMLElement; }
   | { readonly type: 'break'; }
   | { readonly type: 'cancel'; };
 

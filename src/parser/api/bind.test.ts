@@ -27,7 +27,7 @@ describe('Unit: parser/api/bind', () => {
       return acc;
     }
 
-    const cfgs = { footnotes: { references: html('ol') } };
+    const cfgs = { notes: { references: html('ol') } };
 
     it('huge input', () => {
       const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2)}`);
@@ -211,7 +211,7 @@ describe('Unit: parser/api/bind', () => {
           ]).outerHTML,
         ]);
       assert.deepStrictEqual(
-        cfgs.footnotes.references?.outerHTML,
+        cfgs.notes.references?.outerHTML,
         html('ol', [
           html('li', { id: 'reference::def:1' }, [
             html('span', '1'),

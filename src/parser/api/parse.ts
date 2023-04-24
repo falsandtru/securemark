@@ -9,7 +9,7 @@ import { State } from '../context';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
-import { footnote } from '../processor/footnote';
+import { note } from '../processor/note';
 import { ReadonlyURL } from 'spica/url';
 import { frag } from 'typed-dom/dom';
 
@@ -41,9 +41,9 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;
-  for (const _ of figure(node, opts.footnotes, context));
-  for (const _ of footnote(node, opts.footnotes, context));
+  for (const _ of figure(node, opts.notes, context));
+  for (const _ of note(node, opts.notes, context));
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  assert(opts.id !== '' || !opts.footnotes?.references.querySelector('[id], .index[href], .label[href]'));
+  assert(opts.id !== '' || !opts.notes?.references.querySelector('[id], .index[href], .label[href]'));
   return node;
 }

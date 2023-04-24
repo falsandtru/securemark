@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.273.0
+
+- Rename ParserSettings.footnotes to ParserSettings.notes.
+
 ## 0.272.0
 
 - Change footnote identifiers.

@@ -1173,7 +1173,7 @@
   const { bind, render, caches } = global['securemark'];
   const { parse, nearest, index } = bind(viewer, {
     caches,
-    footnotes: {
+    notes: {
       references: document.querySelector('.references'),
     },
   });
@@ -1256,7 +1256,7 @@
           if (++count % 100) continue;
           count = 0;
           break;
-        case 'footnote':
+        case 'note':
           if (result.value.tagName !== 'LI') continue;
         case 'block':
           const el = result.value;

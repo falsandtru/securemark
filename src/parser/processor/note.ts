@@ -1,9 +1,9 @@
 import { identity, text } from '../inline/extension/indexee';
 import { frag, html, define } from 'typed-dom/dom';
 
-export function* footnote(
+export function* note(
   target: ParentNode & Node,
-  footnotes?: { readonly annotations?: HTMLOListElement; readonly references: HTMLOListElement; },
+  notes?: { readonly annotations?: HTMLOListElement; readonly references: HTMLOListElement; },
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
@@ -12,8 +12,8 @@ export function* footnote(
     const el = es[i];
     el.parentNode === target && el.remove();
   }
-  yield* annotation(target, footnotes?.annotations, opts, bottom);
-  yield* reference(target, footnotes?.references, opts, bottom);
+  yield* annotation(target, notes?.annotations, opts, bottom);
+  yield* reference(target, notes?.references, opts, bottom);
   return;
 }
 
@@ -30,7 +30,7 @@ function build(
   // 構文ごとに各1回の処理では不可能
   return function* (
     target: ParentNode & Node,
-    footnote?: HTMLOListElement,
+    note?: HTMLOListElement,
     opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
@@ -104,7 +104,7 @@ function build(
         || defs.set(identifier, html('li',
             {
               id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
-              'data-marker': !footnote ? marker(total + defs.size + 1, abbr) : undefined,
+              'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined,
             },
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')]))
             .get(identifier)!;
@@ -134,14 +134,14 @@ function build(
           },
           `^${refIndex}`));
     }
-    if (defs.size > 0 || footnote) {
-      yield* proc(defs, footnote ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
+    if (defs.size > 0 || note) {
+      yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
     }
     return;
   }
 
-  function* proc(defs: Map<string, HTMLLIElement>, footnote: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
-    const { children } = footnote;
+  function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
+    const { children } = note;
     const size = defs.size;
     let count = 0;
     let length = children.length;
@@ -152,7 +152,7 @@ function build(
       while (length > size) {
         const node = children[count - 1] as HTMLLIElement;
         if (equal(node, def)) continue I;
-        yield footnote.removeChild(node);
+        yield note.removeChild(node);
         --length;
         assert(children.length === length);
       }
@@ -160,13 +160,13 @@ function build(
         ? children[count - 1]
         : null;
       if (node && equal(node, def)) continue;
-      assert(def.parentNode !== footnote);
-      yield footnote.insertBefore(def, node);
+      assert(def.parentNode !== note);
+      yield note.insertBefore(def, node);
       ++length;
       assert(children.length === length);
     }
     while (length > size) {
-      yield footnote.removeChild(children[size] as HTMLLIElement);
+      yield note.removeChild(children[size] as HTMLLIElement);
       --length;
       assert(children.length === length);
     }

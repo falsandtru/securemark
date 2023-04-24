@@ -1,28 +1,28 @@
-import { footnote, annotation, reference } from './footnote';
+import { note, annotation, reference } from './note';
 import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom/dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 
-describe('Unit: parser/processor/footnote', () => {
+describe('Unit: parser/processor/note', () => {
   describe('annotation', () => {
     it('empty', () => {
       const target = parse('');
-      const footnote = html('ol');
-      [...annotation(target, footnote)];
+      const note = html('ol');
+      [...annotation(target, note)];
       assert.deepStrictEqual(
         [...target.children].map(el => el.outerHTML),
         []);
       assert.deepStrictEqual(
-        footnote.outerHTML,
+        note.outerHTML,
         html('ol').outerHTML);
     });
 
     it('1', () => {
       const target = parse('((a b))');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 2 : 1);
+        assert.deepStrictEqual([...annotation(target, note)].length, i === 0 ? 2 : 1);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -34,7 +34,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'annotation::def:a_b' }, [
               html('span', 'a b'),
@@ -46,9 +46,9 @@ describe('Unit: parser/processor/footnote', () => {
 
     it('2', () => {
       const target = parse('((1))((12345678901234567890))');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 4 : 2);
+        assert.deepStrictEqual([...annotation(target, note)].length, i === 0 ? 4 : 2);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -64,7 +64,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'annotation::def:1' }, [
               html('span', '1'),
@@ -80,9 +80,9 @@ describe('Unit: parser/processor/footnote', () => {
 
     it('unify', () => {
       const target = parse('((1))((2))((3))((2))((4))');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target, footnote)];
+        [...annotation(target, note)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -110,7 +110,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'annotation::def:1' }, [
               html('span', '1'),
@@ -133,9 +133,9 @@ describe('Unit: parser/processor/footnote', () => {
             ]),
           ]).outerHTML);
       }
-      [...annotation(parse(''), footnote)];
+      [...annotation(parse(''), note)];
       assert.deepStrictEqual(
-        footnote.outerHTML,
+        note.outerHTML,
         html('ol').outerHTML);
     });
 
@@ -145,9 +145,9 @@ describe('Unit: parser/processor/footnote', () => {
         '~~~~example/markdown\n((3))\n~~~~',
         '((4))',
       ].join('\n\n')).children);
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target, footnote)];
+        [...annotation(target, note)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -156,7 +156,7 @@ describe('Unit: parser/processor/footnote', () => {
             '<p><sup class="annotation" id="annotation::ref:1" title="4"><span hidden="">4</span><a href="#annotation::def:4">*1</a></sup></p>',
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           '<ol><li id="annotation::def:4"><span>4</span><sup><a href="#annotation::ref:1">^1</a></sup></li></ol>');
       }
     });
@@ -164,7 +164,7 @@ describe('Unit: parser/processor/footnote', () => {
     it('split', () => {
       const target = parse('((1))\n\n## a\n\n## b\n\n((2))((3))\n\n## c\n\n((4))');
       for (let i = 0; i < 3; ++i) {
-        [...footnote(target)];
+        [...note(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -221,9 +221,9 @@ describe('Unit: parser/processor/footnote', () => {
 
     it('id', () => {
       const target = parse('((a b))');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 2 : 1);
+        assert.deepStrictEqual([...annotation(target, note, { id: '0' })].length, i === 0 ? 2 : 1);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -235,7 +235,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:0:def:a_b' }, [
               html('span', 'a b'),
@@ -250,9 +250,9 @@ describe('Unit: parser/processor/footnote', () => {
   describe('reference', () => {
     it('1', () => {
       const target = parse('[[a b]]');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...reference(target, footnote)];
+        [...reference(target, note)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -264,7 +264,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'reference::def:a_b' }, [
               html('span', 'a b'),
@@ -276,9 +276,9 @@ describe('Unit: parser/processor/footnote', () => {
 
     it('abbr', () => {
       const target = parse('[[^a|b]][[^a]][[^a]]');
-      const footnote = html('ol');
+      const note = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...reference(target, footnote)];
+        [...reference(target, note)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -298,7 +298,7 @@ describe('Unit: parser/processor/footnote', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          footnote.outerHTML,
+          note.outerHTML,
           html('ol', [
             html('li', { id: 'reference::def:a' }, [
               html('span', 'b'),

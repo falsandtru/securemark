@@ -6,12 +6,12 @@ import { querySelectorAll } from 'typed-dom/query';
 
 export function* figure(
   target: ParentNode & Node,
-  footnotes?: { readonly references: HTMLOListElement; },
+  notes?: { readonly references: HTMLOListElement; },
   opts: { readonly id?: string; } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiQueue<string, HTMLAnchorElement>(push(
     querySelectorAll(target, 'a.label:not(.disabled)[data-label]'),
-    footnotes && querySelectorAll(footnotes.references, 'a.label:not(.disabled)') || [])
+    notes && querySelectorAll(notes.references, 'a.label:not(.disabled)') || [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();

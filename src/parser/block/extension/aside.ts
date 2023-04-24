@@ -21,7 +21,7 @@ export const aside: ExtensionParser.AsideParser = block(validate('~~~', fmap(
     const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
       id: '',
-      footnotes: {
+      notes: {
         references,
       },
     }, context);

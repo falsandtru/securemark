@@ -41,7 +41,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
         const references = html('ol', { class: 'references' });
         const document = parse(source, {
           id: '',
-          footnotes: {
+          notes: {
             references,
           },
         }, context);

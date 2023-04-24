@@ -9,7 +9,7 @@ import { State } from '../context';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
-import { footnote } from '../processor/footnote';
+import { note } from '../processor/note';
 import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
 
@@ -116,17 +116,17 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of figure(next(0)?.parentNode ?? target, settings.footnotes, context)) {
+    for (const el of figure(next(0)?.parentNode ?? target, settings.notes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context, bottom)) {
+    for (const el of note(next(0)?.parentNode ?? target, settings.notes, context, bottom)) {
       assert(rev === revision);
       el
-        ? yield { type: 'footnote', value: el }
+        ? yield { type: 'note', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
