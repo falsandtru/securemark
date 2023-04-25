@@ -100,28 +100,29 @@ function build(
       initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
       style ??= abbr ? 'abbr' : 'count';
-      if (style === 'count' ? abbr : !abbr) {
-        define(ref, {
-          class: void ref.classList.add('invalid'),
-          'data-invalid-syntax': syntax,
-          'data-invalid-type': 'style',
-          'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`,
-        });
+      if (!ref.classList.contains('invalid')) {
+        if (style === 'count' ? abbr : !abbr) {
+          define(ref, {
+            class: void ref.classList.add('invalid'),
+            'data-invalid-syntax': syntax,
+            'data-invalid-type': 'style',
+            'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`,
+          });
+        }
       }
-      else if (ref.getAttribute('data-invalid-type') === 'style') {
-        define(ref, {
-          class: void ref.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null,
-        });
+      else switch (ref.getAttribute('data-invalid-syntax')) {
+        case 'style':
+        case 'content':
+          define(ref, {
+            class: void ref.classList.remove('invalid'),
+            'data-invalid-syntax': null,
+            'data-invalid-type': null,
+            'data-invalid-message': null,
+          });
       }
-      if (!ref.firstElementChild!.hasAttribute('hidden')) {
-        ref.firstElementChild!.setAttribute('hidden', '');
-      }
-      else {
-        ref.lastChild?.remove();
-      }
+      ref.firstElementChild!.hasAttribute('hidden')
+        ? ref.lastElementChild!.remove()
+        : ref.firstElementChild!.setAttribute('hidden', '');
       define(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
