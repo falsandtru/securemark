@@ -7104,22 +7104,23 @@ function* note(target, notes, opts = {}, bottom = null) {
 exports.note = note;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
-function build(syntax, marker, splitter = '_') {
+function build(syntax, marker, splitter = '') {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   return function* (target, note, opts = {}, bottom = null) {
     const defs = new Map();
     const splitters = [];
-    for (let es = target.querySelectorAll(splitter), len = es.length, i = 0; i < len; ++i) {
+    for (let es = target.querySelectorAll(splitter || '_'), len = es.length, i = 0; i < len; ++i) {
       if (i % 100 === 0) yield;
       const el = es[i];
       el.parentNode === target && splitters.push(el);
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map();
-    const rixs = new Map();
-    const dixs = new Map();
-    let count = 0;
+    const defIndexes = new Map();
+    const refSubindexes = new Map();
+    const defSubindexes = new Map();
+    let refIndex = 0;
     let total = 0;
     let style;
     for (let len = refs.length, i = 0; i < len; ++i) {
@@ -7139,24 +7140,26 @@ function build(syntax, marker, splitter = '_') {
         }
         splitters.shift();
       }
-      ++count;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const identifier = abbr || (0, indexee_1.identity)(undefined, (0, indexee_1.text)(ref.firstElementChild), 'mark')?.slice(6) || '';
-      const refIndex = rixs.get(identifier) + 1 || 1;
-      rixs.set(identifier, refIndex);
-      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refIndex}` : undefined;
-      const def = refIndex === 1 ? (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
+      const refSubindex = refSubindexes.get(identifier) + 1 || 1;
+      refSubindexes.set(identifier, refSubindex);
+      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
+      const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
+      const defSubindex = defSubindexes.get(identifier) + 1 || 1;
+      defSubindexes.set(identifier, defSubindex);
+      const def = initial ? (0, dom_1.html)('li', {
+        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}:${defSubindex}` : undefined,
         'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined
       }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
         hidden: null
       }), (0, dom_1.html)('sup')]) : defs.get(identifier);
-      refIndex === 1 && defs.set(identifier, def);
-      const defIndex = refIndex === 1 ? total + defs.size : dixs.get(def);
-      refIndex === 1 && dixs.set(def, defIndex);
+      initial && defs.set(identifier, def);
+      const defIndex = initial ? total + defs.size : defIndexes.get(def);
+      initial && defIndexes.set(def, defIndex);
       const defId = def.id || undefined;
-      const title = refIndex === 1 ? (0, indexee_1.text)(ref.firstElementChild) : titles.get(identifier);
-      refIndex === 1 && titles.set(identifier, title);
+      const title = initial ? (0, indexee_1.text)(ref.firstElementChild) : titles.get(identifier);
+      initial && titles.set(identifier, title);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
         (0, dom_1.define)(ref, {
@@ -7195,7 +7198,7 @@ function build(syntax, marker, splitter = '_') {
       def.lastChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
         title: abbr && (0, indexee_1.text)((0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes)).trim() || undefined
-      }, `^${count}`));
+      }, `^${++refIndex}`));
     }
     if (defs.size > 0 || note) {
       yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
