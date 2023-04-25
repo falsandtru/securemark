@@ -74,7 +74,8 @@ function build(
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refIndex}`
         : undefined;
-      const def = refIndex === 1
+      const initial = refIndex === 1;
+      const def = initial
         ? html('li',
             {
               id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
@@ -82,17 +83,17 @@ function build(
             },
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
         : defs.get(identifier)!;
-      refIndex === 1 && defs.set(identifier, def);
+      initial && defs.set(identifier, def);
       assert(def.lastChild);
-      const defIndex = refIndex === 1
+      const defIndex = initial
         ? total + defs.size
         : dixs.get(def)!;
-      refIndex === 1 && dixs.set(def, defIndex);
+      initial && dixs.set(def, defIndex);
       const defId = def.id || undefined;
-      const title = refIndex === 1
+      const title = initial
         ? text(ref.firstElementChild!)
         : titles.get(identifier)!;
-      refIndex === 1 && titles.set(identifier, title);
+      initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
       style ??= abbr ? 'abbr' : 'count';
       if (style === 'count' ? abbr : !abbr) {
