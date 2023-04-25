@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.274.1
+
+- Fix identifiers of notes.
+
 ## 0.274.0
 
 - Change identifiers of notes.

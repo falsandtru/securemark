@@ -23,7 +23,7 @@ export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(
   syntax: 'annotation' | 'reference',
   marker: (index: number, abbr: string | undefined) => string,
-  splitter: string = '_',
+  splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
@@ -36,7 +36,7 @@ function build(
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
     const splitters: Element[] = [];
-    for (let es = target.querySelectorAll(splitter),
+    for (let es = target.querySelectorAll(splitter || '_'),
              len = es.length, i = 0; i < len; ++i) {
       if (i % 100 === 0) yield;
       const el = es[i];
@@ -44,9 +44,10 @@ function build(
     }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map<string, string>();
-    const rixs = new Map<string, number>();
-    const dixs = new Map<HTMLLIElement, number>();
-    let count = 0;
+    const defIndexes = new Map<HTMLLIElement, number>();
+    const refSubindexes = new Map<string, number>();
+    const defSubindexes = new Map<string, number>();
+    let refIndex = 0;
     let total = 0;
     let style: 'count' | 'abbr';
     for (let len = refs.length, i = 0; i < len; ++i) {
@@ -66,19 +67,22 @@ function build(
         }
         splitters.shift();
       }
-      ++count;
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const identifier = abbr || identity(undefined, text(ref.firstElementChild!), 'mark')?.slice(6) || '';
-      const refIndex = rixs.get(identifier)! + 1 || 1;
-      rixs.set(identifier, refIndex);
+      const refSubindex = refSubindexes.get(identifier)! + 1 || 1;
+      refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== ''
-        ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refIndex}`
+        ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}`
         : undefined;
-      const initial = refIndex === 1;
+      const initial = splitter
+        ? !defs.has(identifier)
+        : refSubindex === 1;
+      const defSubindex = defSubindexes.get(identifier)! + 1 || 1;
+      defSubindexes.set(identifier, defSubindex);
       const def = initial
         ? html('li',
             {
-              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}` : undefined,
+              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}:${defSubindex}` : undefined,
               'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined,
             },
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
@@ -87,8 +91,8 @@ function build(
       assert(def.lastChild);
       const defIndex = initial
         ? total + defs.size
-        : dixs.get(def)!;
-      initial && dixs.set(def, defIndex);
+        : defIndexes.get(def)!;
+      initial && defIndexes.set(def, defIndex);
       const defId = def.id || undefined;
       const title = initial
         ? text(ref.firstElementChild!)
@@ -137,7 +141,7 @@ function build(
             href: refId && `#${refId}`,
             title: abbr && text(frag(ref.firstElementChild!.cloneNode(true).childNodes)).trim() || undefined,
           },
-          `^${count}`));
+          `^${++refIndex}`));
     }
     if (defs.size > 0 || note) {
       yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
