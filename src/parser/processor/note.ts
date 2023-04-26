@@ -4,7 +4,10 @@ import { frag, html, define } from 'typed-dom/dom';
 
 export function* note(
   target: ParentNode & Node,
-  notes?: { readonly annotations?: HTMLOListElement; readonly references: HTMLOListElement; },
+  notes?: {
+    readonly annotations?: HTMLOListElement;
+    readonly references: HTMLOListElement;
+  },
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
@@ -48,9 +51,9 @@ function build(
     const defIndexes = new Map<HTMLLIElement, number>();
     const refSubindexes = new Map<string, number>();
     const defSubindexes = new Map<string, number>();
-    let refIndex = 0;
     let total = 0;
     let format: 'number' | 'abbr';
+    let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       if (ref.closest('[hidden]')) {
@@ -62,6 +65,7 @@ function build(
         if (defs.size > 0) {
           total += defs.size;
           yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0]));
+          assert(defs.size === 0);
         }
         else if (splitters.length % 100 === 0) {
           yield;
@@ -84,7 +88,7 @@ function build(
         ? html('li',
             {
               id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}:${defSubindex}` : undefined,
-              'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined,
+              'data-marker': note ? undefined : marker(total + defs.size + 1, abbr),
             },
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
         : defs.get(identifier)!;
@@ -135,7 +139,7 @@ function build(
           },
           `^${++refIndex}`));
     }
-    if (defs.size > 0 || note) {
+    if (note || defs.size > 0) {
       yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
     }
     return;
