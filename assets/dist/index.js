@@ -1,4 +1,4 @@
-/*! securemark v0.274.1 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED License */
+/*! securemark v0.274.2 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | UNLICENSED License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("Prism"), require("DOMPurify"));
@@ -6645,6 +6645,7 @@ const link_1 = __webpack_require__(9628);
 const html_1 = __webpack_require__(5994);
 const htmlentity_1 = __webpack_require__(1562);
 const source_1 = __webpack_require__(6743);
+const util_1 = __webpack_require__(9437);
 const url_1 = __webpack_require__(2261);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
@@ -6692,32 +6693,19 @@ function sanitize(target, uri, alt) {
     case 'http:':
     case 'https:':
       if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-        (0, dom_1.define)(target, {
-          class: void target.classList.add('invalid'),
-          'data-invalid-syntax': 'media',
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Dot-segments cannot be used in media paths; use subresource paths instead'
-        });
+        (0, util_1.markInvalid)(target, 'media', 'argument', 'Dot-segments cannot be used in media paths; use subresource paths instead');
         return false;
       }
       break;
     default:
-      (0, dom_1.define)(target, {
-        class: void target.classList.add('invalid'),
-        'data-invalid-syntax': 'media',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid protocol'
-      });
+      (0, util_1.markInvalid)(target, 'media', 'argument', 'Invalid protocol');
       return false;
   }
   if (alt.includes('\x1B')) {
     (0, dom_1.define)(target, {
-      class: void target.classList.add('invalid'),
-      'data-invalid-syntax': 'media',
-      'data-invalid-type': 'content',
-      'data-invalid-message': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)[0]}"`,
       alt: target.getAttribute('alt')?.replace(/\x1B/g, '')
     });
+    (0, util_1.markInvalid)(target, 'media', 'content', `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)[0]}"`);
     return false;
   }
   return true;
@@ -6924,6 +6912,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.figure = void 0;
 const label_1 = __webpack_require__(466);
+const util_1 = __webpack_require__(9437);
 const queue_1 = __webpack_require__(4934);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
@@ -6946,11 +6935,8 @@ function* figure(target, notes, opts = {}) {
     const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${increment(index, def)}`;
     if (label.endsWith('-')) continue;
     if (label.endsWith('-0')) {
+      (0, util_1.markInvalid)(def, 'figure', 'argument', 'Invalid base index');
       (0, dom_1.define)(def, {
-        class: void def.classList.add('invalid'),
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid base index',
         hidden: null
       });
       continue;
@@ -6958,32 +6944,23 @@ function* figure(target, notes, opts = {}) {
     if (tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.x.0 is disabled.
       if (label.lastIndexOf('.', label.length - 3) !== -1) {
+        (0, util_1.markInvalid)(def, 'figure', 'argument', 'Base index must be $-x.0 format');
         (0, dom_1.define)(def, {
-          class: void def.classList.add('invalid'),
-          'data-invalid-syntax': 'figure',
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Base index must be $-x.0 format',
           hidden: null
         });
         continue;
       }
       // $-x.0 after h1-h6.
       if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
+        (0, util_1.markInvalid)(def, 'figure', 'position', messages.declaration);
         (0, dom_1.define)(def, {
-          class: void def.classList.add('invalid'),
-          'data-invalid-syntax': 'figure',
-          'data-invalid-type': 'position',
-          'data-invalid-message': messages.declaration,
           hidden: null
         });
         continue;
       } else if (def.getAttribute('data-invalid-message') === messages.declaration) {
+        (0, util_1.unmarkInvalid)(def);
         (0, dom_1.define)(def, {
-          class: void def.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null,
-          hidden: ''
+          hidden: null
         });
       }
     }
@@ -7008,31 +6985,18 @@ function* figure(target, notes, opts = {}) {
     if (labels.has(label)) {
       if (def.classList.contains('invalid')) continue;
       (0, dom_1.define)(def, {
-        id: null,
-        class: void def.classList.add('invalid'),
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': messages.duplicate
+        id: null
       });
+      (0, util_1.markInvalid)(def, 'figure', 'argument', messages.duplicate);
       continue;
     } else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
-      (0, dom_1.define)(def, {
-        class: void def.classList.remove('invalid'),
-        'data-invalid-syntax': null,
-        'data-invalid-type': null,
-        'data-invalid-message': null
-      });
+      (0, util_1.unmarkInvalid)(def);
     }
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
-        (0, dom_1.define)(ref, {
-          class: void ref.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null
-        });
+        (0, util_1.unmarkInvalid)(ref);
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield (0, dom_1.define)(ref, opts.id !== '' ? {
@@ -7044,12 +7008,7 @@ function* figure(target, notes, opts = {}) {
   }
   for (const [, ref] of refs) {
     if (opts.id !== '' && !ref.classList.contains('invalid')) {
-      (0, dom_1.define)(ref, {
-        class: void ref.classList.add('invalid'),
-        'data-invalid-syntax': 'label',
-        'data-invalid-type': 'reference',
-        'data-invalid-message': messages.reference
-      });
+      (0, util_1.markInvalid)(ref, 'label', 'reference', messages.reference);
     }
     yield ref;
   }
@@ -7091,6 +7050,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.reference = exports.annotation = exports.note = void 0;
 const indexee_1 = __webpack_require__(1269);
+const util_1 = __webpack_require__(9437);
 const dom_1 = __webpack_require__(3252);
 function* note(target, notes, opts = {}, bottom = null) {
   for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
@@ -7119,10 +7079,10 @@ function build(syntax, marker, splitter = '') {
     const titles = new Map();
     const defIndexes = new Map();
     const refSubindexes = new Map();
-    const defSubindexes = new Map();
-    let refIndex = 0;
+    const defSubindexes = splitter ? new Map() : undefined;
     let total = 0;
-    let style;
+    let format;
+    let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       if (ref.closest('[hidden]')) {
@@ -7146,41 +7106,31 @@ function build(syntax, marker, splitter = '') {
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
       const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
-      const defSubindex = defSubindexes.get(identifier) + 1 || 1;
-      defSubindexes.set(identifier, defSubindex);
+      const defSubindex = defSubindexes?.get(identifier) + +initial || 1;
+      initial && defSubindexes?.set(identifier, defSubindex);
+      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
       const def = initial ? (0, dom_1.html)('li', {
-        id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}:${defSubindex}` : undefined,
-        'data-marker': !note ? marker(total + defs.size + 1, abbr) : undefined
+        id: defId,
+        'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
       }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
         hidden: null
       }), (0, dom_1.html)('sup')]) : defs.get(identifier);
       initial && defs.set(identifier, def);
       const defIndex = initial ? total + defs.size : defIndexes.get(def);
       initial && defIndexes.set(def, defIndex);
-      const defId = def.id || undefined;
       const title = initial ? (0, indexee_1.text)(ref.firstElementChild) : titles.get(identifier);
       initial && titles.set(identifier, title);
-      style ??= abbr ? 'abbr' : 'count';
-      if (style === 'count' ? abbr : !abbr) {
-        (0, dom_1.define)(ref, {
-          class: void ref.classList.add('invalid'),
-          'data-invalid-syntax': syntax,
-          'data-invalid-type': 'style',
-          'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`
-        });
-      } else if (ref.getAttribute('data-invalid-type') === 'style') {
-        (0, dom_1.define)(ref, {
-          class: void ref.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null
-        });
+      format ??= abbr ? 'abbr' : 'number';
+      if (!ref.classList.contains('invalid')) {
+        if (format === 'number' ? abbr : !abbr) {
+          (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
+        }
+      } else switch (ref.getAttribute('data-invalid-syntax')) {
+        case 'format':
+        case 'content':
+          (0, util_1.unmarkInvalid)(ref);
       }
-      if (!ref.firstElementChild.hasAttribute('hidden')) {
-        ref.firstElementChild.setAttribute('hidden', '');
-      } else {
-        ref.lastChild?.remove();
-      }
+      ref.firstElementChild.hasAttribute('hidden') ? ref.lastElementChild.remove() : ref.firstElementChild.setAttribute('hidden', '');
       (0, dom_1.define)(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
@@ -7195,12 +7145,12 @@ function build(syntax, marker, splitter = '') {
       yield ref.appendChild((0, dom_1.html)('a', {
         href: refId && defId && `#${defId}`
       }, marker(defIndex, abbr)));
-      def.lastChild.appendChild((0, dom_1.html)('a', {
+      def.lastElementChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
         title: abbr && (0, indexee_1.text)((0, dom_1.frag)(ref.firstElementChild.cloneNode(true).childNodes)).trim() || undefined
       }, `^${++refIndex}`));
     }
-    if (defs.size > 0 || note) {
+    if (note || defs.size > 0) {
       yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
       }), splitters[0] ?? bottom));
@@ -7586,7 +7536,7 @@ exports.unescsource = (0, combinator_1.creation)(1, false, ({
 /***/ }),
 
 /***/ 9437:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -7594,7 +7544,26 @@ exports.unescsource = (0, combinator_1.creation)(1, false, ({
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = void 0;
+exports.stringify = exports.unmarkInvalid = exports.markInvalid = void 0;
+const dom_1 = __webpack_require__(3252);
+function markInvalid(el, syntax, type, message) {
+  return (0, dom_1.define)(el, {
+    class: void el.classList.add('invalid'),
+    'data-invalid-syntax': syntax,
+    'data-invalid-type': type,
+    'data-invalid-message': message
+  });
+}
+exports.markInvalid = markInvalid;
+function unmarkInvalid(el) {
+  return (0, dom_1.define)(el, {
+    class: void el.classList.remove('invalid'),
+    'data-invalid-syntax': null,
+    'data-invalid-type': null,
+    'data-invalid-message': null
+  });
+}
+exports.unmarkInvalid = unmarkInvalid;
 function stringify(nodes) {
   let acc = '';
   for (let i = 0; i < nodes.length; ++i) {
