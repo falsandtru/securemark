@@ -162,7 +162,7 @@ describe('Unit: parser/processor/note', () => {
     });
 
     it('split', () => {
-      const target = parse('((1))\n\n## a\n\n((2))((1))((3))((2))');
+      const target = parse('((1))\n\n## a\n\n((2))((1))((3))((2))\n\n## b\n\n((2))');
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
@@ -214,6 +214,19 @@ describe('Unit: parser/processor/note', () => {
               html('li', { id: 'annotation::def:3:1', 'data-marker': '*4' }, [
                 html('span', '3'),
                 html('sup', [html('a', { href: '#annotation::ref:3:1' }, '^4')]),
+              ]),
+            ]).outerHTML,
+            html('h2', { id: 'index::b' }, 'b').outerHTML,
+            html('p', [
+              html('sup', { class: 'annotation', id: 'annotation::ref:2:3', title: '2' }, [
+                html('span', { hidden: '' }, '2'),
+                html('a', { href: '#annotation::def:2:2' }, '*5')
+              ]),
+            ]).outerHTML,
+            html('ol', { class: 'annotations' }, [
+              html('li', { id: 'annotation::def:2:2', 'data-marker': '*5' }, [
+                html('span', '2'),
+                html('sup', [html('a', { href: '#annotation::ref:2:3' }, '^6')]),
               ]),
             ]).outerHTML,
           ]);

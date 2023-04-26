@@ -82,8 +82,8 @@ function build(
       const initial = splitter
         ? !defs.has(identifier)
         : refSubindex === 1;
-      const defSubindex = defSubindexes.get(identifier)! + 1 || 1;
-      defSubindexes.set(identifier, defSubindex);
+      const defSubindex = initial && defSubindexes.get(identifier)! + 1 || 1;
+      initial && defSubindexes.set(identifier, defSubindex);
       const def = initial
         ? html('li',
             {
