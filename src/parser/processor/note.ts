@@ -96,7 +96,7 @@ function build(
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
         : defs.get(identifier)!;
       initial && defs.set(identifier, def);
-      assert(def.lastChild);
+      assert(def.lastElementChild?.matches('sup'));
       const defIndex = initial
         ? total + defs.size
         : defIndexes.get(def)!;
@@ -133,7 +133,7 @@ function build(
       });
       yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
       assert(ref.title || ref.matches('.invalid'));
-      def.lastChild!.appendChild(
+      def.lastElementChild!.appendChild(
         html('a',
           {
             href: refId && `#${refId}`,
