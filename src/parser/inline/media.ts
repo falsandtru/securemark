@@ -5,6 +5,7 @@ import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
 import { Syntax, State } from '../context';
+import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
 import { html, define } from 'typed-dom/dom';
@@ -87,32 +88,19 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
     case 'https:':
       assert(uri.host);
       if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-        define(target, {
-          class: void target.classList.add('invalid'),
-          'data-invalid-syntax': 'media',
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Dot-segments cannot be used in media paths; use subresource paths instead',
-        });
+        markInvalid(target, 'media', 'argument',
+          'Dot-segments cannot be used in media paths; use subresource paths instead');
         return false;
       }
       break;
     default:
-      define(target, {
-        class: void target.classList.add('invalid'),
-        'data-invalid-syntax': 'media',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid protocol',
-      });
+      markInvalid(target, 'media', 'argument', 'Invalid protocol');
       return false;
   }
   if (alt.includes('\x1B')) {
-    define(target, {
-      class: void target.classList.add('invalid'),
-      'data-invalid-syntax': 'media',
-      'data-invalid-type': 'content',
-      'data-invalid-message': `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`,
-      alt: target.getAttribute('alt')?.replace(/\x1B/g, ''),
-    });
+    define(target, { alt: target.getAttribute('alt')?.replace(/\x1B/g, '') });
+    markInvalid(target, 'media', 'content',
+      `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`);
     return false;
   }
   return true;

@@ -1,4 +1,5 @@
 import { number as calculate, isFixed } from '../inline/extension/label';
+import { markInvalid, unmarkInvalid } from '../util';
 import { MultiQueue } from 'spica/queue';
 import { push } from 'spica/array';
 import { define } from 'typed-dom/dom';
@@ -32,46 +33,26 @@ export function* figure(
       : `$-${increment(index, def as HTMLHeadingElement)}`;
     if (label.endsWith('-')) continue;
     if (label.endsWith('-0')) {
-      define(def, {
-        class: void def.classList.add('invalid'),
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': 'Invalid base index',
-        hidden: null,
-      });
+      markInvalid(def, 'figure', 'argument', 'Invalid base index');
+      define(def, { hidden: null });
       continue;
     }
     if (tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.x.0 is disabled.
       if (label.lastIndexOf('.', label.length - 3) !== -1) {
-        define(def, {
-          class: void def.classList.add('invalid'),
-          'data-invalid-syntax': 'figure',
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Base index must be $-x.0 format',
-          hidden: null,
-        });
+        markInvalid(def, 'figure', 'argument', 'Base index must be $-x.0 format');
+        define(def, { hidden: null });
         continue;
       }
       // $-x.0 after h1-h6.
       if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
-        define(def, {
-          class: void def.classList.add('invalid'),
-          'data-invalid-syntax': 'figure',
-          'data-invalid-type': 'position',
-          'data-invalid-message': messages.declaration,
-          hidden: null,
-        });
+        markInvalid(def, 'figure', 'position', messages.declaration);
+        define(def, { hidden: null });
         continue;
       }
       else if (def.getAttribute('data-invalid-message') === messages.declaration) {
-        define(def, {
-          class: void def.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null,
-          hidden: '',
-        });
+        unmarkInvalid(def);
+        define(def, { hidden: null });
       }
     }
     const group = label.split('-', 1)[0];
@@ -120,33 +101,18 @@ export function* figure(
       group === '$' ? figindex : `${figindex}. `);
     if (labels.has(label)) {
       if (def.classList.contains('invalid')) continue;
-      define(def, {
-        id: null,
-        class: void def.classList.add('invalid'),
-        'data-invalid-syntax': 'figure',
-        'data-invalid-type': 'argument',
-        'data-invalid-message': messages.duplicate,
-      });
+      define(def, { id: null });
+      markInvalid(def, 'figure', 'argument', messages.duplicate);
       continue;
     }
     else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
-      define(def, {
-        class: void def.classList.remove('invalid'),
-        'data-invalid-syntax': null,
-        'data-invalid-type': null,
-        'data-invalid-message': null,
-      });
+      unmarkInvalid(def);
     }
     labels.add(label);
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.getAttribute('data-invalid-message') === messages.reference) {
-        define(ref, {
-          class: void ref.classList.remove('invalid'),
-          'data-invalid-syntax': null,
-          'data-invalid-type': null,
-          'data-invalid-message': null,
-        });
+        unmarkInvalid(ref);
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield define(ref,
@@ -156,12 +122,7 @@ export function* figure(
   }
   for (const [, ref] of refs) {
     if (opts.id !== '' && !ref.classList.contains('invalid')) {
-      define(ref, {
-        class: void ref.classList.add('invalid'),
-        'data-invalid-syntax': 'label',
-        'data-invalid-type': 'reference',
-        'data-invalid-message': messages.reference,
-      });
+      markInvalid(ref, 'label', 'reference', messages.reference);
     }
     yield ref;
   }

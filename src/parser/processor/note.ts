@@ -1,4 +1,5 @@
 import { identity, text } from '../inline/extension/indexee';
+import { markInvalid, unmarkInvalid } from '../util';
 import { frag, html, define } from 'typed-dom/dom';
 
 export function* note(
@@ -102,23 +103,14 @@ function build(
       style ??= abbr ? 'abbr' : 'count';
       if (!ref.classList.contains('invalid')) {
         if (style === 'count' ? abbr : !abbr) {
-          define(ref, {
-            class: void ref.classList.add('invalid'),
-            'data-invalid-syntax': syntax,
-            'data-invalid-type': 'style',
-            'data-invalid-message': `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`,
-          });
+          markInvalid(ref, syntax, 'style',
+            `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`);
         }
       }
       else switch (ref.getAttribute('data-invalid-syntax')) {
         case 'style':
         case 'content':
-          define(ref, {
-            class: void ref.classList.remove('invalid'),
-            'data-invalid-syntax': null,
-            'data-invalid-type': null,
-            'data-invalid-message': null,
-          });
+          unmarkInvalid(ref);
       }
       ref.firstElementChild!.hasAttribute('hidden')
         ? ref.lastElementChild!.remove()
