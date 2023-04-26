@@ -50,7 +50,7 @@ function build(
     const defSubindexes = new Map<string, number>();
     let refIndex = 0;
     let total = 0;
-    let style: 'count' | 'abbr';
+    let format: 'number' | 'abbr';
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       if (ref.closest('[hidden]')) {
@@ -100,15 +100,14 @@ function build(
         : titles.get(identifier)!;
       initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
-      style ??= abbr ? 'abbr' : 'count';
+      format ??= abbr ? 'abbr' : 'number';
       if (!ref.classList.contains('invalid')) {
-        if (style === 'count' ? abbr : !abbr) {
-          markInvalid(ref, syntax, 'style',
-            `${syntax[0].toUpperCase() + syntax.slice(1)} style must be consistent`);
+        if (format === 'number' ? abbr : !abbr) {
+          markInvalid(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
         }
       }
       else switch (ref.getAttribute('data-invalid-syntax')) {
-        case 'style':
+        case 'format':
         case 'content':
           unmarkInvalid(ref);
       }
