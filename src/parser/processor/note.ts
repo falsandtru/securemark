@@ -50,7 +50,7 @@ function build(
     const titles = new Map<string, string>();
     const defIndexes = new Map<HTMLLIElement, number>();
     const refSubindexes = new Map<string, number>();
-    const defSubindexes = new Map<string, number>();
+    const defSubindexes = splitter ? new Map<string, number>() : undefined;
     let total = 0;
     let format: 'number' | 'abbr';
     let refIndex = 0;
@@ -82,12 +82,15 @@ function build(
       const initial = splitter
         ? !defs.has(identifier)
         : refSubindex === 1;
-      const defSubindex = initial && defSubindexes.get(identifier)! + 1 || 1;
-      initial && defSubindexes.set(identifier, defSubindex);
+      const defSubindex = defSubindexes?.get(identifier)! + +initial || 1;
+      initial && defSubindexes?.set(identifier, defSubindex);
+      const defId = opts.id !== ''
+        ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}`
+        : undefined;
       const def = initial
         ? html('li',
             {
-              id: opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}:${defSubindex}` : undefined,
+              id: defId,
               'data-marker': note ? undefined : marker(total + defs.size + 1, abbr),
             },
             [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
@@ -98,7 +101,6 @@ function build(
         ? total + defs.size
         : defIndexes.get(def)!;
       initial && defIndexes.set(def, defIndex);
-      const defId = def.id || undefined;
       const title = initial
         ? text(ref.firstElementChild!)
         : titles.get(identifier)!;

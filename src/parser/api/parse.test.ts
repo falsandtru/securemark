@@ -207,12 +207,12 @@ describe('Unit: parser/api/parse', () => {
         [...parse('$-a\n$$\n$$\n\n(($-a[[^b]]))[[^b|$-a]]', { notes }).children].map(el => el.outerHTML),
         [
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
-          '<p><sup class="annotation" id="annotation::ref:(1):1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b"><span></span></sup></span><a href="#annotation::def:(1):1">*1</a></sup><sup class="reference" data-abbr="b" id="reference::ref:b:1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><a href="#reference::def:b:1">[b]</a></sup></p>',
-          '<ol class="annotations"><li id="annotation::def:(1):1" data-marker="*1"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b" id="reference::ref:b:2" title="(1)"><span hidden=""></span><a href="#reference::def:b:1">[b]</a></sup></span><sup><a href="#annotation::ref:(1):1">^1</a></sup></li></ol>',
+          '<p><sup class="annotation" id="annotation::ref:(1):1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b"><span></span></sup></span><a href="#annotation::def:(1):1">*1</a></sup><sup class="reference" data-abbr="b" id="reference::ref:b:1" title="(1)"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><a href="#reference::def:b">[b]</a></sup></p>',
+          '<ol class="annotations"><li id="annotation::def:(1):1" data-marker="*1"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" data-abbr="b" id="reference::ref:b:2" title="(1)"><span hidden=""></span><a href="#reference::def:b">[b]</a></sup></span><sup><a href="#annotation::ref:(1):1">^1</a></sup></li></ol>',
         ]);
       assert.deepStrictEqual(
         notes.references.outerHTML,
-        '<ol><li id="reference::def:b:1"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><sup><a href="#reference::ref:b:1" title="(1)">^1</a><a href="#reference::ref:b:2">^2</a></sup></li></ol>');
+        '<ol><li id="reference::def:b"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><sup><a href="#reference::ref:b:1" title="(1)">^1</a><a href="#reference::ref:b:2">^2</a></sup></li></ol>');
     });
 
     it('normalize', () => {

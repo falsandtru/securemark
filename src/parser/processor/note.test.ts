@@ -273,14 +273,14 @@ describe('Unit: parser/processor/note', () => {
             html('p', [
               html('sup', { class: 'reference', id: 'reference::ref:a_b:1', title: 'a b' }, [
                 html('span', { hidden: '' }, 'a b'),
-                html('a', { href: '#reference::def:a_b:1' }, '[1]')
+                html('a', { href: '#reference::def:a_b' }, '[1]')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           note.outerHTML,
           html('ol', [
-            html('li', { id: 'reference::def:a_b:1' }, [
+            html('li', { id: 'reference::def:a_b' }, [
               html('span', 'a b'),
               html('sup', [html('a', { href: '#reference::ref:a_b:1' }, '^1')]),
             ]),
@@ -299,22 +299,22 @@ describe('Unit: parser/processor/note', () => {
             html('p', [
               html('sup', { class: 'reference', 'data-abbr': 'a', id: 'reference::ref:a:1', title: 'b' }, [
                 html('span', { hidden: '' }, 'b'),
-                html('a', { href: '#reference::def:a:1' }, '[a]')
+                html('a', { href: '#reference::def:a' }, '[a]')
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'a', id: 'reference::ref:a:2', title: 'b' }, [
                 html('span', { hidden: '' }),
-                html('a', { href: '#reference::def:a:1' }, '[a]')
+                html('a', { href: '#reference::def:a' }, '[a]')
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'a', id: 'reference::ref:a:3', title: 'b' }, [
                 html('span', { hidden: '' }),
-                html('a', { href: '#reference::def:a:1' }, '[a]')
+                html('a', { href: '#reference::def:a' }, '[a]')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           note.outerHTML,
           html('ol', [
-            html('li', { id: 'reference::def:a:1' }, [
+            html('li', { id: 'reference::def:a' }, [
               html('span', 'b'),
               html('sup', [
                 html('a', { href: '#reference::ref:a:1', title: 'b' }, '^1'),
@@ -347,7 +347,7 @@ describe('Unit: parser/processor/note', () => {
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'b', id: 'reference::ref:b:1', title: 'c' }, [
                 html('span', { hidden: '' }, 'c'),
-                html('a', { href: '#reference::def:b:1' }, '[b]')
+                html('a', { href: '#reference::def:b' }, '[b]')
               ]),
             ]).outerHTML,
             html('ol', { class: 'annotations' }, [
@@ -356,7 +356,7 @@ describe('Unit: parser/processor/note', () => {
                   'a',
                   html('sup', { class: 'reference', 'data-abbr': 'b', id: 'reference::ref:b:2', title: 'c' }, [
                     html('span', { hidden: '' }),
-                    html('a', { href: '#reference::def:b:1' }, '[b]')
+                    html('a', { href: '#reference::def:b' }, '[b]')
                   ]),
                 ]),
                 html('sup', [html('a', { href: '#annotation::ref:a:1' }, '^1')])
@@ -366,7 +366,7 @@ describe('Unit: parser/processor/note', () => {
         assert.deepStrictEqual(
           note.outerHTML,
           html('ol', [
-            html('li', { id: 'reference::def:b:1' }, [
+            html('li', { id: 'reference::def:b' }, [
               html('span', 'c'),
               html('sup', [
                 html('a', { href: '#reference::ref:b:1', title: 'c' }, '^1'),
