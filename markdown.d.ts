@@ -672,7 +672,7 @@ export namespace MarkdownParser {
         // ^X 2020, 1-2
         // ^X. Y., and Z et al. 2020, 1-2
         Inline<'reference/abbr'>,
-        Parser<HTMLElement, Context, [
+        Parser<string, Context, [
           SourceParser.StrParser,
         ]> {
       }
