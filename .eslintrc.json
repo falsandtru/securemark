@@ -20,8 +20,6 @@
         "maxSimpleRepeatCount": 256,
         "attackTimeout": null,
         "incubationTimeout": null,
-        "recallTimeout": null,
-        "seedingTimeout": null,
         "timeout": 1e6
       }
     ]

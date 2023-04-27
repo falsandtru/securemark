@@ -20,9 +20,10 @@ export const reference: ReferenceParser = lazy(() => surround(
   false,
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest]));
 
+// Chicago-Style
 const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
   '^',
-  union([str(/^(?=[0-9]*[A-Za-z])(?:[0-9A-Za-z]|['-](?!\1)|[.?]?,? ?(?![.?, ]))+/)]),
+  union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),
   ([source], rest) => [['\n', source.trimEnd()], rest.replace(regBlankStart, '')]));
 
@@ -33,7 +34,7 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
         class: 'invalid',
         'data-invalid-syntax': 'reference',
         'data-invalid-type': 'syntax',
-        'data-invalid-message': 'Invalid abbr',
+        'data-invalid-message': 'Invalid abbreviation',
       };
     case '\n':
       const abbr = ns[1] as string;

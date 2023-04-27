@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.274.3
+
+- Fix abbr parser.
+
 ## 0.274.2
 
 - Fix identifiers of notes.
