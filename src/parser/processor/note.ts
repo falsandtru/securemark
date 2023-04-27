@@ -39,18 +39,13 @@ function build(
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
-    const splitters: Element[] = [];
-    for (let es = target.querySelectorAll(splitter || '_'),
-             len = es.length, i = 0; i < len; ++i) {
-      if (i % 100 === 0) yield;
-      const el = es[i];
-      el.parentNode === target && splitters.push(el);
-    }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map<string, string>();
     const defIndexes = new Map<HTMLLIElement, number>();
     const refSubindexes = new Map<string, number>();
-    const defSubindexes = splitter ? new Map<string, number>() : undefined;
+    const defSubindexes = splitter && refs.length > 0 ? new Map<string, number>() : undefined;
+    const splitters = splitter && refs.length > 0 ? target.querySelectorAll(splitter) : [];
+    let iSplitters = 0;
     let total = 0;
     let format: 'number' | 'abbr';
     let refIndex = 0;
@@ -60,17 +55,19 @@ function build(
         yield;
         continue;
       }
-      while (splitters.length > 0
-          && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      if (splitter) for (
+        let el: Element;
+        (el = splitters[iSplitters])?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
+        ++iSplitters) {
+        if (el.parentNode !== target) continue;
         if (defs.size > 0) {
           total += defs.size;
-          yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0]));
+          yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), el));
           assert(defs.size === 0);
         }
-        else if (splitters.length % 100 === 0) {
+        else if (~iSplitters % 128 === 0) {
           yield;
         }
-        splitters.shift();
       }
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const identifier = abbr || identity(undefined, text(ref.firstElementChild!), 'mark')?.slice(6) || '';
@@ -142,7 +139,7 @@ function build(
           `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[0] ?? bottom));
+      yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[iSplitters] ?? bottom));
     }
     return;
   }
