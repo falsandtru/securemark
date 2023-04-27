@@ -51,7 +51,7 @@ function build(
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (ref.closest('[hidden]')) {
+      if (ref.closest('sup > [hidden]')) {
         yield;
         continue;
       }
