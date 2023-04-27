@@ -658,8 +658,8 @@ export namespace MarkdownParser {
     }
     export interface ReferenceParser extends
       // [[abc]]
-      // [[^abbr]]
-      // [[^abbr| abc]]
+      // [[^Abbr]]
+      // [[^Abbr| abc]]
       Inline<'reference'>,
       Parser<HTMLElement, Context, [
         ReferenceParser.AbbrParser,
@@ -669,9 +669,8 @@ export namespace MarkdownParser {
     }
     export namespace ReferenceParser {
       export interface AbbrParser extends
-        // ^Xyz2020
-        // ^X, 2020, p1-2
-        // ^X. Y., Z et al., 2020, p1-2
+        // ^X 2020, 1-2
+        // ^X. Y., and Z et al. 2020, 1-2
         Inline<'reference/abbr'>,
         Parser<HTMLElement, Context, [
           SourceParser.StrParser,

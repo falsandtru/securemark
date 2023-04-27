@@ -80,10 +80,9 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[^1 a]]')), [['<sup class="reference" data-abbr="1 a"><span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^1|]]')), [['<sup class="invalid"><span>^1|</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^1 |]]')), [['<sup class="invalid"><span>^1 |</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[^Xyz2020]]')), [['<sup class="reference" data-abbr="Xyz2020"><span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^Xyz 2020]]')), [['<sup class="reference" data-abbr="Xyz 2020"><span></span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[^Xyz, 2020, p1-2]]')), [['<sup class="reference" data-abbr="Xyz, 2020, p1-2"><span></span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[^X. Y., Z et al., 2020, p1-2]]')), [['<sup class="reference" data-abbr="X. Y., Z et al., 2020, p1-2"><span></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[^Xyz 2020, 1-2]]')), [['<sup class="reference" data-abbr="Xyz 2020, 1-2"><span></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[^X. Y., and Z et al. 2020, 1-2]]')), [['<sup class="reference" data-abbr="X. Y., and Z et al. 2020, 1-2"><span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser(`[[^A's, Aces']]`)), [[`<sup class="reference" data-abbr="A's, Aces'"><span></span></sup>`], '']);
       assert.deepStrictEqual(inspect(parser('[[^^]]')), [['<sup class="invalid"><span>^^</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[\\^]]')), [['<sup class="reference"><span>^</span></sup>'], '']);
