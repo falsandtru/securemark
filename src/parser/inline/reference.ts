@@ -23,7 +23,7 @@ export const reference: ReferenceParser = lazy(() => surround(
 
 const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
   '^',
-  union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
+  union([str(/^(?=[0-9]*[A-Za-z])(?:[0-9A-Za-z]|['-](?!\1)|[.?]?,? ?(?![.?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),
   ([source], rest) => [[html('abbr', source)], rest.replace(regBlankStart, '')]));
 
