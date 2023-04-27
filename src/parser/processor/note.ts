@@ -103,17 +103,6 @@ function build(
         : titles.get(identifier)!;
       initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
-      format ??= abbr ? 'abbr' : 'number';
-      if (!ref.classList.contains('invalid')) {
-        if (format === 'number' ? abbr : !abbr) {
-          markInvalid(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
-        }
-      }
-      else switch (ref.getAttribute('data-invalid-syntax')) {
-        case 'format':
-        case 'content':
-          unmarkInvalid(ref);
-      }
       ref.firstElementChild!.hasAttribute('hidden')
         ? ref.lastElementChild!.remove()
         : ref.firstElementChild!.setAttribute('hidden', '');
@@ -121,13 +110,21 @@ function build(
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
         title,
-        ...!title && {
-          class: void ref.classList.add('invalid'),
-          'data-invalid-syntax': syntax,
-          'data-invalid-type': 'content',
-          'data-invalid-message': 'Missing the content',
-        },
       });
+      switch (ref.getAttribute('data-invalid-syntax')) {
+        case 'format':
+        case 'content':
+          unmarkInvalid(ref);
+      }
+      format ??= abbr ? 'abbr' : 'number';
+      if (!ref.classList.contains('invalid')) switch (true) {
+        case format === 'number' ? !!abbr : !abbr:
+          markInvalid(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
+          break;
+        case !title:
+          markInvalid(ref, syntax, 'content', 'Missing the content');
+          break;
+      }
       yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
       assert(ref.title || ref.matches('.invalid'));
       def.lastElementChild!.appendChild(
