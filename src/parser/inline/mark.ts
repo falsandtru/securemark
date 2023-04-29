@@ -17,9 +17,15 @@ export const mark: MarkParser = lazy(() => surround(
     open(some(inline, '=', [[/^\\?\n/, 9]]), mark),
   ]))))),
   str('=='), false,
-  ([, bs], rest, { id }) => {
+  ([, bs], rest, { id, state }) => {
     const el = html('mark', defrag(bs));
-    define(el, { id: identity(id, text(el), 'mark') });
-    return [[el, html('a', { href: el.id ? `#${el.id}` : undefined })], rest];
+    return [[
+      define(el, {
+        id: state! & (State.annotation | State.reference)
+          ? undefined
+          : identity(id, text(el), 'mark'),
+      }),
+      el.id && html('a', { href: `#${el.id}` }),
+    ], rest];
   },
   ([as, bs], rest) => [unshift(as, bs), rest]));
