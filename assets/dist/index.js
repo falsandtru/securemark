@@ -6581,14 +6581,14 @@ const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
 exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.constraint)(4 /* State.mark */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('=='), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '=', [[/^\\?\n/, 9]]), exports.mark)]))))), (0, source_1.str)('=='), false, ([, bs], rest, {
-  id
+  id,
+  state
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
-  (0, dom_1.define)(el, {
-    id: (0, indexee_1.identity)(id, (0, indexee_1.text)(el), 'mark')
-  });
-  return [[el, (0, dom_1.html)('a', {
-    href: el.id ? `#${el.id}` : undefined
+  return [[(0, dom_1.define)(el, {
+    id: state & (256 /* State.annotation */ | 128 /* State.reference */) ? undefined : (0, indexee_1.identity)(id, (0, indexee_1.text)(el), 'mark')
+  }), el.id && (0, dom_1.html)('a', {
+    href: `#${el.id}`
   })], rest];
 }, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
@@ -6727,22 +6727,31 @@ const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
-const util_1 = __webpack_require__(9437);
 const dom_1 = __webpack_require__(3252);
 exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.subsequence)([abbr, (0, combinator_1.fmap)((0, source_1.str)('^'), ns => ['', ...ns]), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])]), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
-const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [[(0, dom_1.html)('abbr', source)], rest.replace(visibility_1.regBlankStart, '')]));
+// Chicago-Style
+const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [['\n', source.trimEnd()], rest.replace(visibility_1.regBlankStart, '')]));
 function attributes(ns) {
-  return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
-    class: 'reference',
-    'data-abbr': (0, util_1.stringify)([ns.shift()]).trimEnd()
-  } : ns[0] === '' ? {
-    class: 'invalid',
-    'data-invalid-syntax': 'reference',
-    'data-invalid-type': 'syntax',
-    'data-invalid-message': 'Invalid abbr'
-  } : {
-    class: 'reference'
-  };
+  switch (ns[0]) {
+    case '':
+      return {
+        class: 'invalid',
+        'data-invalid-syntax': 'reference',
+        'data-invalid-type': 'syntax',
+        'data-invalid-message': 'Invalid abbreviation'
+      };
+    case '\n':
+      const abbr = ns[1];
+      ns[0] = ns[1] = '';
+      return {
+        class: 'reference',
+        'data-abbr': abbr
+      };
+    default:
+      return {
+        class: 'reference'
+      };
+  }
 }
 
 /***/ }),
@@ -7069,39 +7078,35 @@ function build(syntax, marker, splitter = '') {
   // 構文ごとに各1回の処理では不可能
   return function* (target, note, opts = {}, bottom = null) {
     const defs = new Map();
-    const splitters = [];
-    for (let es = target.querySelectorAll(splitter || '_'), len = es.length, i = 0; i < len; ++i) {
-      if (i % 100 === 0) yield;
-      const el = es[i];
-      el.parentNode === target && splitters.push(el);
-    }
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map();
     const defIndexes = new Map();
     const refSubindexes = new Map();
-    const defSubindexes = splitter ? new Map() : undefined;
+    const defSubindexes = splitter && refs.length > 0 ? new Map() : undefined;
+    const splitters = splitter && refs.length > 0 ? target.querySelectorAll(splitter) : [];
+    let iSplitters = 0;
     let total = 0;
     let format;
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (ref.closest('[hidden]')) {
+      if (ref.closest('sup > [hidden]')) {
         yield;
         continue;
       }
-      while (splitters.length > 0 && splitters[0].compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      if (splitter) for (let el; (el = splitters[iSplitters])?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
+        if (el.parentNode !== target) continue;
         if (defs.size > 0) {
           total += defs.size;
           yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
             class: `${syntax}s`
-          }), splitters[0]));
-        } else if (splitters.length % 100 === 0) {
+          }), el));
+        } else if (~iSplitters % 128 === 0) {
           yield;
         }
-        splitters.shift();
       }
       const abbr = ref.getAttribute('data-abbr') || undefined;
-      const identifier = abbr || (0, indexee_1.identity)(undefined, (0, indexee_1.text)(ref.firstElementChild), 'mark')?.slice(6) || '';
+      const identifier = (0, indexee_1.identity)(undefined, abbr ? abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr : (0, indexee_1.text)(ref.firstElementChild), 'mark')?.slice(6) || '';
       const refSubindex = refSubindexes.get(identifier) + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
@@ -7120,28 +7125,26 @@ function build(syntax, marker, splitter = '') {
       initial && defIndexes.set(def, defIndex);
       const title = initial ? (0, indexee_1.text)(ref.firstElementChild) : titles.get(identifier);
       initial && titles.set(identifier, title);
-      format ??= abbr ? 'abbr' : 'number';
-      if (!ref.classList.contains('invalid')) {
-        if (format === 'number' ? abbr : !abbr) {
-          (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
-        }
-      } else switch (ref.getAttribute('data-invalid-syntax')) {
-        case 'format':
-        case 'content':
-          (0, util_1.unmarkInvalid)(ref);
-      }
       ref.firstElementChild.hasAttribute('hidden') ? ref.lastElementChild.remove() : ref.firstElementChild.setAttribute('hidden', '');
       (0, dom_1.define)(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
-        title,
-        ...(!title && {
-          class: void ref.classList.add('invalid'),
-          'data-invalid-syntax': syntax,
-          'data-invalid-type': 'content',
-          'data-invalid-message': 'Missing the content'
-        })
+        title
       });
+      switch (ref.getAttribute('data-invalid-syntax')) {
+        case 'format':
+        case 'content':
+          (0, util_1.unmarkInvalid)(ref);
+      }
+      format ??= abbr ? 'abbr' : 'number';
+      if (!ref.classList.contains('invalid')) switch (true) {
+        case format === 'number' ? !!abbr : !abbr:
+          (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
+          break;
+        case !title:
+          (0, util_1.markInvalid)(ref, syntax, 'content', 'Missing the content');
+          break;
+      }
       yield ref.appendChild((0, dom_1.html)('a', {
         href: refId && defId && `#${defId}`
       }, marker(defIndex, abbr)));
@@ -7153,7 +7156,7 @@ function build(syntax, marker, splitter = '') {
     if (note || defs.size > 0) {
       yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
-      }), splitters[0] ?? bottom));
+      }), splitters[iSplitters] ?? bottom));
     }
     return;
   };
