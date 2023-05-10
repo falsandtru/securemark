@@ -39,10 +39,7 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
     case '\n':
       const abbr = ns[1] as string;
       ns[0] = ns[1] = '';
-      return {
-        class: 'reference',
-        'data-abbr': abbr,
-      };
+      return { class: 'reference', 'data-abbr': abbr };
     default:
       return { class: 'reference' };
   }
