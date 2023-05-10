@@ -22,7 +22,7 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
     case 'index':
       return `${type}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-      return `${type}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
+      return `${type}:${id ?? ''}:${cs.slice(0, 31).join('')}...${cs.slice(cs.length / 2 - 32 / 2 | 0).slice(0, 32).join('')}...${cs.slice(-31).join('')}`;
   }
   assert(false);
 }
@@ -30,8 +30,8 @@ assert(identity(undefined, '0'.repeat(100 - 1) + 1)!.slice(7) === '0'.repeat(100
 assert(identity(undefined, '0'.repeat(100) + 1)!.slice(7) === '0'.repeat(97) + '...');
 assert(identity(undefined, '0'.repeat(200) + 1)!.slice(7) === '0'.repeat(97) + '...');
 assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.repeat(100 - 1) + 1);
-assert(identity(undefined, '0'.repeat(100) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
-assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
+assert(identity(undefined, '0'.repeat(34) + '1'.repeat(32) + '2'.repeat(34) + 3, 'mark')!.slice(6) === '0'.repeat(31) + '...' + '1'.repeat(32) + '...' + '2'.repeat(31 - 1) + 3);
+assert(identity(undefined, '0'.repeat(84) + '1'.repeat(32) + '2'.repeat(84) + 3, 'mark')!.slice(6) === '0'.repeat(31) + '...' + '1'.repeat(32) + '...' + '2'.repeat(31 - 1) + 3);
 
 export function index(source: Element, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
