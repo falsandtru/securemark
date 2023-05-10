@@ -15,23 +15,23 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
   if (text === '') return undefined;
-  if (text.length <= 100 || type === '') return `${type}:${id ?? ''}:${text}`;
+  if (text.length <= 120 || type === '') return `${type}:${id ?? ''}:${text}`;
   const cs = [...text];
-  if (cs.length <= 100) return `${type}:${id ?? ''}:${text}`;
+  if (cs.length <= 120) return `${type}:${id ?? ''}:${text}`;
   switch (type) {
     case 'index':
-      return `${type}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
+      return `${type}:${id ?? ''}:${cs.slice(0, 120 - 3).join('')}...`;
     case 'mark':
-      return `${type}:${id ?? ''}:${cs.slice(0, 31).join('')}...${cs.slice(cs.length / 2 - 32 / 2 | 0).slice(0, 32).join('')}...${cs.slice(-31).join('')}`;
+      return `${type}:${id ?? ''}:${cs.slice(0, 38).join('')}...${cs.slice(cs.length / 2 - 38 / 2 | 0).slice(0, 38).join('')}...${cs.slice(-38).join('')}`;
   }
   assert(false);
 }
-assert(identity(undefined, '0'.repeat(100 - 1) + 1)!.slice(7) === '0'.repeat(100 - 1) + 1);
-assert(identity(undefined, '0'.repeat(100) + 1)!.slice(7) === '0'.repeat(97) + '...');
-assert(identity(undefined, '0'.repeat(200) + 1)!.slice(7) === '0'.repeat(97) + '...');
-assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.repeat(100 - 1) + 1);
-assert(identity(undefined, '0'.repeat(34) + '1'.repeat(32) + '2'.repeat(34) + 3, 'mark')!.slice(6) === '0'.repeat(31) + '...' + '1'.repeat(32) + '...' + '2'.repeat(31 - 1) + 3);
-assert(identity(undefined, '0'.repeat(84) + '1'.repeat(32) + '2'.repeat(84) + 3, 'mark')!.slice(6) === '0'.repeat(31) + '...' + '1'.repeat(32) + '...' + '2'.repeat(31 - 1) + 3);
+assert(identity(undefined, '0'.repeat(120 - 1) + 1)!.slice(7) === '0'.repeat(120 - 1) + 1);
+assert(identity(undefined, '0'.repeat(120) + 1)!.slice(7) === '0'.repeat(117) + '...');
+assert(identity(undefined, '0'.repeat(200) + 1)!.slice(7) === '0'.repeat(117) + '...');
+assert(identity(undefined, '0'.repeat(120 - 1) + 1, 'mark')!.slice(6) === '0'.repeat(120 - 1) + 1);
+assert(identity(undefined, '0'.repeat(41) + '1'.repeat(38) + '2'.repeat(41) + 3, 'mark')!.slice(6) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
+assert(identity(undefined, '0'.repeat(81) + '1'.repeat(38) + '2'.repeat(81) + 3, 'mark')!.slice(6) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
 
 export function index(source: Element, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
