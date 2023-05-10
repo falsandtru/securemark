@@ -5259,6 +5259,7 @@ const combinator_1 = __webpack_require__(2087);
 const ulist_1 = __webpack_require__(5425);
 const ilist_1 = __webpack_require__(238);
 const inline_1 = __webpack_require__(1160);
+const index_1 = __webpack_require__(4479);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const memoize_1 = __webpack_require__(1808);
@@ -5269,8 +5270,11 @@ const openers = {
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
 exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(8 /* State.media */, exports.olist_))));
-exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => index(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => index(ms[1]), []))])));
-const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.trimBlank)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
+exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []))])));
+const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, combinator_1.union)([(0, combinator_1.trim)((0, combinator_1.fmap)((0, combinator_1.close)((0, combinator_1.union)([index_1.index]), /^$/), ([el]) => [(0, dom_1.define)(el, {
+  class: void el.classList.add('indexer'),
+  'data-index': ''
+})])), (0, visibility_1.trimBlank)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))])]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns[0] || undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 const heads = {
@@ -5291,7 +5295,7 @@ exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.co
   'data-invalid-type': 'syntax',
   'data-invalid-message': 'Fix the indent or the head of the list item'
 }, source.replace('\n', ''))], '']);
-function index(value) {
+function idx(value) {
   switch (value) {
     case 'i':
       return 1;
@@ -5632,11 +5636,15 @@ const combinator_1 = __webpack_require__(2087);
 const olist_1 = __webpack_require__(7471);
 const ilist_1 = __webpack_require__(238);
 const inline_1 = __webpack_require__(1160);
+const index_1 = __webpack_require__(4479);
 const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(8 /* State.media */, exports.ulist_))));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.trimBlank)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.union)([(0, combinator_1.trim)((0, combinator_1.fmap)((0, combinator_1.close)((0, combinator_1.union)([index_1.index]), /^$/), ([el]) => [(0, dom_1.define)(el, {
+  class: void el.classList.add('indexer'),
+  'data-index': ''
+})])), (0, visibility_1.trimBlank)((0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))])]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.creation)(1, false, (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, ({
   source
 }) => [[(0, dom_1.html)('span', {
@@ -6143,7 +6151,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0
   id: el.id ? null : undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : undefined
-}, el.childNodes)])));
+})])));
 const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': (0, indexee_1.identity)(undefined, ns.join('')).slice(7)
@@ -8409,7 +8417,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.330 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.333 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8522,7 +8530,7 @@ exports.reduce = reduce;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
+exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.math = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
 const alias_1 = __nested_webpack_require_4668__(5406);
 const memoize_1 = __nested_webpack_require_4668__(1808);
 var caches;
@@ -8547,6 +8555,7 @@ function frag(children) {
 exports.frag = frag;
 exports.html = element(document, "HTML" /* NS.HTML */);
 exports.svg = element(document, "SVG" /* NS.SVG */);
+exports.math = element(document, "MathML" /* NS.Math */);
 function text(source) {
   return document.createTextNode(source);
 }
@@ -8558,7 +8567,7 @@ function element(context, ns) {
 }
 exports.element = element;
 function elem(context, ns, tag, attrs) {
-  if (!('createElement' in context)) throw new Error(`TypedDOM: Scoped custom elements are not supported on this browser.`);
+  if (!('createElement' in context)) throw new Error(`TypedDOM: Scoped custom elements are not supported on this browser`);
   const opts = 'is' in attrs ? {
     is: attrs['is']
   } : undefined;
@@ -8567,7 +8576,7 @@ function elem(context, ns, tag, attrs) {
       return context.createElement(tag, opts);
     case "SVG" /* NS.SVG */:
       return context.createElementNS('http://www.w3.org/2000/svg', tag, opts);
-    case "MathML" /* NS.MathML */:
+    case "MathML" /* NS.Math */:
       return context.createElementNS('http://www.w3.org/1998/Math/MathML', tag, opts);
   }
 }
@@ -8609,10 +8618,10 @@ function defineAttrs(el, attrs) {
         }
         continue;
       case 'function':
-        if (name.length < 3) throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${name}".`);
+        if (name.length < 3) throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${name}"`);
         const names = name.split(/\s+/);
         for (const name of names) {
-          if (!name.startsWith('on')) throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${name}".`);
+          if (!name.startsWith('on')) throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${name}"`);
           const type = name.slice(2).toLowerCase();
           el.addEventListener(type, value, {
             passive: ['wheel', 'mousewheel', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].includes(type)
@@ -8708,7 +8717,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11589__(moduleId) {
+/******/ 	function __nested_webpack_require_11657__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -8722,7 +8731,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11589__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11657__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -8733,7 +8742,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11589__(7521);
+/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11657__(7521);
 /******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
@@ -8745,7 +8754,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.330 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.333 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
