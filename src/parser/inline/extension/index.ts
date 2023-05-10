@@ -27,8 +27,7 @@ export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surroun
         id: el.id ? null : undefined,
         class: 'index',
         href: el.id ? `#${el.id}` : undefined,
-      },
-      el.childNodes),
+      }),
   ])));
 
 const signature: IndexParser.SignatureParser = lazy(() => creation(fmap(open(
