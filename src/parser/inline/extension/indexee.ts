@@ -32,7 +32,7 @@ assert(identity(undefined, '0'.repeat(100 - 1) + 1, 'mark')!.slice(6) === '0'.re
 assert(identity(undefined, '0'.repeat(100) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 assert(identity(undefined, '0'.repeat(200) + 1, 'mark')!.slice(6) === '0'.repeat(50) + '...' + '0'.repeat(47 - 1) + 1);
 
-export function index(source: Element | DocumentFragment, optional = false): string {
+export function index(source: Element, optional = false): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   if (!source.firstChild) return '';
