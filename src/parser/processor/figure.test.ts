@@ -1,9 +1,10 @@
 import { figure } from './figure';
+import { ParserOptions } from '../../..';
 import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom/dom';
 import { normalize } from '../../debug.test';
 
-const parse = (s: string) => parse_(s, { test: true });
+const parse = (s: string, o?: ParserOptions) => parse_(s, { test: true, ...o });
 
 describe('Unit: parser/processor/figure', () => {
   describe('figure', () => {
@@ -278,15 +279,17 @@ describe('Unit: parser/processor/figure', () => {
     it('id', () => {
       const target = parse([
         '$test-a\n> ',
-        '$test-a',
-      ].join('\n\n'));
+        '==$test-a==',
+        '- $test-a',
+      ].join('\n\n'), { id: '0' });
       for (let i = 0; i < 3; ++i) {
         [...figure(target, undefined, { id: '0' })];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
             '<figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:0:test-a"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
-            '<p><a class="label" data-label="test-a" href="#label:0:test-a">Test 1</a></p>',
+            '<p><mark id="mark:0:[$test-a]"><a class="label" data-label="test-a" href="#label:0:test-a">Test 1</a></mark><a href="#mark:0:[$test-a]"></a></p>',
+            '<ul><li id="index:0:[$test-a]"><a class="label" data-label="test-a" href="#label:0:test-a">Test 1</a></li></ul>',
           ]);
       }
     });

@@ -1,7 +1,7 @@
 import { MarkParser } from '../inline';
 import { union, some, syntax, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { identity, text } from './extension/indexee';
+import { identity, signature } from './extension/indexee';
 import { str } from '../source';
 import { startTight, blankWith } from '../visibility';
 import { Syntax, State } from '../context';
@@ -23,7 +23,7 @@ export const mark: MarkParser = lazy(() => surround(
       define(el, {
         id: state! & (State.annotation | State.reference)
           ? undefined
-          : identity(id, text(el), 'mark'),
+          : identity(id, signature(el), 'mark'),
       }),
       el.id && html('a', { href: `#${el.id}` }),
     ], rest];

@@ -1,4 +1,4 @@
-import { identity, text } from '../inline/extension/indexee';
+import { identity, signature, text } from '../inline/extension/indexee';
 import { markInvalid, unmarkInvalid } from '../util';
 import { html, define } from 'typed-dom/dom';
 
@@ -79,7 +79,7 @@ function build(
               abbr
             ),
             '')?.slice(2) || ''
-        : identity(undefined, text(ref.firstElementChild!).trim(), 'mark')?.slice(6) || '';
+        : identity(undefined, signature(ref.firstElementChild!), 'mark')?.slice(6) || '';
       const refSubindex = refSubindexes.get(identifier)! + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== ''
