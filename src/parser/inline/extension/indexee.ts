@@ -9,19 +9,20 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
-export function identity(id: string | undefined, text: string, name: 'index' | 'mark' = 'index'): string | undefined {
+export function identity(id: string | undefined, text: string, type: 'index' | 'mark' | '' = 'index'): string | undefined {
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
   text &&= text.trim().replace(/\s+/g, '_');
   if (text === '') return undefined;
+  if (text.length <= 100 || type === '') return `${type}:${id ?? ''}:${text}`;
   const cs = [...text];
-  if (cs.length <= 100) return `${name}:${id ?? ''}:${text}`;
-  switch (name) {
+  if (cs.length <= 100) return `${type}:${id ?? ''}:${text}`;
+  switch (type) {
     case 'index':
-      return `${name}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
+      return `${type}:${id ?? ''}:${cs.slice(0, 97).join('')}...`;
     case 'mark':
-      return `${name}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
+      return `${type}:${id ?? ''}:${cs.slice(0, 50).join('')}...${cs.slice(-47).join('')}`;
   }
   assert(false);
 }
