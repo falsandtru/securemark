@@ -6169,7 +6169,7 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.text = exports.index = exports.identity = exports.indexee = void 0;
+exports.text = exports.signature = exports.index = exports.identity = exports.indexee = void 0;
 const combinator_1 = __webpack_require__(2087);
 const memoize_1 = __webpack_require__(1808);
 const dom_1 = __webpack_require__(3252);
@@ -6202,9 +6202,43 @@ function index(source, optional = false) {
   const index = indexer?.getAttribute('data-index');
   if (index) return index;
   if (index === '' && optional) return '';
-  return (0, exports.text)(source);
+  return signature(source);
 }
 exports.index = index;
+function signature(source) {
+  const target = source.cloneNode(true);
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+    const el = es[i];
+    switch (el.tagName) {
+      case 'CODE':
+        el.replaceWith(el.getAttribute('data-src'));
+        continue;
+      case 'RT':
+      case 'RP':
+      case 'BR':
+      case 'UL':
+      case 'OL':
+        el.remove();
+        continue;
+    }
+    switch (el.className) {
+      case 'math':
+        el.replaceWith(el.getAttribute('data-src'));
+        continue;
+      case 'label':
+        el.replaceWith(`[$${el.getAttribute('data-label').replace('$', '')}]`);
+        continue;
+      case 'comment':
+      case 'checkbox':
+      case 'annotation':
+      case 'reference':
+        el.remove();
+        continue;
+    }
+  }
+  return target.textContent.trim();
+}
+exports.signature = signature;
 exports.text = (0, memoize_1.reduce)(source => {
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
@@ -6233,8 +6267,6 @@ exports.text = (0, memoize_1.reduce)(source => {
         continue;
     }
   }
-  // Better:
-  //return target.innerText;
   return target.textContent;
 });
 
@@ -6595,7 +6627,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, sourc
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
   return [[(0, dom_1.define)(el, {
-    id: state & (256 /* State.annotation */ | 128 /* State.reference */) ? undefined : (0, indexee_1.identity)(id, (0, indexee_1.text)(el), 'mark')
+    id: state & (256 /* State.annotation */ | 128 /* State.reference */) ? undefined : (0, indexee_1.identity)(id, (0, indexee_1.signature)(el), 'mark')
   }), el.id && (0, dom_1.html)('a', {
     href: `#${el.id}`
   })], rest];
@@ -7115,7 +7147,7 @@ function build(syntax, marker, splitter = '') {
         }
       }
       const abbr = ref.getAttribute('data-abbr') || undefined;
-      const identifier = abbr ? (0, indexee_1.identity)(undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr, '')?.slice(2) || '' : (0, indexee_1.identity)(undefined, (0, indexee_1.text)(ref.firstElementChild).trim(), 'mark')?.slice(6) || '';
+      const identifier = abbr ? (0, indexee_1.identity)(undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr, '')?.slice(2) || '' : (0, indexee_1.identity)(undefined, (0, indexee_1.signature)(ref.firstElementChild), 'mark')?.slice(6) || '';
       const refSubindex = refSubindexes.get(identifier) + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
