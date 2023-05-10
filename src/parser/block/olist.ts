@@ -1,9 +1,10 @@
 import { OListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
-import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, match, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
+import { index } from '../inline/extension/index';
 import { contentline } from '../source';
 import { State } from '../context';
 import { visualize, trimBlank } from '../visibility';
@@ -27,17 +28,22 @@ export const olist: OListParser = lazy(() => block(validate(
 export const olist_: OListParser = lazy(() => block(union([
   match(
     openers['.'],
-    memoize(ms => list(type(ms[1]), '.'), ms => index(ms[1]), [])),
+    memoize(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])),
   match(
     openers['('],
-    memoize(ms => list(type(ms[1]), '('), ms => index(ms[1]), [])),
+    memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), [])),
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], subsequence([checkbox, trimBlank(visualize(some(union([indexer, inline]))))]), true)),
+        line(open(heads[form], subsequence([checkbox, union([
+          trim(fmap(close(union([index]), /^$/), ([el]) => [
+            define(el, { class: void el.classList.add('indexer'), 'data-index': '' })
+          ])),
+          trimBlank(visualize(some(union([indexer, inline])))),
+        ])]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
@@ -67,7 +73,7 @@ export const invalid = rewrite(
     }, source.replace('\n', ''))
   ], '']);
 
-function index(value: string): number {
+function idx(value: string): number {
   switch (value) {
     case 'i':
       return 1;

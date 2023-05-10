@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.274.4
+
+- Fix list item parser.
+
 ## 0.274.3
 
 - Fix abbr parser.

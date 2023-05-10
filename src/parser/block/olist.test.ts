@@ -127,10 +127,10 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('indexer', () => {
-      assert.deepStrictEqual(inspect(parser('1. [#a]')), [['<ol><li id="index::a"><a class="index" href="#index::a">a</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [#a]')), [['<ol><li><a class="index indexer" href="#index::a" data-index="">a</a></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. a [#]')), [['<ol><li>a<span class="indexer" data-index=""></span></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. a [#b]')), [['<ol><li id="index::b">a<span class="indexer" data-index="b"></span></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. [ ] [#a]')), [['<ol class="checklist"><li id="index::a"><span class="checkbox">☐</span><a class="index" href="#index::a">a</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [ ] [#a]')), [['<ol class="checklist"><li><span class="checkbox">☐</span><a class="index indexer" href="#index::a" data-index="">a</a></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. [ ] a [#b]')), [['<ol class="checklist"><li id="index::b"><span class="checkbox">☐</span>a<span class="indexer" data-index="b"></span></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. a [#]\n 1. c [#d]')), [['<ol><li>a<span class="indexer" data-index=""></span><ol><li id="index::d">c<span class="indexer" data-index="d"></span></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. a [#b]\n 1. c [#d]')), [['<ol><li id="index::b">a<span class="indexer" data-index="b"></span><ol><li id="index::d">c<span class="indexer" data-index="d"></span></li></ol></li></ol>'], '']);
