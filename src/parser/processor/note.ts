@@ -1,6 +1,6 @@
 import { identity, text } from '../inline/extension/indexee';
 import { markInvalid, unmarkInvalid } from '../util';
-import { frag, html, define } from 'typed-dom/dom';
+import { html, define } from 'typed-dom/dom';
 
 export function* note(
   target: ParentNode & Node,
@@ -139,7 +139,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && text(frag(ref.firstElementChild!.cloneNode(true).childNodes)).trim() || undefined,
+            title: abbr && text(ref.firstElementChild!).trim() || undefined,
           },
           `^${++refIndex}`));
     }
