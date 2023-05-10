@@ -107,7 +107,7 @@ function build(
         : defIndexes.get(def)!;
       initial && defIndexes.set(def, defIndex);
       const title = initial
-        ? text(ref.firstElementChild!)
+        ? text(ref.firstElementChild!).trim()
         : titles.get(identifier)!;
       initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
@@ -139,7 +139,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && text(ref.firstElementChild!).trim() || undefined,
+            title: abbr && (initial ? title : text(ref.firstElementChild!).trim()) || undefined,
           },
           `^${++refIndex}`));
     }
