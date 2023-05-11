@@ -53,7 +53,7 @@ Secure markdown renderer working on browsers for user input data.
 - Shortmedia (!https://host/image.png, !https://youtu.be/...)
 - Syntex highlight (```lang filename)
 - LaTeX ($expr$, ${expr}$, $$)
-- Index (# title [#indexer], ~ term [#indexer], [#index])
+- Index ([#index], # title [|signature], ~ term [|signature])
 - Figure (~~~figure $fig-name)
 - Label ($fig-name, [$fig-name])
 - Annotation (((annotation)))

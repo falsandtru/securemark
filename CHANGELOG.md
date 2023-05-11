@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.276.0
+
+- Change indexer syntax.
+
 ## 0.275.2
 
 - Fix identifiers.

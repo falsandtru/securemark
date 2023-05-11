@@ -744,7 +744,6 @@ export namespace MarkdownParser {
       }
     }
     export interface ExtensionParser extends
-      // [#abc]
       Inline<'extension'>,
       Parser<HTMLElement | string, Context, [
         ExtensionParser.IndexParser,
@@ -755,6 +754,7 @@ export namespace MarkdownParser {
     export namespace ExtensionParser {
       export interface IndexParser extends
         // [#index]
+        // [#index|signature]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, Context, [
           IndexParser.SignatureParser,
@@ -791,12 +791,12 @@ export namespace MarkdownParser {
         }
       }
       export interface IndexerParser extends
-        // [#index]
-        // [#]
+        // [|signature]
+        // [|]
         Inline<'extension/indexer'>,
         Parser<HTMLElement, Context, [
-          Parser<HTMLAnchorElement, Context, []>,
-          IndexParser,
+          IndexParser.SignatureParser,
+          Parser<HTMLSpanElement, Context, []>,
         ]> {
       }
       export interface LabelParser extends

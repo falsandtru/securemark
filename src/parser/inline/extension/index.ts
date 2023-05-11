@@ -30,7 +30,7 @@ export const index: IndexParser = lazy(() => validate('[#', fmap(indexee(surroun
       }),
   ])));
 
-const signature: IndexParser.SignatureParser = lazy(() => creation(fmap(open(
+export const signature: IndexParser.SignatureParser = lazy(() => creation(fmap(open(
   '|',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
