@@ -6140,19 +6140,19 @@ exports.extension = (0, combinator_1.validate)(['[', '$'], (0, combinator_1.unio
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.index = void 0;
+exports.signature = exports.index = void 0;
 const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
 const indexee_1 = __webpack_require__(1269);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const dom_1 = __webpack_require__(3252);
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(64 /* State.index */, false, (0, combinator_1.syntax)(128 /* Syntax.index */, 2, 1, 502 /* State.linkers */ | 8 /* State.media */, (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)('|'), (0, combinator_1.some)((0, combinator_1.union)([signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))], rest])), ([el]) => [(0, dom_1.define)(el, {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(64 /* State.index */, false, (0, combinator_1.syntax)(128 /* Syntax.index */, 2, 1, 502 /* State.linkers */ | 8 /* State.media */, (0, visibility_1.startTight)((0, combinator_1.open)((0, source_1.stropt)('|'), (0, combinator_1.some)((0, combinator_1.union)([exports.signature, inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), true)))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : undefined
 })])));
-const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': (0, indexee_1.identity)(undefined, ns.join('')).slice(7)
 })])));
@@ -6285,14 +6285,10 @@ exports.indexer = void 0;
 const combinator_1 = __webpack_require__(2087);
 const index_1 = __webpack_require__(4479);
 const dom_1 = __webpack_require__(3252);
-exports.indexer = (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)(/^\s+(?=\[#\S)/, (0, combinator_1.state)(64 /* State.index */, false, (0, combinator_1.union)([(0, combinator_1.focus)('[#]', () => [[(0, dom_1.html)('a', {
-  href: '#'
-})], '']), index_1.index])), /^\s*$/),
-// Indexer is invisible but invalids must be visible.
-([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, dom_1.html)('span', {
+exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.state)(64 /* State.index */, false, (0, combinator_1.union)([index_1.signature, (0, combinator_1.creation)((0, combinator_1.focus)(/^\|(?=\])/, () => [[(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': el.getAttribute('href').slice(1).replace(/^[^:]*:[^:]*:/, '')
-})]));
+  'data-index': ''
+})], '']))])), /^\]\s*$/);
 
 /***/ }),
 
