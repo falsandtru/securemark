@@ -6291,7 +6291,7 @@ exports.indexer = (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinat
 // Indexer is invisible but invalids must be visible.
 ([el]) => el.getElementsByClassName('invalid').length === 0), ([el]) => [(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': el.getAttribute('href').slice(1).replace(/^\w+:\w*:/, '')
+  'data-index': el.getAttribute('href').slice(1).replace(/^[^:]*:[^:]*:/, '')
 })]));
 
 /***/ }),
