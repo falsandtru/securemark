@@ -9,7 +9,6 @@ import { contentline } from '../source';
 import { State } from '../context';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
-import { shift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const openers = {
@@ -47,8 +46,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
-      (ns: [string, ...(HTMLElement | string)[]]) =>
-        [html('li', { 'data-marker': ns[0] || undefined }, defrag(fillFirstLine(shift(ns)[1])))]), true),
+      ns => [html('li', { 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))]), true),
   ]))),
   es => [format(html('ol', es), type, form)]);
 
