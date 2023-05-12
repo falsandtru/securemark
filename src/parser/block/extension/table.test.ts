@@ -491,7 +491,7 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n#  1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
+          `-\n# 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           `-\n#!+ 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
@@ -511,7 +511,7 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
-          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  33`,
+          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n# 33`,
           `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#!+ 33`,
           '~~~'
         ].join('\n'))),
