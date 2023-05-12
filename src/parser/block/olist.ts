@@ -37,12 +37,12 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], subsequence([checkbox, union([
-          trim(fmap(close(union([index]), /^$/), ([el]) => [
+        line(open(heads[form], subsequence([checkbox, trim(union([
+          fmap(close(union([index]), /^$/), ([el]) => [
             define(el, { class: void el.classList.add('indexer'), 'data-index': '' })
-          ])),
-          trimBlank(visualize(some(union([indexer, inline])))),
-        ])]), true)),
+          ]),
+          visualize(trimBlank(some(union([indexer, inline])))),
+        ]))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
