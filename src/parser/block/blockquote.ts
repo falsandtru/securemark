@@ -22,10 +22,10 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   some(creation(1, false, union([
     rewrite(
       indent,
-      convert(unindent, source)),
+      convert(unindent, source, true)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => [html('pre', defrag(ns))]))),
+      convert(unindent, fmap(autolink, ns => [html('pre', defrag(ns))]), true)),
   ]))),
   ns => [html('blockquote', ns)]));
 
@@ -33,7 +33,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
   some(creation(1, false, union([
     rewrite(
       indent,
-      convert(unindent, markdown)),
+      convert(unindent, markdown, true)),
     creation(99, false,
     rewrite(
       some(contentline, opener),
@@ -46,6 +46,6 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
           },
         }, context);
         return [[html('section', [document, html('h2', 'References'), references])], ''];
-      }))),
+      }, true))),
   ]))),
   ns => [html('blockquote', ns)]));
