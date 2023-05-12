@@ -2,7 +2,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, creation, block, line, validate, focus, rewrite, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { contentline } from '../source';
-import { trimNode } from '../visibility';
+import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -49,16 +49,16 @@ const align: AlignParser = creation(1, false, fmap(open(
 
 const cell: CellParser = surround(
   /^\|\s*(?=\S)/,
-  some(union([inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]),
+  trimBlankStart(some(union([inline]), /^\|/, [[/^[|\\]?\s*$/, 9]])),
   /^[^|]*/, true);
 
 const head: CellParser.HeadParser = creation(1, false, fmap(
   cell,
-  ns => [html('th', trimNode(defrag(ns)))]));
+  ns => [html('th', trimNodeEnd(defrag(ns)))]));
 
 const data: CellParser.DataParser = creation(1, false, fmap(
   cell,
-  ns => [html('td', trimNode(defrag(ns)))]));
+  ns => [html('td', trimNodeEnd(defrag(ns)))]));
 
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
   const aligns = rows[0].className === 'invalid'
