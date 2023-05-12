@@ -8,19 +8,21 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
-const blankline = new RegExp(
-  /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source
-    .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
-  'gm');
-const blankStart = new RegExp(
-  /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source
-    .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
+namespace blank {
+  export const line = new RegExp(
+    /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source
+      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
+    'gm');
+  export const start = new RegExp(
+    /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source
+      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
+}
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return union([
     convert(
-      source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x1B$&')),
+      source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')),
       verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context))),
     some(union([linebreak, unescsource])),
   ]);
@@ -63,7 +65,7 @@ export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, ex
       : undefined;
 }
 const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
-  return isStartTight({ source: source.replace(blankStart, ''), context }, except);
+  return isStartTight({ source: source.replace(blank.start, ''), context }, except);
 }, ({ source }, except = '') => `${source}\x1E${except}`);
 
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
@@ -156,7 +158,7 @@ export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Pa
 export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
 export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    reduce(source => source.replace(blankStart, '')),
+    reduce(source => source.replace(blank.start, '')),
     parser);
 }
 function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
