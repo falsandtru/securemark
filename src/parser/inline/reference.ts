@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, syntax, creation, constraint, surround, lazy, fmap, bind } from '../../combinator';
+import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
@@ -13,7 +13,6 @@ export const reference: ReferenceParser = lazy(() => surround(
   startLoose(
   subsequence([
     abbr,
-    fmap(str('^'), ns => ['', ...ns]),
     some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]]),
   ]), ']'))),
   ']]',
@@ -21,11 +20,13 @@ export const reference: ReferenceParser = lazy(() => surround(
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNode(defrag(ns)))])], rest]));
 
 // Chicago-Style
-const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
+const abbr: ReferenceParser.AbbrParser = creation(surround(
   '^',
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
-  /^\|?(?=]])|^\|[^\S\n]*/),
-  ([source], rest) => [['\n', source.trimEnd()], rest]));
+  /^\|?(?=]])|^\|[^\S\n]*/,
+  true,
+  ([, ns], rest) => [ns ? ['\n', ns[0].trimEnd()] : ['', '^'], rest],
+  ([, , rest]) => [['', '^'], rest]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   switch (ns[0]) {

@@ -673,7 +673,6 @@ export namespace MarkdownParser {
       Inline<'reference'>,
       Parser<HTMLElement, Context, [
         ReferenceParser.AbbrParser,
-        SourceParser.StrParser,
         InlineParser,
       ]> {
     }
