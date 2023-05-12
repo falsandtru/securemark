@@ -1,10 +1,10 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, open, clear, convert, trim, dup, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { visualize } from '../../visibility';
+import { visualize, trimNodeEnd } from '../../visibility';
 import { unshift, splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -84,9 +84,9 @@ const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    trim(visualize(some(union([inline]))))),
+    open(/^(?:\s*\n|\s)/, visualize(some(union([inline]))), true)),
   true),
-  ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
+  ns => [html('th', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
   false));
 
 const data: CellParser.DataParser = creation(1, false, block(fmap(open(
@@ -96,9 +96,9 @@ const data: CellParser.DataParser = creation(1, false, block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    trim(visualize(some(union([inline]))))),
+    open(/^(?:\s*\n|\s)/, visualize(some(union([inline]))), true)),
   true),
-  ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
+  ns => [html('td', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
   false));
 
 const dataline: CellParser.DatalineParser = creation(1, false, line(
