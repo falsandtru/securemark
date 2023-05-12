@@ -25,8 +25,8 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
     apply(parser, source, context, changes, values);
 }
 
-function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: [string, any][], values: any[], reset?: boolean): Result<Tree<P>>;
-function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [string, any][], values: any[], reset = false): Result<T> {
+function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
+function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
   if (context) for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -36,7 +36,7 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: [str
         assert(typeof change[1] === 'object');
         assert(context[prop] || !(prop in context));
         if (prop in context && !hasOwnProperty(context, prop)) break;
-        context[prop as string] = ObjectCreate(change[1]);
+        context[prop as string] = ObjectCreate(change[1] as object);
         break;
       // @ts-expect-error
       case 'memo':
