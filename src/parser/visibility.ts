@@ -38,7 +38,7 @@ function hasVisible(
   return false;
 }
 
-export const regBlankStart = new RegExp(
+const regBlankStart = new RegExp(
   /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
 
 export function blankWith(delimiter: string | RegExp): RegExp;

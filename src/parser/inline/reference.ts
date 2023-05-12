@@ -3,7 +3,7 @@ import { union, subsequence, some, syntax, creation, constraint, surround, lazy,
 import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
-import { regBlankStart, startLoose, trimNode } from '../visibility';
+import { startLoose, trimNode } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => surround(
@@ -25,7 +25,7 @@ const abbr: ReferenceParser.AbbrParser = creation(bind(surround(
   '^',
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/),
-  ([source], rest) => [['\n', source.trimEnd()], rest.replace(regBlankStart, '')]));
+  ([source], rest) => [['\n', source.trimEnd()], rest]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   switch (ns[0]) {
