@@ -158,7 +158,7 @@ export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Pa
 export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
 export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    reduce(source => source.replace(blank.start, '')),
+    source => source.replace(blank.start, ''),
     parser);
 }
 function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
