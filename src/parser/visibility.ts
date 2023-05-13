@@ -8,7 +8,7 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
-namespace blank {
+export namespace blank {
   export const line = new RegExp(
     /^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
@@ -57,16 +57,16 @@ export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): Reg
     }`);
 }
 
-export function startLoose<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
-export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
-  return input =>
-    isStartLoose(input, except)
-      ? parser(input)
-      : undefined;
-}
-const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
-  return isStartTight({ source: source.replace(blank.start, ''), context }, except);
-}, ({ source }, except = '') => `${source}\x1E${except}`);
+//export function startLoose<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
+//export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
+//  return input =>
+//    isStartLoose(input, except)
+//      ? parser(input)
+//      : undefined;
+//}
+//const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
+//  return isStartTight({ source: source.replace(blank.start, ''), context }, except);
+//}, ({ source }, except = '') => `${source}\x1E${except}`);
 
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
