@@ -167,23 +167,23 @@ function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser
     parser,
     trimNodeEnd);
 }
-export function trimNode<T extends HTMLElement | string>(nodes: T[]): T[] {
-  return trimNodeStart(trimNodeEnd(nodes));
-}
-function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
-  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
-    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
-    if (typeof node === 'string') {
-      const pos = node.trimStart().length;
-      if (pos > 0) {
-        nodes[0] = node.slice(-pos) as T;
-        break;
-      }
-    }
-    nodes.shift();
-  }
-  return nodes;
-}
+//export function trimNode<T extends HTMLElement | string>(nodes: T[]): T[] {
+//  return trimNodeStart(trimNodeEnd(nodes));
+//}
+//function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
+//  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
+//    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
+//    if (typeof node === 'string') {
+//      const pos = node.trimStart().length;
+//      if (pos > 0) {
+//        nodes[0] = node.slice(-pos) as T;
+//        break;
+//      }
+//    }
+//    nodes.shift();
+//  }
+//  return nodes;
+//}
 export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&

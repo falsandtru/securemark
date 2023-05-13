@@ -6,7 +6,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
 import { Syntax, State } from '../context';
-import { trimNode } from '../visibility';
+import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -27,14 +27,14 @@ export const textlink: LinkParser.TextLinkParser = lazy(() =>
   bind(reverse(tails([
     dup(surround(
       '[',
-      some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]]),
+      trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
       ']',
       true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
-    return parse(content, params, rest, context);
+    return parse(defrag(content), params, rest, context);
   }))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() =>
@@ -65,7 +65,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []], rest, context) =>
-    parse(content, params, rest, context)))));
+    parse(defrag(content), params, rest, context)))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),
@@ -86,7 +86,7 @@ function parse(
 ): Result<HTMLAnchorElement, MarkdownParser.Context> {
   assert(params.length > 0);
   assert(params.every(p => typeof p === 'string'));
-  if (content.length !== 0 && trimNode(content).length === 0) return;
+  if (content.length !== 0 && trimNodeEnd(content).length === 0) return;
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
@@ -95,7 +95,7 @@ function parse(
     context.host?.href || location.href);
   const el = elem(
     INSECURE_URI,
-    defrag(content),
+    content,
     uri,
     context.host?.origin || location.origin);
   if (el.className === 'invalid') return [[el], rest];
