@@ -1,6 +1,5 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { Result } from '../../combinator/data/parser';
 import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
@@ -36,7 +35,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() =>
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     assert(content[0] !== '');
     if (content.length !== 0 && trimNodeEnd(content = defrag(content)).length === 0) return;
-    return parse(content, params, rest, context);
+    return [[parse(content, params, context)], rest];
   }))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() =>
@@ -50,7 +49,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
-    parse(content, params, rest, context)))));
+    [[parse(defrag(content), params, context)], rest]))));
 
 export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   linebreak,
@@ -67,7 +66,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []], rest, context) =>
-    parse(defrag(content), params, rest, context)))));
+    [[parse(defrag(content), params, context)], rest]))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),
@@ -83,9 +82,8 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 function parse(
   content: readonly (string | HTMLElement)[],
   params: string[],
-  rest: string,
   context: MarkdownParser.Context,
-): Result<HTMLAnchorElement, MarkdownParser.Context> {
+): HTMLAnchorElement {
   assert(params.length > 0);
   assert(params.every(p => typeof p === 'string'));
   const INSECURE_URI = params.shift()!;
@@ -99,8 +97,9 @@ function parse(
     content,
     uri,
     context.host?.origin || location.origin);
-  if (el.className === 'invalid') return [[el], rest];
-  return [[define(el, attributes('link', [], optspec, params))], rest];
+  return el.className === 'invalid'
+    ? el
+    : define(el, attributes('link', [], optspec, params));
 }
 
 function elem(
