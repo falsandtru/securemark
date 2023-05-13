@@ -2860,7 +2860,7 @@ function fence(opener, limit, separation = true) {
     const matches = source.match(opener);
     if (!matches) return;
     const delim = matches[1];
-    if (matches[0].indexOf(delim, delim.length) !== -1) return;
+    if (matches[0].includes(delim, delim.length)) return;
     let rest = source.slice(matches[0].length);
     // Prevent annoying parsing in editing.
     if ((0, line_1.isBlank)((0, line_1.firstline)(rest)) && (0, line_1.firstline)(rest.slice((0, line_1.firstline)(rest).length)).trimEnd() !== delim) return;
@@ -6506,21 +6506,20 @@ const optspec = {
 };
 Object.setPrototypeOf(optspec, null);
 exports.link = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['[', '{'], (0, combinator_1.union)([exports.medialink, exports.textlink])));
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */ | 8 /* State.media */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]]), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
-  return parse(content, params, rest, context);
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */ | 8 /* State.media */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[/^\\?\n/, 9], [']', 2]])), ']', true)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => {
+  if (content.length !== 0 && (0, visibility_1.trimNodeEnd)(content = (0, dom_1.defrag)(content)).length === 0) return;
+  return [[parse(content, params, context)], rest];
 }))));
-exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */ | 8 /* State.media */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
+exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(16 /* State.link */ | 8 /* State.media */, false, (0, combinator_1.syntax)(16 /* Syntax.link */, 2, 10, 502 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => [[parse((0, dom_1.defrag)(content), params, context)], rest]))));
 exports.linemedialink = (0, combinator_1.surround)(source_1.linebreak, (0, combinator_1.union)([exports.medialink]), /^(?=[^\S\n]*(?:$|\n))/);
-exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => parse(content, params, rest, context)))));
+exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.precedence)(2, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/))])), ([params, content = []], rest, context) => [[parse((0, dom_1.defrag)(content), params, context)], rest]))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/^[^\S\n]+/, (0, source_1.str)(/^\S+/)), (0, source_1.str)(/^[^\s{}]+/)]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]), (0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[^\s{}]+/), opt => [` \\${opt.slice(1)}`])]);
-function parse(content, params, rest, context) {
-  if (content.length !== 0 && (0, visibility_1.trimNode)(content).length === 0) return;
+function parse(content, params, context) {
   const INSECURE_URI = params.shift();
   const uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
-  const el = elem(INSECURE_URI, (0, dom_1.defrag)(content), uri, context.host?.origin || location.origin);
-  if (el.className === 'invalid') return [[el], rest];
-  return [[(0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))], rest];
+  const el = elem(INSECURE_URI, content, uri, context.host?.origin || location.origin);
+  return el.className === 'invalid' ? el : (0, dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params));
 }
 function elem(INSECURE_URI, content, uri, origin) {
   let type;
@@ -6871,7 +6870,7 @@ function attributes(texts, rubies) {
   let attrs;
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
-      if (ss[i].indexOf('\x1B') === -1) continue;
+      if (!ss[i].includes('\x1B')) continue;
       ss[i] = ss[i].replace(/\x1B/g, '');
       attrs ??= {
         class: 'invalid',
@@ -7629,7 +7628,7 @@ exports.stringify = stringify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.trimNodeEnd = exports.trimNode = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.blankWith = exports.visualize = exports.blank = void 0;
+exports.trimNodeEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.blankWith = exports.visualize = exports.blank = void 0;
 const parser_1 = __webpack_require__(6728);
 const combinator_1 = __webpack_require__(2087);
 const htmlentity_1 = __webpack_require__(1562);
@@ -7757,24 +7756,23 @@ exports.trimBlankStart = trimBlankStart;
 function trimBlankEnd(parser) {
   return (0, combinator_1.fmap)(parser, trimNodeEnd);
 }
-function trimNode(nodes) {
-  return trimNodeStart(trimNodeEnd(nodes));
-}
-exports.trimNode = trimNode;
-function trimNodeStart(nodes) {
-  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
-    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
-    if (typeof node === 'string') {
-      const pos = node.trimStart().length;
-      if (pos > 0) {
-        nodes[0] = node.slice(-pos);
-        break;
-      }
-    }
-    nodes.shift();
-  }
-  return nodes;
-}
+//export function trimNode<T extends HTMLElement | string>(nodes: T[]): T[] {
+//  return trimNodeStart(trimNodeEnd(nodes));
+//}
+//function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
+//  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
+//    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
+//    if (typeof node === 'string') {
+//      const pos = node.trimStart().length;
+//      if (pos > 0) {
+//        nodes[0] = node.slice(-pos) as T;
+//        break;
+//      }
+//    }
+//    nodes.shift();
+//  }
+//  return nodes;
+//}
 function trimNodeEnd(nodes) {
   const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
   for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
@@ -8433,7 +8431,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.333 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.334 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8710,15 +8708,14 @@ exports.prepend = prepend;
 function defrag(nodes) {
   const acc = [];
   let appendable = false;
-  for (let i = 0; i < nodes.length; ++i) {
+  for (let i = 0, len = nodes.length; i < len; ++i) {
     const node = nodes[i];
-    if (node === '') continue;
-    if (typeof node === 'string') {
-      appendable ? acc[acc.length - 1] += node : acc.push(node);
-      appendable = true;
-    } else {
+    if (typeof node === 'object') {
       acc.push(node);
       appendable = false;
+    } else if (node !== '') {
+      appendable ? acc[acc.length - 1] += node : acc.push(node);
+      appendable = true;
     }
   }
   return acc;
@@ -8733,7 +8730,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11657__(moduleId) {
+/******/ 	function __nested_webpack_require_11654__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -8747,7 +8744,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11657__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11654__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -8758,7 +8755,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11657__(7521);
+/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11654__(7521);
 /******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
@@ -8770,7 +8767,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.333 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.334 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
