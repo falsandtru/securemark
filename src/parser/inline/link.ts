@@ -34,7 +34,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() =>
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
-    return parse(defrag(content), params, rest, context);
+    assert(content[0] !== '');
+    if (content.length !== 0 && trimNodeEnd(content = defrag(content)).length === 0) return;
+    return parse(content, params, rest, context);
   }))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() =>
@@ -79,14 +81,13 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 ]);
 
 function parse(
-  content: (string | HTMLElement)[],
+  content: readonly (string | HTMLElement)[],
   params: string[],
   rest: string,
   context: MarkdownParser.Context,
 ): Result<HTMLAnchorElement, MarkdownParser.Context> {
   assert(params.length > 0);
   assert(params.every(p => typeof p === 'string'));
-  if (content.length !== 0 && trimNodeEnd(content).length === 0) return;
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
