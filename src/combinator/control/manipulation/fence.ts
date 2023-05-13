@@ -10,7 +10,7 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
     assert(matches[0] === firstline(source));
     const delim = matches[1];
     assert(delim && delim === delim.trim());
-    if (matches[0].indexOf(delim, delim.length) !== -1) return;
+    if (matches[0].includes(delim, delim.length)) return;
     let rest = source.slice(matches[0].length);
     // Prevent annoying parsing in editing.
     if (isBlank(firstline(rest)) && firstline(rest.slice(firstline(rest).length)).trimEnd() !== delim) return;
