@@ -4949,7 +4949,7 @@ const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
-const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))), true)), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
+const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), true)), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
 const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))), true)), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
 const dataline = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
 function attributes(source) {
@@ -5602,9 +5602,9 @@ const row = (parser, optional) => (0, combinator_1.creation)(1, false, (0, combi
   'data-invalid-message': 'Missing the start symbol of the table row'
 }, [(0, dom_1.html)('td', source.replace('\n', ''))])], ''])));
 const align = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:/, () => [['center'], '']), (0, combinator_1.focus)(/^:-+/, () => [['start'], '']), (0, combinator_1.focus)(/^-+:/, () => [['end'], '']), (0, combinator_1.focus)(/^-+/, () => [[''], ''])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
-const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]]), /^[^|]*/, true);
-const head = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
-const data = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))]));
+const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]])), /^[^|]*/, true);
+const head = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]));
+const data = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]));
 function format(rows) {
   const aligns = rows[0].className === 'invalid' ? [] : (0, duff_1.duffReduce)(rows.shift().children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
   for (let i = 0; i < rows.length; ++i) {
@@ -5789,9 +5789,9 @@ const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
 const visibility_1 = __webpack_require__(7618);
 const dom_1 = __webpack_require__(3252);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 6, 1, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]]), ')'))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 6, 1, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
+}, [(0, dom_1.html)('span', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))])], rest]));
 
 /***/ }),
 
@@ -6389,7 +6389,7 @@ exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('<', (0, 
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i)]);
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
-const TAGS = Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "basefont", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "hgroup", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
+const TAGS = Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "hgroup", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
 function elem(tag, as, bs, cs) {
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
   if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
@@ -6764,9 +6764,9 @@ const inline_1 = __webpack_require__(1160);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const dom_1 = __webpack_require__(3252);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, visibility_1.startLoose)((0, combinator_1.subsequence)([abbr, (0, combinator_1.fmap)((0, source_1.str)('^'), ns => ['', ...ns]), (0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])]), ']'))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNode)((0, dom_1.defrag)(ns)))])], rest]));
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(256 /* Syntax.reference */, 6, 1, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]]))]))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))])], rest]));
 // Chicago-Style
-const abbr = (0, combinator_1.creation)((0, combinator_1.bind)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/), ([source], rest) => [['\n', source.trimEnd()], rest]));
+const abbr = (0, combinator_1.creation)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/, true, ([, ns], rest) => ns ? [['\n', ns[0].trimEnd()], rest.replace(visibility_1.blank.start, '')] : [[''], `^${rest}`], ([,, rest]) => [[''], `^${rest}`]));
 function attributes(ns) {
   switch (ns[0]) {
     case '':
@@ -7629,7 +7629,7 @@ exports.stringify = stringify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.trimNodeEnd = exports.trimNode = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.startLoose = exports.blankWith = exports.visualize = void 0;
+exports.trimNodeEnd = exports.trimNode = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.blankWith = exports.visualize = exports.blank = void 0;
 const parser_1 = __webpack_require__(6728);
 const combinator_1 = __webpack_require__(2087);
 const htmlentity_1 = __webpack_require__(1562);
@@ -7639,9 +7639,9 @@ const memoize_1 = __webpack_require__(1808);
 const array_1 = __webpack_require__(8112);
 var blank;
 (function (blank) {
-  blank.line = new RegExp(/^(?:\\$|\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
+  blank.line = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
   blank.start = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
-})(blank || (blank = {}));
+})(blank = exports.blank || (exports.blank = {}));
 function visualize(parser) {
   return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
 }
@@ -7665,21 +7665,6 @@ function blankWith(starting, delimiter) {
   return new RegExp(String.raw`^(?:(?=${starting})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`);
 }
 exports.blankWith = blankWith;
-function startLoose(parser, except) {
-  return input => isStartLoose(input, except) ? parser(input) : undefined;
-}
-exports.startLoose = startLoose;
-const isStartLoose = (0, memoize_1.reduce)(({
-  source,
-  context
-}, except) => {
-  return isStartTight({
-    source: source.replace(blank.start, ''),
-    context
-  }, except);
-}, ({
-  source
-}, except = '') => `${source}\x1E${except}`);
 function startTight(parser, except) {
   return input => isStartTight(input, except) ? parser(input) : undefined;
 }
