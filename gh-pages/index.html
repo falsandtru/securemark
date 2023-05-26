@@ -46,7 +46,7 @@
       */
     background-color: #fdfdfd;
   }
-  em, .index {
+  :not(em) :is(em, .index) {
     font-family:
       -apple-system,
       Segoe UI,
@@ -576,6 +576,9 @@
   }
   .index {
     font-style: italic;
+  }
+  em :is(em, .index) {
+    font-style: normal;
   }
   mark + a:empty:after {
     content: "📍";
