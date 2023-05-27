@@ -394,12 +394,12 @@ DWCはこの最適化を行っても状態数の多さに比例して増加し�
 
 */
 class Entry {
-  constructor(key, value, size, partition, region, expiration) {
+  constructor(key, value, size, partition, affiliation, expiration) {
     this.key = key;
     this.value = value;
     this.size = size;
     this.partition = partition;
-    this.region = region;
+    this.affiliation = affiliation;
     this.expiration = expiration;
     this.enode = undefined;
     this.next = undefined;
@@ -423,7 +423,9 @@ class Cache {
       },
       sweep: {
         threshold: 10,
+        ratio: 50,
         window: 2,
+        room: 50,
         range: 1,
         shift: 2
       }
@@ -434,7 +436,7 @@ class Cache {
     this.overlapLRU = 0;
     this.overlapLFU = 0;
     this.$size = 0;
-    this.injection = 0;
+    this.declination = 1;
     if (typeof capacity === 'object') {
       opts = capacity;
       capacity = opts.capacity ?? 0;
@@ -445,8 +447,9 @@ class Cache {
     this.capacity = capacity = settings.capacity;
     if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
     if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.window = capacity * settings.window / 100 >>> 0;
+    this.window = capacity * settings.window / 100 >>> 0 || 1;
     this.partition = capacity - this.window;
+    this.injection = 100 * this.declination;
     this.sample = settings.sample;
     this.resource = settings.resource ?? capacity;
     this.expiration = opts.age !== undefined;
@@ -456,7 +459,7 @@ class Cache {
         stable: false
       });
     }
-    this.sweeper = new Sweeper(this.LRU, settings.sweep.threshold, capacity, settings.sweep.window, settings.sweep.range, settings.sweep.shift);
+    this.sweeper = new Sweeper(this.LRU, capacity, settings.sweep.window, settings.sweep.room, settings.sweep.threshold, settings.sweep.ratio, settings.sweep.range, settings.sweep.shift);
     this.disposer = settings.disposer;
   }
   get length() {
@@ -469,32 +472,80 @@ class Cache {
   get size() {
     return this.$size;
   }
+  resize(capacity, resource) {
+    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
+    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
+    this.partition = this.partition / this.capacity * capacity >>> 0;
+    this.capacity = capacity;
+    const {
+      settings
+    } = this;
+    this.window = capacity * settings.window / 100 >>> 0 || 1;
+    this.resource = resource ?? settings.resource ?? capacity;
+    this.sweeper.resize(capacity, settings.sweep.window, settings.sweep.room, settings.sweep.range);
+    this.ensure(0);
+  }
+  clear() {
+    const {
+      LRU,
+      LFU
+    } = this;
+    this.$size = 0;
+    this.partition = this.capacity - this.window;
+    this.injection = 100 * this.declination;
+    this.dict = new Map();
+    this.LRU = new list_1.List();
+    this.LFU = new list_1.List();
+    this.overlapLRU = 0;
+    this.overlapLFU = 0;
+    this.expirations?.clear();
+    this.sweeper.clear();
+    this.sweeper.replace(this.LRU);
+    if (!this.disposer || !this.settings.capture.clear) return;
+    for (const {
+      key,
+      value
+    } of LRU) {
+      this.disposer(value, key);
+    }
+    for (const {
+      key,
+      value
+    } of LFU) {
+      this.disposer(value, key);
+    }
+  }
   evict$(entry, callback) {
     //assert(this.dict.size <= this.capacity);
 
-    entry.partition === this.LRU ? entry.region === 'LFU' && --this.overlapLFU : entry.region === 'LRU' && --this.overlapLRU;
+    this.overlap(entry, true);
     if (entry.enode !== undefined) {
       this.expirations.delete(entry.enode);
       entry.enode = undefined;
     }
-    entry.partition.delete(entry);
+    entry.partition === 'LRU' ? this.LRU.delete(entry) : this.LFU.delete(entry);
     this.dict.delete(entry.key);
     //assert(this.dict.size <= this.capacity);
     this.$size -= entry.size;
     callback && this.disposer?.(entry.value, entry.key);
   }
-  overlap(entry) {
-    if (entry.partition === this.LRU) {
-      if (entry.region === 'LRU') {
+  overlap(entry, eviction = false) {
+    if (entry.partition === 'LRU') {
+      if (entry.affiliation === 'LRU') {
+        if (eviction) return entry;
         ++this.overlapLRU;
       } else {
         --this.overlapLFU;
       }
     } else {
-      if (entry.region === 'LFU') {
+      if (entry.affiliation === 'LFU') {
+        if (eviction) return entry;
         ++this.overlapLFU;
       } else {
         --this.overlapLRU;
+        if (this.declination !== 1 && this.overlapLRU * 100 < this.LFU.length * this.sample) {
+          this.declination = 1;
+        }
       }
     }
     return entry;
@@ -507,7 +558,7 @@ class Cache {
       LFU
     } = this;
     while (this.size + margin - size > this.resource) {
-      this.injection = (0, alias_1.min)(this.injection + this.sample, 100);
+      this.injection = (0, alias_1.min)(this.injection + this.sample, 100 * this.declination);
       let victim = this.expirations?.peek()?.value;
       if (victim !== undefined && victim !== target && victim.expiration < (0, chrono_1.now)()) {} else if (LRU.length === 0) {
         victim = LFU.head.prev;
@@ -519,16 +570,17 @@ class Cache {
           if (entry !== undefined) {
             LFU.delete(entry);
             LRU.unshift(this.overlap(entry));
-            entry.partition = LRU;
+            entry.partition = 'LRU';
           }
         }
-        if (this.injection === 100 && LRU.length >= this.window && this.overlapLRU * 100 / (0, alias_1.min)(LFU.length, this.partition) < this.sample) {
+        if (LRU.length >= this.window && this.injection === 100 * this.declination) {
           const entry = LRU.head.prev;
-          if (entry.region === 'LRU') {
+          if (entry.affiliation === 'LRU') {
             LRU.delete(entry);
             LFU.unshift(this.overlap(entry));
-            entry.partition = LFU;
+            entry.partition = 'LFU';
             this.injection = 0;
+            this.declination = this.overlapLRU * 100 < LFU.length * this.sample ? 1 : (0, alias_1.min)(this.declination * 1.5, 10);
           }
         }
         if (this.sweeper.isActive()) {
@@ -575,29 +627,31 @@ class Cache {
       LRU,
       LFU
     } = this;
-    this.sweeper.hit();
-    if (entry.partition === LRU) {
-      // For memoize.
-      if (entry === LRU.head) return;
-      if (entry.region === 'LRU') {
-        entry.region = 'LFU';
+    if (entry.partition === 'LRU') {
+      if (entry.affiliation === 'LRU') {
+        // For memoize.
+        // Strict checks are ineffective for OLTP.
+        if (entry === LRU.head) return;
+        entry.affiliation = 'LFU';
       } else {
-        const delta = LRU.length > LFU.length && LRU.length >= this.capacity - this.partition ? LRU.length / (LFU.length || 1) * (this.overlapLRU || 1) / this.overlapLFU | 0 || 1 : 1;
+        const delta = LRU.length > LFU.length && LRU.length >= this.capacity - this.partition ? LRU.length / (LFU.length || 1) * (0, alias_1.max)(this.overlapLRU / this.overlapLFU, 1) | 0 || 1 : 1;
         this.partition = (0, alias_1.min)(this.partition + delta, this.capacity - this.window);
         --this.overlapLFU;
       }
       LRU.delete(entry);
       LFU.unshift(entry);
-      entry.partition = LFU;
+      entry.partition = 'LFU';
     } else {
-      // For memoize.
-      if (entry === LFU.head) return;
-      if (entry.region === 'LFU') {} else {
-        const delta = LFU.length > LRU.length && LFU.length >= this.partition ? LFU.length / (LRU.length || 1) * (this.overlapLFU || 1) / this.overlapLRU | 0 || 1 : 1;
+      if (entry.affiliation === 'LFU') {} else {
+        const delta = LFU.length > LRU.length && LFU.length >= this.partition ? LFU.length / (LRU.length || 1) * (0, alias_1.max)(this.overlapLFU / this.overlapLRU, 1) | 0 || 1 : 1;
         this.partition = (0, alias_1.max)(this.partition - delta, 0);
-        entry.region = 'LFU';
+        entry.affiliation = 'LFU';
         --this.overlapLRU;
+        if (this.declination !== 1 && this.overlapLRU * 100 < this.LFU.length * this.sample) {
+          this.declination = 1;
+        }
       }
+      if (entry === LFU.head) return;
       LFU.delete(entry);
       LFU.unshift(entry);
     }
@@ -626,16 +680,16 @@ class Cache {
     victim = this.ensure(size, victim, true);
     // Note that the key will be duplicate if the key is evicted and added again in disposing.
     if (victim !== undefined) {
-      victim.region === 'LFU' && --this.overlapLFU;
+      victim.affiliation === 'LFU' && --this.overlapLFU;
       this.dict.delete(victim.key);
       this.dict.set(key, victim);
-      victim.region = 'LRU';
+      victim.affiliation = 'LRU';
       LRU.head = victim;
       this.update(victim, key, value, size, expiration);
       return true;
     }
     this.$size += size;
-    const entry = new Entry(key, value, size, LRU, 'LRU', expiration);
+    const entry = new Entry(key, value, size, 'LRU', 'LRU', expiration);
     LRU.unshift(entry);
     this.dict.set(key, entry);
     if (this.expiration && this.expirations !== undefined && expiration !== Infinity) {
@@ -681,6 +735,7 @@ class Cache {
       this.evict$(entry, true);
       return;
     }
+    this.sweeper.hit();
     this.replace(entry);
     return entry.value;
   }
@@ -699,36 +754,6 @@ class Cache {
     this.evict$(entry, this.settings.capture.delete === true);
     return true;
   }
-  clear() {
-    const {
-      LRU,
-      LFU
-    } = this;
-    this.injection = 0;
-    this.$size = 0;
-    this.partition = this.capacity - this.window;
-    this.dict = new Map();
-    this.LRU = new list_1.List();
-    this.LFU = new list_1.List();
-    this.overlapLRU = 0;
-    this.overlapLFU = 0;
-    this.expirations?.clear();
-    this.sweeper.clear();
-    this.sweeper.replace(this.LRU);
-    if (!this.disposer || !this.settings.capture.clear) return;
-    for (const {
-      key,
-      value
-    } of LRU) {
-      this.disposer(value, key);
-    }
-    for (const {
-      key,
-      value
-    } of LFU) {
-      this.disposer(value, key);
-    }
-  }
   *[Symbol.iterator]() {
     for (const {
       key,
@@ -744,60 +769,87 @@ class Cache {
     }
     return;
   }
-  resize(capacity, resource) {
-    if (capacity >>> 0 !== capacity) throw new Error(`Spica: Cache: Capacity must be integer.`);
-    if (capacity >= 1 === false) throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
-    this.partition = this.partition / this.capacity * capacity >>> 0;
-    this.capacity = capacity;
-    this.window = capacity * this.settings.window / 100 >>> 0;
-    this.resource = resource ?? this.settings.resource ?? capacity;
-    this.sweeper.resize(capacity, this.settings.sweep.window, this.settings.sweep.range);
-    this.ensure(0);
-  }
 }
 exports.Cache = Cache;
 // Transitive Wide MRU with Cyclic Replacement
 class Sweeper {
-  constructor(target, threshold, capacity, window, range, shift) {
+  constructor(target, capacity, window, room, threshold, ratio, range, shift) {
     this.target = target;
-    this.threshold = threshold;
     this.window = window;
+    this.room = room;
+    this.threshold = threshold;
+    this.ratio = ratio;
     this.range = range;
     this.shift = shift;
-    this.currHits = 0;
-    this.currMisses = 0;
-    this.prevHits = 0;
-    this.prevMisses = 0;
+    this.currWindowHits = 0;
+    this.currWindowMisses = 0;
+    this.prevWindowHits = 0;
+    this.prevWindowMisses = 0;
+    this.currRoomHits = 0;
+    this.currRoomMisses = 0;
+    this.prevRoomHits = 0;
+    this.prevRoomMisses = 0;
     this.processing = false;
     this.direction = true;
     this.initial = true;
     this.back = 0;
     this.advance = 0;
     this.threshold *= 100;
-    this.window = (0, alias_1.round)(capacity * window / 100) || 1;
-    this.range = capacity * range / 100;
+    this.resize(capacity, window, room, range);
   }
-  slide() {
-    this.prevHits = this.currHits;
-    this.prevMisses = this.currMisses;
-    this.currHits = 0;
-    this.currMisses = 0;
+  replace(target) {
+    this.target = target;
+  }
+  resize(capacity, window, room, range) {
+    this.window = (0, alias_1.round)(capacity * window / 100) || 1;
+    this.room = (0, alias_1.round)(capacity * room / 100) || 1;
+    this.range = capacity * range / 100;
+    this.currWindowHits + this.currWindowMisses >= this.window && this.slideWindow();
+    this.currRoomHits + this.currRoomMisses >= this.room && this.slideRoom();
+    this.active = undefined;
+  }
+  clear() {
+    this.active = undefined;
+    this.processing = true;
+    this.reset();
+    this.slideWindow();
+    this.slideWindow();
+    this.slideRoom();
+    this.slideRoom();
+  }
+  slideWindow() {
+    this.prevWindowHits = this.currWindowHits;
+    this.prevWindowMisses = this.currWindowMisses;
+    this.currWindowHits = 0;
+    this.currWindowMisses = 0;
+  }
+  slideRoom() {
+    this.prevRoomHits = this.currRoomHits;
+    this.prevRoomMisses = this.currRoomMisses;
+    this.currRoomHits = 0;
+    this.currRoomMisses = 0;
   }
   hit() {
     this.active = undefined;
-    ++this.currHits + this.currMisses === this.window && this.slide();
+    ++this.currWindowHits + this.currWindowMisses === this.window && this.slideWindow();
+    ++this.currRoomHits + this.currRoomMisses === this.room && this.slideRoom();
     this.processing && !this.isActive() && this.reset();
   }
   miss() {
     this.active = undefined;
-    this.currHits + ++this.currMisses === this.window && this.slide();
+    this.currWindowHits + ++this.currWindowMisses === this.window && this.slideWindow();
+    this.currRoomHits + ++this.currRoomMisses === this.room && this.slideRoom();
   }
   isActive() {
-    if (this.prevHits === 0 && this.prevMisses === 0) return false;
-    return this.active ??= this.ratio() < this.threshold;
+    if (this.threshold === 0) return false;
+    if (this.prevWindowHits === 0 && this.prevWindowMisses === 0) return false;
+    return this.active ??= this.ratioWindow() < (0, alias_1.max)(this.ratioRoom() * this.ratio / 100, this.threshold);
   }
-  ratio() {
-    return ratio(this.window, [this.currHits, this.prevHits], [this.currMisses, this.prevMisses], 0);
+  ratioWindow() {
+    return ratio(this.window, [this.currWindowHits, this.prevWindowHits], [this.currWindowMisses, this.prevWindowMisses], 0);
+  }
+  ratioRoom() {
+    return ratio(this.room, [this.currRoomHits, this.prevRoomHits], [this.currRoomMisses, this.prevRoomMisses], 0);
   }
   sweep() {
     const {
@@ -843,22 +895,6 @@ class Sweeper {
     this.initial = true;
     this.back = 0;
     this.advance = 0;
-  }
-  clear() {
-    this.active = undefined;
-    this.processing = true;
-    this.reset();
-    this.slide();
-    this.slide();
-  }
-  replace(target) {
-    this.target = target;
-  }
-  resize(capacity, window, range) {
-    this.window = (0, alias_1.round)(capacity * window / 100) || 1;
-    this.range = capacity * range / 100;
-    this.currHits + this.currMisses >= this.window && this.slide();
-    this.active = undefined;
   }
 }
 function ratio(window, targets, remains, offset) {
@@ -6616,12 +6652,11 @@ const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
 exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.constraint)(4 /* State.mark */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('=='), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '=', [[/^\\?\n/, 9]]), exports.mark)]))))), (0, source_1.str)('=='), false, ([, bs], rest, {
-  id,
-  state
+  id
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
   return [[(0, dom_1.define)(el, {
-    id: state & (256 /* State.annotation */ | 128 /* State.reference */) ? undefined : (0, indexee_1.identity)(id, (0, indexee_1.signature)(el), 'mark')
+    id: (0, indexee_1.identity)(id, (0, indexee_1.signature)(el), 'mark')
   }), el.id && (0, dom_1.html)('a', {
     href: `#${el.id}`
   })], rest];
@@ -7095,6 +7130,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.reference = exports.annotation = exports.note = void 0;
 const indexee_1 = __webpack_require__(1269);
 const util_1 = __webpack_require__(9437);
+const memoize_1 = __webpack_require__(1808);
 const dom_1 = __webpack_require__(3252);
 function* note(target, notes, opts = {}, bottom = null) {
   for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
@@ -7111,6 +7147,18 @@ exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(syntax, marker, splitter = '') {
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
+  const memory = (0, memoize_1.memoize)(ref => {
+    const content = ref.firstElementChild;
+    content.replaceWith(content.cloneNode());
+    const abbr = ref.getAttribute('data-abbr') ?? '';
+    const identifier = abbr ? (0, indexee_1.identity)(undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr, '')?.slice(2) || '' : (0, indexee_1.identity)(undefined, (0, indexee_1.signature)(content), 'mark')?.slice(6) || '';
+    return {
+      content,
+      identifier,
+      abbr,
+      text: (0, indexee_1.text)(content).trim()
+    };
+  }, new WeakMap());
   return function* (target, note, opts = {}, bottom = null) {
     const defs = new Map();
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
@@ -7125,7 +7173,7 @@ function build(syntax, marker, splitter = '') {
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (ref.closest('sup > [hidden]')) {
+      if (!target.contains(ref)) {
         yield;
         continue;
       }
@@ -7140,8 +7188,12 @@ function build(syntax, marker, splitter = '') {
           yield;
         }
       }
-      const abbr = ref.getAttribute('data-abbr') || undefined;
-      const identifier = abbr ? (0, indexee_1.identity)(undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr, '')?.slice(2) || '' : (0, indexee_1.identity)(undefined, (0, indexee_1.signature)(ref.firstElementChild), 'mark')?.slice(6) || '';
+      const {
+        content,
+        identifier,
+        abbr,
+        text
+      } = memory(ref);
       const refSubindex = refSubindexes.get(identifier) + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
@@ -7152,15 +7204,13 @@ function build(syntax, marker, splitter = '') {
       const def = initial ? (0, dom_1.html)('li', {
         id: defId,
         'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
-      }, [(0, dom_1.define)(ref.firstElementChild.cloneNode(true), {
-        hidden: null
-      }), (0, dom_1.html)('sup')]) : defs.get(identifier);
+      }, [content.cloneNode(true), (0, dom_1.html)('sup')]) : defs.get(identifier);
       initial && defs.set(identifier, def);
       const defIndex = initial ? total + defs.size : defIndexes.get(def);
       initial && defIndexes.set(def, defIndex);
-      const title = initial ? (0, indexee_1.text)(ref.firstElementChild).trim() : titles.get(identifier);
+      const title = initial ? text : titles.get(identifier);
       initial && titles.set(identifier, title);
-      ref.firstElementChild.hasAttribute('hidden') ? ref.lastElementChild.remove() : ref.firstElementChild.setAttribute('hidden', '');
+      ref.childElementCount > 1 && ref.lastElementChild.remove();
       (0, dom_1.define)(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
@@ -7185,7 +7235,7 @@ function build(syntax, marker, splitter = '') {
       }, marker(defIndex, abbr)));
       def.lastElementChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
-        title: abbr && (initial ? title : (0, indexee_1.text)(ref.firstElementChild).trim()) || undefined
+        title: abbr && text || undefined
       }, `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
@@ -8431,7 +8481,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.334 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.335 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8767,7 +8817,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.334 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.335 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
