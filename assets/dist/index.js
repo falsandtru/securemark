@@ -1395,7 +1395,7 @@ exports["default"] = global;
 
 
 // @ts-ignore
-var global = globalThis;
+var global = (/* unused pure expression or super */ null && (globalThis));
 
 /***/ }),
 
