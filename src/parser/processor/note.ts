@@ -1,5 +1,6 @@
 import { identity, signature, text } from '../inline/extension/indexee';
 import { markInvalid, unmarkInvalid } from '../util';
+import { memoize } from 'spica/memoize';
 import { html, define } from 'typed-dom/dom';
 
 export function* note(
@@ -26,12 +27,38 @@ export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
 function build(
   syntax: 'annotation' | 'reference',
-  marker: (index: number, abbr: string | undefined) => string,
+  marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
+  const memory = memoize((ref: HTMLElement): {
+    readonly content: Element;
+    readonly identifier: string;
+    readonly abbr: string;
+    readonly text: string;
+  } => {
+    const content = ref.firstElementChild!;
+    content.replaceWith(content.cloneNode());
+    const abbr = ref.getAttribute('data-abbr') ?? '';
+    const identifier = abbr
+      ? identity(
+          undefined,
+          (
+            abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ??
+            abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
+            abbr
+          ),
+          '')?.slice(2) || ''
+      : identity(undefined, signature(content), 'mark')?.slice(6) || '';
+    return {
+      content,
+      identifier,
+      abbr,
+      text: text(content).trim(),
+    };
+  }, new WeakMap());
   return function* (
     target: ParentNode & Node,
     note?: HTMLOListElement,
@@ -51,7 +78,7 @@ function build(
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (ref.closest('sup > [hidden]')) {
+      if (!target.contains(ref)) {
         yield;
         continue;
       }
@@ -69,17 +96,7 @@ function build(
           yield;
         }
       }
-      const abbr = ref.getAttribute('data-abbr') || undefined;
-      const identifier = abbr
-        ? identity(
-            undefined,
-            (
-              abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ??
-              abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
-              abbr
-            ),
-            '')?.slice(2) || ''
-        : identity(undefined, signature(ref.firstElementChild!), 'mark')?.slice(6) || '';
+      const { content, identifier, abbr, text } = memory(ref);
       const refSubindex = refSubindexes.get(identifier)! + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== ''
@@ -99,7 +116,7 @@ function build(
               id: defId,
               'data-marker': note ? undefined : marker(total + defs.size + 1, abbr),
             },
-            [define(ref.firstElementChild!.cloneNode(true), { hidden: null }), html('sup')])
+            [content.cloneNode(true), html('sup')])
         : defs.get(identifier)!;
       initial && defs.set(identifier, def);
       assert(def.lastElementChild?.matches('sup'));
@@ -107,14 +124,10 @@ function build(
         ? total + defs.size
         : defIndexes.get(def)!;
       initial && defIndexes.set(def, defIndex);
-      const title = initial
-        ? text(ref.firstElementChild!).trim()
-        : titles.get(identifier)!;
+      const title = initial ? text : titles.get(identifier)!;
       initial && titles.set(identifier, title);
       assert(syntax !== 'annotation' || title);
-      ref.firstElementChild!.hasAttribute('hidden')
-        ? ref.lastElementChild!.remove()
-        : ref.firstElementChild!.setAttribute('hidden', '');
+      ref.childElementCount > 1 && ref.lastElementChild!.remove();
       define(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
@@ -140,7 +153,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: abbr && (initial ? title : text(ref.firstElementChild!).trim()) || undefined,
+            title: abbr && text || undefined,
           },
           `^${++refIndex}`));
     }

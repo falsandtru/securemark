@@ -193,19 +193,19 @@ describe('Unit: parser/api/bind', () => {
         [
           html('p', [
             html('sup', { class: "reference", id: "reference::ref:1:1", title: "1" }, [
-              html('span', { hidden: '' }, '1'),
+              html('span'),
               html('a', { href: "#reference::def:1" }, '[1]'),
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "reference", id: "reference::ref:2:1", title: "2" }, [
-              html('span', { hidden: '' }, '2'),
+              html('span'),
               html('a', { href: "#reference::def:2" }, '[2]'),
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "reference", id: "reference::ref:3:1", title: "3" }, [
-              html('span', { hidden: '' }, '3'),
+              html('span'),
               html('a', { href: "#reference::def:3" }, '[3]'),
             ]),
           ]).outerHTML,

@@ -28,7 +28,7 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:a_b:1', title: 'a b' }, [
-                html('span', { hidden: '' }, 'a b'),
+                html('span'),
                 html('a', { href: '#annotation::def:a_b:1' }, '*1')
               ]),
             ]).outerHTML,
@@ -54,11 +54,11 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:1:1', title: '1' }, [
-                html('span', { hidden: '' }, '1'),
+                html('span'),
                 html('a', { href: '#annotation::def:1:1' }, '*1')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:12345678901234567890:1', title: '12345678901234567890' }, [
-                html('span', { hidden: '' }, '12345678901234567890'),
+                html('span'),
                 html('a', { href: '#annotation::def:12345678901234567890:1' }, '*2')
               ]),
             ]).outerHTML,
@@ -88,23 +88,23 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:1:1', title: '1' }, [
-                html('span', { hidden: '' }, '1'),
+                html('span'),
                 html('a', { href: '#annotation::def:1:1' }, '*1')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:2:1', title: '2' }, [
-                html('span', { hidden: '' }, '2'),
+                html('span'),
                 html('a', { href: '#annotation::def:2:1' }, '*2')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:3:1', title: '3' }, [
-                html('span', { hidden: '' }, '3'),
+                html('span'),
                 html('a', { href: '#annotation::def:3:1' }, '*3')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:2:2', title: '2' }, [
-                html('span', { hidden: '' }, '2'),
+                html('span'),
                 html('a', { href: '#annotation::def:2:1' }, '*2')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:4:1', title: '4' }, [
-                html('span', { hidden: '' }, '4'),
+                html('span'),
                 html('a', { href: '#annotation::def:4:1' }, '*4')
               ]),
             ]).outerHTML,
@@ -151,9 +151,9 @@ describe('Unit: parser/processor/note', () => {
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><section><p><sup class="annotation disabled" title="1"><span hidden="">1</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1"><span>1</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote><section><p><sup class="annotation disabled" title="2"><span hidden="">2</span><a>*1</a></sup><br>~~~</p><ol class="annotations"><li data-marker="*1"><span>2</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">((3))</pre><hr><section><p><sup class="annotation disabled" title="3"><span hidden="">3</span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1"><span>3</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></aside>',
-            '<p><sup class="annotation" id="annotation::ref:4:1" title="4"><span hidden="">4</span><a href="#annotation::def:4:1">*1</a></sup></p>',
+            '<blockquote><blockquote><section><p><sup class="annotation disabled" title="1"><span></span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1"><span>1</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote><section><p><sup class="annotation disabled" title="2"><span></span><a>*1</a></sup><br>~~~</p><ol class="annotations"><li data-marker="*1"><span>2</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></blockquote>',
+            '<aside class="example" data-type="markdown"><pre translate="no">((3))</pre><hr><section><p><sup class="annotation disabled" title="3"><span></span><a>*1</a></sup></p><ol class="annotations"><li data-marker="*1"><span>3</span><sup><a>^1</a></sup></li></ol><h2>References</h2><ol class="references"></ol></section></aside>',
+            '<p><sup class="annotation" id="annotation::ref:4:1" title="4"><span></span><a href="#annotation::def:4:1">*1</a></sup></p>',
           ]);
         assert.deepStrictEqual(
           note.outerHTML,
@@ -170,7 +170,7 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:1:1', title: '1' }, [
-                html('span', { hidden: '' }, '1'),
+                html('span'),
                 html('a', { href: '#annotation::def:1:1' }, '*1')
               ]),
             ]).outerHTML,
@@ -183,19 +183,19 @@ describe('Unit: parser/processor/note', () => {
             html('h2', { id: 'index::a' }, 'a').outerHTML,
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:2:1', title: '2' }, [
-                html('span', { hidden: '' }, '2'),
+                html('span'),
                 html('a', { href: '#annotation::def:2:1' }, '*2')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:1:2', title: '1' }, [
-                html('span', { hidden: '' }, '1'),
+                html('span'),
                 html('a', { href: '#annotation::def:1:2' }, '*3')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:3:1', title: '3' }, [
-                html('span', { hidden: '' }, '3'),
+                html('span'),
                 html('a', { href: '#annotation::def:3:1' }, '*4')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:2:2', title: '2' }, [
-                html('span', { hidden: '' }, '2'),
+                html('span'),
                 html('a', { href: '#annotation::def:2:1' }, '*2')
               ]),
             ]).outerHTML,
@@ -219,7 +219,7 @@ describe('Unit: parser/processor/note', () => {
             html('h2', { id: 'index::b' }, 'b').outerHTML,
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:2:3', title: '2' }, [
-                html('span', { hidden: '' }, '2'),
+                html('span'),
                 html('a', { href: '#annotation::def:2:2' }, '*5')
               ]),
             ]).outerHTML,
@@ -243,7 +243,7 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation:0:ref:a_b:1', title: 'a b' }, [
-                html('span', { hidden: '' }, 'a b'),
+                html('span'),
                 html('a', { href: '#annotation:0:def:a_b:1' }, '*1')
               ]),
             ]).outerHTML,
@@ -272,7 +272,7 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'reference', id: 'reference::ref:a_b:1', title: 'a b' }, [
-                html('span', { hidden: '' }, 'a b'),
+                html('span'),
                 html('a', { href: '#reference::def:a_b' }, '[1]')
               ]),
             ]).outerHTML,
@@ -298,15 +298,15 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'reference', 'data-abbr': 'A 1', id: 'reference::ref:A_1:1', title: 'b' }, [
-                html('span', { hidden: '' }, 'b'),
+                html('span'),
                 html('a', { href: '#reference::def:A_1' }, '[A 1]')
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'A 1', id: 'reference::ref:A_1:2', title: 'b' }, [
-                html('span', { hidden: '' }),
+                html('span'),
                 html('a', { href: '#reference::def:A_1' }, '[A 1]')
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'A 1', id: 'reference::ref:A_1:3', title: 'b' }, [
-                html('span', { hidden: '' }),
+                html('span'),
                 html('a', { href: '#reference::def:A_1' }, '[A 1]')
               ]),
             ]).outerHTML,
@@ -337,16 +337,11 @@ describe('Unit: parser/processor/note', () => {
           [
             html('p', [
               html('sup', { class: 'annotation', id: 'annotation::ref:a:1', title: 'a' }, [
-                html('span', { hidden: '' }, [
-                  'a',
-                  html('sup', { class: 'reference', 'data-abbr': 'B' }, [
-                    html('span'),
-                  ]),
-                ]),
+                html('span'),
                 html('a', { href: '#annotation::def:a:1' }, '*1')
               ]),
               html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:1', title: 'c' }, [
-                html('span', { hidden: '' }, 'c'),
+                html('span'),
                 html('a', { href: '#reference::def:B' }, '[B]')
               ]),
             ]).outerHTML,
@@ -355,7 +350,7 @@ describe('Unit: parser/processor/note', () => {
                 html('span', [
                   'a',
                   html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:2', title: 'c' }, [
-                    html('span', { hidden: '' }),
+                    html('span'),
                     html('a', { href: '#reference::def:B' }, '[B]')
                   ]),
                 ]),
