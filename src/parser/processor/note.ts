@@ -12,11 +12,6 @@ export function* note(
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  for (let es = target.querySelectorAll(`.annotations`),
-           len = es.length, i = 0; i < len; ++i) {
-    const el = es[i];
-    el.parentNode === target && el.remove();
-  }
   yield* annotation(target, notes?.annotations, opts, bottom);
   yield* reference(target, notes?.references, opts, bottom);
   return;
@@ -28,9 +23,10 @@ export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 function build(
   syntax: 'annotation' | 'reference',
   marker: (index: number, abbr: string) => string,
-  splitter: string = '',
+  splitter?: string,
 ) {
   assert(syntax.match(/^[a-z]+$/));
+  splitter = splitter?.concat(`, .${syntax}s`) ?? `.${syntax}s`;
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   const memory = memoize((ref: HTMLElement): {
@@ -65,13 +61,15 @@ function build(
     opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+    assert(splitter = splitter!);
     const defs = new Map<string, HTMLLIElement>();
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
     const titles = new Map<string, string>();
     const defIndexes = new Map<HTMLLIElement, number>();
     const refSubindexes = new Map<string, number>();
-    const defSubindexes = splitter && refs.length > 0 ? new Map<string, number>() : undefined;
-    const splitters = splitter && refs.length > 0 ? target.querySelectorAll(splitter) : [];
+    const defSubindexes = new Map<string, number>();
+    const split = splitter.includes(',');
+    const splitters = split ? target.querySelectorAll(splitter) : [];
     let iSplitters = 0;
     let total = 0;
     let format: 'number' | 'abbr';
@@ -82,18 +80,26 @@ function build(
         yield;
         continue;
       }
-      if (splitter) for (
+      if (split) for (
         let el: Element;
-        (el = splitters[iSplitters])?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
+        el = splitters[iSplitters],
+        el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
         ++iSplitters) {
+        if (~iSplitters << 32 - 8 === 0) yield;
         if (el.parentNode !== target) continue;
+        if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
+          assert(el.matches(`.${syntax}s`));
+          el.remove();
+          continue;
+        }
         if (defs.size > 0) {
           total += defs.size;
-          yield* proc(defs, target.insertBefore(html('ol', { class: `${syntax}s` }), el));
+          const note = el.tagName === 'OL'
+            ? el as HTMLOListElement
+            : target.insertBefore(html('ol', { class: `${syntax}s` }), el);
+          assert(note.parentNode);
+          yield* proc(defs, note);
           assert(defs.size === 0);
-        }
-        else if (~iSplitters % 128 === 0) {
-          yield;
         }
       }
       const { content, identifier, abbr, text } = memory(ref);
@@ -102,13 +108,13 @@ function build(
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}`
         : undefined;
-      const initial = splitter
+      const initial = split
         ? !defs.has(identifier)
         : refSubindex === 1;
       const defSubindex = defSubindexes?.get(identifier)! + +initial || 1;
       initial && defSubindexes?.set(identifier, defSubindex);
       const defId = opts.id !== ''
-        ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}`
+        ? `${syntax}:${opts.id ?? ''}:def:${identifier}${split ? `:${defSubindex}` : ''}`
         : undefined;
       const def = initial
         ? html('li',
@@ -158,7 +164,22 @@ function build(
           `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      yield* proc(defs, note ?? target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[iSplitters] ?? bottom));
+      const el = splitters[iSplitters];
+      note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1]
+        ? (++iSplitters, el as HTMLOListElement)
+        : target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[iSplitters] ?? bottom);
+      yield* proc(defs, note);
+    }
+    if (split) for (
+      let el: Element;
+      el = splitters[iSplitters];
+      ++iSplitters) {
+      if (~iSplitters << 32 - 8 === 0) yield;
+      if (el.parentNode !== target) continue;
+      if (el.tagName === 'OL') {
+        assert(el.matches(`.${syntax}s`));
+        el.remove();
+      }
     }
     return;
   }
