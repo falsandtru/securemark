@@ -580,7 +580,7 @@ class Cache {
             LFU.unshift(this.overlap(entry));
             entry.partition = 'LFU';
             this.injection = 0;
-            this.declination = this.overlapLRU * 100 < LFU.length * this.sample ? 1 : (0, alias_1.min)(this.declination * 1.5, 10);
+            this.declination = this.overlapLRU * 100 < LFU.length * this.sample ? 1 : (0, alias_1.min)(this.declination * 1.5, 5);
           }
         }
         if (this.sweeper.isActive()) {
@@ -634,7 +634,7 @@ class Cache {
         if (entry === LRU.head) return;
         entry.affiliation = 'LFU';
       } else {
-        const delta = LRU.length > LFU.length && LRU.length >= this.capacity - this.partition ? LRU.length / (LFU.length || 1) * (0, alias_1.max)(this.overlapLRU / this.overlapLFU, 1) | 0 || 1 : 1;
+        const delta = LRU.length >= this.capacity - this.partition ? (0, alias_1.max)(LRU.length / (LFU.length || 1) * (0, alias_1.max)(this.overlapLRU / this.overlapLFU, 1) | 0, 1) : 0;
         this.partition = (0, alias_1.min)(this.partition + delta, this.capacity - this.window);
         --this.overlapLFU;
       }
@@ -643,7 +643,7 @@ class Cache {
       entry.partition = 'LFU';
     } else {
       if (entry.affiliation === 'LFU') {} else {
-        const delta = LFU.length > LRU.length && LFU.length >= this.partition ? LFU.length / (LRU.length || 1) * (0, alias_1.max)(this.overlapLFU / this.overlapLRU, 1) | 0 || 1 : 1;
+        const delta = LFU.length >= this.partition ? (0, alias_1.max)(LFU.length / (LRU.length || 1) * (0, alias_1.max)(this.overlapLFU / this.overlapLRU, 1) | 0, 1) : 0;
         this.partition = (0, alias_1.max)(this.partition - delta, 0);
         entry.affiliation = 'LFU';
         --this.overlapLRU;
@@ -1522,9 +1522,9 @@ class Heap {
     this.$length = 0;
   }
 }
+exports.Heap = Heap;
 Heap.max = (a, b) => a > b ? -1 : a < b ? 1 : 0;
 Heap.min = (a, b) => a > b ? 1 : a < b ? -1 : 0;
-exports.Heap = Heap;
 function sort(cmp, array, index, length, stable) {
   if (length === 0) return false;
   switch (index) {
@@ -1666,9 +1666,9 @@ class MultiHeap {
     this.$length = 0;
   }
 }
+exports.MultiHeap = MultiHeap;
 MultiHeap.max = Heap.max;
 MultiHeap.min = Heap.min;
-exports.MultiHeap = MultiHeap;
 
 /***/ }),
 
@@ -1815,7 +1815,7 @@ exports.List = List;
     }
   }
   List.Node = Node;
-})(List = exports.List || (exports.List = {}));
+})(List || (exports.List = List = {}));
 
 /***/ }),
 
@@ -2028,10 +2028,10 @@ class PriorityQueue {
     return;
   }
 }
+exports.PriorityQueue = PriorityQueue;
 PriorityQueue.priority = Symbol('priority');
 PriorityQueue.max = heap_1.Heap.max;
 PriorityQueue.min = heap_1.Heap.min;
-exports.PriorityQueue = PriorityQueue;
 class MultiQueue {
   constructor(entries) {
     this.dict = new Map();
@@ -2235,7 +2235,7 @@ exports.xorshift = xorshift;
     return () => rng() / (max + 1);
   }
   xorshift.random = random;
-})(xorshift = exports.xorshift || (exports.xorshift = {}));
+})(xorshift || (exports.xorshift = xorshift = {}));
 const uint32n = n => n & 2n ** 32n - 1n;
 const uint64n = n => n & 2n ** 64n - 1n;
 // https://www.pcg-random.org/download.html
@@ -2286,7 +2286,7 @@ exports.pcg32 = pcg32;
     return seed;
   }
   pcg32.advance = advance;
-})(pcg32 = exports.pcg32 || (exports.pcg32 = {}));
+})(pcg32 || (exports.pcg32 = pcg32 = {}));
 
 /***/ }),
 
@@ -2605,6 +2605,7 @@ class ReadonlyURL {
     return this.href;
   }
 }
+exports.ReadonlyURL = ReadonlyURL;
 // Can't freeze URL object in the Firefox extension environment.
 // ref: https://github.com/falsandtru/pjax-api/issues/44#issuecomment-633915035
 // Bug: Error in dependents.
@@ -2612,7 +2613,6 @@ class ReadonlyURL {
 ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
   url: new __webpack_require__.g.URL(url, base)
 }), (url, base = '') => `${base.indexOf('\n') > -1 ? base.replace(/\n+/g, '') : base}\n${url}`, new cache_1.Cache(10000));
-exports.ReadonlyURL = ReadonlyURL;
 
 /***/ }),
 
@@ -3575,6 +3575,7 @@ class Delimiters {
     return false;
   }
 }
+exports.Delimiters = Delimiters;
 _a = Delimiters;
 Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
   switch (typeof pattern) {
@@ -3586,7 +3587,6 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
       return (0, memoize_1.reduce)(source => pattern.test(source) || undefined);
   }
 }, _a.signature);
-exports.Delimiters = Delimiters;
 
 /***/ }),
 
@@ -4135,8 +4135,8 @@ exports.caches = void 0;
 const cache_1 = __webpack_require__(9210);
 // For rerendering in editing.
 exports.caches = {
-  code: new cache_1.Cache(100),
-  math: new cache_1.Cache(100),
+  code: new cache_1.Cache(1000),
+  math: new cache_1.Cache(10000),
   media: new cache_1.Cache(100)
 };
 
@@ -7133,10 +7133,6 @@ const util_1 = __webpack_require__(9437);
 const memoize_1 = __webpack_require__(1808);
 const dom_1 = __webpack_require__(3252);
 function* note(target, notes, opts = {}, bottom = null) {
-  for (let es = target.querySelectorAll(`.annotations`), len = es.length, i = 0; i < len; ++i) {
-    const el = es[i];
-    el.parentNode === target && el.remove();
-  }
   yield* (0, exports.annotation)(target, notes?.annotations, opts, bottom);
   yield* (0, exports.reference)(target, notes?.references, opts, bottom);
   return;
@@ -7144,7 +7140,8 @@ function* note(target, notes, opts = {}, bottom = null) {
 exports.note = note;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
-function build(syntax, marker, splitter = '') {
+function build(syntax, marker, splitter) {
+  splitter = splitter?.concat(`, .${syntax}s`) ?? `.${syntax}s`;
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   const memory = (0, memoize_1.memoize)(ref => {
@@ -7165,8 +7162,9 @@ function build(syntax, marker, splitter = '') {
     const titles = new Map();
     const defIndexes = new Map();
     const refSubindexes = new Map();
-    const defSubindexes = splitter && refs.length > 0 ? new Map() : undefined;
-    const splitters = splitter && refs.length > 0 ? target.querySelectorAll(splitter) : [];
+    const defSubindexes = new Map();
+    const split = splitter.includes(',');
+    const splitters = split ? target.querySelectorAll(splitter) : [];
     let iSplitters = 0;
     let total = 0;
     let format;
@@ -7177,15 +7175,19 @@ function build(syntax, marker, splitter = '') {
         yield;
         continue;
       }
-      if (splitter) for (let el; (el = splitters[iSplitters])?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
+      if (split) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
+        if (~iSplitters << 32 - 8 === 0) yield;
         if (el.parentNode !== target) continue;
+        if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
+          el.remove();
+          continue;
+        }
         if (defs.size > 0) {
           total += defs.size;
-          yield* proc(defs, target.insertBefore((0, dom_1.html)('ol', {
+          const note = el.tagName === 'OL' ? el : target.insertBefore((0, dom_1.html)('ol', {
             class: `${syntax}s`
-          }), el));
-        } else if (~iSplitters % 128 === 0) {
-          yield;
+          }), el);
+          yield* proc(defs, note);
         }
       }
       const {
@@ -7197,10 +7199,10 @@ function build(syntax, marker, splitter = '') {
       const refSubindex = refSubindexes.get(identifier) + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
-      const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
+      const initial = split ? !defs.has(identifier) : refSubindex === 1;
       const defSubindex = defSubindexes?.get(identifier) + +initial || 1;
       initial && defSubindexes?.set(identifier, defSubindex);
-      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
+      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${split ? `:${defSubindex}` : ''}` : undefined;
       const def = initial ? (0, dom_1.html)('li', {
         id: defId,
         'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
@@ -7239,9 +7241,18 @@ function build(syntax, marker, splitter = '') {
       }, `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      yield* proc(defs, note ?? target.insertBefore((0, dom_1.html)('ol', {
+      const el = splitters[iSplitters];
+      note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1] ? (++iSplitters, el) : target.insertBefore((0, dom_1.html)('ol', {
         class: `${syntax}s`
-      }), splitters[iSplitters] ?? bottom));
+      }), splitters[iSplitters] ?? bottom);
+      yield* proc(defs, note);
+    }
+    if (split) for (let el; el = splitters[iSplitters]; ++iSplitters) {
+      if (~iSplitters << 32 - 8 === 0) yield;
+      if (el.parentNode !== target) continue;
+      if (el.tagName === 'OL') {
+        el.remove();
+      }
     }
     return;
   };
@@ -7690,7 +7701,7 @@ var blank;
 (function (blank) {
   blank.line = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
   blank.start = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
-})(blank = exports.blank || (exports.blank = {}));
+})(blank || (exports.blank = blank = {}));
 function visualize(parser) {
   return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
 }
