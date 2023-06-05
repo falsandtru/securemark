@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.278.0
+
+- Extend account syntax.
+
 ## 0.277.0
 
 - Revert emphasis syntax and strong syntax.

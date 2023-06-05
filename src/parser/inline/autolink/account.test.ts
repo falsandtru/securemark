@@ -33,10 +33,12 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@a-')), [['<a class="account" href="/@a">@a</a>'], '-']);
       assert.deepStrictEqual(inspect(parser('@a-b')), [['<a class="account" href="/@a-b">@a-b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a--b')), [['<a class="account" href="/@a">@a</a>'], '--b']);
+      assert.deepStrictEqual(inspect(parser('@a.')), [['<a class="account" href="/@a">@a</a>'], '.']);
+      assert.deepStrictEqual(inspect(parser('@a.domain.com')), [['<a class="account" href="/@a.domain.com">@a.domain.com</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@http://host')), [['<a class="account" href="/@http">@http</a>'], '://host']);
       assert.deepStrictEqual(inspect(parser('@ttp://host')), [['<a class="account" href="/@ttp">@ttp</a>'], '://host']);
       assert.deepStrictEqual(inspect(parser('@domain/a')), [['<a class="account" href="https://domain/@a" target="_blank">@domain/a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@domain.co.jp/a')), [['<a class="account" href="https://domain.co.jp/@a" target="_blank">@domain.co.jp/a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@domain.com/a')), [['<a class="account" href="https://domain.com/@a" target="_blank">@domain.com/a</a>'], '']);
     });
 
   });

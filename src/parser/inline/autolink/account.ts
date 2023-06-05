@@ -13,7 +13,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
     '@',
     tails([
       str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i),
-      str(/^[a-z][0-9a-z]*(?:-[0-9a-z]+)*/i),
+      str(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i),
     ]))),
   convert(
     source =>
