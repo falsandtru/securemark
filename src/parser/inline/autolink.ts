@@ -12,7 +12,7 @@ import { Syntax, State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>
-  validate(/^(?:[@#>0-9a-z\r\n]|\S[#>])/i,
+  validate(/^(?:[@#>0-9a-z\r\n]|\S[#>])/iu,
   constraint(State.autolink, false,
   syntax(Syntax.autolink, 1, 1, ~State.shortcut,
   union([
