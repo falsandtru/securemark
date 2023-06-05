@@ -8,7 +8,7 @@ import { define } from 'typed-dom/dom';
 
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => fmap(rewrite(
   constraint(State.shortcut, false,
-  open('#', str(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|')/u.source.replace(/emoji/, emoji), 'u')))),
+  open('#', str(new RegExp(/^[0-9]{1,9}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, emoji), 'u')))),
   convert(
     source => `[${source}]{ ${source.slice(1)} }`,
     union([unsafelink]))),

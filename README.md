@@ -47,7 +47,7 @@ Secure markdown renderer working on browsers for user input data.
 - Blockquote (>, !>)
 - Preformattedtext (```)
 - Pagebreak (===)
-- Inline markups (_, *, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
+- Inline markups (*, **, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
 - Inline HTML tags (\<bdi>, \<bdo>)
 - Autolink (https://host, user@host, @user)
 - Shortmedia (!https://host/image.png, !https://youtu.be/...)
@@ -65,16 +65,16 @@ Secure markdown renderer working on browsers for user input data.
 
 ## Operator precedence
 
-|P| Operators        |
-|-|------------------|
-|9| \n, \\\n         |
-|8| `                |
-|6| (()), [[]], ${}$ |
-|5| \<tag>\</tag>    |
-|4| [% %]            |
-|3| $, "             |
-|2| (), [], {}       |
-|1| _, *, ==, ++, ~~ |
+|P| Operators         |
+|-|-------------------|
+|9| \n, \\\n          |
+|8| `                 |
+|6| (()), [[]], ${}$  |
+|5| \<tag>\</tag>     |
+|4| [% %]             |
+|3| $, "              |
+|2| (), [], {}        |
+|1| *, **, ==, ++, ~~ |
 
 ## Dependencies
 

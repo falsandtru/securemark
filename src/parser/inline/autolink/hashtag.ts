@@ -15,8 +15,8 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
   open(
     '#',
     str(new RegExp([
-      /^(?=(?:[0-9]{1,15})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source,
-      /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
+      /^(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')))/u.source,
+      /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
     ].join('').replace(/emoji/g, emoji), 'u')))),
   convert(
     source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,

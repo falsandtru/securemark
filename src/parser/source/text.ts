@@ -32,7 +32,6 @@ export const text: TextParser = creation(1, false, ({ source, context }) => {
           }
         case '\n':
           return [[html('br')], source.slice(1)];
-        case '_':
         case '*':
         case '+':
         case '~':

@@ -7,38 +7,47 @@ describe('Unit: parser/inline/emphasis', () => {
     const parser = (source: string) => some(emphasis)({ source, context: {} });
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_a')), [['_', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('_a _')), [['_', 'a'], ' _']);
-      assert.deepStrictEqual(inspect(parser('_a  _')), [['_', 'a', ' '], ' _']);
-      assert.deepStrictEqual(inspect(parser('_a\n_')), [['_', 'a'], '\n_']);
-      assert.deepStrictEqual(inspect(parser('_a\nb_')), [['_', 'a'], '\nb_']);
-      assert.deepStrictEqual(inspect(parser('_a\\ _')), [['_', 'a'], '\\ _']);
-      assert.deepStrictEqual(inspect(parser('_a\\\n_')), [['_', 'a'], '\\\n_']);
-      assert.deepStrictEqual(inspect(parser('_a\\\nb_')), [['_', 'a'], '\\\nb_']);
-      assert.deepStrictEqual(inspect(parser('_ _')), undefined);
-      assert.deepStrictEqual(inspect(parser('_ a_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_ a _')), undefined);
-      assert.deepStrictEqual(inspect(parser('_\n_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_\na_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_\\ a_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_\\\na_')), undefined);
-      assert.deepStrictEqual(inspect(parser('_<wbr>a_')), undefined);
-      assert.deepStrictEqual(inspect(parser(' _a_')), undefined);
+      assert.deepStrictEqual(inspect(parser('*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*a')), [['*', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('*a *')), [['*', 'a'], ' *']);
+      assert.deepStrictEqual(inspect(parser('*a  *')), [['*', 'a', ' '], ' *']);
+      assert.deepStrictEqual(inspect(parser('*a\n*')), [['*', 'a'], '\n*']);
+      assert.deepStrictEqual(inspect(parser('*a\nb*')), [['*', 'a'], '\nb*']);
+      assert.deepStrictEqual(inspect(parser('*a\\ *')), [['*', 'a'], '\\ *']);
+      assert.deepStrictEqual(inspect(parser('*a\\\n*')), [['*', 'a'], '\\\n*']);
+      assert.deepStrictEqual(inspect(parser('*a\\\nb*')), [['*', 'a'], '\\\nb*']);
+      assert.deepStrictEqual(inspect(parser('*a**b')), [['*', 'a', '**', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**b*')), [['*', 'a', '**', 'b', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('* *')), undefined);
+      assert.deepStrictEqual(inspect(parser('* a*')), undefined);
+      assert.deepStrictEqual(inspect(parser('* a *')), undefined);
+      assert.deepStrictEqual(inspect(parser('*\n*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*\na*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*\\ a*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*\\\na*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*<wbr>a*')), undefined);
+      assert.deepStrictEqual(inspect(parser('**a**')), undefined);
+      assert.deepStrictEqual(inspect(parser('***a***')), undefined);
+      assert.deepStrictEqual(inspect(parser(' *a*')), undefined);
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('_a_')), [['<em>a</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_ab_')), [['<em>ab</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a*')), [['<em>a</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*ab*')), [['<em>ab</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**')), [['<em>a</em>'], '*']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('_a _b__')), [['<em>a <em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a *b*_')), [['<em>a <strong>b</strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a\\ _b__')), [['<em>a <em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a&Tab;_b__')), [['<em>a\t<em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_a<wbr>_b__')), [['<em>a<wbr><em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('_(_a_)_')), [['<em><span class="paren">(<em>a</em>)</span></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a *b**')), [['<em>a <em>b</em></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a **b***')), [['<em>a <strong>b</strong></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a\\ *b**')), [['<em>a <em>b</em></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a&Tab;*b**')), [['<em>a\t<em>b</em></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a<wbr>*b**')), [['<em>a<wbr><em>b</em></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**b**c*')), [['<em>a<strong>b</strong>c</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**b**c*d')), [['<em>a<strong>b</strong>c</em>'], 'd']);
+      assert.deepStrictEqual(inspect(parser('*`a`*')), [['<em><code data-src="`a`">a</code></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em><span class="paren">(<em>a</em>)</span></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*(**a**)*')), [['<em><span class="paren">(<strong>a</strong>)</span></em>'], '']);
     });
 
   });

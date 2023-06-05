@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, syntax, constraint, validate, focus, lazy, fmap } from '../../combinator';
+import { union, some, syntax, constraint, validate, lazy, fmap } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -21,24 +21,17 @@ export const autolink: AutolinkParser = lazy(() =>
       url,
       email,
       // Escape unmatched email-like strings.
-      focus(
-        /^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z])*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i,
-        ({ source }) => {
-          if (source.length > 255 || source.includes('@')) return [[source], ''];
-          const i = source.indexOf('_');
-          if (i === -1) return [[source], ''];
-          return [[source.slice(0, i)], source.slice(i)];
-        }),
+      str(/^[0-9a-z]+(?:[_.+-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i),
       channel,
       account,
       // Escape unmatched account-like strings.
       str(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i),
       // Escape invalid leading characters.
-      str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/u.source.replace('emoji', emoji), 'u')),
+      str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', emoji), 'u')),
       hashtag,
       hashnum,
       // Escape unmatched hashtag-like strings.
-      str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|')*/u.source.replace('emoji', emoji), 'u')),
+      str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', emoji), 'u')),
       // Escape invalid leading characters.
       str(/^[0-9\p{Sc}](?=>)/u),
       anchor,

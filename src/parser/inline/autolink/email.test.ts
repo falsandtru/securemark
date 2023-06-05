@@ -8,9 +8,6 @@ describe('Unit: parser/inline/autolink/email', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('a_b')), [['a'], '_b']);
-      assert.deepStrictEqual(inspect(parser('a_b_c')), [['a'], '_b_c']);
-      assert.deepStrictEqual(inspect(parser(`a_${'b'.repeat(255 - 2)}@`)), [[`a_${'b'.repeat(255 - 2)}@`], '']);
       assert.deepStrictEqual(inspect(parser('a@')), [['a@'], '']);
       assert.deepStrictEqual(inspect(parser('a@+')), [['a@'], '+']);
       assert.deepStrictEqual(inspect(parser('a@_')), [['a@'], '_']);

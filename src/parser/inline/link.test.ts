@@ -175,7 +175,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[@a@b]{c}')), [['<a class="link" href="c">@a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a@b]{c}')), [['<a class="link" href="c">a@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[*a*]{b}')), [['<a class="link" href="b"><strong>a</strong></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[*a*]{b}')), [['<a class="link" href="b"><em>a</em></a>'], '']);
     });
 
     it('external', () => {

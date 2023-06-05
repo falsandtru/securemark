@@ -2,6 +2,7 @@
 
 ## 0.277.0
 
+- Revert emphasis syntax and strong syntax.
 - Rename comment syntax to remark syntax.
 
 ## 0.276.5
