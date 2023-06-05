@@ -5761,7 +5761,7 @@ const combinator_1 = __webpack_require__(2087);
 const annotation_1 = __webpack_require__(2736);
 const reference_1 = __webpack_require__(3555);
 const template_1 = __webpack_require__(4695);
-const comment_1 = __webpack_require__(8657);
+const remark_1 = __webpack_require__(3217);
 const math_1 = __webpack_require__(8946);
 const extension_1 = __webpack_require__(8053);
 const ruby_1 = __webpack_require__(6705);
@@ -5770,6 +5770,7 @@ const html_1 = __webpack_require__(5994);
 const insertion_1 = __webpack_require__(2945);
 const deletion_1 = __webpack_require__(7501);
 const mark_1 = __webpack_require__(2480);
+const emstrong_1 = __webpack_require__(6132);
 const emphasis_1 = __webpack_require__(3867);
 const strong_1 = __webpack_require__(6578);
 const code_1 = __webpack_require__(5771);
@@ -5779,7 +5780,7 @@ const shortmedia_1 = __webpack_require__(4189);
 const autolink_1 = __webpack_require__(6051);
 const bracket_1 = __webpack_require__(5196);
 const source_1 = __webpack_require__(6743);
-exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, comment_1.comment, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, link_1.linemedialink, media_1.linemedia, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.lineshortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]));
+exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, remark_1.remark, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, link_1.linemedialink, media_1.linemedia, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.lineshortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]));
 var indexee_1 = __webpack_require__(1269);
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
@@ -5851,22 +5852,15 @@ const hashnum_1 = __webpack_require__(5631);
 const anchor_1 = __webpack_require__(6495);
 const source_1 = __webpack_require__(6743);
 const util_1 = __webpack_require__(9437);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:[@#>0-9a-z\r\n]|\S[#>])/i, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, 1, ~1 /* State.shortcut */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:[@#>0-9a-z\r\n]|\S[#>])/iu, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, 1, ~1 /* State.shortcut */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
 // Escape unmatched email-like strings.
-(0, combinator_1.focus)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z])*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i, ({
-  source
-}) => {
-  if (source.length > 255 || source.includes('@')) return [[source], ''];
-  const i = source.indexOf('_');
-  if (i === -1) return [[source], ''];
-  return [[source.slice(0, i)], source.slice(i)];
-}), channel_1.channel, account_1.account,
+(0, source_1.str)(/^[0-9a-z]+(?:[_.+-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i), channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
 (0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i),
 // Escape invalid leading characters.
-(0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum,
+(0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum,
 // Escape unmatched hashtag-like strings.
-(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|')*/u.source.replace('emoji', hashtag_1.emoji), 'u')),
+(0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')),
 // Escape invalid leading characters.
 (0, source_1.str)(/^[0-9\p{Sc}](?=>)/u), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])])))));
 
@@ -5985,7 +5979,7 @@ const link_1 = __webpack_require__(9628);
 const hashtag_1 = __webpack_require__(5491);
 const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,16}(?![^\p{C}\p{S}\p{P}\s]|emoji|')/u.source.replace(/emoji/, hashtag_1.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,9}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, hashtag_1.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashnum',
   href: null
 })]));
@@ -6009,7 +6003,7 @@ const dom_1 = __webpack_require__(3252);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp([/^(?=(?:[0-9]{1,15})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|(?<!')'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source].join('').replace(/emoji/g, exports.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp([/^(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')))/u.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source].join('').replace(/emoji/g, exports.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
 })]));
 
@@ -6084,30 +6078,6 @@ function format(text) {
 
 /***/ }),
 
-/***/ 8657:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.comment = void 0;
-const combinator_1 = __webpack_require__(2087);
-const inline_1 = __webpack_require__(1160);
-const source_1 = __webpack_require__(6743);
-const memoize_1 = __webpack_require__(1808);
-const array_1 = __webpack_require__(8112);
-const dom_1 = __webpack_require__(3252);
-exports.comment = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0 /* Syntax.none */, 4, 1, 0 /* State.none */, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
-  class: 'comment'
-}, [(0, dom_1.html)('input', {
-  type: 'checkbox'
-}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), ([, fence]) => fence.length, [])))));
-
-/***/ }),
-
 /***/ 7501:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -6140,11 +6110,52 @@ Object.defineProperty(exports, "__esModule", ({
 exports.emphasis = void 0;
 const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
+const emstrong_1 = __webpack_require__(6132);
+const strong_1 = __webpack_require__(6578);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('_', '_'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('_'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '_', [[/^\\?\n/, 9]]), exports.emphasis)])))), (0, source_1.str)('_'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])))), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+
+/***/ }),
+
+/***/ 6132:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.emstrong = void 0;
+const combinator_1 = __webpack_require__(2087);
+const inline_1 = __webpack_require__(1160);
+const strong_1 = __webpack_require__(6578);
+const emphasis_1 = __webpack_require__(3867);
+const source_1 = __webpack_require__(6743);
+const visibility_1 = __webpack_require__(7618);
+const dom_1 = __webpack_require__(3252);
+const array_1 = __webpack_require__(8112);
+const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
+const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
+exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('***'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), inline_1.inline)])))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
+  switch (cs[0]) {
+    case '***':
+      return [[(0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))])], rest];
+    case '**':
+      return (0, combinator_1.bind)(subemphasis, (ds, rest) => rest.slice(0, 1) === '*' ? [[(0, dom_1.html)('em', (0, array_1.unshift)([(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], (0, dom_1.defrag)(ds)))], rest.slice(1)] : [(0, array_1.unshift)(['*', (0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], ds), rest])({
+        source: rest,
+        context
+      }) ?? [['*', (0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest];
+    case '*':
+      return (0, combinator_1.bind)(substrong, (ds, rest) => rest.slice(0, 2) === '**' ? [[(0, dom_1.html)('strong', (0, array_1.unshift)([(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], (0, dom_1.defrag)(ds)))], rest.slice(2)] : [(0, array_1.unshift)(['**', (0, dom_1.html)('em', (0, dom_1.defrag)(bs))], ds), rest])({
+        source: rest,
+        context
+      }) ?? [['**', (0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest];
+  }
+}, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -6242,7 +6253,7 @@ function index(source, optional = false) {
 exports.index = index;
 function signature(source) {
   const target = source.cloneNode(true);
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':
@@ -6263,7 +6274,7 @@ function signature(source) {
       case 'label':
         el.replaceWith(`[$${el.getAttribute('data-label').replace('$', '')}]`);
         continue;
-      case 'comment':
+      case 'remark':
       case 'checkbox':
       case 'annotation':
       case 'reference':
@@ -6276,7 +6287,7 @@ function signature(source) {
 exports.signature = signature;
 exports.text = (0, memoize_1.reduce)(source => {
   const target = source.cloneNode(true);
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':
@@ -6294,7 +6305,7 @@ exports.text = (0, memoize_1.reduce)(source => {
       case 'math':
         el.replaceWith(el.getAttribute('data-src'));
         continue;
-      case 'comment':
+      case 'remark':
       case 'checkbox':
       case 'annotation':
       case 'reference':
@@ -6826,6 +6837,30 @@ function attributes(ns) {
 
 /***/ }),
 
+/***/ 3217:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.remark = void 0;
+const combinator_1 = __webpack_require__(2087);
+const inline_1 = __webpack_require__(1160);
+const source_1 = __webpack_require__(6743);
+const memoize_1 = __webpack_require__(1808);
+const array_1 = __webpack_require__(8112);
+const dom_1 = __webpack_require__(3252);
+exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.syntax)(0 /* Syntax.none */, 4, 1, 0 /* State.none */, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+  class: 'remark'
+}, [(0, dom_1.html)('input', {
+  type: 'checkbox'
+}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), ([, fence]) => fence.length, [])))));
+
+/***/ }),
+
 /***/ 6705:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -6951,11 +6986,12 @@ Object.defineProperty(exports, "__esModule", ({
 exports.strong = void 0;
 const combinator_1 = __webpack_require__(2087);
 const inline_1 = __webpack_require__(1160);
+const emstrong_1 = __webpack_require__(6132);
 const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), exports.strong)])))), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('**', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])))), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest]));
 
 /***/ }),
 
@@ -7565,7 +7601,6 @@ exports.text = (0, combinator_1.creation)(1, false, ({
           }
         case '\n':
           return [[(0, dom_1.html)('br')], source.slice(1)];
-        case '_':
         case '*':
         case '+':
         case '~':
