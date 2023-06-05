@@ -2219,7 +2219,7 @@ function xorshift(seed = xorshift.seed()) {
     let x = seed;
     x ^= x << 13;
     x ^= x >> 17;
-    x ^= x << 5;
+    x ^= x << 15;
     return seed = x >>> 0;
   };
 }
@@ -7140,8 +7140,8 @@ function* note(target, notes, opts = {}, bottom = null) {
 exports.note = note;
 exports.annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 exports.reference = build('reference', (n, abbr) => `[${abbr || n}]`);
-function build(syntax, marker, splitter) {
-  splitter = splitter?.concat(`, .${syntax}s`) ?? `.${syntax}s`;
+function build(syntax, marker, splitter = '') {
+  splitter &&= `${splitter}, .${syntax}s`;
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
   const memory = (0, memoize_1.memoize)(ref => {
@@ -7163,8 +7163,7 @@ function build(syntax, marker, splitter) {
     const defIndexes = new Map();
     const refSubindexes = new Map();
     const defSubindexes = new Map();
-    const split = splitter.includes(',');
-    const splitters = split ? target.querySelectorAll(splitter) : [];
+    const splitters = splitter ? target.querySelectorAll(splitter) : [];
     let iSplitters = 0;
     let total = 0;
     let format;
@@ -7175,7 +7174,7 @@ function build(syntax, marker, splitter) {
         yield;
         continue;
       }
-      if (split) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
+      if (splitter) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
         if (el.parentNode !== target) continue;
         if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
@@ -7199,10 +7198,10 @@ function build(syntax, marker, splitter) {
       const refSubindex = refSubindexes.get(identifier) + 1 || 1;
       refSubindexes.set(identifier, refSubindex);
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
-      const initial = split ? !defs.has(identifier) : refSubindex === 1;
+      const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
       const defSubindex = defSubindexes?.get(identifier) + +initial || 1;
       initial && defSubindexes?.set(identifier, defSubindex);
-      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${split ? `:${defSubindex}` : ''}` : undefined;
+      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
       const def = initial ? (0, dom_1.html)('li', {
         id: defId,
         'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
@@ -7247,7 +7246,7 @@ function build(syntax, marker, splitter) {
       }), splitters[iSplitters] ?? bottom);
       yield* proc(defs, note);
     }
-    if (split) for (let el; el = splitters[iSplitters]; ++iSplitters) {
+    if (splitter) for (let el; el = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (el.parentNode !== target) continue;
       if (el.tagName === 'OL') {
