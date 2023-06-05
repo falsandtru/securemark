@@ -444,7 +444,7 @@
   }
   aside.example > hr {
     margin: 0;
-    border-block-start: solid 1px #ddd;
+    border-block-end: solid 1px #ddd;
     opacity: 1;
   }
   aside.aside {
@@ -482,6 +482,14 @@
   }
   .message > :last-child {
     margin-block-end: 0;
+  }
+  hr {
+    border-block-end: dashed 1px #ddd;
+    background-color: unset;
+    opacity: 1;
+  }
+  hr + hr {
+    display: none;
   }
   .cite, .quote {
     white-space: pre-wrap;
