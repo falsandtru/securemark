@@ -636,7 +636,7 @@ export namespace MarkdownParser {
       InlineParser.AnnotationParser,
       InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
-      InlineParser.CommentParser,
+      InlineParser.RemarkParser,
       InlineParser.MathParser,
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
@@ -714,9 +714,9 @@ export namespace MarkdownParser {
         ]> {
       }
     }
-    export interface CommentParser extends
-      // [% comment %]
-      Inline<'comment'>,
+    export interface RemarkParser extends
+      // [% remark %]
+      Inline<'remark'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
       ]> {

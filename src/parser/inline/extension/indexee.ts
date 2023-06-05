@@ -47,7 +47,7 @@ export function index(source: Element, optional = false): string {
 export function signature(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -69,7 +69,7 @@ export function signature(source: Element | DocumentFragment): string {
       case 'label':
         el.replaceWith(`[$${el.getAttribute('data-label')!.replace('$', '')}]`);
         continue;
-      case 'comment':
+      case 'remark':
       case 'checkbox':
       case 'annotation':
       case 'reference':
@@ -83,7 +83,7 @@ export function signature(source: Element | DocumentFragment): string {
 export const text = reduce((source: Element | DocumentFragment): string => {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .comment, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -102,7 +102,7 @@ export const text = reduce((source: Element | DocumentFragment): string => {
       case 'math':
         el.replaceWith(el.getAttribute('data-src')!);
         continue;
-      case 'comment':
+      case 'remark':
       case 'checkbox':
       case 'annotation':
       case 'reference':

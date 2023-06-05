@@ -1,4 +1,4 @@
-import { CommentParser } from '../inline';
+import { RemarkParser } from '../inline';
 import { union, some, syntax, validate, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
@@ -7,7 +7,7 @@ import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const comment: CommentParser = lazy(() => validate('[%', syntax(Syntax.none, 4, 1, State.none, match(
+export const remark: RemarkParser = lazy(() => validate('[%', syntax(Syntax.none, 4, 1, State.none, match(
   /^\[(%+)\s/,
   memoize(
   ([, fence]) =>
@@ -16,7 +16,7 @@ export const comment: CommentParser = lazy(() => validate('[%', syntax(Syntax.no
       some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]),
       close(some(text, /^\S/), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
-        html('span', { class: 'comment' }, [
+        html('span', { class: 'remark' }, [
           html('input', { type: 'checkbox' }),
           html('span', defrag(push(unshift(as, bs), cs))),
         ]),

@@ -58,14 +58,14 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('あ>>1')), [['<p>あ<a class="anchor" href="?at=1">&gt;&gt;1</a></p>'], '']);
     });
 
-    it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('[% a %]')), [['<p><span class="comment"><input type="checkbox"><span>[% a %]</span></span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[% a %]b')), [['<p><span class="comment"><input type="checkbox"><span>[% a %]</span></span>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[% a %]\nb')), [['<p><span class="comment"><input type="checkbox"><span>[% a %]</span></span><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% a %%]')), [['<p><span class="comment"><input type="checkbox"><span>[%% a %%]</span></span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]')), [['<p><span class="comment"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]a')), [['<p><span class="comment"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]\na')), [['<p><span class="comment"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>'], '']);
+    it('remark', () => {
+      assert.deepStrictEqual(inspect(parser('[% a %]')), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[% a %]b')), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[% a %]\nb')), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[%% a %%]')), [['<p><span class="remark"><input type="checkbox"><span>[%% a %%]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]')), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]a')), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]\na')), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>'], '']);
     });
 
     it('template', () => {

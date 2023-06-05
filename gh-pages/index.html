@@ -19,7 +19,7 @@
     font-family: Meiryo Italic;
     src: local('Meiryo');
   }
-  body, .comment {
+  body, .remark {
     font-family:
       -apple-system,
       Segoe UI,
@@ -646,29 +646,29 @@
     font-size: 95%;
     color: #666;
   }
-  .comment .paren {
+  .remark .paren {
     color: inherit;
   }
-  .comment {
+  .remark {
     font-style: initial;
     font-weight: initial;
     color: gray;
   }
-  .comment > input {
+  .remark > input {
     display: inline;
     appearance: none;
   }
-  .comment > input::before {
+  .remark > input::before {
     position: relative;
     content: "†";
     top: -0.3em;
     font-weight: 900;
     color: red;
   }
-  .comment > input:checked + span {
+  .remark > input:checked + span {
     display: none;
   }
-  :is(.code, .media) .comment::before {
+  :is(.code, .media) .remark::before {
     all: unset;
   }
   h1.error {
@@ -942,11 +942,11 @@
     '',
     'Reference syntax also generates footnotes[[^Abbr|A reference.]]((References are coordinated to _the references section_[[^Abbr]].)).',
     '',
-    '## Comment',
+    '## Remark',
     '',
-    'Comment syntax provides a communication method among authors and *_editors_*[% Comments can collapse by clicking the red dagger mark. %].',
+    'Remark syntax provides a communication method among authors and *_editors_*[% Remarks can collapse by clicking the red dagger mark. %].',
     '',
-    '\tYou must not use comment syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this].',
+    '\tDo not use remark syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this].',
     '',
     '## Link',
     '',

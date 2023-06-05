@@ -3,7 +3,7 @@ import { union, lazy } from '../combinator';
 import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
-import { comment } from './inline/comment';
+import { remark } from './inline/remark';
 import { math } from './inline/math';
 import { extension } from './inline/extension';
 import { ruby } from './inline/ruby';
@@ -26,7 +26,7 @@ export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
-export import CommentParser = InlineParser.CommentParser;
+export import RemarkParser = InlineParser.RemarkParser;
 export import MathParser = InlineParser.MathParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import RubyParser = InlineParser.RubyParser;
@@ -49,7 +49,7 @@ export const inline: InlineParser = lazy(() => union([
   annotation,
   reference,
   template,
-  comment,
+  remark,
   math,
   extension,
   ruby,

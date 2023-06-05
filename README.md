@@ -61,7 +61,7 @@ Secure markdown renderer working on browsers for user input data.
 - Channel (@user#tag)
 - Hashtag (#tag)
 - Template ({{ template }})
-- Comment ([% comment %])
+- Remark ([% remark %])
 
 ## Operator precedence
 
