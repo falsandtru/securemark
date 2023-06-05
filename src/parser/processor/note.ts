@@ -67,7 +67,8 @@ function build(
     const defIndexes = new Map<HTMLLIElement, number>();
     const refSubindexes = new Map<string, number>();
     const defSubindexes = new Map<string, number>();
-    const splitters = splitter ? target.querySelectorAll(splitter) : [];
+    const scope = target instanceof Element ? ':scope > ' : '';
+    const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
     let iSplitters = 0;
     let total = 0;
     let format: 'number' | 'abbr';
@@ -84,7 +85,7 @@ function build(
         el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
         ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (el.parentNode !== target) continue;
+        if (!scope && el.parentNode !== target) continue;
         if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
           assert(el.matches(`.${syntax}s`));
           el.remove();
@@ -173,7 +174,7 @@ function build(
       el = splitters[iSplitters];
       ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (el.parentNode !== target) continue;
+      if (!scope && el.parentNode !== target) continue;
       if (el.tagName === 'OL') {
         assert(el.matches(`.${syntax}s`));
         el.remove();

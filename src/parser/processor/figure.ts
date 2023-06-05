@@ -16,15 +16,16 @@ export function* figure(
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
+  const scope = target instanceof Element ? ':scope > ' : '';
   let base = '0';
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   for (
-    let defs = target.querySelectorAll('figure[data-label], h1, h2'),
+    let defs = target.querySelectorAll(`${scope}:is(figure[data-label], h1, h2)`),
         len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
-    if (def.parentNode !== target) continue;
+    if (!scope && def.parentNode !== target) continue;
     const { tagName } = def;
     if (bases.length === 1 && tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);

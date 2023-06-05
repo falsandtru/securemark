@@ -34,7 +34,7 @@ assert(identity(undefined, '0'.repeat(41) + '1'.repeat(38) + '2'.repeat(41) + 3,
 assert(identity(undefined, '0'.repeat(81) + '1'.repeat(38) + '2'.repeat(81) + 3, 'mark')!.slice(6) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
 
 export function index(source: Element, optional = false): string {
-  assert(source instanceof DocumentFragment || !source.matches('.indexer'));
+  assert(!source.matches('.indexer'));
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
