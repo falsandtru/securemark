@@ -1,7 +1,7 @@
 import { IListParser } from '../block';
 import { union, inits, some, creation, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
-import { ulist_, fillFirstLine } from './ulist';
-import { olist_, invalid } from './olist';
+import { ulist_, invalid, fillFirstLine } from './ulist';
+import { olist_ } from './olist';
 import { inline } from '../inline';
 import { html, defrag } from 'typed-dom/dom';
 

@@ -1,9 +1,11 @@
 import { UListParser } from '../block';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, close, trim, fallback, lazy, fmap } from '../../combinator';
-import { olist_, invalid } from './olist';
+import { Parser } from '../../combinator/data/parser';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, close, trim, fallback, lazy, fmap } from '../../combinator';
+import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
 import { index } from '../inline/extension/index';
+import { contentline } from '../source';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -35,6 +37,18 @@ export const checkbox = creation(1, false, focus(
   ({ source }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ], '']));
+
+export const invalid = rewrite(
+  inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),
+  ({ source }) => [[
+    '',
+    html('span', {
+      class: 'invalid',
+      'data-invalid-syntax': 'list',
+      'data-invalid-type': 'syntax',
+      'data-invalid-message': 'Fix the indent or the head of the list item',
+    }, source.replace('\n', ''))
+  ], '']);
 
 export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | string)[] {
   return ns.length === 1

@@ -1,11 +1,9 @@
 import { OListParser } from '../block';
-import { Parser } from '../../combinator/data/parser';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
-import { checkbox, ulist_, fillFirstLine } from './ulist';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { index } from '../inline/extension/index';
-import { contentline } from '../source';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -56,18 +54,6 @@ const heads = {
     openers['('],
     ({ source }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
 } as const;
-
-export const invalid = rewrite(
-  inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),
-  ({ source }) => [[
-    '',
-    html('span', {
-      class: 'invalid',
-      'data-invalid-syntax': 'list',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Fix the indent or the head of the list item',
-    }, source.replace('\n', ''))
-  ], '']);
 
 function idx(value: string): number {
   switch (value) {
