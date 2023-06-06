@@ -11,6 +11,7 @@ import { codeblock } from '../codeblock';
 import { mathblock } from '../mathblock';
 import { sidefence } from '../sidefence';
 import { blockquote } from '../blockquote';
+import { mediablock } from '../mediablock';
 import { paragraph } from '../paragraph';
 import { unshift, push } from 'spica/array';
 import { html } from 'typed-dom/dom';
@@ -74,5 +75,6 @@ const content: MessageParser.ContentParser = union([
   mathblock,
   sidefence,
   blockquote,
+  mediablock,
   paragraph,
 ]);

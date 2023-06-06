@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.279.0
+
+- Change media syntax not to be included in inline syntax.
+
 ## 0.278.0
 
 - Extend account syntax.

@@ -71,6 +71,7 @@ export namespace MarkdownParser {
       BlockParser.ExtensionParser,
       BlockParser.SidefenceParser,
       BlockParser.BlockquoteParser,
+      BlockParser.MediaBlockParser,
       BlockParser.ReplyParser,
       BlockParser.ParagraphParser,
     ]> {
@@ -270,12 +271,18 @@ export namespace MarkdownParser {
         export interface HeadParser extends
           Block<'table/cell/head'>,
           Parser<HTMLTableCellElement, Context, [
+            InlineParser.LinkParser.MediaLinkParser,
+            InlineParser.MediaParser,
+            InlineParser.ShortMediaParser,
             InlineParser,
           ]> {
         }
         export interface DataParser extends
           Block<'table/cell/data'>,
           Parser<HTMLTableCellElement, Context, [
+            InlineParser.LinkParser.MediaLinkParser,
+            InlineParser.MediaParser,
+            InlineParser.ShortMediaParser,
             InlineParser,
           ]> {
         }
@@ -457,12 +464,18 @@ export namespace MarkdownParser {
           export interface HeadParser extends
             Block<'extension/table/cell/head'>,
             Parser<HTMLTableCellElement, Context, [
+              InlineParser.LinkParser.MediaLinkParser,
+              InlineParser.MediaParser,
+              InlineParser.ShortMediaParser,
               InlineParser,
             ]> {
           }
           export interface DataParser extends
             Block<'extension/table/cell/data'>,
             Parser<HTMLTableCellElement, Context, [
+              InlineParser.LinkParser.MediaLinkParser,
+              InlineParser.MediaParser,
+              InlineParser.ShortMediaParser,
               InlineParser,
             ]> {
           }
@@ -497,6 +510,7 @@ export namespace MarkdownParser {
             BlockParser.MathBlockParser,
             BlockParser.SidefenceParser,
             BlockParser.BlockquoteParser,
+            BlockParser.MediaBlockParser,
             BlockParser.ParagraphParser,
           ]> {
         }
@@ -561,6 +575,22 @@ export namespace MarkdownParser {
           Parser<HTMLElement, Context, []>,
         ]> {
       }
+    }
+    export interface MediaBlockParser extends
+      // abc
+      Block<'mediablock'>,
+      Parser<HTMLDivElement, Context, [
+        Parser<HTMLElement, Context, [
+          InlineParser.LinkParser.MediaLinkParser,
+          InlineParser.MediaParser,
+          InlineParser.ShortMediaParser,
+        ]>,
+        Parser<HTMLElement, Context, [
+          InlineParser.LinkParser.MediaLinkParser,
+          InlineParser.MediaParser,
+          InlineParser.ShortMediaParser,
+        ]>,
+      ]> {
     }
     export interface ReplyParser extends
       // >>1
@@ -641,8 +671,6 @@ export namespace MarkdownParser {
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
       InlineParser.LinkParser.TextLinkParser,
-      InlineParser.LinkParser.LineMediaLinkParser,
-      InlineParser.MediaParser.LineMediaParser,
       InlineParser.HTMLParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
@@ -652,7 +680,6 @@ export namespace MarkdownParser {
       InlineParser.EmphasisParser,
       InlineParser.CodeParser,
       InlineParser.HTMLEntityParser,
-      InlineParser.ShortMediaParser.LineShortMediaParser,
       InlineParser.AutolinkParser,
       InlineParser.BracketParser,
       SourceParser.TextParser,

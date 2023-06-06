@@ -23,18 +23,18 @@ describe('Unit: renderer/render', () => {
 
     it('media', () => {
       // image
-      assert(render(parse('!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
-      assert(render(parse('[!{https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg}]{#}').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
+      assert(render(parse('!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg').querySelector('div')!).querySelector('img')!.matches('div > a > img'));
+      assert(render(parse('[!{https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg}]{#}').querySelector('div')!).querySelector('img')!.matches('div > a > img'));
       // other
-      assert(render(parse('!http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
-      assert(render(parse('[!{http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf}]{#}').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
+      assert(render(parse('!http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf').querySelector('div')!).querySelector('.media')!.matches('div > .media'));
+      assert(render(parse('[!{http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf}]{#}').querySelector('div')!).querySelector('.media')!.matches('div > .media'));
       // all
       assert(render(parse([
         '!https://youtu.be/xRF7WIZV4lA',
         '!http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf',
         '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
         '!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg',
-      ].join('\n')).querySelector('p')!).querySelectorAll('.media').length === 4);
+      ].join('\n')).querySelector('div')!).querySelectorAll('.media').length === 4);
     });
 
   });

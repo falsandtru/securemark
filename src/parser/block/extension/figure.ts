@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, inits, sequence, some, state, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
+import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
 import { ulist } from '../ulist';
@@ -12,7 +12,6 @@ import { table, segment_ as seg_table } from './table';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
-import { State } from '../../context';
 import { visualize, trimBlankStart, trimNodeEnd } from '../../visibility';
 import { memoize } from 'spica/memoize';
 import { html, defrag } from 'typed-dom/dom';
@@ -64,9 +63,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         line(shortmedia),
       ])),
       emptyline,
-      block(
-        state(State.media,
-        visualize(trimBlankStart(some(inline))))),
+      block(visualize(trimBlankStart(some(inline)))),
     ]),
   ])),
   ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [

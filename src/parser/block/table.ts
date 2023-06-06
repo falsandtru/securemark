@@ -1,6 +1,6 @@
 import { TableParser } from '../block';
-import { union, sequence, some, creation, block, line, validate, focus, rewrite, surround, open, fallback, lazy, fmap } from '../../combinator';
-import { inline } from '../inline';
+import { union, sequence, some, creation, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
+import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { duffReduce } from 'spica/duff';
@@ -49,7 +49,12 @@ const align: AlignParser = creation(1, false, fmap(open(
 
 const cell: CellParser = surround(
   /^\|\s*(?=\S)/,
-  trimBlankStart(some(union([inline]), /^\|/, [[/^[|\\]?\s*$/, 9]])),
+  trimStart(union([
+    close(medialink, /^\s*(?=\||$)/),
+    close(media, /^\s*(?=\||$)/),
+    close(shortmedia, /^\s*(?=\||$)/),
+    trimBlankStart(some(inline, /^\|/, [[/^[|\\]?\s*$/, 9]])),
+  ])),
   /^[^|]*/, true);
 
 const head: CellParser.HeadParser = creation(1, false, fmap(

@@ -132,9 +132,9 @@ describe('Unit: parser/api/parse', () => {
           '<p><a class="url" href="https://source/a" target="_blank">../a</a></p>',
           '<p><a class="url" href="https://source/a" target="_blank">../../a</a></p>',
           '<p><a class="url" href="//domain/a" target="_blank">//domain/a</a></p>',
-          '<p><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
-          '<p><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
-          '<p><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
+          '<div><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></div>',
+          '<div><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></div>',
+          '<div><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></div>',
           '<ol class="annotations"><li id="annotation::def:a:1" data-marker="*1"><span>a</span><sup><a href="#annotation::ref:a:1">^1</a></sup></li></ol>',
         ]);
       assert.deepStrictEqual(

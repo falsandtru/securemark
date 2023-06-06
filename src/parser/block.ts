@@ -13,6 +13,7 @@ import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { sidefence } from './block/sidefence';
 import { blockquote } from './block/blockquote';
+import { mediablock } from './block/mediablock';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
 import { rnd0Z } from 'spica/random';
@@ -31,6 +32,7 @@ export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import SidefenceParser = BlockParser.SidefenceParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
+export import MediaBlockParser = BlockParser.MediaBlockParser;
 export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
@@ -50,6 +52,7 @@ export const block: BlockParser = creation(1, false, error(
     extension,
     sidefence,
     blockquote,
+    mediablock,
     reply,
     paragraph
   ]))));

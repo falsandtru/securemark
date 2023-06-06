@@ -7,7 +7,7 @@ import { remark } from './inline/remark';
 import { math } from './inline/math';
 import { extension } from './inline/extension';
 import { ruby } from './inline/ruby';
-import { textlink, linemedialink } from './inline/link';
+import { textlink } from './inline/link';
 import { html } from './inline/html';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
@@ -16,9 +16,7 @@ import { emstrong } from './inline/emstrong';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
-import { linemedia } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
-import { lineshortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
 import { text } from './source';
@@ -56,8 +54,6 @@ export const inline: InlineParser = lazy(() => union([
   extension,
   ruby,
   textlink,
-  linemedialink,
-  linemedia,
   html,
   insertion,
   deletion,
@@ -67,7 +63,6 @@ export const inline: InlineParser = lazy(() => union([
   emphasis,
   code,
   htmlentity,
-  lineshortmedia,
   autolink,
   bracket,
   text
@@ -75,5 +70,6 @@ export const inline: InlineParser = lazy(() => union([
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';
+export { medialink } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';

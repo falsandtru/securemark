@@ -1,18 +1,16 @@
 import { UListParser } from '../block';
-import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, open, close, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, close, trim, fallback, lazy, fmap } from '../../combinator';
 import { olist_, invalid } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
 import { index } from '../inline/extension/index';
-import { State } from '../context';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const ulist: UListParser = lazy(() => block(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,
-  state(State.media,
-  ulist_))));
+  ulist_)));
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /^-(?=$|\s)/,

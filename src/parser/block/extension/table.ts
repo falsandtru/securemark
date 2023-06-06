@@ -1,8 +1,8 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
-import { inline } from '../../inline';
+import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
+import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { visualize, trimBlankStart, trimNodeEnd } from '../../visibility';
 import { unshift, splice } from 'spica/array';
@@ -84,7 +84,12 @@ const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    open(/^(?:\s*\n|\s)/, visualize(trimBlankStart(some(union([inline])))), true)),
+    union([
+      block(surround(/^[^\n]/, medialink, /^\s*$/)),
+      block(surround(/^[^\n]/, media, /^\s*$/)),
+      block(surround(/^[^\n]/, shortmedia, /^\s*$/)),
+      open(/^(?:\s*\n|\s)/, visualize(trimBlankStart(some(inline))), true),
+    ])),
   true),
   ns => [html('th', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
   false));
@@ -96,7 +101,12 @@ const data: CellParser.DataParser = creation(1, false, block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    open(/^(?:\s*\n|\s)/, visualize(some(union([inline]))), true)),
+    union([
+      block(surround(/^[^\n]/, medialink, /^\s*$/)),
+      block(surround(/^[^\n]/, media, /^\s*$/)),
+      block(surround(/^[^\n]/, shortmedia, /^\s*$/)),
+      open(/^(?:\s*\n|\s)/, visualize(some(inline)), true),
+    ])),
   true),
   ns => [html('td', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
   false));

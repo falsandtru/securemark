@@ -134,7 +134,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('{a}')), [['<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{{a}}')), [['<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('\r!{}')), [['!', '{', '}'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!{a}')), [['<a href="a" target="_blank"><img class="media" data-src="a" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\r!{a}')), [['!', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('\r!{{a}}')), [['!', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('\r!{{{a}}}')), [['!', '<span class="template">{{{a}}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('\r!!{a}')), [['!', '!', '<a class="url" href="a">a</a>'], '']);

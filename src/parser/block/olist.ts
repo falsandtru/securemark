@@ -1,12 +1,11 @@
 import { OListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
-import { union, inits, subsequence, some, creation, state, block, line, validate, indent, focus, rewrite, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { index } from '../inline/extension/index';
 import { contentline } from '../source';
-import { State } from '../context';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -21,8 +20,7 @@ export const olist: OListParser = lazy(() => block(validate(
     /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source,
     /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source,
   ].join('|')),
-  state(State.media,
-  olist_))));
+  olist_)));
 
 export const olist_: OListParser = lazy(() => block(union([
   match(
