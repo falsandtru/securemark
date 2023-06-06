@@ -5856,7 +5856,7 @@ exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:
 // Escape unmatched email-like strings.
 (0, source_1.str)(/^[0-9a-z]+(?:[_.+-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i), channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
-(0, source_1.str)(/^@+[0-9a-z]*(?:-[0-9a-z]+)*/i),
+(0, source_1.str)(/^@+[0-9a-z]*(?:[-.][0-9a-z]+)*/i),
 // Escape invalid leading characters.
 (0, source_1.str)(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', hashtag_1.emoji), 'u')), hashtag_1.hashtag, hashnum_1.hashnum,
 // Escape unmatched hashtag-like strings.
@@ -5881,7 +5881,7 @@ const link_1 = __webpack_require__(9628);
 const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
 // https://example/@user must be a user page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*\//i), (0, source_1.str)(/^[a-z][0-9a-z]*(?:-[0-9a-z]+)*/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//i), (0, source_1.str)(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]));
 
@@ -5955,7 +5955,7 @@ const combinator_1 = __webpack_require__(2087);
 const source_1 = __webpack_require__(6743);
 const dom_1 = __webpack_require__(3252);
 // https://html.spec.whatwg.org/multipage/input.html
-exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=\w)){0,61}[0-9a-z])?)*(?![0-9a-z])/i), ([source]) => source.length <= 255), ({
+exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z])/i), ([source]) => source.length <= 255), ({
   source
 }) => [[(0, dom_1.html)('a', {
   class: 'email',
@@ -6631,10 +6631,10 @@ function resolve(uri, host, source) {
 exports.resolve = resolve;
 function decode(uri) {
   if (!uri.includes('%')) return uri;
-  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
+  const origin = uri.match(/^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;
@@ -7036,13 +7036,14 @@ function* figure(target, notes, opts = {}) {
   const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new Set();
   const numbers = new Map();
+  const scope = target instanceof Element ? ':scope > ' : '';
   let base = '0';
   let bases = base.split('.');
   let index = bases;
-  for (let defs = target.querySelectorAll('figure[data-label], h1, h2'), len = defs.length, i = 0; i < len; ++i) {
+  for (let defs = target.querySelectorAll(`${scope}:is(figure[data-label], h1, h2)`), len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
-    if (def.parentNode !== target) continue;
+    if (!scope && def.parentNode !== target) continue;
     const {
       tagName
     } = def;
@@ -7199,7 +7200,8 @@ function build(syntax, marker, splitter = '') {
     const defIndexes = new Map();
     const refSubindexes = new Map();
     const defSubindexes = new Map();
-    const splitters = splitter ? target.querySelectorAll(splitter) : [];
+    const scope = target instanceof Element ? ':scope > ' : '';
+    const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
     let iSplitters = 0;
     let total = 0;
     let format;
@@ -7212,7 +7214,7 @@ function build(syntax, marker, splitter = '') {
       }
       if (splitter) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (el.parentNode !== target) continue;
+        if (!scope && el.parentNode !== target) continue;
         if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
           el.remove();
           continue;
@@ -7284,7 +7286,7 @@ function build(syntax, marker, splitter = '') {
     }
     if (splitter) for (let el; el = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (el.parentNode !== target) continue;
+      if (!scope && el.parentNode !== target) continue;
       if (el.tagName === 'OL') {
         el.remove();
       }
@@ -8155,7 +8157,7 @@ const origins = ['https://twitter.com'];
 function twitter(source, url) {
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop().includes('.')) return;
-  if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
+  if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}\/?$/)) return;
   const el = (0, dom_1.html)('div', {
     class: source.className,
     'data-type': 'twitter'
