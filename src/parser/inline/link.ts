@@ -203,10 +203,10 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
 
 function decode(uri: string): string {
   if (!uri.includes('%')) return uri;
-  const origin = uri.match(/^[a-z](?:[-.](?=\w)|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
+  const origin = uri.match(/^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=\w)|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
+    if (!origin && /^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;

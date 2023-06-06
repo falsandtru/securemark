@@ -19,7 +19,7 @@ const origins = [
 export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undefined {
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
-  if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
+  if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}\/?$/)) return;
   const el = h('div', { class: source.className, 'data-type': 'twitter' }, [
     h('em', `Loading ${source.getAttribute('data-src')}...`),
   ]);
