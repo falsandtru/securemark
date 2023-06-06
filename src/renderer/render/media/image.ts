@@ -15,6 +15,6 @@ export function image(source: HTMLImageElement, url: URL, cache?: Dict<string, H
     source.cloneNode(true),
     Object.fromEntries([...source.attributes]
       .filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name))
-      .map(attr => [attr.name, null]))));
+      .map(attr => [attr.name, attr.name === 'alt' ? '' : null]))));
   return source;
 }
