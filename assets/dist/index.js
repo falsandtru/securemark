@@ -4350,6 +4350,7 @@ const mathblock_1 = __webpack_require__(3754);
 const extension_1 = __webpack_require__(4751);
 const sidefence_1 = __webpack_require__(4078);
 const blockquote_1 = __webpack_require__(7859);
+const mediablock_1 = __webpack_require__(785);
 const reply_1 = __webpack_require__(9978);
 const paragraph_1 = __webpack_require__(6457);
 const random_1 = __webpack_require__(7325);
@@ -4359,7 +4360,7 @@ exports.block = (0, combinator_1.creation)(1, false, error((0, combinator_1.rese
     clock: 50 * 1000,
     recursion: 20
   }
-}, (0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, reply_1.reply, paragraph_1.paragraph]))));
+}, (0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, mediablock_1.mediablock, reply_1.reply, paragraph_1.paragraph]))));
 function error(parser) {
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', ({
     source
@@ -4736,7 +4737,7 @@ const dom_1 = __webpack_require__(3252);
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([
 // All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, [])));
-exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, combinator_1.state)(8 /* State.media */, (0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline)))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
+exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/^(?=\s).*\n/)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.shortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline))))])])), ([label, param, content, ...caption]) => [(0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
   class: 'figindex'
 }), (0, dom_1.html)('span', {
   class: 'figtext'
@@ -4857,6 +4858,7 @@ const codeblock_1 = __webpack_require__(1849);
 const mathblock_1 = __webpack_require__(3754);
 const sidefence_1 = __webpack_require__(4078);
 const blockquote_1 = __webpack_require__(7859);
+const mediablock_1 = __webpack_require__(785);
 const paragraph_1 = __webpack_require__(6457);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
@@ -4903,7 +4905,7 @@ function title(type) {
   }
 }
 // Must not have indexed blocks.
-const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olist_1.olist, ilist_1.ilist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, sidefence_1.sidefence, blockquote_1.blockquote, paragraph_1.paragraph]);
+const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olist_1.olist, ilist_1.ilist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, sidefence_1.sidefence, blockquote_1.blockquote, mediablock_1.mediablock, paragraph_1.paragraph]);
 
 /***/ }),
 
@@ -4985,8 +4987,8 @@ const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.
 const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
-const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), true)), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
-const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))), true)), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
+const head = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.medialink, /^\s*$/)), (0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.media, /^\s*$/)), (0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.shortmedia, /^\s*$/)), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
+const data = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.medialink, /^\s*$/)), (0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.media, /^\s*$/)), (0, combinator_1.block)((0, combinator_1.surround)(/^[^\n]/, inline_1.shortmedia, /^\s*$/)), (0, combinator_1.open)(/^(?:\s*\n|\s)/, (0, visibility_1.visualize)((0, combinator_1.some)(inline_1.inline)), true)])), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
 const dataline = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/^!+\s/, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)]))));
 function attributes(source) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(?:(!+)([+]?))?$/) ?? [];
@@ -5237,8 +5239,8 @@ const ulist_1 = __webpack_require__(5425);
 const olist_1 = __webpack_require__(7471);
 const inline_1 = __webpack_require__(1160);
 const dom_1 = __webpack_require__(3252);
-exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(8 /* State.media */, exports.ilist_))));
-exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.some)(inline_1.inline), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
+exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, exports.ilist_)));
+exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.some)(inline_1.inline), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), ulist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
   'data-invalid-syntax': 'list',
   'data-invalid-type': 'syntax',
@@ -5281,6 +5283,31 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0,
 
 /***/ }),
 
+/***/ 785:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.mediablock = void 0;
+const combinator_1 = __webpack_require__(2087);
+const inline_1 = __webpack_require__(1160);
+const dom_1 = __webpack_require__(3252);
+exports.mediablock = (0, combinator_1.block)((0, combinator_1.validate)(['[!', '!'], (0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.shortmedia])), (0, combinator_1.some)((0, combinator_1.line)((0, combinator_1.fallback)((0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.shortmedia]), ({
+  source
+}) => [[(0, dom_1.html)('div', [(0, dom_1.html)('span', attrs, source.replace('\n', ''))])], ''])))]), ns => [(0, dom_1.html)('div', ns)])));
+const attrs = {
+  class: 'invalid',
+  'data-invalid-syntax': 'mediablock',
+  'data-invalid-type': 'syntax',
+  'data-invalid-message': 'Not media syntax'
+};
+
+/***/ }),
+
 /***/ 7471:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -5290,13 +5317,12 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0,
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.invalid = exports.olist_ = exports.olist = void 0;
+exports.olist_ = exports.olist = void 0;
 const combinator_1 = __webpack_require__(2087);
 const ulist_1 = __webpack_require__(5425);
 const ilist_1 = __webpack_require__(238);
 const inline_1 = __webpack_require__(1160);
 const index_1 = __webpack_require__(4479);
-const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const memoize_1 = __webpack_require__(1808);
 const dom_1 = __webpack_require__(3252);
@@ -5304,12 +5330,12 @@ const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
 };
-exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), (0, combinator_1.state)(8 /* State.media */, exports.olist_))));
+exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source, /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source].join('|')), exports.olist_)));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []))])));
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, combinator_1.trim)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.close)((0, combinator_1.union)([index_1.index]), /^$/), ([el]) => [(0, dom_1.define)(el, {
   class: void el.classList.add('indexer'),
   'data-index': ''
-})]), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', {
+})]), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), ulist_1.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns.shift() || undefined
 }, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 const heads = {
@@ -5320,16 +5346,6 @@ const heads = {
     source
   }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], ''])
 };
-exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.contentline, (0, combinator_1.indent)(({
-  source
-}) => [[source], ''])]), ({
-  source
-}) => [['', (0, dom_1.html)('span', {
-  class: 'invalid',
-  'data-invalid-syntax': 'list',
-  'data-invalid-type': 'syntax',
-  'data-invalid-message': 'Fix the indent or the head of the list item'
-}, source.replace('\n', ''))], '']);
 function idx(value) {
   switch (value) {
     case 'i':
@@ -5638,7 +5654,7 @@ const row = (parser, optional) => (0, combinator_1.creation)(1, false, (0, combi
   'data-invalid-message': 'Missing the start symbol of the table row'
 }, [(0, dom_1.html)('td', source.replace('\n', ''))])], ''])));
 const align = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:/, () => [['center'], '']), (0, combinator_1.focus)(/^:-+/, () => [['start'], '']), (0, combinator_1.focus)(/^-+:/, () => [['end'], '']), (0, combinator_1.focus)(/^-+/, () => [[''], ''])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]));
-const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /^\|/, [[/^[|\\]?\s*$/, 9]])), /^[^|]*/, true);
+const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.trimStart)((0, combinator_1.union)([(0, combinator_1.close)(inline_1.medialink, /^\s*(?=\||$)/), (0, combinator_1.close)(inline_1.media, /^\s*(?=\||$)/), (0, combinator_1.close)(inline_1.shortmedia, /^\s*(?=\||$)/), (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, /^\|/, [[/^[|\\]?\s*$/, 9]]))])), /^[^|]*/, true);
 const head = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]));
 const data = (0, combinator_1.creation)(1, false, (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]));
 function format(rows) {
@@ -5666,25 +5682,36 @@ function format(rows) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.fillFirstLine = exports.checkbox = exports.ulist_ = exports.ulist = void 0;
+exports.fillFirstLine = exports.invalid = exports.checkbox = exports.ulist_ = exports.ulist = void 0;
 const combinator_1 = __webpack_require__(2087);
 const olist_1 = __webpack_require__(7471);
 const ilist_1 = __webpack_require__(238);
 const inline_1 = __webpack_require__(1160);
 const index_1 = __webpack_require__(4479);
+const source_1 = __webpack_require__(6743);
 const visibility_1 = __webpack_require__(7618);
 const array_1 = __webpack_require__(8112);
 const dom_1 = __webpack_require__(3252);
-exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.state)(8 /* State.media */, exports.ulist_))));
+exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, exports.ulist_)));
 exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.close)((0, combinator_1.union)([index_1.index]), /^$/), ([el]) => [(0, dom_1.define)(el, {
   class: void el.classList.add('indexer'),
   'data-index': ''
-})]), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), olist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+})]), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.creation)(1, false, (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, ({
   source
 }) => [[(0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[1].trimStart() ? '☑' : '☐')], '']));
+exports.invalid = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.contentline, (0, combinator_1.indent)(({
+  source
+}) => [[source], ''])]), ({
+  source
+}) => [['', (0, dom_1.html)('span', {
+  class: 'invalid',
+  'data-invalid-syntax': 'list',
+  'data-invalid-type': 'syntax',
+  'data-invalid-message': 'Fix the indent or the head of the list item'
+}, source.replace('\n', ''))], '']);
 function fillFirstLine(ns) {
   return ns.length === 1 && typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName) ? (0, array_1.unshift)([(0, dom_1.html)('br')], ns) : ns;
 }
@@ -5756,7 +5783,7 @@ const field = (0, combinator_1.line)(({
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.shortmedia = exports.media = exports.indexer = exports.indexee = exports.inline = void 0;
+exports.shortmedia = exports.media = exports.medialink = exports.indexer = exports.indexee = exports.inline = void 0;
 const combinator_1 = __webpack_require__(2087);
 const annotation_1 = __webpack_require__(2736);
 const reference_1 = __webpack_require__(3555);
@@ -5774,13 +5801,11 @@ const emstrong_1 = __webpack_require__(6132);
 const emphasis_1 = __webpack_require__(3867);
 const strong_1 = __webpack_require__(6578);
 const code_1 = __webpack_require__(5771);
-const media_1 = __webpack_require__(1303);
 const htmlentity_1 = __webpack_require__(1562);
-const shortmedia_1 = __webpack_require__(4189);
 const autolink_1 = __webpack_require__(6051);
 const bracket_1 = __webpack_require__(5196);
 const source_1 = __webpack_require__(6743);
-exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, remark_1.remark, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, link_1.linemedialink, media_1.linemedia, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, shortmedia_1.lineshortmedia, autolink_1.autolink, bracket_1.bracket, source_1.text]));
+exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, remark_1.remark, math_1.math, extension_1.extension, ruby_1.ruby, link_1.textlink, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, code_1.code, htmlentity_1.htmlentity, autolink_1.autolink, bracket_1.bracket, source_1.text]));
 var indexee_1 = __webpack_require__(1269);
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
@@ -5795,18 +5820,25 @@ Object.defineProperty(exports, "indexer", ({
     return indexer_1.indexer;
   }
 }));
-var media_2 = __webpack_require__(1303);
+var link_2 = __webpack_require__(9628);
+Object.defineProperty(exports, "medialink", ({
+  enumerable: true,
+  get: function () {
+    return link_2.medialink;
+  }
+}));
+var media_1 = __webpack_require__(1303);
 Object.defineProperty(exports, "media", ({
   enumerable: true,
   get: function () {
-    return media_2.media;
+    return media_1.media;
   }
 }));
-var shortmedia_2 = __webpack_require__(4189);
+var shortmedia_1 = __webpack_require__(4189);
 Object.defineProperty(exports, "shortmedia", ({
   enumerable: true,
   get: function () {
-    return shortmedia_2.shortmedia;
+    return shortmedia_1.shortmedia;
   }
 }));
 
@@ -6331,10 +6363,10 @@ exports.indexer = void 0;
 const combinator_1 = __webpack_require__(2087);
 const index_1 = __webpack_require__(4479);
 const dom_1 = __webpack_require__(3252);
-exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.state)(64 /* State.index */, false, (0, combinator_1.union)([index_1.signature, (0, combinator_1.creation)((0, combinator_1.focus)(/^\|(?=\])/, () => [[(0, dom_1.html)('span', {
+exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.union)([index_1.signature, (0, combinator_1.creation)((0, combinator_1.focus)(/^\|(?=\])/, () => [[(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': ''
-})], '']))])), /^\]\s*$/);
+})], '']))]), /^\]\s*$/);
 
 /***/ }),
 
@@ -7739,21 +7771,21 @@ var blank;
   blank.start = new RegExp(/^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
 })(blank || (exports.blank = blank = {}));
 function visualize(parser) {
-  return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
+  return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')), (0, combinator_1.verify)(parser, (ns, rest) => !rest && hasVisible(ns))), (0, combinator_1.some)((0, combinator_1.union)([source_1.linebreak, source_1.unescsource]))]);
 }
 exports.visualize = visualize;
-function hasVisible(nodes, {
-  state = 0
-} = {}) {
+function hasVisible(nodes) {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     if (typeof node === 'string') {
       if (node && node.trimStart()) return true;
     } else {
       if (node.innerText.trimStart()) return true;
-      if (state & 8 /* State.media */ ^ 8 /* State.media */ && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
+      //if (state & State.media ^ State.media &&
+      //    (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }
   }
+
   return false;
 }
 function blankWith(starting, delimiter) {
@@ -8098,7 +8130,7 @@ function image(source, url, cache) {
     src: source.getAttribute('data-src'),
     loading: 'lazy'
   });
-  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, null]))));
+  cache?.set(url.href, (0, dom_1.define)(source.cloneNode(true), Object.fromEntries([...source.attributes].filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name)).map(attr => [attr.name, attr.name === 'alt' ? '' : null]))));
   return source;
 }
 exports.image = image;
@@ -8528,7 +8560,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.335 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.336 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8864,7 +8896,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.335 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.336 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();

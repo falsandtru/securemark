@@ -508,11 +508,18 @@
   .media:not([width]) {
     width: 100%;
   }
+  table .media {
+    min-width: 2rem;
+  }
+  table .media:not([width]) {
+    width: revert;
+  }
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
   img.media[alt=""]::before {
-    content: "Failed to load resource.";
+    content: "Failed to load image";
+    color: orangered;
   }
   .media[data-type="pdf"] {
     word-wrap: break-word;
@@ -537,9 +544,6 @@
   }
   .media[data-type="twitter"] + br {
     display: none;
-  }
-  table .media {
-    min-width: 2rem;
   }
   ins .media {
     border-block-end: solid 2px #acf2bd;
