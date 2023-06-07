@@ -14,7 +14,6 @@ export function* note(
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   yield* annotation(target, notes?.annotations, opts, bottom);
   yield* reference(target, notes?.references, opts, bottom);
-  return;
 }
 
 export const annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
@@ -180,7 +179,6 @@ function build(
         el.remove();
       }
     }
-    return;
   }
 
   function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
@@ -213,7 +211,6 @@ function build(
       --length;
       assert(children.length === length);
     }
-    return;
   }
 }
 

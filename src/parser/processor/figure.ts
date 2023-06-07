@@ -127,7 +127,6 @@ export function* figure(
     }
     yield ref;
   }
-  return;
 }
 
 const messages = {
