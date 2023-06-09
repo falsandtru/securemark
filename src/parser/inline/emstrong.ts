@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, syntax, some, surround, open, lazy, bind } from '../../combinator';
+import { union, syntax, creation, some, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
@@ -27,9 +27,9 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   ])),
 ])));
 
-export const emstrong: EmStrongParser = lazy(() => surround(
+export const emstrong: EmStrongParser = lazy(() => creation(surround(
   str('***'),
-  syntax(Syntax.none, 1, 1, State.none,
+  syntax(Syntax.none, 1, State.none,
   startTight(some(union([
     some(inline, blankWith('*'), [[/^\\?\n/, 9]]),
     open(some(inline, '*', [[/^\\?\n/, 9]]), inline),
@@ -59,4 +59,4 @@ export const emstrong: EmStrongParser = lazy(() => surround(
     }
     assert(false);
   },
-  ([as, bs], rest) => [unshift(as, bs), rest]));
+  ([as, bs], rest) => [unshift(as, bs), rest])));

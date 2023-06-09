@@ -20,9 +20,9 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
   textlink,
 ])));
 
-export const textlink: LinkParser.TextLinkParser = lazy(() =>
+export const textlink: LinkParser.TextLinkParser = lazy(() => creation(10,
   constraint(State.link, false,
-  syntax(Syntax.link, 2, 10, State.linkers | State.media,
+  syntax(Syntax.link, 2, State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
       '[',
@@ -36,11 +36,11 @@ export const textlink: LinkParser.TextLinkParser = lazy(() =>
     assert(content[0] !== '');
     if (content.length !== 0 && trimNodeEnd(content = defrag(content)).length === 0) return;
     return [[parse(content, params, context)], rest];
-  }))));
+  })))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() =>
+export const medialink: LinkParser.MediaLinkParser = lazy(() => creation(10,
   constraint(State.link | State.media, false,
-  syntax(Syntax.link, 2, 10, State.linkers,
+  syntax(Syntax.link, 2, State.linkers,
   bind(reverse(sequence([
     dup(surround(
       '[',
@@ -49,7 +49,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
-    [[parse(defrag(content), params, context)], rest]))));
+    [[parse(defrag(content), params, context)], rest])))));
 
 export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   linebreak,

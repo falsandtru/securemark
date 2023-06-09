@@ -1,5 +1,5 @@
 import { HTMLParser } from '../inline';
-import { union, subsequence, some, syntax, validate, focus, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, syntax, creation, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, syntax(Syntax.none, 5, 1, State.none, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(syntax(Syntax.none, 5, State.none, union([
   focus(
     /^<wbr[^\S\n]*>/i,
     () => [[h('wbr')], '']),
@@ -59,7 +59,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
           [[elem(tag, as, bs, [])], rest]),
     ([, tag]) => tag,
     new Clock(10000))),
-])))));
+]))))));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),

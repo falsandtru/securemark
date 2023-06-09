@@ -36,8 +36,8 @@ export import MediaBlockParser = BlockParser.MediaBlockParser;
 export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = creation(1, false, error(
-  reset({ resources: { clock: 50 * 1000, recursion: 20 } },
+export const block: BlockParser = creation(0, false, error(
+  reset({ resources: { clock: 50000, recursion: 20 + 1 } },
   union([
     emptyline,
     pagebreak,

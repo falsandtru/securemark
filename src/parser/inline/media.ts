@@ -18,10 +18,10 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
+export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(10, open(
   '!',
   constraint(State.media, false,
-  syntax(Syntax.media, 2, 10, ~State.link,
+  syntax(Syntax.media, 2, ~State.link,
   bind(verify(fmap(tails([
     dup(surround(
       '[',
@@ -60,7 +60,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], open(
       unsafelink as MediaParser,
       ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
       ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
-  }))))));
+  })))))));
 
 export const linemedia: MediaParser.LineMediaParser = surround(
   linebreak,

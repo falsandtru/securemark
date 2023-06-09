@@ -1,5 +1,5 @@
 import { InsertionParser } from '../inline';
-import { union, some, syntax, surround, open, lazy } from '../../combinator';
+import { union, some, syntax, creation, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { Syntax, State } from '../context';
@@ -7,13 +7,13 @@ import { blankWith } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const insertion: InsertionParser = lazy(() => surround(
+export const insertion: InsertionParser = lazy(() => creation(surround(
   str('++', '+'),
-  syntax(Syntax.none, 1, 1, State.none,
+  syntax(Syntax.none, 1, State.none,
   some(union([
     some(inline, blankWith('\n', '++')),
     open('\n', some(inline, '+'), true),
   ]))),
   str('++'), false,
   ([, bs], rest) => [[html('ins', defrag(bs))], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest]));
+  ([as, bs], rest) => [unshift(as, bs), rest])));

@@ -66,9 +66,9 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
   return result;
 }
 
-export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, cost: number, state: number, parser: P): P;
-export function syntax<T>(syntax: number, prec: number, cost: number, state: number, parser?: Parser<T>): Parser<T> {
-  return creation(cost, precedence(prec, ({ source, context }) => {
+export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, state: number, parser: P): P;
+export function syntax<T>(syntax: number, prec: number, state: number, parser?: Parser<T>): Parser<T> {
+  return precedence(prec, ({ source, context }) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
     context.offset ??= 0;
@@ -91,7 +91,7 @@ export function syntax<T>(syntax: number, prec: number, cost: number, state: num
     }
     context.state = stateOuter;
     return result;
-  }));
+  });
 }
 
 export function creation<P extends Parser<unknown>>(parser: P): P;
@@ -100,11 +100,13 @@ export function creation<P extends Parser<unknown>>(cost: number, recursion: boo
 export function creation(cost: number | Parser<unknown>, recursion?: boolean | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
   if (typeof cost === 'function') return creation(1, true, cost);
   if (typeof recursion === 'function') return creation(cost, true, recursion);
-  assert(cost > 0);
+  assert(cost >= 0);
+  assert(recursion !== undefined);
   return ({ source, context }) => {
-    const resources = context.resources ?? { clock: 1, recursion: 1 };
+    assert([recursion = recursion!]);
+    const resources = context.resources ?? { clock: cost || 1, recursion: 1 };
     if (resources.clock <= 0) throw new Error('Too many creations');
-    if (resources.recursion <= 0) throw new Error('Too much recursion');
+    if (resources.recursion < +recursion) throw new Error('Too much recursion');
     recursion && --resources.recursion;
     const result = parser!({ source, context });
     recursion && ++resources.recursion;
