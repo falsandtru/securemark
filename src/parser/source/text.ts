@@ -4,8 +4,8 @@ import { str } from './str';
 import { html } from 'typed-dom/dom';
 
 export const delimiter = /[\s\x00-\x7F]|\S[#>]/u;
-export const nonWhitespace = /[\S\n]|$/;
-export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/;
+export const nonWhitespace = /[\S\n]|$/u;
+export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/u;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creation(1, false, ({ source, context }) => {
