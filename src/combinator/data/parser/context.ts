@@ -173,3 +173,17 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
     return result;
   };
 }
+
+//export function log<P extends Parser<unknown>>(log: number, parser: P, cond?: (ns: readonly Tree<P>[]) => boolean): P;
+//export function log<T>(log: number, parser: Parser<T>, cond: (ns: readonly T[]) => boolean = () => true): Parser<T> {
+//  assert(log);
+//  return ({ source, context }) => {
+//    const l = context.log ?? 0;
+//    context.log = 0;
+//    const result = parser!({ source, context });
+//    context.log = result && cond(eval(result))
+//      ? l | log
+//      : l;
+//    return result;
+//  };
+//}
