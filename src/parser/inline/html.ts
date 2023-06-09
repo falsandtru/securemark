@@ -41,8 +41,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
         ([as, bs = [], cs], rest) =>
           [[elem(tag, as, bs, cs)], rest],
         ([as, bs = []], rest) =>
-          [[elem(tag, as, bs, [])], rest]),
-    ([, tag]) => TAGS.indexOf(tag), [])),
+          [[elem(tag, as, bs, [])], rest]))),
   match(
     /^<([a-z]+)(?=[^\S\n]|>)/i,
     memoize(
