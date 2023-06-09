@@ -3,7 +3,7 @@ export class Memo {
     this.targets = targets;
   }
   public readonly targets: number;
-  private readonly memory: Record<string, readonly [any[], number] | readonly []>[/* pos */] = [];
+  private readonly memory: Record<number, Record<number, readonly [any[], number] | readonly []>>[/* pos */] = [];
   public get length(): number {
     return this.memory.length;
   }
@@ -12,8 +12,8 @@ export class Memo {
     syntax: number,
     state: number,
   ): readonly [any[], number] | readonly [] | undefined {
-    //console.log('get', position, syntax, state, this.memory[position - 1]?.[`${syntax}:${state}`]);;
-    const cache = this.memory[position - 1]?.[`${syntax}:${state}`];
+    //console.log('get', position, syntax, state, this.memory[position - 1]?.[syntax]?.[state]);
+    const cache = this.memory[position - 1]?.[syntax]?.[state];
     return cache?.length === 2
       ? [cache[0].slice(), cache[1]]
       : cache;
@@ -26,11 +26,11 @@ export class Memo {
     offset: number,
   ): void {
     const record = this.memory[position - 1] ??= {};
-    assert(!record[`${syntax}:${state}`]);
-    record[`${syntax}:${state}`] = nodes
+    assert(!record[syntax]?.[state]);
+    (record[syntax] ??= {})[state] = nodes
       ? [nodes.slice(), offset]
       : [];
-    //console.log('set', position, syntax, state, record[`${syntax}:${state}`]);
+    //console.log('set', position, syntax, state, record[syntax]?.[state]);
   }
   public clear(position: number): void {
     const memory = this.memory;
