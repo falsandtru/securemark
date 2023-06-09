@@ -170,13 +170,10 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[~~a~~]')), [['[', '<del>a</del>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^http://host')), [['[^', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a@b')), [['[^', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#a++b\nc++]')), [['[', '<a class="hashtag" href="/hashtags/a">#a</a>', '<ins>b<br>c</ins>', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[++a\nb++]{/}')), [['[', '<ins>a<br>b</ins>', ']', '<a class="url" href="/">/</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[++a\nb]++')), [['[', '++', 'a', '<br>', 'b', ']', '++'], '']);
-      assert.deepStrictEqual(inspect(parser('[++[a\nb++]')), [['[', '++', '[', 'a', '<br>', 'b', '++', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[[++a\nb++]]')), [['[', '[', '<ins>a<br>b</ins>', ']', ']'], '']);
       assert.deepStrictEqual(inspect(parser('"[% *"*"*')), [['"', '[%', ' ', '*', '"', '*', '"', '*'], '']);
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]')), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('(<bdi>a\\\nb</bdi>)')), [['<span class="paren">(<bdi>a<br>b</bdi>)</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('({{\\\n}})')), [['<span class="paren">(<span class="template">{{\\\n}}</span>)</span>'], '']);
     });
 
     it('uri', () => {
