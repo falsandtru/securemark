@@ -70,8 +70,8 @@ Secure markdown renderer working on browsers for user input data.
 |9| \n, \\\n               |
 |8| `                      |
 |6| (()), [[]], {{}}, ${}$ |
-|5| \<tag>\</tag>          |
-|4| [% %]                  |
+|5| [% %]                  |
+|4| \<tag>\</tag>          |
 |3| $, "                   |
 |2| (), [], {}             |
 |1| *, **, ==, ++, ~~      |

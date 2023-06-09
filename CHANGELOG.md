@@ -3,6 +3,7 @@
 ## 0.280.0
 
 - Change operator precedence of template syntax to 6.
+- Swap operator precedence of html syntax and remark syntax.
 
 ## 0.279.1
 

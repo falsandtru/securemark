@@ -58,6 +58,7 @@ describe('Unit: parser/inline/remark', () => {
       assert.deepStrictEqual(inspect(parser('[% [ %]')), [['<span class="remark"><input type="checkbox"><span>[% [ %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% \\ a %]')), [['<span class="remark"><input type="checkbox"><span>[%  a %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% $-a %]$')), [['<span class="remark"><input type="checkbox"><span>[% <a class="label" data-label="$-a">$-a</a> %]</span></span>'], '$']);
+      assert.deepStrictEqual(inspect(parser('[% <bdi> %]')), [['<span class="remark"><input type="checkbox"><span>[% <span class="invalid">&lt;bdi&gt;</span> %]</span></span>'], '']);
     });
 
   });

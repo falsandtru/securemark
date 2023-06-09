@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(syntax(Syntax.none, 5, State.none, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(syntax(Syntax.none, 4, State.none, union([
   focus(
     /^<wbr[^\S\n]*>/i,
     () => [[h('wbr')], '']),
@@ -35,7 +35,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         subsequence([
           focus(/^[^\S\n]*\n/, some(inline)),
-          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 5]]), true)),
+          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 4]]), true)),
         ]),
         str(`</${tag}>`), true,
         ([as, bs = [], cs], rest) =>
@@ -50,7 +50,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
         str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
         subsequence([
           focus(/^[^\S\n]*\n/, some(inline)),
-          some(inline, `</${tag}>`, [[`</${tag}>`, 5]]),
+          some(inline, `</${tag}>`, [[`</${tag}>`, 4]]),
         ]),
         str(`</${tag}>`), true,
         ([as, bs = [], cs], rest) =>
