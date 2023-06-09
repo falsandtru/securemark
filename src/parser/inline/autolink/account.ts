@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, constraint, tails, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, tails, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { State } from '../../context';
