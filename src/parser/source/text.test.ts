@@ -2,7 +2,7 @@ import { text } from './text';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/text/text', () => {
+describe('Unit: parser/source/text', () => {
   describe('text', () => {
     const parser = (source: string) => some(text)({ source, context: {} });
 
