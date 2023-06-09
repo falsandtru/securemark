@@ -13,5 +13,5 @@ const bracket: TemplateParser.BracketParser = lazy(() => creation(union([
   surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('"'), precedence(8, some(escsource, /^"|^\\?\n/)), str('"'), true),
+  surround(str('"'), precedence(3, some(escsource, /^"|^\\?\n/)), str('"'), true),
 ])));

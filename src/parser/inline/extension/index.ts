@@ -41,5 +41,5 @@ const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(u
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true),
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),
-  surround(str('"'), precedence(8, some(txt, '"')), str('"'), true),
+  surround(str('"'), precedence(3, some(txt, '"')), str('"'), true),
 ])));
