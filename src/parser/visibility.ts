@@ -170,13 +170,15 @@ function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser
 //}
 //function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
 //  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
-//    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
 //    if (typeof node === 'string') {
 //      const pos = node.trimStart().length;
 //      if (pos > 0) {
 //        nodes[0] = node.slice(-pos) as T;
 //        break;
 //      }
+//    }
+//    else if (nodes.length === 1 && node.className === 'indexer') {
+//      break;
 //    }
 //    nodes.shift();
 //  }
