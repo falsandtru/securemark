@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.279.1
+
+- Refactoring.
+
 ## 0.279.0
 
 - Change media syntax not to be included in inline syntax.
