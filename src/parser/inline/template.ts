@@ -6,7 +6,10 @@ import { unshift } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => creation(surround(
-  '{{', syntax(Syntax.none, 2, State.all, some(union([bracket, escsource]), '}')), '}}', true,
+  '{{',
+  syntax(Syntax.none, 6, State.all, some(union([bracket, escsource]), '}', [['}}', 6]])),
+  '}}',
+  true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => creation(union([

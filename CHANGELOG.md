@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.280.0
+
+- Change operator precedence of template syntax to 6.
+
 ## 0.279.1
 
 - Refactoring.
