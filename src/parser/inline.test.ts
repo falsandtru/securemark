@@ -18,6 +18,8 @@ describe('Unit: parser/inline', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('あ（Ａ）')), [['あ', '（', 'Ａ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser('あ（い）')), [['あ', '<span class="paren">（い）</span>'], '']);
       assert.deepStrictEqual(inspect(parser('+++a+++')), [['+++', 'a', '+++'], '']);
       assert.deepStrictEqual(inspect(parser('~~~a~~~')), [['~~~', 'a', '~~~'], '']);
       assert.deepStrictEqual(inspect(parser('===a===')), [['===', 'a', '==='], '']);
