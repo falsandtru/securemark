@@ -37,7 +37,7 @@ export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creation(0, false, error(
-  reset({ resources: { clock: 50000, recursion: 20 + 1 } },
+  reset({ resources: { clock: 20000, recursion: 20 + 1 } },
   union([
     emptyline,
     pagebreak,

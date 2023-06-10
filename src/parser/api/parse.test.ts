@@ -335,15 +335,15 @@ describe('Unit: parser/api/parse', () => {
       this.timeout(5000);
       // 実測500ms程度
       assert.deepStrictEqual(
-        [...parse('.'.repeat(50000)).children].map(el => el.outerHTML),
-        [`<p>${'.'.repeat(50000)}</p>`]);
+        [...parse('.'.repeat(20000)).children].map(el => el.outerHTML),
+        [`<p>${'.'.repeat(20000)}</p>`]);
     });
 
     it('creation error', function () {
       this.timeout(5000);
       // 実測500ms程度
       assert.deepStrictEqual(
-        [...parse('.'.repeat(50001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse('.'.repeat(20001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">${'.'.repeat(1000).slice(0, 997)}...</pre>`,

@@ -2,6 +2,7 @@
 
 ## 0.280.0
 
+- Decrease resource size to 20,000.
 - Change operator precedence of template syntax to 6.
 - Swap operator precedence of html syntax and remark syntax.
 
