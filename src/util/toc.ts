@@ -61,7 +61,10 @@ function level(h: HTMLHeadingElement): number {
 function unlink(h: HTMLHeadingElement): Iterable<Node> {
   for (let es = h.getElementsByTagName('a'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    el.replaceWith(...el.childNodes);
+    assert(el.childNodes.length <= 1);
+    el.firstChild
+      ? el.replaceWith(el.firstChild)
+      : el.remove();
   }
   return h.childNodes;
 }
