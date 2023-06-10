@@ -23,8 +23,8 @@ export class Delimiters {
       }
     },
     this.signature);
+  private readonly registry = new Map<string, boolean>();
   private readonly matchers: [number, string, number, (source: string) => boolean | undefined][] = [];
-  private readonly registry: Record<string, boolean> = {};
   private length = 0;
   public push(
     ...delimiters: readonly {
@@ -33,24 +33,26 @@ export class Delimiters {
       readonly precedence?: number;
     }[]
   ): void {
+    const { registry, matchers } = this;
     for (let i = 0; i < delimiters.length; ++i) {
       const delimiter = delimiters[i];
       assert(this.length >= this.matchers.length);
       const { signature, matcher, precedence = 1 } = delimiter;
-      if (!this.registry[signature]) {
-        this.matchers.unshift([this.length, signature, precedence, matcher]);
-        this.registry[signature] = true;
+      if (!registry.get(signature)) {
+        matchers.push([this.length, signature, precedence, matcher]);
+        registry.set(signature, true);
       }
       ++this.length;
     }
   }
   public pop(count = 1): void {
     assert(count > 0);
+    const { registry, matchers } = this;
     for (let i = 0; i < count; ++i) {
       assert(this.matchers.length > 0);
       assert(this.length >= this.matchers.length);
-      if (--this.length === this.matchers[0][0]) {
-        this.registry[this.matchers.shift()![1]] = false;
+      if (--this.length === matchers.at(-1)![0]) {
+        registry.set(matchers.pop()![1], false);
       }
     }
   }
