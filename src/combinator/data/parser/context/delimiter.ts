@@ -34,7 +34,7 @@ export class Delimiters {
   private readonly delimiters: Delimiter[] = [];
   private readonly order: number[] = [];
   public push(
-    ...delims: readonly {
+    delims: readonly {
       readonly signature: string;
       readonly matcher: (source: string) => boolean | undefined;
       readonly precedence?: number;

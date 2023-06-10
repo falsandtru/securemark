@@ -22,7 +22,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
     let nodes: T[] | undefined;
     if (delims.length > 0) {
       context.delimiters ??= new Delimiters();
-      context.delimiters.push(...delims);
+      context.delimiters.push(delims);
     }
     while (true) {
       if (rest === '') break;
