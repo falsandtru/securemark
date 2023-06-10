@@ -33,11 +33,11 @@ export class Memo {
       : [];
     //console.log('set', position, syntax, state, record[syntax]?.[state]);
   }
-  public clear(position: number): void {
+  public resize(position: number): void {
     const memory = this.memory;
     for (let len = memory.length, i = position; i < len; ++i) {
       memory.pop();
     }
-    //console.log('clear', position + 1);
+    //console.log('resize', position + 1);
   }
 }

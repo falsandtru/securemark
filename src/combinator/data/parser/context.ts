@@ -87,7 +87,7 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser?: 
     }
     if (result && !stateOuter && memo.length! >= position + 2) {
       assert(!(stateOuter & memo.targets));
-      memo.clear(position + 2);
+      memo.resize(position + 2);
     }
     context.state = stateOuter;
     return result;
