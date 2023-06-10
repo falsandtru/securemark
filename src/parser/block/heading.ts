@@ -18,7 +18,7 @@ export const heading: HeadingParser = block(rewrite(segment,
       visualize(trimBlankStart(some(union([indexer, inline])))), true),
     open(
       str('#'),
-      state(State.autolink,
+      state(State.linkers,
       visualize(trimBlankStart(some(union([indexer, inline]))))), true),
   ]),
   ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
