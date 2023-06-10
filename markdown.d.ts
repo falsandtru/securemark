@@ -784,8 +784,8 @@ export namespace MarkdownParser {
         // [#index|signature]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, Context, [
-          IndexParser.SignatureParser,
           InlineParser,
+          IndexParser.SignatureParser,
         ]> {
       }
       export namespace IndexParser {
