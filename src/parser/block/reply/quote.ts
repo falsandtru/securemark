@@ -44,12 +44,8 @@ const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
   const nodes = eval(text({ source: `\r${content}`, context }), []);
   nodes.unshift(quotes.shift()!);
   for (let i = 0; i < nodes.length; ++i) {
-    const child = nodes[i] as string | Text | Element;
+    const child = nodes[i];
     if (typeof child === 'string') continue;
-    if ('wholeText' in child) {
-      nodes[i] = child.data;
-      continue;
-    }
     assert(child instanceof HTMLElement);
     if (child.tagName === 'BR') {
       assert(quotes.length > 0);
@@ -57,16 +53,9 @@ const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
       ++i;
       continue;
     }
-    if (child.className === 'cite' || child.classList.contains('quote')) {
-      context.resources && (context.resources.clock -= child.childNodes.length);
-      nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
-      --i;
-      continue;
-    }
   }
   nodes.unshift('');
   assert(nodes.length > 1);
-  assert(nodes.every(n => typeof n === 'string' || n instanceof HTMLElement));
   assert(quotes.length === 0);
   return [nodes, ''];
 };
