@@ -1,12 +1,9 @@
-import { hasOwnProperty, ObjectCreate } from 'spica/alias';
+import { ObjectCreate } from 'spica/alias';
 import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../../data/parser';
 import { Memo } from './context/memo';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
-  if (!('memo' in base)) {
-    base.memo = undefined;
-  }
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
@@ -27,41 +24,38 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
 
 function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
 function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
-  if (context) for (let i = 0; i < changes.length; ++i) {
+  for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
     switch (prop) {
       case 'resources':
-        if (!reset) break;
-        assert(typeof change[1] === 'object');
-        assert(context[prop] || !(prop in context));
-        if (prop in context && !hasOwnProperty(context, prop)) break;
-        context[prop as string] = ObjectCreate(change[1] as object);
-        break;
-      // @ts-expect-error
-      case 'memo':
-        if (!reset) break;
-        context.memo = new Memo(context.memo?.targets);
-        // fallthrough
-      default:
-        values[i] = context[prop];
-        context[prop] = change[1];
+        assert(reset);
+        assert(!context.offset);
+        assert(!context.precedence);
+        assert(!context.delimiters);
+        assert(!context.state);
+        assert(!context.memo);
+        context[prop as string] ??= ObjectCreate(change[1] as object);
+        continue;
     }
+    values[i] = context[prop];
+    context[prop] = change[1];
   }
   const result = parser({ source, context });
-  if (context) for (let i = 0; i < changes.length; ++i) {
+  for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
     switch (prop) {
       case 'resources':
-      // @ts-expect-error
+        assert(reset);
+        break;
       case 'memo':
-        if (!reset) break;
-        // fallthrough
-      default:
-        context[prop] = values[i];
-        values[i] = undefined;
+        assert(reset);
+        context.memo!.clear();
+        break;
     }
+    context[prop] = values[i];
+    values[i] = undefined;
   }
   return result;
 }

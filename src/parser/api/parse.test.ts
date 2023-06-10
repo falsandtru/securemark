@@ -333,7 +333,6 @@ describe('Unit: parser/api/parse', () => {
 
     it('creation', function () {
       this.timeout(5000);
-      // 実測500ms程度
       assert.deepStrictEqual(
         [...parse('.'.repeat(20000)).children].map(el => el.outerHTML),
         [`<p>${'.'.repeat(20000)}</p>`]);
@@ -341,12 +340,21 @@ describe('Unit: parser/api/parse', () => {
 
     it('creation error', function () {
       this.timeout(5000);
-      // 実測500ms程度
       assert.deepStrictEqual(
         [...parse('.'.repeat(20001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">${'.'.repeat(1000).slice(0, 997)}...</pre>`,
+        ]);
+    });
+
+    it('recovery', function () {
+      this.timeout(5000);
+      assert.deepStrictEqual(
+        [...parse(`!>> ${'['.repeat(20)}${'{a}'.repeat(518)}\n> ${'{a}'.repeat(4)}\n\na`).children].map(el => el.outerHTML),
+        [
+          `<blockquote><blockquote><section><p>${'['.repeat(20)}${'<a class="url" href="a">a</a>'.repeat(518)}</p><h2>References</h2><ol class="references"></ol></section></blockquote><section><h1 class="error">Error: Too many creations</h1><pre class="error" translate="no">{a}{a}{a}{a}</pre><h2>References</h2><ol class="references"></ol></section></blockquote>`,
+          '<p>a</p>',
         ]);
     });
 

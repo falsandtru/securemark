@@ -4,7 +4,7 @@ export class Memo {
   ) {
     this.targets = targets;
   }
-  private readonly memory: Record<number, Record<number, readonly [any[], number] | readonly []>>[/* pos */] = [];
+  private memory: Record<number, Record<number, readonly [any[], number] | readonly []>>[/* pos */] = [];
   public get length(): number {
     return this.memory.length;
   }
@@ -39,5 +39,8 @@ export class Memo {
       memory.pop();
     }
     //console.log('resize', position + 1);
+  }
+  public clear(): void {
+    this.memory = [];
   }
 }
