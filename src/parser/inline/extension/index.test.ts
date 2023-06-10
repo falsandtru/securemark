@@ -20,6 +20,12 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#\\]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#a')), undefined);
       assert.deepStrictEqual(inspect(parser('[#*a\nb*]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#(a\nb)]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#"a\nb"]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#<bdi>a\nb</bdi>]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#[% a\nb %]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#{{ a\nb }}]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#({{ a\nb }})]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#a\n|b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#a|\n]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#a|\\\n]')), undefined);

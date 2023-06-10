@@ -1,5 +1,12 @@
 import { memoize, reduce } from 'spica/memoize';
 
+interface Delimiter {
+  readonly index: number;
+  readonly signature: string;
+  readonly matcher: (source: string) => boolean | undefined;
+  readonly precedence: number;
+}
+
 export class Delimiters {
   public static signature(pattern: string | RegExp | undefined): string {
     switch (typeof pattern) {
@@ -23,45 +30,64 @@ export class Delimiters {
       }
     },
     this.signature);
-  private readonly registry = new Map<string, boolean>();
-  private readonly matchers: [number, string, number, (source: string) => boolean | undefined][] = [];
-  private length = 0;
+  private readonly registry = memoize<(signature: string) => Delimiter[]>(() => []);
+  private readonly delimiters: Delimiter[] = [];
+  private readonly order: number[] = [];
   public push(
-    ...delimiters: readonly {
+    ...delims: readonly {
       readonly signature: string;
       readonly matcher: (source: string) => boolean | undefined;
       readonly precedence?: number;
     }[]
   ): void {
-    const { registry, matchers } = this;
-    for (let i = 0; i < delimiters.length; ++i) {
-      const delimiter = delimiters[i];
-      assert(this.length >= this.matchers.length);
-      const { signature, matcher, precedence = 1 } = delimiter;
-      if (!registry.get(signature)) {
-        matchers.push([this.length, signature, precedence, matcher]);
-        registry.set(signature, true);
+    const { registry, delimiters, order } = this;
+    for (let i = 0; i < delims.length; ++i) {
+      const { signature, matcher, precedence = 1 } = delims[i];
+      const stack = registry(signature);
+      const index = stack[0]?.index ?? delimiters.length;
+      if (stack.length === 0 || precedence > delimiters[index].precedence) {
+        const delimiter: Delimiter = {
+          index,
+          signature,
+          matcher,
+          precedence,
+        };
+        delimiters[index] = delimiter;
+        stack.push(delimiter);
+        order.push(index);
       }
-      ++this.length;
+      else {
+        order.push(-1);
+      }
     }
   }
   public pop(count = 1): void {
     assert(count > 0);
-    const { registry, matchers } = this;
+    const { registry, delimiters, order } = this;
     for (let i = 0; i < count; ++i) {
-      assert(this.matchers.length > 0);
-      assert(this.length >= this.matchers.length);
-      if (--this.length === matchers.at(-1)![0]) {
-        registry.set(matchers.pop()![1], false);
+      assert(this.order.length > 0);
+      const index = order.pop()!;
+      if (index === -1) continue;
+      const stack = registry(delimiters[index].signature);
+      assert(stack.length > 0);
+      if (stack.length === 1) {
+        assert(index === delimiters.length - 1);
+        assert(stack[0] === delimiters.at(-1));
+        stack.pop();
+        delimiters.pop();
+      }
+      else {
+        stack.pop();
+        delimiters[index] = stack.at(-1)!;
       }
     }
   }
   public match(source: string, precedence = 1): boolean {
-    const { matchers } = this;
-    for (let i = 0; i < matchers.length; ++i) {
-      const matcher = matchers[i];
-      if (precedence >= matcher[2]) continue;
-      switch (matcher[3](source)) {
+    const { delimiters } = this;
+    for (let i = 0; i < delimiters.length; ++i) {
+      const delimiter = delimiters[i];
+      if (precedence >= delimiter.precedence) continue;
+      switch (delimiter.matcher(source)) {
         case true:
           return true;
         case false:
