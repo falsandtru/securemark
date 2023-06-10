@@ -21,7 +21,6 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   if (!validate(source, MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
-  assert(!context?.delimiters);
   context = {
     host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
     url: url ? new ReadonlyURL(url as ':') : context?.url,
@@ -32,6 +31,10 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     },
     memo: new Memo({ targets: State.backtrackers }),
   };
+  assert(!context.offset);
+  assert(!context.precedence);
+  assert(!context.delimiters);
+  assert(!context.state);
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
