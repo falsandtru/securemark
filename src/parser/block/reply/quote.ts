@@ -1,6 +1,5 @@
 import { ReplyParser } from '../../block';
-import { eval } from '../../../combinator/data/parser';
-import { union, some, creation, block, line, validate, rewrite, lazy, fmap } from '../../../combinator';
+import { union, some, creation, block, line, validate, rewrite, convert, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
 import { linebreak, unescsource, str, anyline } from '../../source';
@@ -33,36 +32,11 @@ export const quote: ReplyParser.QuoteParser = lazy(() => creation(1, false, bloc
   ]),
   false)));
 
-const qblock: ReplyParser.QuoteParser.BlockParser = ({ source, context }) => {
-  source = source.replace(/\n$/, '');
-  const lines = source.match(/^.*\n?/mg)!;
-  assert(lines);
-  const quotes = source.match(/^>+[^\S\n]/mg)!;
-  assert(quotes);
-  assert(quotes.length > 0);
-  const content = lines.reduce((acc, line, i) => acc + line.slice(quotes[i].length), '');
-  const nodes = eval(text({ source: `\r${content}`, context }), []);
-  nodes.unshift(quotes.shift()!);
-  for (let i = 0; i < nodes.length; ++i) {
-    const child = nodes[i];
-    if (typeof child === 'string') continue;
-    assert(child instanceof HTMLElement);
-    if (child.tagName === 'BR') {
-      assert(quotes.length > 0);
-      nodes.splice(i + 1, 0, quotes.shift()!);
-      ++i;
-      continue;
-    }
-  }
-  nodes.unshift('');
-  assert(nodes.length > 1);
-  assert(quotes.length === 0);
-  return [nodes, ''];
-};
-
-const text: ReplyParser.QuoteParser.TextParser = some(union([
-  math, // quote補助関数が残した数式をパースする。他の構文で数式を残す場合はソーステキストを直接使用する。
-  autolink,
-  linebreak,
-  unescsource,
-]));
+const qblock: ReplyParser.QuoteParser.BlockParser = convert(
+  source => source.replace(/\n$/, '').replace(/(?<=^>+[^\S\n])/mg, '\r'),
+  some(union([
+    math, // quote補助関数が残した数式をパースする。他の構文で数式を残す場合はソーステキストを直接使用する。
+    autolink,
+    linebreak,
+    unescsource,
+  ])));

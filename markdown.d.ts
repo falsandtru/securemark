@@ -632,12 +632,6 @@ export namespace MarkdownParser {
         export interface BlockParser extends
           Block<'reply/quote/block'>,
           Parser<string | HTMLElement, Context, [
-            TextParser,
-          ]> {
-        }
-        export interface TextParser extends
-          Block<'reply/quote/text'>,
-          Parser<string | HTMLElement, Context, [
             InlineParser.MathParser,
             InlineParser.AutolinkParser,
             SourceParser.LinebreakParser,
