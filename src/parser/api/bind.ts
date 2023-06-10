@@ -24,7 +24,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-    memo: new Memo({ targets: State.backtrackers }),
+    memo: new Memo(State.backtrackers),
   };
   assert(!context.offset);
   assert(!context.precedence);

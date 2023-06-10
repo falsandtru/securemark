@@ -1,8 +1,9 @@
 export class Memo {
-  constructor({ targets = ~0 } = {}) {
+  constructor(
+    public readonly targets = ~0,
+  ) {
     this.targets = targets;
   }
-  public readonly targets: number;
   private readonly memory: Record<number, Record<number, readonly [any[], number] | readonly []>>[/* pos */] = [];
   public get length(): number {
     return this.memory.length;

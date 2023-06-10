@@ -41,7 +41,7 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
       // @ts-expect-error
       case 'memo':
         if (!reset) break;
-        context.memo = new Memo({ targets: context.memo?.targets });
+        context.memo = new Memo(context.memo?.targets);
         // fallthrough
       default:
         values[i] = context[prop];

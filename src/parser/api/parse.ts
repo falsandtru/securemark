@@ -29,7 +29,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     ...context?.resources && {
       resources: context.resources,
     },
-    memo: new Memo({ targets: State.backtrackers }),
+    memo: new Memo(State.backtrackers),
   };
   assert(!context.offset);
   assert(!context.precedence);
