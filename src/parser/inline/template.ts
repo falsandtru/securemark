@@ -13,8 +13,11 @@ export const template: TemplateParser = lazy(() => creation(surround(
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => creation(union([
-  surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), precedence(3, some(escsource, /^"|^\\?\n/)), str('"'), true),
 ])));

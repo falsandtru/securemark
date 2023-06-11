@@ -68,9 +68,12 @@ export const linemedia: MediaParser.LineMediaParser = surround(
   /^(?=[^\S\n]*(?:$|\n))/);
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([
-  surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), precedence(3, some(union([unsafehtmlentity, txt]), '"')), str('"'), true),
 ])));
 
