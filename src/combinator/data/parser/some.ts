@@ -32,7 +32,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (result === undefined) break;
       nodes = nodes
-        ? nodes.length < eval(result).length
+        ? nodes.length < eval(result).length / 8
           ? unshift(nodes, eval(result))
           : push(nodes, eval(result))
         : eval(result);

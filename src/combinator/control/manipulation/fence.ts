@@ -1,6 +1,6 @@
 import { Parser, Ctx } from '../../data/parser';
 import { firstline, isBlank } from '../constraint/line';
-import { unshift } from 'spica/array';
+import { push } from 'spica/array';
 
 export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
   return ({ source }) => {
@@ -42,6 +42,6 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
       }
       rest = rest.slice(line.length);
     }
-    return [unshift([block, overflow, closer], matches), rest];
+    return [push([block, overflow, closer], matches), rest];
   };
 }
