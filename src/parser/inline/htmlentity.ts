@@ -27,4 +27,4 @@ const parse = reduce((el => (entity: string): string | undefined => {
   return entity === text
     ? undefined
     : text;
-})(html('b')));
+})(html('span')));
