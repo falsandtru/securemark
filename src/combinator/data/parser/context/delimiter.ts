@@ -37,12 +37,12 @@ export class Delimiters {
     delims: readonly {
       readonly signature: string;
       readonly matcher: (source: string) => boolean | undefined;
-      readonly precedence?: number;
+      readonly precedence: number;
     }[]
   ): void {
     const { registry, delimiters, order } = this;
     for (let i = 0; i < delims.length; ++i) {
-      const { signature, matcher, precedence = 1 } = delims[i];
+      const { signature, matcher, precedence } = delims[i];
       const stack = registry(signature);
       const index = stack[0]?.index ?? delimiters.length;
       if (stack.length === 0 || precedence > delimiters[index].precedence) {
@@ -61,7 +61,7 @@ export class Delimiters {
       }
     }
   }
-  public pop(count = 1): void {
+  public pop(count: number): void {
     assert(count > 0);
     const { registry, delimiters, order } = this;
     for (let i = 0; i < count; ++i) {
