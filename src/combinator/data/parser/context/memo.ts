@@ -38,10 +38,10 @@ export class Memo {
   }
   public resize(position: number): void {
     const memory = this.memory;
-    for (let len = memory.length, i = position; i < len; ++i) {
+    for (let i = memory.length; i > position; --i) {
       this.count -= +memory.pop()!;
     }
-    //console.log('resize', position);
+    //console.log('resize', position + 1);
   }
   public clear(): void {
     this.memory = [];
