@@ -1,13 +1,21 @@
 export const enum Syntax {
-  reference = 1 << 8,
-  index = 1 << 7,
-  placeholder = 1 << 6,
-  ruby = 1 << 5,
-  link = 1 << 4,
-  bracket = 1 << 3,
-  media = 1 << 2,
+  annotation = 1 << 8,
+  reference = 1 << 7,
+  index = 1 << 6,
+  placeholder = 1 << 5,
+  ruby = 1 << 4,
+  link = 1 << 3,
+  bracket = 1 << 2,
   autolink = 1 << 1,
   none = 0,
+  targets = 0
+    | Syntax.annotation
+    | Syntax.reference
+    | Syntax.index
+    | Syntax.placeholder
+    | Syntax.ruby
+    | Syntax.link
+    | Syntax.bracket,
 }
 
 export const enum State {
@@ -30,10 +38,4 @@ export const enum State {
     | State.link
     | State.mark
     | State.autolink,
-  backtrackers = 0
-    | State.annotation
-    | State.reference
-    | State.index
-    | State.link
-    | State.media,
 }

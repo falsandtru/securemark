@@ -69,19 +69,17 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser?: 
     const position = source.length + context.offset!;
     const stateOuter = context.state ?? 0;
     const stateInner = context.state = stateOuter | state;
-    const cache = syntax && stateInner & memo.targets && memo.get(position, syntax, stateInner);
+    const cache = syntax & memo.targets && stateInner && memo.get(position, syntax, stateInner);
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
         : [cache[0], source.slice(cache[1])]
       : parser!({ source, context });
-    if (syntax && stateOuter & memo.targets) {
-      cache ?? memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
-      assert.deepStrictEqual(cache && cache, cache && memo.get(position, syntax, stateInner));
+    if (stateOuter && !cache && syntax & memo.targets) {
+      memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
     }
-    if (result && !stateOuter && memo.length! >= position + 2) {
-      assert(!(stateOuter & memo.targets));
-      memo.resize(position + 2);
+    else if (!stateOuter && result && memo.length! >= position + memo.margin) {
+      memo.resize(position + memo.margin);
     }
     context.state = stateOuter;
     return result;

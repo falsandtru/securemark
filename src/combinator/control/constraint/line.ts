@@ -1,12 +1,10 @@
 import { Parser, eval, exec, check } from '../../data/parser';
-import { Memo } from '../../data/parser/context/memo';
 
 export function line<P extends Parser<unknown>>(parser: P): P;
 export function line<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return ({ source, context }) => {
     if (source === '') return;
-    context.memo ??= new Memo();
     const line = firstline(source);
     context.offset ??= 0;
     context.offset += source.length - line.length;

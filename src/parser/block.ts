@@ -17,7 +17,7 @@ import { blockquote } from './block/blockquote';
 import { mediablock } from './block/mediablock';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
-import { State } from './context';
+import { Syntax } from './context';
 import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom/dom';
 
@@ -39,7 +39,10 @@ export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creation(0, false,
-  reset({ resources: { clock: 20000, recursion: 20 + 1 }, memo: new Memo(State.backtrackers) },
+  reset({
+    resources: { clock: 20000, recursion: 20 + 1 },
+    memo: new Memo(Syntax.targets, 2),
+  },
   error(union([
     emptyline,
     pagebreak,
