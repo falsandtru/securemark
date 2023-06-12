@@ -661,7 +661,6 @@ export namespace MarkdownParser {
       InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
       InlineParser.RemarkParser,
-      InlineParser.MathParser,
       InlineParser.ExtensionParser,
       InlineParser.RubyParser,
       InlineParser.LinkParser.TextLinkParser,
@@ -672,6 +671,7 @@ export namespace MarkdownParser {
       InlineParser.EmStrongParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
+      InlineParser.MathParser,
       InlineParser.CodeParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
@@ -742,27 +742,6 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         InlineParser,
       ]> {
-    }
-    export interface MathParser extends
-      // $expr$
-      // ${expr}$
-      Inline<'math'>,
-      Parser<HTMLElement, Context, [
-        MathParser.BracketParser,
-        Parser<string, Context, [
-          MathParser.BracketParser,
-          SourceParser.UnescapableSourceParser,
-        ]>,
-      ]> {
-    }
-    export namespace MathParser {
-      export interface BracketParser extends
-        Inline<'math/bracket'>,
-        Parser<HTMLElement, Context, [
-          BracketParser,
-          SourceParser.EscapableSourceParser,
-        ]> {
-      }
     }
     export interface ExtensionParser extends
       Inline<'extension'>,
@@ -1096,6 +1075,27 @@ export namespace MarkdownParser {
           EmphasisParser,
         ]>,
       ]> {
+    }
+    export interface MathParser extends
+      // $expr$
+      // ${expr}$
+      Inline<'math'>,
+      Parser<HTMLElement, Context, [
+        MathParser.BracketParser,
+        Parser<string, Context, [
+          MathParser.BracketParser,
+          SourceParser.UnescapableSourceParser,
+        ]>,
+      ]> {
+    }
+    export namespace MathParser {
+      export interface BracketParser extends
+        Inline<'math/bracket'>,
+        Parser<HTMLElement, Context, [
+          BracketParser,
+          SourceParser.EscapableSourceParser,
+        ]> {
+      }
     }
     export interface CodeParser extends
       // `abc`

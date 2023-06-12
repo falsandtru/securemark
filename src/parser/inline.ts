@@ -4,7 +4,6 @@ import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
 import { remark } from './inline/remark';
-import { math } from './inline/math';
 import { extension } from './inline/extension';
 import { ruby } from './inline/ruby';
 import { textlink } from './inline/link';
@@ -13,8 +12,9 @@ import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
 import { mark } from './inline/mark';
 import { emstrong } from './inline/emstrong';
-import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
+import { emphasis } from './inline/emphasis';
+import { math } from './inline/math';
 import { code } from './inline/code';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
@@ -26,7 +26,6 @@ export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
 export import RemarkParser = InlineParser.RemarkParser;
-export import MathParser = InlineParser.MathParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import RubyParser = InlineParser.RubyParser;
 export import LinkParser = InlineParser.LinkParser;
@@ -35,8 +34,9 @@ export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
 export import MarkParser = InlineParser.MarkParser;
 export import EmStrongParser = InlineParser.EmStrongParser;
-export import EmphasisParser = InlineParser.EmphasisParser;
 export import StrongParser = InlineParser.StrongParser;
+export import EmphasisParser = InlineParser.EmphasisParser;
+export import MathParser = InlineParser.MathParser;
 export import CodeParser = InlineParser.CodeParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
@@ -50,7 +50,6 @@ export const inline: InlineParser = lazy(() => union([
   reference,
   template,
   remark,
-  math,
   extension,
   ruby,
   textlink,
@@ -61,6 +60,7 @@ export const inline: InlineParser = lazy(() => union([
   emstrong,
   strong,
   emphasis,
+  math,
   code,
   htmlentity,
   autolink,
