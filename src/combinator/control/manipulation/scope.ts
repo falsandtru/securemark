@@ -12,11 +12,13 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
     const src = match(source);
     assert(source.startsWith(src));
     if (src === '') return;
+    const offset = source.length - src.length;
+    assert(offset >= 0);
     context.offset ??= 0;
-    context.offset += source.length - src.length;
+    context.offset += offset;
     const result = parser({ source: src, context });
     assert(check(src, result));
-    context.offset -= source.length - src.length;
+    context.offset -= offset;
     if (result === undefined) return;
     assert(exec(result).length < src.length);
     return exec(result).length < src.length
@@ -41,11 +43,13 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');
     assert(source.startsWith(src));
+    const offset = source.length - src.length;
+    assert(offset >= 0);
     context.offset ??= 0;
-    context.offset += source.length - src.length;
+    context.offset += offset;
     const res2 = parser({ source: src, context });
     assert(check(src, res2));
-    context.offset -= source.length - src.length;
+    context.offset -= offset;
     if (res2 === undefined) return;
     assert(exec(res2) === '');
     return exec(res2).length < src.length
