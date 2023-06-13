@@ -2814,6 +2814,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.convert = void 0;
 const parser_1 = __webpack_require__(6728);
+const alias_1 = __webpack_require__(5406);
 function convert(conv, parser, empty = false) {
   return ({
     source,
@@ -2822,13 +2823,14 @@ function convert(conv, parser, empty = false) {
     if (source === '') return;
     const src = conv(source, context);
     if (src === '') return empty ? [[], ''] : undefined;
+    const offset = (0, alias_1.max)(source.length - src.length, 0);
     context.offset ??= 0;
-    context.offset += source.length - src.length;
+    context.offset += offset;
     const result = parser({
       source: src,
       context
     });
-    context.offset -= source.length - src.length;
+    context.offset -= offset;
     return result;
   };
 }
@@ -2953,13 +2955,14 @@ function indent(opener, parser, separation = false) {
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, ({
     source
   }) => [[source], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation), (lines, rest, context) => {
+    const offset = rest.length;
     context.offset ??= 0;
-    context.offset += rest.length;
+    context.offset += offset;
     const result = parser({
       source: trimBlockEnd(lines.join('')),
       context
     });
-    context.offset -= rest.length;
+    context.offset -= offset;
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : undefined;
   });
 }
@@ -3080,13 +3083,14 @@ function focus(scope, parser) {
     if (source === '') return;
     const src = match(source);
     if (src === '') return;
+    const offset = source.length - src.length;
     context.offset ??= 0;
-    context.offset += source.length - src.length;
+    context.offset += offset;
     const result = parser({
       source: src,
       context
     });
-    context.offset -= source.length - src.length;
+    context.offset -= offset;
     if (result === undefined) return;
     return (0, parser_1.exec)(result).length < src.length ? [(0, parser_1.eval)(result), (0, parser_1.exec)(result) + source.slice(src.length)] : undefined;
   };
@@ -3107,13 +3111,14 @@ function rewrite(scope, parser) {
     context.memo = memo;
     if (res1 === undefined || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
+    const offset = source.length - src.length;
     context.offset ??= 0;
-    context.offset += source.length - src.length;
+    context.offset += offset;
     const res2 = parser({
       source: src,
       context
     });
-    context.offset -= source.length - src.length;
+    context.offset -= offset;
     if (res2 === undefined) return;
     return (0, parser_1.exec)(res2).length < src.length ? [(0, parser_1.eval)(res2), (0, parser_1.exec)(res2) + (0, parser_1.exec)(res1)] : undefined;
   };
@@ -3645,10 +3650,10 @@ class Memo {
 
   resize(position) {
     const memory = this.memory;
-    for (let len = memory.length, i = position; i < len; ++i) {
+    for (let i = memory.length; i > position; --i) {
       this.count -= +memory.pop();
     }
-    //console.log('resize', position);
+    //console.log('resize', position + 1);
   }
 
   clear() {
@@ -5874,7 +5879,7 @@ exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:
 // Escape unmatched hashtag-like strings.
 (0, source_1.str)(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', hashtag_1.emoji), 'u')),
 // Escape invalid leading characters.
-(0, source_1.str)(/^[0-9\p{Sc}](?=>)/u), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])])))));
+(0, source_1.str)(/^[0-9a-z](?=>)/iu), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])])))));
 
 /***/ }),
 
