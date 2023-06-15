@@ -1,8 +1,10 @@
 import { IListParser } from '../block';
-import { union, inits, some, creation, block, line, validate, indent, open, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, some, creation, block, line, validate, indent, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, invalid, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
+import { lineable } from '../util';
+import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
@@ -14,7 +16,7 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   some(creation(1, false, union([
     fmap(fallback(
       inits([
-        line(open(/^[-+*](?:$|\s)/, some(inline), true)),
+        line(open(/^[-+*](?:$|\s)/, trim(visualize(trimBlank(lineable(some(inline))))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),

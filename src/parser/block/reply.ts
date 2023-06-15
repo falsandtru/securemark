@@ -4,6 +4,7 @@ import { cite } from './reply/cite';
 import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
+import { lineable } from '../util';
 import { visualize, trimNodeEnd } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -25,7 +26,7 @@ export const reply: ReplyParser = block(validate('>', fmap(
       some(quote),
       fmap(rewrite(
         some(anyline, delimiter),
-        visualize(some(inline))),
+        visualize(lineable(some(inline)))),
         ns => push(ns, [html('br')])),
     ])),
   ]),

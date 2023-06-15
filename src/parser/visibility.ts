@@ -9,11 +9,11 @@ import { push } from 'spica/array';
 
 export namespace blank {
   export const line = new RegExp(
-    /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source
+    /^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   export const start = new RegExp(
-    /^(?:\\?[^\S\n]|&IHN;|<wbr[^\S\n]*>)+/.source
+    /^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
 }
 

@@ -57,6 +57,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n 0. ')), [['<ul><li id="index::1">1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. 2')), [['<ul><li id="index::1">1<ol><li id="index::2">2</li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- a [#b]')), [['<ul><li id="index::a_b">a <a class="index" href="#index::b">b</a></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- http://host\\')), [['<ul><li id="index::http://host\\"><a class="url" href="http://host\\" target="_blank">http://host\\</a></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li id="index::!http://host">!<a class="url" href="http://host" target="_blank">http://host</a></li></ul>'], '']);
     });
 
@@ -68,10 +69,10 @@ describe('Unit: parser/block/ulist', () => {
     });
 
     it('indexer', () => {
-      assert.deepStrictEqual(inspect(parser('- [|a]')), [['<ul><li id="index::a"><span class="invalid">a</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- [|a]')), [['<ul><li id="index::[|a]">[|a]</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- a [|]')), [['<ul><li>a<span class="indexer" data-index=""></span></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- a [|b]')), [['<ul><li id="index::b">a<span class="indexer" data-index="b"></span></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- [ ] [|a]')), [['<ul class="checklist"><li id="index::a"><span class="checkbox">☐</span><span class="invalid">a</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- [ ] [|a]')), [['<ul class="checklist"><li id="index::[|a]"><span class="checkbox">☐</span>[|a]</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- [ ] a [|b]')), [['<ul class="checklist"><li id="index::b"><span class="checkbox">☐</span>a<span class="indexer" data-index="b"></span></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- a [|]\n - c [|d]')), [['<ul><li>a<span class="indexer" data-index=""></span><ul><li id="index::d">c<span class="indexer" data-index="d"></span></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- a [|b]\n - c [|d]')), [['<ul><li id="index::b">a<span class="indexer" data-index="b"></span><ul><li id="index::d">c<span class="indexer" data-index="d"></span></li></ul></li></ul>'], '']);

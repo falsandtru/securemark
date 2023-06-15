@@ -5,6 +5,7 @@ import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
 import { contentline } from '../source';
+import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -20,7 +21,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
       inits([
         line(open(/^-(?:$|\s)/, subsequence([
           checkbox,
-          trim(visualize(trimBlank(some(union([indexer, inline]))))),
+          trim(visualize(lineable(trimBlank(some(union([indexer, inline])))))),
         ]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),

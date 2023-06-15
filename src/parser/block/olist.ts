@@ -3,6 +3,7 @@ import { union, inits, subsequence, some, creation, block, line, validate, inden
 import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
+import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -34,7 +35,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
       inits([
         line(open(heads[form], subsequence([
           checkbox,
-          trim(visualize(trimBlank(some(union([indexer, inline])))))]), true)),
+          trim(visualize(lineable(trimBlank(some(union([indexer, inline]))))))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
