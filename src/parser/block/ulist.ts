@@ -1,14 +1,13 @@
 import { UListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, close, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
-import { index } from '../inline/extension/index';
 import { contentline } from '../source';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
-import { html, define, defrag } from 'typed-dom/dom';
+import { html, defrag } from 'typed-dom/dom';
 
 export const ulist: UListParser = lazy(() => block(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,
@@ -19,12 +18,10 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
   some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
-        line(open(/^-(?:$|\s)/, subsequence([checkbox, trim(union([
-          fmap(close(union([index]), /^$/), ([el]) => [
-            define(el, { class: void el.classList.add('indexer'), 'data-index': '' })
-          ]),
-          visualize(trimBlank(some(union([indexer, inline])))),
-        ]))]), true)),
+        line(open(/^-(?:$|\s)/, subsequence([
+          checkbox,
+          trim(visualize(trimBlank(some(union([indexer, inline]))))),
+        ]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),

@@ -56,6 +56,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n 0.')), [['<ul><li id="index::1">1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. ')), [['<ul><li id="index::1">1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. 2')), [['<ul><li id="index::1">1<ol><li id="index::2">2</li></ol></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- a [#b]')), [['<ul><li id="index::a_b">a <a class="index" href="#index::b">b</a></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li id="index::!http://host">!<a class="url" href="http://host" target="_blank">http://host</a></li></ul>'], '']);
     });
 

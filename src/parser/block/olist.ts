@@ -1,9 +1,8 @@
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, close, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
-import { index } from '../inline/extension/index';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -33,12 +32,9 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
   some(creation(1, false, union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], subsequence([checkbox, trim(union([
-          fmap(close(union([index]), /^$/), ([el]) => [
-            define(el, { class: void el.classList.add('indexer'), 'data-index': '' })
-          ]),
-          visualize(trimBlank(some(union([indexer, inline])))),
-        ]))]), true)),
+        line(open(heads[form], subsequence([
+          checkbox,
+          trim(visualize(trimBlank(some(union([indexer, inline])))))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
