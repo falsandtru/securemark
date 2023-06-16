@@ -20,18 +20,14 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
   if (cs.length <= 120) return `${type}:${id ?? ''}:${text}`;
   switch (type) {
     case 'index':
-      return `${type}:${id ?? ''}:${cs.slice(0, 120 - 3).join('')}...`;
     case 'mark':
       return `${type}:${id ?? ''}:${cs.slice(0, 38).join('')}...${cs.slice(cs.length / 2 - 38 / 2 | 0).slice(0, 38).join('')}...${cs.slice(-38).join('')}`;
   }
   assert(false);
 }
 assert(identity(undefined, '0'.repeat(120 - 1) + 1)!.slice(7) === '0'.repeat(120 - 1) + 1);
-assert(identity(undefined, '0'.repeat(120) + 1)!.slice(7) === '0'.repeat(117) + '...');
-assert(identity(undefined, '0'.repeat(200) + 1)!.slice(7) === '0'.repeat(117) + '...');
-assert(identity(undefined, '0'.repeat(120 - 1) + 1, 'mark')!.slice(6) === '0'.repeat(120 - 1) + 1);
-assert(identity(undefined, '0'.repeat(41) + '1'.repeat(38) + '2'.repeat(41) + 3, 'mark')!.slice(6) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
-assert(identity(undefined, '0'.repeat(81) + '1'.repeat(38) + '2'.repeat(81) + 3, 'mark')!.slice(6) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
+assert(identity(undefined, '0'.repeat(41) + '1'.repeat(38) + '2'.repeat(41) + 3)!.slice(7) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
+assert(identity(undefined, '0'.repeat(81) + '1'.repeat(38) + '2'.repeat(81) + 3)!.slice(7) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
 
 export function index(source: Element, optional = false): string {
   assert(!source.matches('.indexer'));
