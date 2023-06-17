@@ -6251,7 +6251,6 @@ function identity(id, text, type = 'index') {
   if (cs.length <= 120) return `${type}:${id ?? ''}:${text}`;
   switch (type) {
     case 'index':
-      return `${type}:${id ?? ''}:${cs.slice(0, 120 - 3).join('')}...`;
     case 'mark':
       return `${type}:${id ?? ''}:${cs.slice(0, 38).join('')}...${cs.slice(cs.length / 2 - 38 / 2 | 0).slice(0, 38).join('')}...${cs.slice(-38).join('')}`;
   }
