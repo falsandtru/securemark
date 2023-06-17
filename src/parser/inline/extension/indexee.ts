@@ -13,15 +13,21 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
-  text &&= text.trim().replace(/\s+/g, '_');
+  text &&= text.trim().replace(/\s\s+/g, ' ');
   if (text === '') return undefined;
-  if (text.length <= 120 || type === '') return `${type}:${id ?? ''}:${text}`;
+  const hash = text.replace(/\s/g, '_');
+  if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
   const cs = [...text];
-  if (cs.length <= 120) return `${type}:${id ?? ''}:${text}`;
+  if (cs.length <= 120) return `${type}:${id ?? ''}:${hash}`;
+  const ellipsis = '...';
+  const len = (120 - ellipsis.length * 2) / 3 | 0;
   switch (type) {
     case 'index':
     case 'mark':
-      return `${type}:${id ?? ''}:${cs.slice(0, 38).join('')}...${cs.slice(cs.length / 2 - 38 / 2 | 0).slice(0, 38).join('')}...${cs.slice(-38).join('')}`;
+      const s1 = hash.slice(0, cs.slice(0, len).join('').trimEnd().length);
+      const s3 = hash.slice(-cs.slice(-len).join('').trimStart().length);
+      const s2 = cs.slice(cs.length / 2 - len / 2 - (len - s1.length) | 0).slice(0, len + len - s3.length).join('').trim().replace(/\s/g, '_');
+      return `${type}:${id ?? ''}:${s1}${ellipsis}${s2}${ellipsis}${s3}`;
   }
   assert(false);
 }
