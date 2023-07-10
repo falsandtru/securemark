@@ -180,37 +180,37 @@ function build(
       }
     }
   }
+}
 
-  function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
-    const { children } = note;
-    const size = defs.size;
-    let count = 0;
-    let length = children.length;
-    I:
-    for (const [key, def] of defs) {
-      defs.delete(key);
-      ++count;
-      while (length > size) {
-        const node = children[count - 1] as HTMLLIElement;
-        if (equal(node, def)) continue I;
-        yield note.removeChild(node);
-        --length;
-        assert(children.length === length);
-      }
-      const node = count <= length
-        ? children[count - 1]
-        : null;
-      if (node && equal(node, def)) continue;
-      assert(def.parentNode !== note);
-      yield note.insertBefore(def, node);
-      ++length;
-      assert(children.length === length);
-    }
+function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
+  const { children } = note;
+  const size = defs.size;
+  let count = 0;
+  let length = children.length;
+  I:
+  for (const [key, def] of defs) {
+    defs.delete(key);
+    ++count;
     while (length > size) {
-      yield note.removeChild(children[size] as HTMLLIElement);
+      const node = children[count - 1] as HTMLLIElement;
+      if (equal(node, def)) continue I;
+      yield note.removeChild(node);
       --length;
       assert(children.length === length);
     }
+    const node = count <= length
+      ? children[count - 1]
+      : null;
+    if (node && equal(node, def)) continue;
+    assert(def.parentNode !== note);
+    yield note.insertBefore(def, node);
+    ++length;
+    assert(children.length === length);
+  }
+  while (length > size) {
+    yield note.removeChild(children[size] as HTMLLIElement);
+    --length;
+    assert(children.length === length);
   }
 }
 
