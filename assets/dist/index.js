@@ -395,13 +395,13 @@ DWCはこの最適化を行っても状態数の多さに比例して増加し�
 
 */
 class Entry {
-  constructor(key, value, size, partition, affiliation, expiration) {
+  constructor(key, value, size, expiration, partition, affiliation) {
     this.key = key;
     this.value = value;
     this.size = size;
+    this.expiration = expiration;
     this.partition = partition;
     this.affiliation = affiliation;
-    this.expiration = expiration;
     this.enode = undefined;
     this.next = undefined;
     this.prev = undefined;
@@ -631,7 +631,7 @@ class Cache {
     if (entry.partition === 'LRU') {
       if (entry.affiliation === 'LRU') {
         // For memoize.
-        // Strict checks are ineffective for OLTP.
+        // Strict checks are ineffective with OLTP.
         if (entry === LRU.head) return;
         entry.affiliation = 'LFU';
       } else {
@@ -690,7 +690,7 @@ class Cache {
       return true;
     }
     this.$size += size;
-    const entry = new Entry(key, value, size, 'LRU', 'LRU', expiration);
+    const entry = new Entry(key, value, size, expiration, 'LRU', 'LRU');
     LRU.unshift(entry);
     this.dict.set(key, entry);
     if (this.expiration && this.expirations !== undefined && expiration !== Infinity) {
@@ -768,7 +768,6 @@ class Cache {
     } of this.LFU) {
       yield [key, value];
     }
-    return;
   }
 }
 exports.Cache = Cache;
@@ -843,7 +842,6 @@ class Sweeper {
   }
   isActive() {
     if (this.threshold === 0) return false;
-    if (this.prevWindowHits === 0 && this.prevWindowMisses === 0) return false;
     return this.active ??= this.ratioWindow() < (0, alias_1.max)(this.ratioRoom() * this.ratio / 100, this.threshold);
   }
   ratioWindow() {
@@ -907,6 +905,7 @@ function ratio(window, targets, remains, offset) {
   const currRatio = currTotal * 100 / window - offset;
   if (currRatio <= 0) return prevRate * 100 | 0;
   const currRate = currHits && currHits * 100 / currTotal;
+  if (prevTotal === 0) return currRate * 100 | 0;
   const prevRatio = 100 - currRatio;
   return currRate * currRatio + prevRate * prevRatio | 0;
 }
@@ -1051,21 +1050,27 @@ class Clock {
       capacity,
       refs
     } = this;
-    let hand = this.hand;
-    for (let i = hand >>> DIGIT, r = hand & MASK, len = refs.length;;) {
+    for (let {
+        hand
+      } = this, i = hand >>> DIGIT, r = hand & MASK;;) {
       const b = refs[i];
       if (b >>> r === ~0 >>> r) {
-        hand += BASE - r;
+        hand = hand + BASE - r;
         refs[i] = 0;
         r = 0;
-        if (++i === len) {
+        if (hand < capacity) {
+          ++i;
+        } else {
+          hand -= capacity;
           i = 0;
         }
         continue;
       }
       const l = search(b, r);
-      refs[i] = b & ~((1 << l) - 1 >>> r << r);
-      hand = (hand + l - r) % capacity;
+      if (l !== r) {
+        refs[i] = b & ~((1 << l) - 1 >>> r << r);
+        hand += l - r;
+      }
       this.locate(hand, key, value);
       return hand;
     }
@@ -1107,10 +1112,12 @@ class Clock {
     const v = values[index] = values[hand];
     keys[hand] = undefined;
     values[hand] = empty;
-    this.unmark(index);
-    if (index === hand || v === empty) return true;
+    if (index === hand || v === empty) {
+      this.unmark(index);
+      return true;
+    }
     dict.set(k, index);
-    refs[index >>> DIGIT] |= (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? 0 : 1 << (index & MASK);
+    (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? this.unmark(index) : this.mark(index);
     this.unmark(hand);
     return true;
   }
@@ -1118,9 +1125,10 @@ class Clock {
     this.dict = new Map();
     this.keys = [];
     this.values = [];
-    this.refs = new Uint32Array(this.refs.length);
+    this.refs.fill(0);
     this.hand = 0;
     this.$length = 0;
+    this.initial = 1;
   }
   *[Symbol.iterator]() {
     const {
@@ -1130,7 +1138,6 @@ class Clock {
     for (const index of this.dict.values()) {
       yield [keys[index], values[index]];
     }
-    return;
   }
 }
 exports.Clock = Clock;
@@ -1832,17 +1839,38 @@ Object.defineProperty(exports, "__esModule", ({
 exports.reduce = exports.memoize = void 0;
 const alias_1 = __webpack_require__(5406);
 const compare_1 = __webpack_require__(5529);
-function memoize(f, identify = (...as) => as[0], memory) {
-  if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) || memory?.constructor === Object ? memoizeRecord(f, identify, memory) : memoizeDict(f, identify, memory ?? new Map());
+function memoize(f, identify, memory) {
+  if (typeof identify === 'object') {
+    memory = identify;
+    identify = undefined;
+  }
+  identify ??= (...as) => as[0];
+  switch (true) {
+    case (0, alias_1.isArray)(memory):
+      return memoizeArray(f, identify, memory);
+    case memory?.constructor === Object:
+      return memoizeObject(f, identify, memory);
+    default:
+      return memoizeDict(f, identify, memory ?? new Map());
+  }
 }
 exports.memoize = memoize;
-function memoizeRecord(f, identify, memory) {
+function memoizeArray(f, identify, memory) {
+  return (...as) => {
+    const b = identify(...as);
+    let z = memory[b];
+    if (z !== undefined) return z;
+    z = f(...as);
+    memory[b] = z;
+    return z;
+  };
+}
+function memoizeObject(f, identify, memory) {
   let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory[b];
-    if (z !== undefined || nullable && memory[b] !== undefined) return z;
+    if (z !== undefined || nullable && b in memory) return z;
     z = f(...as);
     nullable ||= z === undefined;
     memory[b] = z;
@@ -1943,7 +1971,6 @@ class Queue {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-    return;
   }
 }
 exports.Queue = Queue;
@@ -2026,7 +2053,6 @@ class PriorityQueue {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-    return;
   }
 }
 exports.PriorityQueue = PriorityQueue;
@@ -2106,7 +2132,6 @@ class MultiQueue {
         yield [k, vs.pop()];
       }
     }
-    return;
   }
 }
 exports.MultiQueue = MultiQueue;
@@ -2122,7 +2147,7 @@ exports.MultiQueue = MultiQueue;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.pcg32 = exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd32 = exports.rnd16 = void 0;
+exports.pcg32 = exports.xorshift = exports.unique = exports.rndAf = exports.rndAP = exports.rnd0_ = exports.rnd0Z = exports.rnd0z = exports.rnd0v = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
 const bases = Object.freeze([...Array(7)].map((_, i) => 1 << i));
 const masks = Object.freeze(bases.map(radix => radix - 1));
 const dict0_ = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '_'].join('');
@@ -2135,10 +2160,12 @@ const dictAz = [...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).sl
 
 exports.rnd16 = cons(16);
 exports.rnd32 = cons(32);
+exports.rnd36 = cons(36);
 exports.rnd62 = cons(62);
 exports.rnd64 = cons(64);
 exports.rnd0f = conv(exports.rnd16, dict0_);
 exports.rnd0v = conv(exports.rnd32, dict0_);
+exports.rnd0z = conv(exports.rnd36, dict0_);
 exports.rnd0Z = conv(exports.rnd62, dict0_);
 exports.rnd0_ = conv(exports.rnd64, dict0_);
 exports.rndAP = conv(exports.rnd16, dictAz);
@@ -2219,14 +2246,14 @@ function xorshift(seed = xorshift.seed()) {
   return () => {
     let x = seed;
     x ^= x << 13;
-    x ^= x >> 17;
+    x ^= x >>> 17;
     x ^= x << 15;
     return seed = x >>> 0;
   };
 }
 exports.xorshift = xorshift;
 (function (xorshift) {
-  const max = -1 >>> 0;
+  const max = ~0 >>> 0;
   function seed() {
     return Math.random() * max + 1 >>> 0;
   }
@@ -2334,7 +2361,6 @@ class Stack {
     while (!this.isEmpty()) {
       yield this.pop();
     }
-    return;
   }
 }
 exports.Stack = Stack;
@@ -2413,26 +2439,29 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
-const format_1 = __webpack_require__(137);
-var format_2 = __webpack_require__(137);
+const internal_1 = __webpack_require__(2560);
+var internal_2 = __webpack_require__(2560);
 Object.defineProperty(exports, "standardize", ({
   enumerable: true,
   get: function () {
-    return format_2.standardize;
+    return internal_2.standardize;
   }
 }));
-var format_3 = __webpack_require__(137);
+var internal_3 = __webpack_require__(2560);
 Object.defineProperty(exports, "ReadonlyURL", ({
   enumerable: true,
   get: function () {
-    return format_3.ReadonlyURL;
+    return internal_3.ReadonlyURL;
   }
 }));
 class URL {
   constructor(source, base) {
+    source = source.trim();
+    base = base?.trim();
+    this.url = new internal_1.ReadonlyURL(source, base);
+    this.params = undefined;
     this.source = source;
     this.base = base;
-    this.url = new format_1.ReadonlyURL(source, base);
 
     //assert(this.href.startsWith(this.resource));
   }
@@ -2447,7 +2476,7 @@ class URL {
     return this.url.origin;
   }
   get scheme() {
-    return this.url.protocol.slice(0, -1);
+    return this.url.scheme;
   }
   get protocol() {
     return this.url.protocol;
@@ -2489,17 +2518,17 @@ class URL {
     return this.params ??= new URLSearchParams(this.search);
   }
   toString() {
-    return this.href;
+    return this.url.toString();
   }
   toJSON() {
-    return this.href;
+    return this.url.toJSON();
   }
 }
 exports.URL = URL;
 
 /***/ }),
 
-/***/ 137:
+/***/ 2560:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2508,28 +2537,37 @@ exports.URL = URL;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.ReadonlyURL = exports._encode = exports.standardize = void 0;
+exports.ReadonlyURL = exports.encode = exports.standardize = void 0;
 __webpack_require__(4128);
 const memoize_1 = __webpack_require__(1808);
 const cache_1 = __webpack_require__(9210);
 function standardize(url, base) {
-  const u = new ReadonlyURL(url, base);
-  url = u.origin === 'null' ? u.protocol.toLowerCase() + u.href.slice(u.protocol.length) : u.origin.toLowerCase() + u.href.slice(u.origin.length);
+  const {
+    origin,
+    protocol,
+    href
+  } = new ReadonlyURL(url, base);
+  url = origin === 'null' ? protocol.toLowerCase() + href.slice(protocol.length) : origin.toLowerCase() + href.slice(origin.length);
   return encode(url);
 }
 exports.standardize = standardize;
 function encode(url) {
-  return url
-  // Percent-encoding
-  .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : encodeURIComponent(str)))
-  // Use uppercase letters within percent-encoding triplets
-  .replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')));
+  url = url.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
+  const {
+    1: base,
+    2: hash
+  } = url.match(/^([^#]*)(.*)$/s);
+  const {
+    1: path,
+    2: query
+  } = base.replace(/(?:%(?:[0-9][a-f]|[a-f][0-9a-fA-F]|[A-F][0-9a-f]))+/g, str => str.toUpperCase()).match(/^([^?]*)(.*)$/s);
+  return '' + path.replace(/(?:[^%[\]]|%(?![0-9A-F]{2}))+/ig, encodeURI) + query.replace(/(?!^)(?:[^%=&]|%(?![0-9A-F]{2}))+/ig, encodeURIComponent) + hash;
 }
-exports._encode = encode;
+exports.encode = encode;
 class ReadonlyURL {
   constructor(source, base) {
-    this.source = source;
-    this.base = base;
+    source = source.trim();
+    base = base?.trim();
     switch (source.slice(0, source.lastIndexOf('://', 9) + 1).toLowerCase()) {
       case 'http:':
       case 'https:':
@@ -2544,60 +2582,66 @@ class ReadonlyURL {
               base = base.slice(0, i);
             }
             const j = base.indexOf('?');
-            if (i > -1 && source.indexOf('#') === -1) {
+            if (j > -1 && source !== '' && source[0] !== '#') {
               base = base.slice(0, j);
             }
         }
     }
-    this.share = ReadonlyURL.get(source, base);
+    this.cache = ReadonlyURL.get(source, base);
+    this.params = undefined;
+    this.source = source;
+    this.base = base;
   }
   get href() {
-    return this.share.href ??= this.share.url.href;
+    return this.cache.href ??= this.cache.url.href;
   }
   get resource() {
-    return this.share.resource ??= this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search;
+    return this.cache.resource ??= this.href.slice(0, this.href.search(/[?#]|$/)) + this.search;
   }
   get origin() {
-    return this.share.origin ??= this.share.url.origin;
+    return this.cache.origin ??= this.cache.url.origin;
+  }
+  get scheme() {
+    return this.cache.scheme ??= this.protocol.slice(0, -1);
   }
   get protocol() {
-    return this.share.protocol ??= this.share.url.protocol;
+    return this.cache.protocol ??= this.cache.url.protocol;
   }
   get username() {
-    return this.share.username ??= this.share.url.username;
+    return this.cache.username ??= this.cache.url.username;
   }
   get password() {
-    return this.share.password ??= this.share.url.password;
+    return this.cache.password ??= this.cache.url.password;
   }
   get host() {
-    return this.share.host ??= this.share.url.host;
+    return this.cache.host ??= this.cache.url.host;
   }
   get hostname() {
-    return this.share.hostname ??= this.share.url.hostname;
+    return this.cache.hostname ??= this.cache.url.hostname;
   }
   get port() {
-    return this.share.port ??= this.share.url.port;
+    return this.cache.port ??= this.cache.url.port;
   }
   get path() {
-    return this.share.path ??= `${this.pathname}${this.search}`;
+    return this.cache.path ??= `${this.pathname}${this.search}`;
   }
   get pathname() {
-    return this.share.pathname ??= this.share.url.pathname;
+    return this.cache.pathname ??= this.cache.url.pathname;
   }
   get search() {
-    return this.share.search ??= this.share.url.search;
+    return this.cache.search ??= this.cache.url.search;
   }
   get query() {
-    return this.share.query ??= this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
+    return this.cache.query ??= this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
   }
   get hash() {
-    return this.share.hash ??= this.share.url.hash;
+    return this.cache.hash ??= this.cache.url.hash;
   }
   get fragment() {
-    return this.share.fragment ??= this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
+    return this.cache.fragment ??= this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
   }
   get searchParams() {
-    return this.params ??= new URLSearchParams(this.search);
+    return this.params ??= new ReadonlyURLSearchParams(this.search);
   }
   toString() {
     return this.href;
@@ -2614,6 +2658,26 @@ exports.ReadonlyURL = ReadonlyURL;
 ReadonlyURL.get = (0, memoize_1.memoize)((url, base) => ({
   url: new __webpack_require__.g.URL(url, base)
 }), (url, base = '') => `${base.indexOf('\n') > -1 ? base.replace(/\n+/g, '') : base}\n${url}`, new cache_1.Cache(10000));
+class ReadonlyURLSearchParams extends URLSearchParams {
+  append(name, value) {
+    this.sort();
+    name;
+    value;
+  }
+  delete(name, value) {
+    this.sort();
+    name;
+    value;
+  }
+  set(name, value) {
+    this.sort();
+    name;
+    value;
+  }
+  sort() {
+    throw new Error('Spica: URL: Cannot use mutable methods with ReadonlyURLSearchParams');
+  }
+}
 
 /***/ }),
 
@@ -4159,11 +4223,12 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.caches = void 0;
 const cache_1 = __webpack_require__(9210);
+const clock_1 = __webpack_require__(7681);
 // For rerendering in editing.
 exports.caches = {
-  code: new cache_1.Cache(1000),
-  math: new cache_1.Cache(10000),
-  media: new cache_1.Cache(100)
+  code: new clock_1.Clock(1000),
+  math: new cache_1.Cache(1000),
+  media: new clock_1.Clock(100)
 };
 
 /***/ }),
@@ -7310,31 +7375,31 @@ function build(syntax, marker, splitter = '') {
       }
     }
   };
-  function* proc(defs, note) {
-    const {
-      children
-    } = note;
-    const size = defs.size;
-    let count = 0;
-    let length = children.length;
-    I: for (const [key, def] of defs) {
-      defs.delete(key);
-      ++count;
-      while (length > size) {
-        const node = children[count - 1];
-        if (equal(node, def)) continue I;
-        yield note.removeChild(node);
-        --length;
-      }
-      const node = count <= length ? children[count - 1] : null;
-      if (node && equal(node, def)) continue;
-      yield note.insertBefore(def, node);
-      ++length;
-    }
+}
+function* proc(defs, note) {
+  const {
+    children
+  } = note;
+  const size = defs.size;
+  let count = 0;
+  let length = children.length;
+  I: for (const [key, def] of defs) {
+    defs.delete(key);
+    ++count;
     while (length > size) {
-      yield note.removeChild(children[size]);
+      const node = children[count - 1];
+      if (equal(node, def)) continue I;
+      yield note.removeChild(node);
       --length;
     }
+    const node = count <= length ? children[count - 1] : null;
+    if (node && equal(node, def)) continue;
+    yield note.insertBefore(def, node);
+    ++length;
+  }
+  while (length > size) {
+    yield note.removeChild(children[size]);
+    --length;
   }
 }
 function equal(a, b) {
@@ -8530,7 +8595,7 @@ function unlink(h) {
 /***/ 3252:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.336 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.348 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8590,17 +8655,38 @@ Object.defineProperty(exports, "__esModule", ({
 exports.reduce = exports.memoize = void 0;
 const alias_1 = __nested_webpack_require_3150__(5406);
 const compare_1 = __nested_webpack_require_3150__(5529);
-function memoize(f, identify = (...as) => as[0], memory) {
-  if (typeof identify === 'object') return memoize(f, undefined, identify);
-  return (0, alias_1.isArray)(memory) || memory?.constructor === Object ? memoizeRecord(f, identify, memory) : memoizeDict(f, identify, memory ?? new Map());
+function memoize(f, identify, memory) {
+  if (typeof identify === 'object') {
+    memory = identify;
+    identify = undefined;
+  }
+  identify ??= (...as) => as[0];
+  switch (true) {
+    case (0, alias_1.isArray)(memory):
+      return memoizeArray(f, identify, memory);
+    case memory?.constructor === Object:
+      return memoizeObject(f, identify, memory);
+    default:
+      return memoizeDict(f, identify, memory ?? new Map());
+  }
 }
 exports.memoize = memoize;
-function memoizeRecord(f, identify, memory) {
+function memoizeArray(f, identify, memory) {
+  return (...as) => {
+    const b = identify(...as);
+    let z = memory[b];
+    if (z !== undefined) return z;
+    z = f(...as);
+    memory[b] = z;
+    return z;
+  };
+}
+function memoizeObject(f, identify, memory) {
   let nullable = false;
   return (...as) => {
     const b = identify(...as);
     let z = memory[b];
-    if (z !== undefined || nullable && memory[b] !== undefined) return z;
+    if (z !== undefined || nullable && b in memory) return z;
     z = f(...as);
     nullable ||= z === undefined;
     memory[b] = z;
@@ -8636,7 +8722,7 @@ exports.reduce = reduce;
 /***/ }),
 
 /***/ 7521:
-/***/ ((__unused_webpack_module, exports, __nested_webpack_require_4668__) => {
+/***/ ((__unused_webpack_module, exports, __nested_webpack_require_5013__) => {
 
 
 
@@ -8644,10 +8730,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.math = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
-const alias_1 = __nested_webpack_require_4668__(5406);
-const memoize_1 = __nested_webpack_require_4668__(1808);
+const alias_1 = __nested_webpack_require_5013__(5406);
+const memoize_1 = __nested_webpack_require_5013__(1808);
 var caches;
 (function (caches) {
+  // Closed only.
   caches.shadows = new WeakMap();
   caches.shadow = (0, memoize_1.memoize)((el, opts) => el.attachShadow(opts), caches.shadows);
   caches.fragment = document.createDocumentFragment();
@@ -8659,7 +8746,7 @@ function shadow(el, opts, children, factory = exports.html) {
   if (isChildren(opts)) return shadow(el, undefined, opts, factory);
   return defineChildren(!opts ? el.shadowRoot ?? caches.shadows.get(el) ?? el.attachShadow({
     mode: 'open'
-  }) : opts.mode === 'open' ? el.shadowRoot ?? el.attachShadow(opts) : caches.shadows.get(el) ?? caches.shadow(el, opts), children);
+  }) : opts.mode === 'open' ? el.shadowRoot ?? el.attachShadow(opts) : caches.shadow(el, opts), children);
 }
 exports.shadow = shadow;
 function frag(children) {
@@ -8680,7 +8767,7 @@ function element(context, ns) {
 }
 exports.element = element;
 function elem(context, ns, tag, attrs) {
-  if (!('createElement' in context)) throw new Error(`TypedDOM: Scoped custom elements are not supported on this browser`);
+  if (!('createElement' in context)) throw new Error(`Typed-DOM: Scoped custom elements are not supported on this browser`);
   const opts = 'is' in attrs ? {
     is: attrs['is']
   } : undefined;
@@ -8731,10 +8818,10 @@ function defineAttrs(el, attrs) {
         }
         continue;
       case 'function':
-        if (name.length < 3) throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${name}"`);
+        if (name.length < 3) throw new Error(`Typed-DOM: Attribute names for event listeners must have an event name but got "${name}"`);
         const names = name.split(/\s+/);
         for (const name of names) {
-          if (!name.startsWith('on')) throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${name}"`);
+          if (!name.startsWith('on')) throw new Error(`Typed-DOM: Attribute names for event listeners must start with "on" but got "${name}"`);
           const type = name.slice(2).toLowerCase();
           el.addEventListener(type, value, {
             passive: ['wheel', 'mousewheel', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].includes(type)
@@ -8766,7 +8853,7 @@ function defineChildren(node, children) {
   if (children === undefined) return node;
   if (typeof children === 'string') {
     node.textContent = children;
-  } else if ((0, alias_1.isArray)(children) && !node.firstChild) {
+  } else if (((0, alias_1.isArray)(children) || !(Symbol.iterator in children)) && !node.firstChild) {
     for (let i = 0; i < children.length; ++i) {
       const child = children[i];
       typeof child === 'object' ? node.appendChild(child) : node.append(child);
@@ -8784,6 +8871,11 @@ function append(node, children) {
   if (children === undefined) return node;
   if (typeof children === 'string') {
     node.append(children);
+  } else if ((0, alias_1.isArray)(children) || !(Symbol.iterator in children)) {
+    for (let i = 0; i < children.length; ++i) {
+      const child = children[i];
+      typeof child === 'object' ? node.appendChild(child) : node.append(child);
+    }
   } else {
     for (const child of children) {
       typeof child === 'object' ? node.appendChild(child) : node.append(child);
@@ -8796,6 +8888,11 @@ function prepend(node, children) {
   if (children === undefined) return node;
   if (typeof children === 'string') {
     node.prepend(children);
+  } else if ((0, alias_1.isArray)(children) || !(Symbol.iterator in children)) {
+    for (let i = 0; i < children.length; ++i) {
+      const child = children[i];
+      typeof child === 'object' ? node.insertBefore(child, null) : node.prepend(child);
+    }
   } else {
     for (const child of children) {
       typeof child === 'object' ? node.insertBefore(child, null) : node.prepend(child);
@@ -8829,7 +8926,7 @@ exports.defrag = defrag;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_11654__(moduleId) {
+/******/ 	function __nested_webpack_require_12534__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -8843,7 +8940,7 @@ exports.defrag = defrag;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_11654__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_12534__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -8854,7 +8951,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_11654__(7521);
+/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_12534__(7521);
 /******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
@@ -8866,7 +8963,7 @@ exports.defrag = defrag;
 /***/ 6120:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.336 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.348 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
