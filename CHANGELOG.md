@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.280.8
+
+- Fix dependencies.
+
 ## 0.280.7
 
 - Refactoring.

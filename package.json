@@ -27,6 +27,9 @@
     "NOTICE",
     "LICENSE"
   ],
+  "dependencies": {
+    "spica": "0.0.761"
+  },
   "devDependencies": {
     "@types/dompurify": "3.0.4",
     "@types/jquery": "3.5.26",
@@ -51,7 +54,6 @@
     "mocha": "^10.2.0",
     "npm-check-updates": "^16.14.6",
     "semver": "^7.5.4",
-    "spica": "0.0.761",
     "ts-loader": "^9.5.0",
     "typed-dom": "0.0.348",
     "typescript": "5.2.2",
