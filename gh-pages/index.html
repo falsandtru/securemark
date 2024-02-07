@@ -1188,6 +1188,12 @@
     showCursorWhenSelecting: true,
     viewportMargin: Infinity,
   });
+  editor.setOption("extraKeys", {
+    Tab: cm =>
+      cm.state.vim.insertMode
+        ? cm.replaceSelection(Array(cm.getOption("indentUnit") + 1).join(" "))
+        : CodeMirror.Pass,
+  });
   const viewer = document.getElementById('viewer');
   const { bind, render, caches } = global['securemark'];
   const { parse, nearest, index } = bind(viewer, {
