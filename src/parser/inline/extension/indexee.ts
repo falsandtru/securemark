@@ -9,13 +9,17 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
-export function identity(id: string | undefined, text: string, type: 'index' | 'mark' | '' = 'index'): string | undefined {
+export function identity(
+  id: string | undefined,
+  text: string, type: 'index' | 'mark' | '' = 'index',
+): string | undefined {
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
-  text &&= text.trim();
-  if (text === '') return undefined;
-  const hash = text.replace(/\s/g, '_');
+  const hash = text.trim()
+    .replace(/[ _]/g, c => c === ' ' ? '_' : ' ')
+    .replace(/\s+/g, encodeURI);
+  if (hash === '') return undefined;
   if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
   const cs = [...hash];
   if (cs.length <= 120) return `${type}:${id ?? ''}:${hash}`;
@@ -26,7 +30,7 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
     case 'mark':
       const s1 = hash.slice(0, cs.slice(0, len).join('').trimEnd().length);
       const s3 = hash.slice(-cs.slice(-len).join('').trimStart().length);
-      const s2 = cs.slice(cs.length / 2 - len / 2 - (len - s1.length) | 0).slice(0, len + len - s3.length).join('').trim().replace(/\s/g, '_');
+      const s2 = cs.slice(cs.length / 2 - len / 2 - (len - s1.length) | 0).slice(0, len + len - s3.length).join('').trim();
       return `${type}:${id ?? ''}:${s1}${ellipsis}${s2}${ellipsis}${s3}`;
   }
   assert(false);
@@ -41,7 +45,7 @@ export function index(source: Element, optional = false): string {
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
   const index = indexer?.getAttribute('data-index');
-  if (index) return index;
+  if (index) return index.replace(/[ _]/g, c => c === ' ' ? '_' : ' ');
   if (index === '' && optional) return '';
   return signature(source);
 }
