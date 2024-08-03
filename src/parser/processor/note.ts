@@ -85,7 +85,7 @@ function build(
         ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
         if (!scope && el.parentNode !== target) continue;
-        if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
+        if (el.tagName === 'OL' && (el.nextElementSibling !== splitters[iSplitters + 1] || defs.size === 0)) {
           assert(el.matches(`.${syntax}s`));
           el.remove();
           continue;

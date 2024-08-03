@@ -3,6 +3,7 @@
 ## 0.281.0
 
 - Change identifiers.
+- Fix note processing.
 
 ## 0.280.9
 
