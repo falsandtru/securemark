@@ -38,7 +38,7 @@ describe('Unit: parser/inline/mark', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('==a ==b====')), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a\\ ==b====')), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('==a&Tab;==b====')), [['<mark id="mark::a%09b">a\t<mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a%09b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('==a&Tab;==b====')), [['<mark id="mark::a_b">a\t<mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a<wbr>==b====')), [['<mark id="mark::ab">a<wbr><mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::ab"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark id="mark::a"><em><mark id="mark::a">a</mark><a href="#mark::a"></a></em></mark>', '<a href="#mark::a"></a>'], '']);
     });
