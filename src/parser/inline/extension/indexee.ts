@@ -13,7 +13,7 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
-  text &&= text.trim().replace(/\s\s+/g, ' ');
+  text &&= text.trim();
   if (text === '') return undefined;
   const hash = text.replace(/\s/g, '_');
   if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
