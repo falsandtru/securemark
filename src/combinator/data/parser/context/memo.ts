@@ -14,6 +14,7 @@ export class Memo {
     syntax: number,
     state: number,
   ): readonly [any[], number] | readonly [] | undefined {
+    assert(position > 0);
     if (this.count === 0) return;
     //console.log('get', position, syntax, state, this.memory[position - 1]?.[syntax]?.[state]);
     const cache = this.memory[position - 1]?.[syntax]?.[state];
@@ -28,6 +29,7 @@ export class Memo {
     nodes: any[] | undefined,
     offset: number,
   ): void {
+    assert(position > 0);
     this.count += +!this.memory[position - 1];
     const record = this.memory[position - 1] ??= {};
     assert(!record[syntax]?.[state]);
