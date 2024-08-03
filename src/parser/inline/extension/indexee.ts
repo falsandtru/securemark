@@ -17,7 +17,7 @@ export function identity(id: string | undefined, text: string, type: 'index' | '
   if (text === '') return undefined;
   const hash = text.replace(/\s/g, '_');
   if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
-  const cs = [...text];
+  const cs = [...hash];
   if (cs.length <= 120) return `${type}:${id ?? ''}:${hash}`;
   const ellipsis = '...';
   const len = (120 - ellipsis.length * 2) / 3 | 0;
