@@ -9,6 +9,10 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
+const MAX = 120;
+const ELLIPSIS = '...';
+const PART = (MAX - ELLIPSIS.length * 2) / 3 | 0;
+const REM = MAX - PART * 3 - ELLIPSIS.length * 2;
 export function identity(
   id: string | undefined,
   text: string, type: 'index' | 'mark' | '' = 'index',
@@ -20,24 +24,28 @@ export function identity(
     .replace(/[ _]/g, c => c === ' ' ? '_' : ' ')
     .replace(/\s+/g, encodeURI);
   if (hash === '') return undefined;
-  if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
+  if (hash.length <= MAX || type === '') return `${type}:${id ?? ''}:${hash}`;
   const cs = [...hash];
-  if (cs.length <= 120) return `${type}:${id ?? ''}:${hash}`;
-  const ellipsis = '...';
-  const len = (120 - ellipsis.length * 2) / 3 | 0;
+  if (cs.length <= MAX) return `${type}:${id ?? ''}:${hash}`;
   switch (type) {
     case 'index':
     case 'mark':
-      const s1 = hash.slice(0, cs.slice(0, len).join('').trimEnd().length);
-      const s3 = hash.slice(-cs.slice(-len).join('').trimStart().length);
-      const s2 = cs.slice(cs.length / 2 - len / 2 - (len - s1.length) | 0).slice(0, len + len - s3.length).join('').trim();
-      return `${type}:${id ?? ''}:${s1}${ellipsis}${s2}${ellipsis}${s3}`;
+      const s1 = cs.slice(0, PART).join('');
+      const s3 = cs.slice(-PART).join('');
+      const s2 = cs.slice(cs.length / 2 - PART / 2 - REM | 0).slice(0, PART + REM).join('');
+      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}${ELLIPSIS}${s3}`;
   }
   assert(false);
 }
-assert(identity(undefined, '0'.repeat(120 - 1) + 1)!.slice(7) === '0'.repeat(120 - 1) + 1);
-assert(identity(undefined, '0'.repeat(41) + '1'.repeat(38) + '2'.repeat(41) + 3)!.slice(7) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
-assert(identity(undefined, '0'.repeat(81) + '1'.repeat(38) + '2'.repeat(81) + 3)!.slice(7) === '0'.repeat(38) + '...' + '1'.repeat(38) + '...' + '2'.repeat(38 - 1) + 3);
+assert.deepStrictEqual(
+  identity(undefined, '0'.repeat(MAX - 1) + '1')!.slice(7),
+  '0'.repeat(MAX - 1) + '1');
+assert.deepStrictEqual(
+  identity(undefined, '0'.repeat(MAX / 3) + '1'.repeat(MAX / 3) + '2'.repeat(MAX / 3) + '3')!.slice(7),
+  '0'.repeat(PART) + ELLIPSIS + '1'.repeat(PART + REM) + ELLIPSIS + '2'.repeat(PART - 1) + '3');
+assert.deepStrictEqual(
+  identity(undefined, '0'.repeat(MAX / 3 * 2) + '1'.repeat(MAX / 3) + '2'.repeat(MAX / 3 * 2) + '3')!.slice(7),
+  '0'.repeat(PART) + ELLIPSIS + '1'.repeat(PART + REM) + ELLIPSIS + '2'.repeat(PART - 1) + '3');
 
 export function index(source: Element, optional = false): string {
   assert(!source.matches('.indexer'));
