@@ -1,11 +1,11 @@
 import { Caches } from '../../..';
-import { Clock } from 'spica/clock';
+import { TClock } from 'spica/tclock';
 import { TLRU } from 'spica/tlru';
 
 // For rerendering in editing.
 
 /*
-同一文書内で複数回使用される可能性が低いデータ: Clock
+同一文書内で複数回使用される可能性が低いデータ: TClock
 同一文書内で複数回使用される可能性が高いデータ: TLRU
 
 編集時の再描画高速化が主目的であるためブロックを周期とするループおよび
@@ -22,7 +22,7 @@ import { TLRU } from 'spica/tlru';
 */
 
 export const caches: Caches = {
-  code: new Clock<string, HTMLElement>(1000),
+  code: new TClock<string, HTMLElement>(1000),
   math: new TLRU<string, HTMLElement>(1000),
-  media: new Clock<string, HTMLElement>(100),
+  media: new TClock<string, HTMLElement>(100),
 } as const;
