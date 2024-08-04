@@ -8,11 +8,11 @@
 		exports["securemark"] = factory(require("Prism"), require("DOMPurify"));
 	else
 		root["securemark"] = factory(root["Prism"], root["DOMPurify"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__9736__, __WEBPACK_EXTERNAL_MODULE__2282__) => {
+})(this, (__WEBPACK_EXTERNAL_MODULE__293__, __WEBPACK_EXTERNAL_MODULE__611__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 8207:
+/***/ 8257:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -40,14 +40,14 @@ var __exportStar = this && this.__exportStar || function (m, exports) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-__webpack_require__(8324);
-__exportStar(__webpack_require__(8112), exports);
-__exportStar(__webpack_require__(9108), exports);
-__exportStar(__webpack_require__(4652), exports);
+__webpack_require__(518);
+__exportStar(__webpack_require__(3561), exports);
+__exportStar(__webpack_require__(2570), exports);
+__exportStar(__webpack_require__(1625), exports);
 
 /***/ }),
 
-/***/ 5807:
+/***/ 5413:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -71,7 +71,7 @@ exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
 
 /***/ }),
 
-/***/ 8980:
+/***/ 6876:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -167,7 +167,39 @@ exports.splice = splice;
 
 /***/ }),
 
-/***/ 7124:
+/***/ 6212:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  var desc = Object.getOwnPropertyDescriptor(m, k);
+  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    desc = {
+      enumerable: true,
+      get: function () {
+        return m[k];
+      }
+    };
+  }
+  Object.defineProperty(o, k2, desc);
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+var __exportStar = this && this.__exportStar || function (m, exports) {
+  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+__exportStar(__webpack_require__(1311), exports);
+
+/***/ }),
+
+/***/ 8663:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -192,7 +224,7 @@ class Clock {
     this.$length = 0;
     this.initial = 1;
     this.capacity = ((capacity - 1 | MASK) >>> 0) + 1;
-    this.refs = new Uint32Array(this.capacity >>> DIGIT);
+    this.refs = new Int32Array(this.capacity >>> DIGIT);
   }
   get length() {
     return this.$length;
@@ -237,8 +269,8 @@ class Clock {
       } = this, i = hand >>> DIGIT, r = hand & MASK;;) {
       const b = refs[i];
       if (b >>> r === ~0 >>> r) {
-        hand = hand + BASE - r;
-        refs[i] = 0;
+        hand += BASE - r;
+        refs[i] = b & (1 << r) - 1;
         r = 0;
         if (hand < capacity) {
           ++i;
@@ -250,8 +282,8 @@ class Clock {
       }
       const l = search(b, r);
       if (l !== r) {
-        refs[i] = b & ~((1 << l) - 1 >>> r << r);
         hand += l - r;
+        refs[i] = b & ~((1 << l) - 1 >>> r << r);
       }
       this.locate(hand, key, value);
       return hand;
@@ -294,12 +326,10 @@ class Clock {
     const v = values[index] = values[hand];
     keys[hand] = undefined;
     values[hand] = empty;
-    if (index === hand || v === empty) {
-      this.unmark(index);
-      return true;
+    if (index !== hand && v !== empty) {
+      dict.set(k, index);
+      (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? this.unmark(index) : this.mark(index);
     }
-    dict.set(k, index);
-    (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? this.unmark(index) : this.mark(index);
     this.unmark(hand);
     return true;
   }
@@ -407,7 +437,7 @@ function potision(n) {
 
 /***/ }),
 
-/***/ 1928:
+/***/ 1934:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -424,7 +454,7 @@ exports.equal = equal;
 
 /***/ }),
 
-/***/ 1444:
+/***/ 9202:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -567,7 +597,7 @@ exports.duffReduce = duffReduce;
 
 /***/ }),
 
-/***/ 8324:
+/***/ 518:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -576,14 +606,14 @@ exports.duffReduce = duffReduce;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-__webpack_require__(8304);
+__webpack_require__(3394);
 const global = globalThis;
 global.global = global;
 exports["default"] = global;
 
 /***/ }),
 
-/***/ 8304:
+/***/ 3394:
 /***/ (() => {
 
 "use strict";
@@ -594,7 +624,7 @@ var global = (/* unused pure expression or super */ null && (globalThis));
 
 /***/ }),
 
-/***/ 8487:
+/***/ 3719:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -604,8 +634,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.MultiHeap = exports.Heap = void 0;
-const list_1 = __webpack_require__(9756);
-const memoize_1 = __webpack_require__(276);
+const list_1 = __webpack_require__(4609);
+const memoize_1 = __webpack_require__(6925);
 class Heap {
   constructor(cmp = Heap.max, options) {
     this.cmp = cmp;
@@ -831,7 +861,7 @@ MultiHeap.min = Heap.min;
 
 /***/ }),
 
-/***/ 9756:
+/***/ 4609:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -859,11 +889,11 @@ var __exportStar = this && this.__exportStar || function (m, exports) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-__exportStar(__webpack_require__(6868), exports);
+__exportStar(__webpack_require__(1952), exports);
 
 /***/ }),
 
-/***/ 6868:
+/***/ 1311:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -977,7 +1007,120 @@ exports.List = List;
 
 /***/ }),
 
-/***/ 276:
+/***/ 1952:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+// Memory-efficient flexible list.
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.List = void 0;
+// LRUではclistの方が速い。
+class List {
+  constructor() {
+    this.length = 0;
+    this.head = undefined;
+    this.last = undefined;
+  }
+  get tail() {
+    return this.head?.next;
+  }
+  insert(node, before) {
+    if (before === undefined) return this.push(node);
+    if (before === this.head) return this.unshift(node);
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    const next = node.next = before;
+    const prev = node.prev = next.prev;
+    return next.prev = prev.next = node;
+  }
+  delete(node) {
+    if (--this.length === 0) {
+      this.head = this.last = undefined;
+    } else {
+      const {
+        next,
+        prev
+      } = node;
+      prev === undefined ? this.head = next : prev.next = next;
+      next === undefined ? this.last = prev : next.prev = prev;
+    }
+    node.next = node.prev = undefined;
+    return node;
+  }
+  unshift(node) {
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.next = this.head;
+    return this.head = this.head.prev = node;
+  }
+  push(node) {
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.prev = this.last;
+    return this.last = this.last.next = node;
+  }
+  shift() {
+    if (this.length === 0) return;
+    return this.delete(this.head);
+  }
+  pop() {
+    if (this.length === 0) return;
+    return this.delete(this.last);
+  }
+  clear() {
+    this.length = 0;
+    this.head = this.last = undefined;
+  }
+  *[Symbol.iterator]() {
+    for (let node = this.head; node !== undefined; node = node.next) {
+      yield node;
+    }
+  }
+  flatMap(f) {
+    const acc = [];
+    for (let node = this.head; node !== undefined; node = node.next) {
+      const as = f(node);
+      switch (as.length) {
+        case 0:
+          break;
+        case 1:
+          acc.push(as[0]);
+          break;
+        default:
+          for (let len = as.length, i = 0; i < len; ++i) {
+            acc.push(as[i]);
+          }
+      }
+    }
+    return acc;
+  }
+  find(f) {
+    for (let node = this.head; node !== undefined; node = node.next) {
+      if (f(node)) return node;
+    }
+  }
+}
+exports.List = List;
+(function (List) {
+  class Node {
+    constructor() {
+      this.next = undefined;
+      this.prev = undefined;
+    }
+  }
+  List.Node = Node;
+})(List || (exports.List = List = {}));
+
+/***/ }),
+
+/***/ 6925:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -987,8 +1130,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reduce = exports.memoize = void 0;
-const alias_1 = __webpack_require__(5807);
-const compare_1 = __webpack_require__(1928);
+const alias_1 = __webpack_require__(5413);
+const compare_1 = __webpack_require__(1934);
 function memoize(f, identify, memory) {
   if (typeof identify === 'object') {
     memory = identify;
@@ -1055,7 +1198,7 @@ exports.reduce = reduce;
 
 /***/ }),
 
-/***/ 9556:
+/***/ 4110:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1065,8 +1208,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.MultiQueue = exports.PriorityQueue = exports.Queue = void 0;
-const heap_1 = __webpack_require__(8487);
-const memoize_1 = __webpack_require__(276);
+const heap_1 = __webpack_require__(3719);
+const memoize_1 = __webpack_require__(6925);
 const size = 2048;
 const initsize = 16;
 class Queue {
@@ -1074,11 +1217,11 @@ class Queue {
     this.head = new FixedQueue(initsize);
     this.tail = this.head;
     this.count = 0;
-    this.irregular = 0;
   }
   get length() {
-    return this.count === 0 ? this.head.length : this.head.length + this.tail.length + (size - 1) * (this.count - 2) + (this.irregular || size) - 1;
+    return this.head === this.tail ? this.head.length : this.head.length + this.count + this.tail.length;
   }
+  // Faster than queue.length > 0.
   isEmpty() {
     return this.head.isEmpty();
   }
@@ -1093,9 +1236,8 @@ class Queue {
       } else {
         this.tail = tail.next = new FixedQueue(size, tail.next);
       }
-      ++this.count;
-      if (tail.size !== size && tail !== this.head) {
-        this.irregular = tail.size;
+      if (this.head !== tail) {
+        this.count += tail.size;
       }
     }
     this.tail.push(value);
@@ -1104,10 +1246,16 @@ class Queue {
     const head = this.head;
     const value = head.pop();
     if (head.isEmpty() && !head.next.isEmpty()) {
-      --this.count;
+      const tail = this.tail;
+      // 空になるごとの削除と再作成を避ける
+      if (tail.next !== head) {
+        // 初期サイズの方を消す
+        tail.next.next = tail.next;
+        tail.next = head;
+      }
       this.head = head.next;
-      if (this.head.size === this.irregular) {
-        this.irregular = 0;
+      if (this.head !== tail) {
+        this.count -= head.next.size;
       }
     }
     return value;
@@ -1115,7 +1263,6 @@ class Queue {
   clear() {
     this.head = this.tail = new FixedQueue(initsize);
     this.count = 0;
-    this.irregular = 0;
   }
   *[Symbol.iterator]() {
     while (!this.isEmpty()) {
@@ -1131,29 +1278,34 @@ class FixedQueue {
     this.mask = this.array.length - 1;
     this.head = 0;
     this.tail = 0;
+    // 1要素無駄にしフラグを使用しない場合と有意差がないため可読性とテスト性を優先しフラグを使用。
+    this.empty = true;
     this.next = next ?? this;
   }
   get length() {
-    return this.tail >= this.head ? this.tail - this.head : this.array.length - this.head + this.tail;
+    return this.tail >= this.head ? this.empty ? 0 : this.tail - this.head || this.size : this.array.length - this.head + this.tail;
   }
   isEmpty() {
-    return this.tail === this.head;
+    return this.empty;
   }
   isFull() {
-    return (this.tail + 1 & this.mask) === this.head;
+    return this.tail === this.head && !this.empty;
   }
   peek(index = 0) {
-    return index === 0 ? this.array[this.head] : this.array[this.tail - 1 & this.mask];
+    return index >= 0 ? this.array[this.head + index & this.mask] : this.array[this.tail + index & this.mask];
   }
   push(value) {
     this.array[this.tail] = value;
     this.tail = this.tail + 1 & this.mask;
+    this.empty = false;
   }
   pop() {
-    if (this.isEmpty()) return;
+    if (this.empty) return;
     const value = this.array[this.head];
     this.array[this.head] = undefined;
     this.head = this.head + 1 & this.mask;
+    // isEmptyの前倒し
+    this.empty = this.tail === this.head;
     return value;
   }
 }
@@ -1288,7 +1440,7 @@ exports.MultiQueue = MultiQueue;
 
 /***/ }),
 
-/***/ 72:
+/***/ 3158:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1466,7 +1618,269 @@ exports.pcg32 = pcg32;
 
 /***/ }),
 
-/***/ 8884:
+/***/ 3307:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.TClock = void 0;
+const alias_1 = __webpack_require__(5413);
+const BASE = 32;
+const DIGIT = Math.log2(BASE);
+const MASK = BASE - 1;
+const empty = Symbol('empty');
+class TClock {
+  // Capacity is rounded up to multiples of 32.
+  constructor(capacity, demotion = 8) {
+    this.capacity = capacity;
+    this.demotion = demotion;
+    this.dict = new Map();
+    this.keys = [];
+    this.values = [];
+    this.hand = 0;
+    this.stock = 0;
+    this.threshold = 100 / this.demotion | 0;
+    this.$count = 0;
+    this.$length = 0;
+    this.initial = 1;
+    this.capacity = ((capacity - 1 | MASK) >>> 0) + 1;
+    this.refs = new Int32Array(this.capacity >>> DIGIT);
+  }
+  get count() {
+    return this.$count;
+  }
+  set count(value) {
+    this.$count = value;
+    if (value < this.threshold) return;
+    this.stock = (0, alias_1.min)(this.stock + value / this.threshold | 0, this.capacity);
+    this.$count = (0, alias_1.min)(value % this.threshold, this.capacity);
+  }
+  get length() {
+    return this.$length;
+  }
+  get size() {
+    return this.$length;
+  }
+  mark(index) {
+    const i = index >>> DIGIT;
+    const before = this.refs[i];
+    const after = before | 1 << (index & MASK);
+    if (after === before) return;
+    this.refs[i] = after;
+  }
+  unmark(index) {
+    const i = index >>> DIGIT;
+    const before = this.refs[i];
+    const after = before & ~(1 << (index & MASK));
+    if (after === before) return;
+    this.refs[i] = after;
+  }
+  locate(hand, key, value) {
+    const {
+      capacity,
+      dict,
+      keys,
+      values
+    } = this;
+    this.$length === capacity || this.initial === 0 && values[hand] !== empty ? dict.delete(keys[hand]) : ++this.$length;
+    dict.set(key, hand);
+    keys[hand] = key;
+    values[hand] = value;
+    this.hand = ++hand === capacity ? this.initial = 0 : hand;
+  }
+  add(key, value) {
+    const {
+      capacity,
+      refs
+    } = this;
+    for (let {
+        hand
+      } = this, i = hand >>> DIGIT, r = hand & MASK;;) {
+      const b = refs[i];
+      if (b >>> r === ~0 >>> r) {
+        hand += BASE - r;
+        this.count += BASE - r;
+        if (this.stock > 0) {
+          refs[i] = b & (1 << r) - 1;
+          this.stock -= BASE - r;
+        }
+        r = 0;
+        if (hand < capacity) {
+          ++i;
+        } else {
+          hand -= capacity;
+          i = 0;
+        }
+        continue;
+      }
+      const l = search(b, r);
+      if (l !== r) {
+        hand += l - r;
+        this.count += l - r;
+        if (this.stock > 0) {
+          refs[i] = b & ~((1 << l) - 1 >>> r << r);
+          this.stock -= l - r;
+        }
+      }
+      this.locate(hand, key, value);
+      return hand;
+    }
+  }
+  put(key, value) {
+    const index = this.dict.get(key);
+    if (index === undefined) return this.add(key, value);
+    this.values[index] = value;
+    return index;
+  }
+  set(key, value) {
+    this.put(key, value);
+    return this;
+  }
+  get(key) {
+    const index = this.dict.get(key);
+    if (index === undefined) return;
+    this.mark(index);
+    return this.values[index];
+  }
+  has(key) {
+    return this.dict.has(key);
+  }
+  delete(key) {
+    const index = this.dict.get(key);
+    if (index === undefined) return false;
+    // 末尾と削除対象を交換して削除する。
+    // 次の挿入の前に次の削除が行われると交換できないが稀なため対処しない。
+    const {
+      hand,
+      dict,
+      keys,
+      values,
+      refs
+    } = this;
+    dict.delete(key);
+    --this.$length;
+    const k = keys[index] = keys[hand];
+    const v = values[index] = values[hand];
+    keys[hand] = undefined;
+    values[hand] = empty;
+    if (index !== hand && v !== empty) {
+      dict.set(k, index);
+      (refs[hand >>> DIGIT] & 1 << (hand & MASK)) === 0 ? this.unmark(index) : this.mark(index);
+    }
+    this.unmark(hand);
+    return true;
+  }
+  clear() {
+    this.dict = new Map();
+    this.keys = [];
+    this.values = [];
+    this.refs.fill(0);
+    this.hand = 0;
+    this.stock = 0;
+    this.$count = 0;
+    this.$length = 0;
+    this.initial = 1;
+  }
+  *[Symbol.iterator]() {
+    const {
+      keys,
+      values
+    } = this;
+    for (const index of this.dict.values()) {
+      yield [keys[index], values[index]];
+    }
+  }
+}
+exports.TClock = TClock;
+function search(b, r) {
+  for (let l = r;; ++l) {
+    if ((b & 1 << l) === 0) return l;
+  }
+}
+function bsearch(b, r) {
+  const n = ~b >>> r << r >>> 0;
+  const l = potision(0x05f66a47 * (n & -n) >>> 27);
+  return l;
+}
+//const potisions = new Uint8Array([
+//  0, 1, 2, 26, 23, 3, 15, 27, 24, 21, 19, 4, 12, 16, 28, 6, 31, 25, 22, 14, 20, 18, 11, 5, 30, 13, 17, 10, 29, 9, 8, 7,
+//]);
+function potision(n) {
+  switch (n) {
+    case 0:
+      return 0;
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 3:
+      return 26;
+    case 4:
+      return 23;
+    case 5:
+      return 3;
+    case 6:
+      return 15;
+    case 7:
+      return 27;
+    case 8:
+      return 24;
+    case 9:
+      return 21;
+    case 10:
+      return 19;
+    case 11:
+      return 4;
+    case 12:
+      return 12;
+    case 13:
+      return 16;
+    case 14:
+      return 28;
+    case 15:
+      return 6;
+    case 16:
+      return 31;
+    case 17:
+      return 25;
+    case 18:
+      return 22;
+    case 19:
+      return 14;
+    case 20:
+      return 20;
+    case 21:
+      return 18;
+    case 22:
+      return 11;
+    case 23:
+      return 5;
+    case 24:
+      return 30;
+    case 25:
+      return 13;
+    case 26:
+      return 17;
+    case 27:
+      return 10;
+    case 28:
+      return 29;
+    case 29:
+      return 9;
+    case 30:
+      return 8;
+    default:
+      return 7;
+  }
+}
+
+/***/ }),
+
+/***/ 108:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1476,8 +1890,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.TLRU = void 0;
-const alias_1 = __webpack_require__(5807);
-const list_1 = __webpack_require__(9756);
+const alias_1 = __webpack_require__(5413);
+const clist_1 = __webpack_require__(6212);
 class Entry {
   constructor(key, value) {
     this.key = key;
@@ -1487,13 +1901,16 @@ class Entry {
   }
 }
 class TLRU {
-  constructor(capacity, step = 1, window = 0, retrial = true) {
+  constructor(capacity, demotion = 2, window = 0, retrial = true,
+  // ヒットにより前方が増えるためstep=100では不足する。
+  pure = demotion >= 100) {
     this.capacity = capacity;
-    this.step = step;
+    this.demotion = demotion;
     this.window = window;
     this.retrial = retrial;
+    this.pure = pure;
     this.dict = new Map();
-    this.list = new list_1.List();
+    this.list = new clist_1.List();
     this.handV = undefined;
     this.handG = undefined;
     this.count = 0;
@@ -1504,41 +1921,28 @@ class TLRU {
   get size() {
     return this.list.length;
   }
-  return() {
+  extend() {
     const {
       list
     } = this;
-    if (this.count !== -1 && this.handV !== undefined && this.handG !== list.last && this.handG !== undefined) {
-      if (this.count >= 0) {
-        // 1周できる
+    // 1周できる
 
-        //this.count = -max(max(list.length - this.count, 0) * this.step / 100 | 0, 1) - 1;
-        this.count = -(0, alias_1.max)(list.length * this.step / 100 | 0, list.length * this.window / 100 - this.count | 0, 1) - 1;
-      } else {
-        this.handG = this.handG.prev;
-      }
-    } else {
-      if (this.handV === list.head) {
-        this.handG = undefined;
-      }
-      if (this.handG === list.last) {
-        this.handG = this.handG.prev;
-      }
-      this.handV = list.last;
-      this.count = 0;
-    }
+    this.count = -(0, alias_1.max)(
+    //list.length * this.demotion / 100 / max(this.count / list.length * this.demotion, 1) | 0,
+    (list.length - this.count) * this.demotion / 100 | 0, list.length * this.window / 100 - this.count | 0, this.demotion && 1);
   }
   replace(key, value) {
     const {
       dict,
       list
     } = this;
-    if (this.handV === this.handG || this.handV === list.last) {
-      this.return();
+    this.handV ??= list.last;
+    if (this.handV === this.handG && this.count >= 0) {
+      this.extend();
     }
     // 非延命
-    if (this.count >= 0 || !this.retrial) {
-      const entry = this.handV ??= list.last;
+    if (this.count >= 0 || this.handV === list.last || !this.retrial) {
+      const entry = this.handV;
       dict.delete(entry.key);
       dict.set(key, entry);
       entry.key = key;
@@ -1559,19 +1963,27 @@ class TLRU {
         list.unshift(entry);
       }
       this.handV = entry;
-      this.handG = entry.prev;
+      this.handG = entry;
+    }
+    if (this.count < 0) {
+      this.handG = this.handG !== list.head ? this.handG.prev : undefined;
     }
     if (this.handV !== this.handG) {
       this.handV = this.handV.prev;
     }
-    ++this.count;
+    if (this.handV === list.last || this.count === -1) {
+      this.handV = list.last;
+      this.count = 0;
+    } else {
+      ++this.count;
+    }
   }
   evict() {
     const {
       list
     } = this;
-    if (list.length === 0) return;
-    const entry = this.handV ??= list.last;
+    const entry = this.handV ?? list.last;
+    if (entry === undefined) return;
     this.delete(entry.key);
     return [entry.key, entry.value];
   }
@@ -1585,7 +1997,11 @@ class TLRU {
     } else {
       const entry = new Entry(key, value);
       dict.set(key, entry);
-      if (this.handV !== undefined) {
+      if (this.pure && this.handG !== undefined) {
+        // 純粋なTLRUの検証用。
+        list.insert(entry, this.handG.next);
+      } else if (this.handV !== undefined) {
+        // 基本的にこのほうがヒット率が高い。
         list.insert(entry, this.handV.next);
       } else {
         list.unshift(entry);
@@ -1613,10 +2029,10 @@ class TLRU {
       return;
     }
     if (entry === this.handV) {
-      this.handV = this.handV !== list.head ? this.handV.prev : this.handV.next;
+      this.handV = this.handV.prev;
     }
     if (entry === this.handG) {
-      this.handG = this.handG !== list.head ? this.handG.prev : this.handG.next;
+      this.handG = this.handG.prev;
     }
   }
   get(key) {
@@ -1644,6 +2060,9 @@ class TLRU {
     } = this;
     const entry = dict.get(key);
     if (entry === undefined) return false;
+    if (entry === this.handG && entry === list.head) {
+      this.handG = undefined;
+    }
     this.escape(entry);
     list.delete(entry);
     return dict.delete(key);
@@ -1668,7 +2087,7 @@ exports.TLRU = TLRU;
 
 /***/ }),
 
-/***/ 1900:
+/***/ 8888:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -1698,20 +2117,81 @@ var __exportStar = this && this.__exportStar || function (m, exports) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+__exportStar(__webpack_require__(108), exports);
 /*
 真に最近性に基づく真のLRU。
 最近性には有参照間、無参照間、有無参照間の3つがある。
 LRUは有無参照間の最近性を喪失しClockは有参照間の最近性を喪失する。
 TLRUはすべての最近性を保持する。
-DWCより高速かつ堅牢で小さいキャッシュサイズに適している。
-パラメータを調整しやすくDWCより高ヒット率となることもある。
+パラメータを調整しやすく用途に合わせてヒット率を上げやすい。
+stepパラメータはヒットエントリを重み付けおよび保護しており
+demotion=100で重み付けと保護なしの純粋なTLRUを設定できる。
+windowパラメータでSLRU同様捕捉可能最小再利用距離を設定できるが
+降格区間内では捕捉可能再利用距離が半減しSLRUより短くなる。
+DWCより高速かつ堅牢でアプリケーションのインメモリキャッシュなどの
+極端に変化の大きいアクセスパターンにも適応する。
 
 */
-__exportStar(__webpack_require__(8884), exports);
+/*
+LRUとClockは偽の最近性に基づく誤ったアルゴリズムにより性能が大幅に低下する。
+真の最近性は偽の最近性よりも非常に優れている。
+
+エントリ間の最近性関係には使用済みと使用済み、使用済みと未使用、未使用と未使用の3種類がある。
+ただしLRUとClockは一部の最近性に違反する。真のLRUはすべての最近性を維持することにより
+LRUとClockよりも優れた性能を発揮する。
+
+LRUの根本的誤りは新しいエントリを最近使用されたと見なすことである。実際それがキャッシュ内で
+使用されたことはない。従って新しいエントリは実際に使用されたエントリの後ろに追加する必要がある。
+
+```
+Sequence: 1, 2, 3, 3, 2, 4
+
+LRU
+
+  MRU |4 2 3 1| LRU
+  Hit |0 1 1 0|
+        ^ Violation of the recency between used and unused.
+
+Clock
+
+  N-1 |4 3 2 1| 0
+  Hit |0 1 1 0|
+          ^ Violation of the recency between used and used.
+
+True LRU
+
+  MRU |2 3 4 1| LRU
+  Hit |1 1 0 0|
+        ^ ^ ^ Ideal recency(Recency-complete).
+```
+
+この最近性はClockですでに使用され普及していることから奇異でも不合理でもないことが証明されて
+おりLRUよりClockの方がヒット率が同等または非常に高いことから使用済みエントリ間の最近性より
+未使用エントリとの最近性の方が効果が高く重要であることがわかる。
+
+またClockはLRUの近似アルゴリズムとして知られているがLRUとClockはこのように異なる種類の最近性
+に基づくアルゴリズムであることからClockは実際にはLRUの近似アルゴリズムではなく異なる種類の
+最近性に基づくまったく異なる最近性基準アルゴリズムである。
+
+|Algorithm|Used-Used|Used-Unused|Unused-Unused|
+|:-------:|:-------:|:---------:|:-----------:|
+|LRU      |✓        |           |✓           |
+|Clock    |         |✓          |✓           |
+|True LRU |✓        |✓          |✓           |
+
+再利用距離と同様に使用済みと未使用の最近性には有限と無限の差があり差を埋める方法には
+様々な方法が考えられこの調整可能性はTrue LRUとClockにのみ存在しLRUには存在しない。
+
+True LRUにおけるLRUからの大幅な改善はすべてのアルゴリズムの改善の過半が未使用のエントリを
+偶然削除したことによるものを独自の改善として混同および錯覚したものであり各アルゴリズムの
+独自性による改善は小さいか半分に満たないことを示している。True LRUをLRUの代わりに真の
+ベースラインとすると他のアルゴリズムは特に汎用性においてあまり魅力的な性能を達成していない。
+
+*/
 
 /***/ }),
 
-/***/ 3800:
+/***/ 1904:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1721,15 +2201,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
-const internal_1 = __webpack_require__(7568);
-var internal_2 = __webpack_require__(7568);
+const internal_1 = __webpack_require__(1094);
+var internal_2 = __webpack_require__(1094);
 Object.defineProperty(exports, "standardize", ({
   enumerable: true,
   get: function () {
     return internal_2.standardize;
   }
 }));
-var internal_3 = __webpack_require__(7568);
+var internal_3 = __webpack_require__(1094);
 Object.defineProperty(exports, "ReadonlyURL", ({
   enumerable: true,
   get: function () {
@@ -1809,7 +2289,7 @@ exports.URL = URL;
 
 /***/ }),
 
-/***/ 7568:
+/***/ 1094:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1819,9 +2299,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ReadonlyURL = exports.encode = exports.standardize = void 0;
-__webpack_require__(8324);
-const memoize_1 = __webpack_require__(276);
-const tlru_1 = __webpack_require__(1900);
+__webpack_require__(518);
+const memoize_1 = __webpack_require__(6925);
+const tlru_1 = __webpack_require__(8888);
 function standardize(url, base) {
   const {
     origin,
@@ -1962,7 +2442,7 @@ class ReadonlyURLSearchParams extends URLSearchParams {
 
 /***/ }),
 
-/***/ 7436:
+/***/ 3484:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -1990,34 +2470,34 @@ var __exportStar = this && this.__exportStar || function (m, exports) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-__exportStar(__webpack_require__(8340), exports);
-__exportStar(__webpack_require__(9400), exports);
-__exportStar(__webpack_require__(5512), exports);
-__exportStar(__webpack_require__(6096), exports);
-__exportStar(__webpack_require__(272), exports);
-__exportStar(__webpack_require__(5456), exports);
-__exportStar(__webpack_require__(9976), exports);
-__exportStar(__webpack_require__(3948), exports);
-__exportStar(__webpack_require__(6480), exports);
-__exportStar(__webpack_require__(4720), exports);
-__exportStar(__webpack_require__(5896), exports);
-__exportStar(__webpack_require__(3121), exports);
-__exportStar(__webpack_require__(7176), exports);
-__exportStar(__webpack_require__(3424), exports);
-__exportStar(__webpack_require__(9104), exports);
-__exportStar(__webpack_require__(1864), exports);
-__exportStar(__webpack_require__(336), exports);
-__exportStar(__webpack_require__(9664), exports);
-__exportStar(__webpack_require__(6216), exports);
-__exportStar(__webpack_require__(4304), exports);
-__exportStar(__webpack_require__(7944), exports);
-__exportStar(__webpack_require__(8280), exports);
-__exportStar(__webpack_require__(8328), exports);
-__exportStar(__webpack_require__(6032), exports);
+__exportStar(__webpack_require__(2369), exports);
+__exportStar(__webpack_require__(2861), exports);
+__exportStar(__webpack_require__(765), exports);
+__exportStar(__webpack_require__(3989), exports);
+__exportStar(__webpack_require__(7429), exports);
+__exportStar(__webpack_require__(2148), exports);
+__exportStar(__webpack_require__(5745), exports);
+__exportStar(__webpack_require__(8212), exports);
+__exportStar(__webpack_require__(8287), exports);
+__exportStar(__webpack_require__(4271), exports);
+__exportStar(__webpack_require__(7190), exports);
+__exportStar(__webpack_require__(549), exports);
+__exportStar(__webpack_require__(7723), exports);
+__exportStar(__webpack_require__(5781), exports);
+__exportStar(__webpack_require__(1638), exports);
+__exportStar(__webpack_require__(6572), exports);
+__exportStar(__webpack_require__(79), exports);
+__exportStar(__webpack_require__(4750), exports);
+__exportStar(__webpack_require__(2217), exports);
+__exportStar(__webpack_require__(5117), exports);
+__exportStar(__webpack_require__(1672), exports);
+__exportStar(__webpack_require__(6981), exports);
+__exportStar(__webpack_require__(2705), exports);
+__exportStar(__webpack_require__(994), exports);
 
 /***/ }),
 
-/***/ 3948:
+/***/ 8212:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2027,8 +2507,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.block = void 0;
-const parser_1 = __webpack_require__(3232);
-const line_1 = __webpack_require__(6480);
+const parser_1 = __webpack_require__(605);
+const line_1 = __webpack_require__(8287);
 function block(parser, separation = true) {
   return ({
     source,
@@ -2049,7 +2529,7 @@ exports.block = block;
 
 /***/ }),
 
-/***/ 4720:
+/***/ 4271:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2059,8 +2539,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.verify = exports.validate = void 0;
-const alias_1 = __webpack_require__(5807);
-const parser_1 = __webpack_require__(3232);
+const alias_1 = __webpack_require__(5413);
+const parser_1 = __webpack_require__(605);
 function validate(patterns, has, parser) {
   if (typeof has === 'function') return validate(patterns, '', has);
   if (!(0, alias_1.isArray)(patterns)) return validate([patterns], has, parser);
@@ -2099,7 +2579,7 @@ exports.verify = verify;
 
 /***/ }),
 
-/***/ 6480:
+/***/ 8287:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2109,7 +2589,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isBlank = exports.firstline = exports.line = void 0;
-const parser_1 = __webpack_require__(3232);
+const parser_1 = __webpack_require__(605);
 function line(parser) {
   return ({
     source,
@@ -2148,7 +2628,7 @@ exports.isBlank = isBlank;
 
 /***/ }),
 
-/***/ 1864:
+/***/ 6572:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2158,8 +2638,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.convert = void 0;
-const parser_1 = __webpack_require__(3232);
-const alias_1 = __webpack_require__(5807);
+const parser_1 = __webpack_require__(605);
+const alias_1 = __webpack_require__(5413);
 function convert(conv, parser, empty = false) {
   return ({
     source,
@@ -2183,7 +2663,7 @@ exports.convert = convert;
 
 /***/ }),
 
-/***/ 9664:
+/***/ 4750:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2193,7 +2673,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dup = void 0;
-const fmap_1 = __webpack_require__(8328);
+const fmap_1 = __webpack_require__(2705);
 function dup(parser) {
   return (0, fmap_1.fmap)(parser, nodes => [nodes]);
 }
@@ -2201,7 +2681,7 @@ exports.dup = dup;
 
 /***/ }),
 
-/***/ 4304:
+/***/ 5117:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2211,7 +2691,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fallback = void 0;
-const union_1 = __webpack_require__(8340);
+const union_1 = __webpack_require__(2369);
 function fallback(parser, otherwise) {
   return (0, union_1.union)([parser, otherwise]);
 }
@@ -2219,7 +2699,7 @@ exports.fallback = fallback;
 
 /***/ }),
 
-/***/ 5896:
+/***/ 7190:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2229,8 +2709,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fence = void 0;
-const line_1 = __webpack_require__(6480);
-const array_1 = __webpack_require__(8980);
+const line_1 = __webpack_require__(8287);
+const array_1 = __webpack_require__(6876);
 function fence(opener, limit, separation = true) {
   return ({
     source
@@ -2277,7 +2757,7 @@ exports.fence = fence;
 
 /***/ }),
 
-/***/ 3121:
+/***/ 549:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2287,14 +2767,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.indent = void 0;
-const parser_1 = __webpack_require__(3232);
-const some_1 = __webpack_require__(5456);
-const block_1 = __webpack_require__(3948);
-const line_1 = __webpack_require__(6480);
-const bind_1 = __webpack_require__(6032);
-const match_1 = __webpack_require__(9104);
-const surround_1 = __webpack_require__(3424);
-const memoize_1 = __webpack_require__(276);
+const parser_1 = __webpack_require__(605);
+const some_1 = __webpack_require__(2148);
+const block_1 = __webpack_require__(8212);
+const line_1 = __webpack_require__(8287);
+const bind_1 = __webpack_require__(994);
+const match_1 = __webpack_require__(1638);
+const surround_1 = __webpack_require__(5781);
+const memoize_1 = __webpack_require__(6925);
 function indent(opener, parser, separation = false) {
   if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, ({
@@ -2318,7 +2798,7 @@ function trimBlockEnd(block) {
 
 /***/ }),
 
-/***/ 8280:
+/***/ 6981:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2336,7 +2816,7 @@ exports.lazy = lazy;
 
 /***/ }),
 
-/***/ 9104:
+/***/ 1638:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2346,7 +2826,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.match = void 0;
-const parser_1 = __webpack_require__(3232);
+const parser_1 = __webpack_require__(605);
 function match(pattern, f) {
   return ({
     source,
@@ -2367,7 +2847,7 @@ exports.match = match;
 
 /***/ }),
 
-/***/ 7944:
+/***/ 1672:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2390,7 +2870,7 @@ exports.recover = recover;
 
 /***/ }),
 
-/***/ 6216:
+/***/ 2217:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2400,7 +2880,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reverse = void 0;
-const fmap_1 = __webpack_require__(8328);
+const fmap_1 = __webpack_require__(2705);
 function reverse(parser) {
   return (0, fmap_1.fmap)(parser, nodes => nodes.reverse());
 }
@@ -2408,7 +2888,7 @@ exports.reverse = reverse;
 
 /***/ }),
 
-/***/ 7176:
+/***/ 7723:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2418,7 +2898,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.rewrite = exports.focus = void 0;
-const parser_1 = __webpack_require__(3232);
+const parser_1 = __webpack_require__(605);
 function focus(scope, parser) {
   const match = typeof scope === 'string' ? source => source.slice(0, scope.length) === scope ? scope : '' : source => source.match(scope)?.[0] ?? '';
   return ({
@@ -2472,7 +2952,7 @@ exports.rewrite = rewrite;
 
 /***/ }),
 
-/***/ 3424:
+/***/ 5781:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2482,9 +2962,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.clear = exports.close = exports.open = exports.surround = void 0;
-const parser_1 = __webpack_require__(3232);
-const fmap_1 = __webpack_require__(8328);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const fmap_1 = __webpack_require__(2705);
+const array_1 = __webpack_require__(6876);
 function surround(opener, parser, closer, optional = false, f, g) {
   switch (typeof opener) {
     case 'string':
@@ -2557,7 +3037,7 @@ exports.clear = clear;
 
 /***/ }),
 
-/***/ 336:
+/***/ 79:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2567,7 +3047,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.trimEnd = exports.trimStart = exports.trim = void 0;
-const convert_1 = __webpack_require__(1864);
+const convert_1 = __webpack_require__(6572);
 function trim(parser) {
   return (0, convert_1.convert)(source => source.trim(), parser);
 }
@@ -2583,7 +3063,7 @@ exports.trimEnd = trimEnd;
 
 /***/ }),
 
-/***/ 6032:
+/***/ 994:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2593,7 +3073,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bind = void 0;
-const parser_1 = __webpack_require__(3232);
+const parser_1 = __webpack_require__(605);
 function bind(parser, f) {
   return ({
     source,
@@ -2614,7 +3094,7 @@ exports.bind = bind;
 
 /***/ }),
 
-/***/ 8328:
+/***/ 2705:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2624,7 +3104,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fmap = void 0;
-const bind_1 = __webpack_require__(6032);
+const bind_1 = __webpack_require__(994);
 function fmap(parser, f) {
   return (0, bind_1.bind)(parser, (nodes, rest, context) => [f(nodes, rest, context), rest]);
 }
@@ -2632,7 +3112,7 @@ exports.fmap = fmap;
 
 /***/ }),
 
-/***/ 3232:
+/***/ 605:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2657,7 +3137,7 @@ exports.check = check;
 
 /***/ }),
 
-/***/ 9976:
+/***/ 5745:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2667,9 +3147,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.state = exports.constraint = exports.guard = exports.precedence = exports.creation = exports.syntax = exports.context = exports.reset = void 0;
-const alias_1 = __webpack_require__(5807);
-const parser_1 = __webpack_require__(3232);
-const memo_1 = __webpack_require__(6660);
+const alias_1 = __webpack_require__(5413);
+const parser_1 = __webpack_require__(605);
+const memo_1 = __webpack_require__(1074);
 function reset(base, parser) {
   const changes = Object.entries(base);
   const values = Array(changes.length);
@@ -2850,7 +3330,7 @@ exports.state = state;
 
 /***/ }),
 
-/***/ 7252:
+/***/ 5691:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -2861,7 +3341,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Delimiters = void 0;
-const memoize_1 = __webpack_require__(276);
+const memoize_1 = __webpack_require__(6925);
 class Delimiters {
   constructor() {
     this.registry = (0, memoize_1.memoize)(() => []);
@@ -2960,7 +3440,7 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
 
 /***/ }),
 
-/***/ 6660:
+/***/ 1074:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -3008,7 +3488,7 @@ exports.Memo = Memo;
 
 /***/ }),
 
-/***/ 9400:
+/***/ 2861:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3018,8 +3498,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.inits = void 0;
-const parser_1 = __webpack_require__(3232);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const array_1 = __webpack_require__(6876);
 function inits(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return ({
@@ -3047,7 +3527,7 @@ exports.inits = inits;
 
 /***/ }),
 
-/***/ 6096:
+/***/ 3989:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3057,8 +3537,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sequence = void 0;
-const parser_1 = __webpack_require__(3232);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const array_1 = __webpack_require__(6876);
 function sequence(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return ({
@@ -3086,7 +3566,7 @@ exports.sequence = sequence;
 
 /***/ }),
 
-/***/ 5456:
+/***/ 2148:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3096,9 +3576,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.some = void 0;
-const parser_1 = __webpack_require__(3232);
-const delimiter_1 = __webpack_require__(7252);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const delimiter_1 = __webpack_require__(5691);
+const array_1 = __webpack_require__(6876);
 function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
@@ -3141,7 +3621,7 @@ exports.some = some;
 
 /***/ }),
 
-/***/ 272:
+/***/ 7429:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3151,8 +3631,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.subsequence = void 0;
-const union_1 = __webpack_require__(8340);
-const inits_1 = __webpack_require__(9400);
+const union_1 = __webpack_require__(2369);
+const inits_1 = __webpack_require__(2861);
 function subsequence(parsers, resume) {
   return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1), resume)], resume) : parsers[i]));
 }
@@ -3160,7 +3640,7 @@ exports.subsequence = subsequence;
 
 /***/ }),
 
-/***/ 5512:
+/***/ 765:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3170,8 +3650,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.tails = void 0;
-const union_1 = __webpack_require__(8340);
-const sequence_1 = __webpack_require__(6096);
+const union_1 = __webpack_require__(2369);
+const sequence_1 = __webpack_require__(3989);
 function tails(parsers, resume) {
   return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i), resume)));
 }
@@ -3179,7 +3659,7 @@ exports.tails = tails;
 
 /***/ }),
 
-/***/ 8340:
+/***/ 2369:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -3203,7 +3683,7 @@ exports.union = union;
 
 /***/ }),
 
-/***/ 8112:
+/***/ 3561:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -3231,11 +3711,11 @@ var __exportStar = this && this.__exportStar || function (m, exports) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-__exportStar(__webpack_require__(6104), exports);
+__exportStar(__webpack_require__(5886), exports);
 
 /***/ }),
 
-/***/ 6104:
+/***/ 5886:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3245,28 +3725,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.normalize = exports.body = exports.headers = exports.header = exports.caches = exports.bind = exports.parse = void 0;
-var parse_1 = __webpack_require__(2244);
+var parse_1 = __webpack_require__(3662);
 Object.defineProperty(exports, "parse", ({
   enumerable: true,
   get: function () {
     return parse_1.parse;
   }
 }));
-var bind_1 = __webpack_require__(5492);
+var bind_1 = __webpack_require__(7990);
 Object.defineProperty(exports, "bind", ({
   enumerable: true,
   get: function () {
     return bind_1.bind;
   }
 }));
-var cache_1 = __webpack_require__(3380);
+var cache_1 = __webpack_require__(4331);
 Object.defineProperty(exports, "caches", ({
   enumerable: true,
   get: function () {
     return cache_1.caches;
   }
 }));
-var header_1 = __webpack_require__(6308);
+var header_1 = __webpack_require__(3652);
 Object.defineProperty(exports, "header", ({
   enumerable: true,
   get: function () {
@@ -3279,14 +3759,14 @@ Object.defineProperty(exports, "headers", ({
     return header_1.headers;
   }
 }));
-var body_1 = __webpack_require__(2172);
+var body_1 = __webpack_require__(3413);
 Object.defineProperty(exports, "body", ({
   enumerable: true,
   get: function () {
     return body_1.body;
   }
 }));
-var normalize_1 = __webpack_require__(9588);
+var normalize_1 = __webpack_require__(4490);
 Object.defineProperty(exports, "normalize", ({
   enumerable: true,
   get: function () {
@@ -3296,7 +3776,7 @@ Object.defineProperty(exports, "normalize", ({
 
 /***/ }),
 
-/***/ 5492:
+/***/ 7990:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3306,16 +3786,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bind = void 0;
-const parser_1 = __webpack_require__(3232);
-const segment_1 = __webpack_require__(1284);
-const header_1 = __webpack_require__(540);
-const block_1 = __webpack_require__(9372);
-const normalize_1 = __webpack_require__(9588);
-const header_2 = __webpack_require__(6308);
-const figure_1 = __webpack_require__(5712);
-const note_1 = __webpack_require__(6992);
-const url_1 = __webpack_require__(3800);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const segment_1 = __webpack_require__(3967);
+const header_1 = __webpack_require__(3009);
+const block_1 = __webpack_require__(7099);
+const normalize_1 = __webpack_require__(4490);
+const header_2 = __webpack_require__(3652);
+const figure_1 = __webpack_require__(1657);
+const note_1 = __webpack_require__(165);
+const url_1 = __webpack_require__(1904);
+const array_1 = __webpack_require__(6876);
 function bind(target, settings) {
   let context = {
     ...settings,
@@ -3473,7 +3953,7 @@ exports.bind = bind;
 
 /***/ }),
 
-/***/ 2172:
+/***/ 3413:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3483,7 +3963,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.body = void 0;
-const header_1 = __webpack_require__(6308);
+const header_1 = __webpack_require__(3652);
 function body(source) {
   return source.slice((0, header_1.header)(source).length);
 }
@@ -3491,7 +3971,7 @@ exports.body = body;
 
 /***/ }),
 
-/***/ 3380:
+/***/ 4331:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3501,11 +3981,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.caches = void 0;
-const clock_1 = __webpack_require__(7124);
-const tlru_1 = __webpack_require__(1900);
+const tclock_1 = __webpack_require__(3307);
+const tlru_1 = __webpack_require__(8888);
 // For rerendering in editing.
 /*
-同一文書内で複数回使用される可能性が低いデータ: Clock
+同一文書内で複数回使用される可能性が低いデータ: TClock
 同一文書内で複数回使用される可能性が高いデータ: TLRU
 
 編集時の再描画高速化が主目的であるためブロックを周期とするループおよび
@@ -3521,14 +4001,14 @@ const tlru_1 = __webpack_require__(1900);
 
 */
 exports.caches = {
-  code: new clock_1.Clock(1000),
+  code: new tclock_1.TClock(1000),
   math: new tlru_1.TLRU(1000),
-  media: new clock_1.Clock(100)
+  media: new tclock_1.TClock(100)
 };
 
 /***/ }),
 
-/***/ 6308:
+/***/ 3652:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3538,8 +4018,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.headers = exports.header = void 0;
-const parser_1 = __webpack_require__(3232);
-const header_1 = __webpack_require__(540);
+const parser_1 = __webpack_require__(605);
+const header_1 = __webpack_require__(3009);
 function header(source) {
   const [, rest = source] = parse(source);
   return source.slice(0, source.length - rest.length);
@@ -3561,7 +4041,7 @@ function parse(source) {
 
 /***/ }),
 
-/***/ 9588:
+/***/ 4490:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3571,8 +4051,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
-const parser_1 = __webpack_require__(3232);
-const htmlentity_1 = __webpack_require__(3740);
+const parser_1 = __webpack_require__(605);
+const htmlentity_1 = __webpack_require__(470);
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 function normalize(source) {
   return sanitize(format(source));
@@ -3633,7 +4113,7 @@ exports.escape = escape;
 
 /***/ }),
 
-/***/ 2244:
+/***/ 3662:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3643,16 +4123,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.parse = void 0;
-const parser_1 = __webpack_require__(3232);
-const segment_1 = __webpack_require__(1284);
-const header_1 = __webpack_require__(540);
-const block_1 = __webpack_require__(9372);
-const normalize_1 = __webpack_require__(9588);
-const header_2 = __webpack_require__(6308);
-const figure_1 = __webpack_require__(5712);
-const note_1 = __webpack_require__(6992);
-const url_1 = __webpack_require__(3800);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(605);
+const segment_1 = __webpack_require__(3967);
+const header_1 = __webpack_require__(3009);
+const block_1 = __webpack_require__(7099);
+const normalize_1 = __webpack_require__(4490);
+const header_2 = __webpack_require__(3652);
+const figure_1 = __webpack_require__(1657);
+const note_1 = __webpack_require__(165);
+const url_1 = __webpack_require__(1904);
+const dom_1 = __webpack_require__(394);
 function parse(source, opts = {}, context) {
   if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
@@ -3688,7 +4168,7 @@ exports.parse = parse;
 
 /***/ }),
 
-/***/ 5244:
+/***/ 1671:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3698,14 +4178,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.autolink = void 0;
-const combinator_1 = __webpack_require__(7436);
-const autolink_1 = __webpack_require__(2044);
-const source_1 = __webpack_require__(4856);
+const combinator_1 = __webpack_require__(3484);
+const autolink_1 = __webpack_require__(8072);
+const source_1 = __webpack_require__(8745);
 exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.convert)(source => `\r${source}`, (0, combinator_1.some)((0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource]))));
 
 /***/ }),
 
-/***/ 9372:
+/***/ 7099:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3715,26 +4195,26 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.block = void 0;
-const combinator_1 = __webpack_require__(7436);
-const memo_1 = __webpack_require__(6660);
-const source_1 = __webpack_require__(4856);
-const pagebreak_1 = __webpack_require__(4904);
-const heading_1 = __webpack_require__(6700);
-const ulist_1 = __webpack_require__(4788);
-const olist_1 = __webpack_require__(9585);
-const ilist_1 = __webpack_require__(6688);
-const dlist_1 = __webpack_require__(9708);
-const table_1 = __webpack_require__(5068);
-const codeblock_1 = __webpack_require__(8912);
-const mathblock_1 = __webpack_require__(8748);
-const extension_1 = __webpack_require__(9536);
-const sidefence_1 = __webpack_require__(2208);
-const blockquote_1 = __webpack_require__(9848);
-const mediablock_1 = __webpack_require__(468);
-const reply_1 = __webpack_require__(8452);
-const paragraph_1 = __webpack_require__(4740);
-const random_1 = __webpack_require__(72);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const memo_1 = __webpack_require__(1074);
+const source_1 = __webpack_require__(8745);
+const pagebreak_1 = __webpack_require__(2946);
+const heading_1 = __webpack_require__(2778);
+const ulist_1 = __webpack_require__(7595);
+const olist_1 = __webpack_require__(7697);
+const ilist_1 = __webpack_require__(4223);
+const dlist_1 = __webpack_require__(636);
+const table_1 = __webpack_require__(2752);
+const codeblock_1 = __webpack_require__(9194);
+const mathblock_1 = __webpack_require__(4903);
+const extension_1 = __webpack_require__(6193);
+const sidefence_1 = __webpack_require__(6500);
+const blockquote_1 = __webpack_require__(5885);
+const mediablock_1 = __webpack_require__(2583);
+const reply_1 = __webpack_require__(3832);
+const paragraph_1 = __webpack_require__(4330);
+const random_1 = __webpack_require__(3158);
+const dom_1 = __webpack_require__(394);
 exports.block = (0, combinator_1.creation)(0, false, (0, combinator_1.reset)({
   resources: {
     clock: 20000,
@@ -3763,7 +4243,7 @@ function error(parser) {
 
 /***/ }),
 
-/***/ 9848:
+/***/ 5885:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3773,11 +4253,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.blockquote = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const autolink_1 = __webpack_require__(5244);
-const source_1 = __webpack_require__(4856);
-const parse_1 = __webpack_require__(2244);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const autolink_1 = __webpack_require__(1671);
+const source_1 = __webpack_require__(8745);
+const parse_1 = __webpack_require__(3662);
+const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['!>', '>'], (0, combinator_1.union)([(0, combinator_1.validate)(/^!?>+(?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.some)(source_1.contentline))])));
 exports.blockquote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.union)([(0, combinator_1.open)(/^(?=>)/, source), (0, combinator_1.open)(/^!(?=>)/, markdown)]))));
 const opener = /^(?=>>+(?:$|\s))/;
@@ -3802,7 +4282,7 @@ const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combina
 
 /***/ }),
 
-/***/ 8912:
+/***/ 9194:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3812,10 +4292,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.codeblock = exports.segment_ = exports.segment = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const autolink_1 = __webpack_require__(5244);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const autolink_1 = __webpack_require__(1671);
+const dom_1 = __webpack_require__(394);
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
@@ -3865,7 +4345,7 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0
 
 /***/ }),
 
-/***/ 9708:
+/***/ 636:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3875,13 +4355,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dlist = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(256 /* State.annotation */ | 128 /* State.reference */ | 64 /* State.index */ | 32 /* State.label */ | 16 /* State.link */ | 8 /* State.media */, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), es => [(0, dom_1.html)('dl', fillTrailingDescription(es))])));
 const term = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, visibility_1.visualize)((0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => [(0, dom_1.html)('dt', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]))));
 const desc = (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/^:[^\S\n]+(?=\S)|/, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /^[~:][^\S\n]+\S/), (0, visibility_1.visualize)((0, util_1.lineable)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, dom_1.html)('dd', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]), false));
@@ -3891,7 +4371,7 @@ function fillTrailingDescription(es) {
 
 /***/ }),
 
-/***/ 9536:
+/***/ 6193:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3901,21 +4381,21 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.extension = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const figbase_1 = __webpack_require__(8828);
-const fig_1 = __webpack_require__(8180);
-const figure_1 = __webpack_require__(2443);
-const table_1 = __webpack_require__(4280);
-const message_1 = __webpack_require__(2080);
-const aside_1 = __webpack_require__(5351);
-const example_1 = __webpack_require__(5072);
-const placeholder_1 = __webpack_require__(5704);
+const combinator_1 = __webpack_require__(3484);
+const figbase_1 = __webpack_require__(8289);
+const fig_1 = __webpack_require__(7396);
+const figure_1 = __webpack_require__(4248);
+const table_1 = __webpack_require__(3646);
+const message_1 = __webpack_require__(3949);
+const aside_1 = __webpack_require__(6150);
+const example_1 = __webpack_require__(6624);
+const placeholder_1 = __webpack_require__(4091);
 exports.segment = (0, combinator_1.validate)(['~~~', '[$', '$'], (0, combinator_1.validate)(/^~{3,}|^\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/, (0, combinator_1.union)([fig_1.segment, figure_1.segment, table_1.segment, placeholder_1.segment])));
 exports.extension = (0, combinator_1.union)([figbase_1.figbase, fig_1.fig, figure_1.figure, table_1.table, message_1.message, aside_1.aside, example_1.example, placeholder_1.placeholder]);
 
 /***/ }),
 
-/***/ 5351:
+/***/ 6150:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3925,10 +4405,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.aside = void 0;
-const combinator_1 = __webpack_require__(7436);
-const indexee_1 = __webpack_require__(5688);
-const parse_1 = __webpack_require__(2244);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const indexee_1 = __webpack_require__(7610);
+const parse_1 = __webpack_require__(3662);
+const dom_1 = __webpack_require__(394);
 exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
 // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, param], _, context) => {
@@ -3964,7 +4444,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
 
 /***/ }),
 
-/***/ 5072:
+/***/ 6624:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -3974,11 +4454,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.example = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const parse_1 = __webpack_require__(2244);
-const mathblock_1 = __webpack_require__(8748);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const parse_1 = __webpack_require__(3662);
+const mathblock_1 = __webpack_require__(4903);
+const dom_1 = __webpack_require__(394);
 const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300),
 // Bug: Type mismatch between outer and inner.
@@ -4032,7 +4512,7 @@ exports.example = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, 
 
 /***/ }),
 
-/***/ 8180:
+/***/ 7396:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4042,16 +4522,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fig = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const figure_1 = __webpack_require__(2443);
-const label_1 = __webpack_require__(3640);
-const codeblock_1 = __webpack_require__(8912);
-const mathblock_1 = __webpack_require__(8748);
-const table_1 = __webpack_require__(4280);
-const blockquote_1 = __webpack_require__(9848);
-const placeholder_1 = __webpack_require__(5704);
-const inline_1 = __webpack_require__(2716);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const figure_1 = __webpack_require__(4248);
+const label_1 = __webpack_require__(2178);
+const codeblock_1 = __webpack_require__(9194);
+const mathblock_1 = __webpack_require__(4903);
+const table_1 = __webpack_require__(3646);
+const blockquote_1 = __webpack_require__(5885);
+const placeholder_1 = __webpack_require__(4091);
+const inline_1 = __webpack_require__(7973);
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /^(?=\s).*\n/)), (0, combinator_1.union)([codeblock_1.segment, mathblock_1.segment, table_1.segment, blockquote_1.segment, placeholder_1.segment, (0, combinator_1.some)(source_1.contentline)])])));
 exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.verify)((0, combinator_1.convert)((source, context) => {
   // Bug: TypeScript
@@ -4065,7 +4545,7 @@ const parser = (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator
 
 /***/ }),
 
-/***/ 8828:
+/***/ 8289:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4075,9 +4555,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figbase = void 0;
-const combinator_1 = __webpack_require__(7436);
-const label_1 = __webpack_require__(3640);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const label_1 = __webpack_require__(2178);
+const dom_1 = __webpack_require__(394);
 exports.figbase = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\[?\$-(?:[0-9]+\.)*0\]?[^\S\n]*(?!\S|\n[^\S\n]*\S)/, (0, combinator_1.line)((0, combinator_1.union)([label_1.label]))), ([el]) => {
   const label = el.getAttribute('data-label');
   const group = label.split('-', 1)[0];
@@ -4090,7 +4570,7 @@ exports.figbase = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_
 
 /***/ }),
 
-/***/ 2443:
+/***/ 4248:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4100,22 +4580,22 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figure = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const label_1 = __webpack_require__(3640);
-const ulist_1 = __webpack_require__(4788);
-const olist_1 = __webpack_require__(9585);
-const table_1 = __webpack_require__(5068);
-const codeblock_1 = __webpack_require__(8912);
-const mathblock_1 = __webpack_require__(8748);
-const example_1 = __webpack_require__(5072);
-const table_2 = __webpack_require__(4280);
-const blockquote_1 = __webpack_require__(9848);
-const placeholder_1 = __webpack_require__(5704);
-const inline_1 = __webpack_require__(2716);
-const visibility_1 = __webpack_require__(5424);
-const memoize_1 = __webpack_require__(276);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const label_1 = __webpack_require__(2178);
+const ulist_1 = __webpack_require__(7595);
+const olist_1 = __webpack_require__(7697);
+const table_1 = __webpack_require__(2752);
+const codeblock_1 = __webpack_require__(9194);
+const mathblock_1 = __webpack_require__(4903);
+const example_1 = __webpack_require__(6624);
+const table_2 = __webpack_require__(3646);
+const blockquote_1 = __webpack_require__(5885);
+const placeholder_1 = __webpack_require__(4091);
+const inline_1 = __webpack_require__(7973);
+const visibility_1 = __webpack_require__(6364);
+const memoize_1 = __webpack_require__(6925);
+const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([
 // All parsers which can include closing terms.
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, {})));
@@ -4218,7 +4698,7 @@ function attributes(label, param, content, caption) {
 
 /***/ }),
 
-/***/ 2080:
+/***/ 3949:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4228,22 +4708,22 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.message = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const segment_1 = __webpack_require__(1284);
-const source_1 = __webpack_require__(4856);
-const ulist_1 = __webpack_require__(4788);
-const olist_1 = __webpack_require__(9585);
-const ilist_1 = __webpack_require__(6688);
-const table_1 = __webpack_require__(5068);
-const codeblock_1 = __webpack_require__(8912);
-const mathblock_1 = __webpack_require__(8748);
-const sidefence_1 = __webpack_require__(2208);
-const blockquote_1 = __webpack_require__(9848);
-const mediablock_1 = __webpack_require__(468);
-const paragraph_1 = __webpack_require__(4740);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const segment_1 = __webpack_require__(3967);
+const source_1 = __webpack_require__(8745);
+const ulist_1 = __webpack_require__(7595);
+const olist_1 = __webpack_require__(7697);
+const ilist_1 = __webpack_require__(4223);
+const table_1 = __webpack_require__(2752);
+const codeblock_1 = __webpack_require__(9194);
+const mathblock_1 = __webpack_require__(4903);
+const sidefence_1 = __webpack_require__(6500);
+const blockquote_1 = __webpack_require__(5885);
+const mediablock_1 = __webpack_require__(2583);
+const paragraph_1 = __webpack_require__(4330);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.message = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.fmap)((0, combinator_1.fence)(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300),
 // Bug: Type mismatch between outer and inner.
 ([body, overflow, closer, opener, delim, type, param], _, context) => {
@@ -4291,7 +4771,7 @@ const content = (0, combinator_1.union)([source_1.emptyline, ulist_1.ulist, olis
 
 /***/ }),
 
-/***/ 5704:
+/***/ 4091:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4301,8 +4781,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.placeholder = exports.segment_ = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
 const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
@@ -4314,7 +4794,7 @@ exports.placeholder = (0, combinator_1.block)((0, combinator_1.validate)('~~~', 
 
 /***/ }),
 
-/***/ 4280:
+/***/ 3646:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4324,15 +4804,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.table = exports.segment_ = exports.segment = void 0;
-const alias_1 = __webpack_require__(5807);
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const alias_1 = __webpack_require__(5413);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 10000, false))), false);
@@ -4580,7 +5060,7 @@ function format(rows) {
 
 /***/ }),
 
-/***/ 6700:
+/***/ 2778:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4590,11 +5070,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.heading = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('#', (0, combinator_1.focus)(/^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/, (0, combinator_1.some)((0, combinator_1.line)(({
   source
 }) => [[source], ''])))));
@@ -4607,7 +5087,7 @@ exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segm
 
 /***/ }),
 
-/***/ 6688:
+/***/ 4223:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4617,13 +5097,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ilist_ = exports.ilist = void 0;
-const combinator_1 = __webpack_require__(7436);
-const ulist_1 = __webpack_require__(4788);
-const olist_1 = __webpack_require__(9585);
-const inline_1 = __webpack_require__(2716);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const ulist_1 = __webpack_require__(7595);
+const olist_1 = __webpack_require__(7697);
+const inline_1 = __webpack_require__(7973);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, exports.ilist_)));
 exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?:$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.trim)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, util_1.lineable)((0, combinator_1.some)(inline_1.inline))))), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), ulist_1.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
@@ -4634,7 +5114,7 @@ exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combin
 
 /***/ }),
 
-/***/ 8748:
+/***/ 4903:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4644,8 +5124,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.mathblock = exports.segment_ = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
 const opener = /^(\${2,})(?!\$)([^\n]*)(?:$|\n)/;
 exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
@@ -4668,7 +5148,7 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.validate)('$$', (0,
 
 /***/ }),
 
-/***/ 468:
+/***/ 2583:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4678,9 +5158,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.mediablock = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const dom_1 = __webpack_require__(394);
 exports.mediablock = (0, combinator_1.block)((0, combinator_1.validate)(['[!', '!'], (0, combinator_1.fmap)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.shortmedia])), (0, combinator_1.some)((0, combinator_1.line)((0, combinator_1.fallback)((0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.shortmedia]), ({
   source
 }) => [[(0, dom_1.html)('div', [(0, dom_1.html)('span', attrs, source.replace('\n', ''))])], ''])))]), ns => [(0, dom_1.html)('div', ns)])));
@@ -4693,7 +5173,7 @@ const attrs = {
 
 /***/ }),
 
-/***/ 9585:
+/***/ 7697:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4703,14 +5183,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.olist_ = exports.olist = void 0;
-const combinator_1 = __webpack_require__(7436);
-const ulist_1 = __webpack_require__(4788);
-const ilist_1 = __webpack_require__(6688);
-const inline_1 = __webpack_require__(2716);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const memoize_1 = __webpack_require__(276);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const ulist_1 = __webpack_require__(7595);
+const ilist_1 = __webpack_require__(4223);
+const inline_1 = __webpack_require__(7973);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const memoize_1 = __webpack_require__(6925);
+const dom_1 = __webpack_require__(394);
 const openers = {
   '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
   '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/
@@ -4820,7 +5300,7 @@ function format(list, type, form) {
 
 /***/ }),
 
-/***/ 4904:
+/***/ 2946:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4830,13 +5310,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pagebreak = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
 exports.pagebreak = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/^={3,}[^\S\n]*(?:$|\n)/, () => [[(0, dom_1.html)('hr')], ''])));
 
 /***/ }),
 
-/***/ 4740:
+/***/ 4330:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4846,16 +5326,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.paragraph = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.paragraph = (0, combinator_1.block)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, util_1.lineable)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => [(0, dom_1.html)('p', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))]));
 
 /***/ }),
 
-/***/ 8452:
+/***/ 3832:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4865,15 +5345,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reply = void 0;
-const combinator_1 = __webpack_require__(7436);
-const cite_1 = __webpack_require__(1632);
-const quote_1 = __webpack_require__(6423);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const cite_1 = __webpack_require__(1200);
+const quote_1 = __webpack_require__(4847);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 /*
 必ず対象指定から始まる
 対象がページである場合>>.を表現方法とする
@@ -4884,7 +5364,7 @@ exports.reply = (0, combinator_1.block)((0, combinator_1.validate)('>', (0, comb
 
 /***/ }),
 
-/***/ 1632:
+/***/ 1200:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4894,10 +5374,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.cite = void 0;
-const combinator_1 = __webpack_require__(7436);
-const anchor_1 = __webpack_require__(6508);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const anchor_1 = __webpack_require__(8535);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([(0, source_1.str)(/^>*(?=>>[^>\s]+\s*$)/), (0, combinator_1.union)([anchor_1.anchor,
 // Subject page representation.
 // リンクの実装は後で検討
@@ -4921,7 +5401,7 @@ exports.cite = (0, combinator_1.creation)(1, false, (0, combinator_1.line)((0, c
 
 /***/ }),
 
-/***/ 6423:
+/***/ 4847:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4931,11 +5411,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.quote = exports.syntax = void 0;
-const combinator_1 = __webpack_require__(7436);
-const math_1 = __webpack_require__(4540);
-const autolink_1 = __webpack_require__(2044);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const math_1 = __webpack_require__(2962);
+const autolink_1 = __webpack_require__(8072);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 exports.syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, false, (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([(0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|')[0]), source_1.anyline)), qblock), (0, combinator_1.rewrite)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|').slice(1).join('|')), source_1.anyline), (0, combinator_1.line)((0, combinator_1.union)([(0, source_1.str)(/^.+/)])))])), ns => [(0, dom_1.html)('span', ns.length > 1 ? {
   class: 'quote'
@@ -4951,7 +5431,7 @@ autolink_1.autolink, source_1.linebreak, source_1.unescsource])));
 
 /***/ }),
 
-/***/ 2208:
+/***/ 6500:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4961,10 +5441,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sidefence = void 0;
-const combinator_1 = __webpack_require__(7436);
-const autolink_1 = __webpack_require__(5244);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const autolink_1 = __webpack_require__(1671);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/^(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/, (0, combinator_1.union)([source])), ([el]) => [(0, dom_1.define)(el, {
   class: 'invalid',
   'data-invalid-syntax': 'sidefence',
@@ -4977,7 +5457,7 @@ const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinato
 
 /***/ }),
 
-/***/ 5068:
+/***/ 2752:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -4987,13 +5467,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.table = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const duff_1 = __webpack_require__(1444);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const duff_1 = __webpack_require__(9202);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^\|[^\n]*(?:\n\|[^\n]*){2}/, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => [(0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift()]), (0, dom_1.html)('tbody', format(rows))])])));
 const row = (parser, optional) => (0, combinator_1.creation)(1, false, (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/^(?=\|)/, (0, combinator_1.some)((0, combinator_1.union)([parser])), /^[|\\]?\s*$/, optional)), es => [(0, dom_1.html)('tr', es)]), (0, combinator_1.rewrite)(source_1.contentline, ({
   source
@@ -5023,7 +5503,7 @@ function format(rows) {
 
 /***/ }),
 
-/***/ 4788:
+/***/ 7595:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5033,15 +5513,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.fillFirstLine = exports.invalid = exports.checkbox = exports.ulist_ = exports.ulist = void 0;
-const combinator_1 = __webpack_require__(7436);
-const olist_1 = __webpack_require__(9585);
-const ilist_1 = __webpack_require__(6688);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const olist_1 = __webpack_require__(7697);
+const ilist_1 = __webpack_require__(4223);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, exports.ulist_)));
 exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.lineable)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.creation)(1, false, (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, ({
@@ -5072,7 +5552,7 @@ function format(list) {
 
 /***/ }),
 
-/***/ 540:
+/***/ 3009:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5082,11 +5562,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.header = void 0;
-const combinator_1 = __webpack_require__(7436);
-const segment_1 = __webpack_require__(1284);
-const source_1 = __webpack_require__(4856);
-const normalize_1 = __webpack_require__(9588);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const segment_1 = __webpack_require__(3967);
+const source_1 = __webpack_require__(8745);
+const normalize_1 = __webpack_require__(4490);
+const dom_1 = __webpack_require__(394);
 exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([(0, combinator_1.rewrite)(({
   source,
   context
@@ -5121,7 +5601,7 @@ const field = (0, combinator_1.line)(({
 
 /***/ }),
 
-/***/ 2716:
+/***/ 7973:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5131,57 +5611,57 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.shortmedia = exports.media = exports.medialink = exports.indexer = exports.indexee = exports.inline = void 0;
-const combinator_1 = __webpack_require__(7436);
-const annotation_1 = __webpack_require__(2292);
-const reference_1 = __webpack_require__(1932);
-const template_1 = __webpack_require__(5872);
-const remark_1 = __webpack_require__(5188);
-const extension_1 = __webpack_require__(2656);
-const ruby_1 = __webpack_require__(8780);
-const link_1 = __webpack_require__(9596);
-const html_1 = __webpack_require__(1480);
-const insertion_1 = __webpack_require__(6896);
-const deletion_1 = __webpack_require__(6676);
-const mark_1 = __webpack_require__(1076);
-const emstrong_1 = __webpack_require__(5400);
-const strong_1 = __webpack_require__(8428);
-const emphasis_1 = __webpack_require__(3500);
-const math_1 = __webpack_require__(4540);
-const code_1 = __webpack_require__(8132);
-const htmlentity_1 = __webpack_require__(3740);
-const autolink_1 = __webpack_require__(2044);
-const bracket_1 = __webpack_require__(7376);
-const source_1 = __webpack_require__(4856);
+const combinator_1 = __webpack_require__(3484);
+const annotation_1 = __webpack_require__(4045);
+const reference_1 = __webpack_require__(9047);
+const template_1 = __webpack_require__(4510);
+const remark_1 = __webpack_require__(8948);
+const extension_1 = __webpack_require__(2743);
+const ruby_1 = __webpack_require__(7304);
+const link_1 = __webpack_require__(3628);
+const html_1 = __webpack_require__(5013);
+const insertion_1 = __webpack_require__(4515);
+const deletion_1 = __webpack_require__(7066);
+const mark_1 = __webpack_require__(5381);
+const emstrong_1 = __webpack_require__(365);
+const strong_1 = __webpack_require__(6591);
+const emphasis_1 = __webpack_require__(1354);
+const math_1 = __webpack_require__(2962);
+const code_1 = __webpack_require__(3481);
+const htmlentity_1 = __webpack_require__(470);
+const autolink_1 = __webpack_require__(8072);
+const bracket_1 = __webpack_require__(4526);
+const source_1 = __webpack_require__(8745);
 exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([annotation_1.annotation, reference_1.reference, template_1.template, remark_1.remark, extension_1.extension, ruby_1.ruby, link_1.textlink, html_1.html, insertion_1.insertion, deletion_1.deletion, mark_1.mark, emstrong_1.emstrong, strong_1.strong, emphasis_1.emphasis, math_1.math, code_1.code, htmlentity_1.htmlentity, autolink_1.autolink, bracket_1.bracket, source_1.text]));
-var indexee_1 = __webpack_require__(5688);
+var indexee_1 = __webpack_require__(7610);
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
   get: function () {
     return indexee_1.indexee;
   }
 }));
-var indexer_1 = __webpack_require__(3268);
+var indexer_1 = __webpack_require__(7483);
 Object.defineProperty(exports, "indexer", ({
   enumerable: true,
   get: function () {
     return indexer_1.indexer;
   }
 }));
-var link_2 = __webpack_require__(9596);
+var link_2 = __webpack_require__(3628);
 Object.defineProperty(exports, "medialink", ({
   enumerable: true,
   get: function () {
     return link_2.medialink;
   }
 }));
-var media_1 = __webpack_require__(1064);
+var media_1 = __webpack_require__(7478);
 Object.defineProperty(exports, "media", ({
   enumerable: true,
   get: function () {
     return media_1.media;
   }
 }));
-var shortmedia_1 = __webpack_require__(8396);
+var shortmedia_1 = __webpack_require__(5902);
 Object.defineProperty(exports, "shortmedia", ({
   enumerable: true,
   get: function () {
@@ -5191,7 +5671,7 @@ Object.defineProperty(exports, "shortmedia", ({
 
 /***/ }),
 
-/***/ 2292:
+/***/ 4045:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5201,17 +5681,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.annotation = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)('((', (0, combinator_1.constraint)(256 /* State.annotation */, false, (0, combinator_1.syntax)(256 /* Syntax.annotation */, 6, 256 /* State.annotation */ | 8 /* State.media */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[/^\\?\n/, 9], [')', 2], ['))', 6]])))), '))', false, ([, ns], rest) => [[(0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))])], rest])));
 
 /***/ }),
 
-/***/ 2044:
+/***/ 8072:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5221,16 +5701,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.autolink = void 0;
-const combinator_1 = __webpack_require__(7436);
-const url_1 = __webpack_require__(868);
-const email_1 = __webpack_require__(5664);
-const channel_1 = __webpack_require__(8628);
-const account_1 = __webpack_require__(536);
-const hashtag_1 = __webpack_require__(2916);
-const hashnum_1 = __webpack_require__(4916);
-const anchor_1 = __webpack_require__(6508);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
+const combinator_1 = __webpack_require__(3484);
+const url_1 = __webpack_require__(2129);
+const email_1 = __webpack_require__(5836);
+const channel_1 = __webpack_require__(4639);
+const account_1 = __webpack_require__(4107);
+const hashtag_1 = __webpack_require__(5764);
+const hashnum_1 = __webpack_require__(8684);
+const anchor_1 = __webpack_require__(8535);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
 exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:[@#>0-9a-z]|\S[#>]|[\r\n]!?https?:\/\/)/iu, (0, combinator_1.constraint)(2 /* State.autolink */, false, (0, combinator_1.syntax)(2 /* Syntax.autolink */, 1, ~1 /* State.shortcut */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
 // Escape unmatched email-like strings.
 (0, source_1.str)(/^[0-9a-z]+(?:[_.+-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i), channel_1.channel, account_1.account,
@@ -5245,7 +5725,7 @@ exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/^(?:
 
 /***/ }),
 
-/***/ 536:
+/***/ 4107:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5255,10 +5735,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.account = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
 exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('@', (0, combinator_1.tails)([(0, source_1.str)(/^[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//i), (0, source_1.str)(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i)]))), (0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
@@ -5266,7 +5746,7 @@ exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combin
 
 /***/ }),
 
-/***/ 6508:
+/***/ 8535:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5276,9 +5756,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.anchor = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const dom_1 = __webpack_require__(394);
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
 // UTC
@@ -5292,7 +5772,7 @@ exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (
 
 /***/ }),
 
-/***/ 8628:
+/***/ 4639:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5302,11 +5782,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.channel = void 0;
-const combinator_1 = __webpack_require__(7436);
-const account_1 = __webpack_require__(536);
-const hashtag_1 = __webpack_require__(2916);
-const util_1 = __webpack_require__(9224);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const account_1 = __webpack_require__(4107);
+const hashtag_1 = __webpack_require__(5764);
+const util_1 = __webpack_require__(4992);
+const dom_1 = __webpack_require__(394);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 exports.channel = (0, combinator_1.validate)('@', (0, combinator_1.bind)((0, combinator_1.sequence)([account_1.account, (0, combinator_1.some)(hashtag_1.hashtag)]), (es, rest) => {
   const source = (0, util_1.stringify)(es);
@@ -5320,7 +5800,7 @@ exports.channel = (0, combinator_1.validate)('@', (0, combinator_1.bind)((0, com
 
 /***/ }),
 
-/***/ 5664:
+/***/ 5836:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5330,9 +5810,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.email = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 // https://html.spec.whatwg.org/multipage/input.html
 exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z])/i), ([source]) => source.length <= 255), ({
   source
@@ -5343,7 +5823,7 @@ exports.email = (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combina
 
 /***/ }),
 
-/***/ 4916:
+/***/ 8684:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5353,11 +5833,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.hashnum = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const hashtag_1 = __webpack_require__(2916);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const hashtag_1 = __webpack_require__(5764);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.constraint)(1 /* State.shortcut */, false, (0, combinator_1.open)('#', (0, source_1.str)(new RegExp(/^[0-9]{1,9}(?![^\p{C}\p{S}\p{P}\s]|emoji|['_])/u.source.replace(/emoji/, hashtag_1.emoji), 'u')))), (0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]))), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashnum',
   href: null
@@ -5365,7 +5845,7 @@ exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combin
 
 /***/ }),
 
-/***/ 2916:
+/***/ 5764:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5375,10 +5855,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.hashtag = exports.emoji = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
@@ -5388,7 +5868,7 @@ exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combin
 
 /***/ }),
 
-/***/ 868:
+/***/ 2129:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5398,9 +5878,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.lineurl = exports.url = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const source_1 = __webpack_require__(4856);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const source_1 = __webpack_require__(8745);
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://', 'https://'], (0, combinator_1.rewrite)((0, combinator_1.open)(/^https?:\/\/(?=[\x21-\x7E])/, (0, combinator_1.focus)(/^[\x21-\x7E]+/, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.unescsource, closer)])))), (0, combinator_1.convert)(url => `{ ${url} }`, (0, combinator_1.union)([link_1.unsafelink])))));
 exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.focus)(/^https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink))])));
@@ -5408,7 +5888,7 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 
 /***/ }),
 
-/***/ 7376:
+/***/ 4526:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5418,11 +5898,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bracket = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 const index = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/;
 exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.creation)((0, combinator_1.syntax)(0 /* Syntax.none */, 2, 0 /* State.none */, (0, source_1.str)(index))), (0, source_1.str)(')')), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.creation)((0, combinator_1.syntax)(4 /* Syntax.bracket */, 2, 0 /* State.none */, (0, combinator_1.some)(inline_1.inline, ')', [[/^\\?\n/, 3], [')', 2]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
@@ -5432,7 +5912,7 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, comb
 
 /***/ }),
 
-/***/ 8132:
+/***/ 3481:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5442,8 +5922,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.code = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
 exports.code = (0, combinator_1.creation)((0, combinator_1.validate)('`', (0, combinator_1.match)(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole,, body]) => ({
   source
 }) => [[(0, dom_1.html)('code', {
@@ -5455,7 +5935,7 @@ function format(text) {
 
 /***/ }),
 
-/***/ 6676:
+/***/ 7066:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5465,17 +5945,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.deletion = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('~~', '~'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)]))), (0, source_1.str)('~~'), false, ([, bs], rest) => [[(0, dom_1.html)('del', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
-/***/ 3500:
+/***/ 1354:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5485,19 +5965,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.emphasis = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const emstrong_1 = __webpack_require__(5400);
-const strong_1 = __webpack_require__(8428);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const emstrong_1 = __webpack_require__(365);
+const strong_1 = __webpack_require__(6591);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([emstrong_1.emstrong, strong_1.strong, exports.emphasis]))])))), (0, source_1.str)('*'), false, ([, bs], rest) => [[(0, dom_1.html)('em', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
-/***/ 5400:
+/***/ 365:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5507,14 +5987,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.emstrong = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const strong_1 = __webpack_require__(8428);
-const emphasis_1 = __webpack_require__(3500);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
-const array_1 = __webpack_require__(8980);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const strong_1 = __webpack_require__(6591);
+const emphasis_1 = __webpack_require__(1354);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
+const array_1 = __webpack_require__(6876);
 const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
 const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
 exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('***'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), inline_1.inline)])))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
@@ -5536,7 +6016,7 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, c
 
 /***/ }),
 
-/***/ 2656:
+/***/ 2743:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5546,15 +6026,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.extension = void 0;
-const combinator_1 = __webpack_require__(7436);
-const index_1 = __webpack_require__(8300);
-const label_1 = __webpack_require__(3640);
-const placeholder_1 = __webpack_require__(1320);
+const combinator_1 = __webpack_require__(3484);
+const index_1 = __webpack_require__(4688);
+const label_1 = __webpack_require__(2178);
+const placeholder_1 = __webpack_require__(6033);
 exports.extension = (0, combinator_1.validate)(['[', '$'], (0, combinator_1.union)([index_1.index, label_1.label, placeholder_1.placeholder]));
 
 /***/ }),
 
-/***/ 8300:
+/***/ 4688:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5564,12 +6044,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.signature = exports.index = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const indexee_1 = __webpack_require__(5688);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const indexee_1 = __webpack_require__(7610);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0, combinator_1.creation)((0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.constraint)(64 /* State.index */, false, (0, combinator_1.syntax)(64 /* Syntax.index */, 2, 502 /* State.linkers */ | 8 /* State.media */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[/^\\?\n/, 9], [']', 2]])))), ']', false, ([, ns], rest) => [[(0, dom_1.html)('a', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))], rest])), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : undefined,
   class: 'index',
@@ -5583,7 +6063,7 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 
 /***/ }),
 
-/***/ 5688:
+/***/ 7610:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5593,9 +6073,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.text = exports.signature = exports.index = exports.identity = exports.indexee = void 0;
-const combinator_1 = __webpack_require__(7436);
-const memoize_1 = __webpack_require__(276);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const memoize_1 = __webpack_require__(6925);
+const dom_1 = __webpack_require__(394);
 function indexee(parser, optional) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
@@ -5604,31 +6084,42 @@ function indexee(parser, optional) {
   })]);
 }
 exports.indexee = indexee;
+const MAX = 60;
+const ELLIPSIS = '...';
+const PART = (MAX - ELLIPSIS.length) / 2 | 0;
+const REM = MAX - PART * 2 - ELLIPSIS.length;
 function identity(id, text, type = 'index') {
   if (id === '') return undefined;
-  text &&= text.trim().replace(/\s\s+/g, ' ');
+  text = text.trim();
   if (text === '') return undefined;
-  const hash = text.replace(/\s/g, '_');
-  if (hash.length <= 120 || type === '') return `${type}:${id ?? ''}:${hash}`;
-  const cs = [...text];
-  if (cs.length <= 120) return `${type}:${id ?? ''}:${hash}`;
-  const ellipsis = '...';
-  const len = (120 - ellipsis.length * 2) / 3 | 0;
+  const str = text.replace(/\s/g, '_');
+  if (str.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
+  const cs = [...str];
+  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}`;
   switch (type) {
     case 'index':
     case 'mark':
-      const s1 = hash.slice(0, cs.slice(0, len).join('').trimEnd().length);
-      const s3 = hash.slice(-cs.slice(-len).join('').trimStart().length);
-      const s2 = cs.slice(cs.length / 2 - len / 2 - (len - s1.length) | 0).slice(0, len + len - s3.length).join('').trim().replace(/\s/g, '_');
-      return `${type}:${id ?? ''}:${s1}${ellipsis}${s2}${ellipsis}${s3}`;
+      const s1 = cs.slice(0, PART + REM).join('');
+      const s2 = cs.slice(-PART).join('');
+      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text).toString(36)}`;
   }
 }
 exports.identity = identity;
+function hash(source) {
+  let x = 1;
+  for (let i = 0; i < source.length; ++i) {
+    x ^= x << 13;
+    x ^= x >>> 17;
+    x ^= x << 15;
+    x ^= source.charCodeAt(i) << 11;
+  }
+  return x >>> 0;
+}
 function index(source, optional = false) {
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
   const index = indexer?.getAttribute('data-index');
-  if (index) return index;
+  if (index) return index.replace(/=\w+$/, '');
   if (index === '' && optional) return '';
   return signature(source);
 }
@@ -5700,7 +6191,7 @@ exports.text = (0, memoize_1.reduce)(source => {
 
 /***/ }),
 
-/***/ 3268:
+/***/ 7483:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5710,9 +6201,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.indexer = void 0;
-const combinator_1 = __webpack_require__(7436);
-const index_1 = __webpack_require__(8300);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const index_1 = __webpack_require__(4688);
+const dom_1 = __webpack_require__(394);
 exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.union)([index_1.signature, (0, combinator_1.creation)((0, combinator_1.focus)(/^\|(?=\])/, () => [[(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': ''
@@ -5720,7 +6211,7 @@ exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.
 
 /***/ }),
 
-/***/ 3640:
+/***/ 2178:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5730,9 +6221,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isFixed = exports.number = exports.label = exports.segment = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)(['[$', '$'], (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])));
 exports.label = (0, combinator_1.validate)(['[$', '$'], (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.constraint)(32 /* State.label */, false, (0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body])), ([text]) => [(0, dom_1.html)('a', {
@@ -5759,7 +6250,7 @@ function increment(number, position) {
 
 /***/ }),
 
-/***/ 1320:
+/***/ 6033:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5769,12 +6260,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.placeholder = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 // Don't use the symbols already used: !#$%@&*+~=|
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)(/^\[[:^|]/), (0, combinator_1.syntax)(32 /* Syntax.placeholder */, 2, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 2]]))), (0, source_1.str)(']'), false, ([, bs], rest) => [[(0, dom_1.html)('span', {
@@ -5786,7 +6277,7 @@ exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[
 
 /***/ }),
 
-/***/ 1480:
+/***/ 5013:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5796,14 +6287,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.attributes = exports.attribute = exports.html = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const memoize_1 = __webpack_require__(276);
-const clock_1 = __webpack_require__(7124);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const memoize_1 = __webpack_require__(6925);
+const clock_1 = __webpack_require__(8663);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 const tags = Object.freeze(['bdo', 'bdi']);
 const attrspecs = {
   bdo: {
@@ -5861,7 +6352,7 @@ exports.attributes = attributes;
 
 /***/ }),
 
-/***/ 3740:
+/***/ 470:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5871,9 +6362,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.htmlentity = exports.unsafehtmlentity = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
-const memoize_1 = __webpack_require__(276);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
+const memoize_1 = __webpack_require__(6925);
 exports.unsafehtmlentity = (0, combinator_1.creation)((0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]+;/, ({
   source
 }) => [[parse(source) ?? `\x1B${source}`], ''])));
@@ -5892,7 +6383,7 @@ const parse = (0, memoize_1.reduce)((el => entity => {
 
 /***/ }),
 
-/***/ 6896:
+/***/ 4515:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5902,17 +6393,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.insertion = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('++', '+'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)]))), (0, source_1.str)('++'), false, ([, bs], rest) => [[(0, dom_1.html)('ins', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
-/***/ 9596:
+/***/ 3628:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -5922,14 +6413,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.linemedialink = exports.medialink = exports.textlink = exports.link = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const html_1 = __webpack_require__(1480);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const util_1 = __webpack_require__(9224);
-const url_1 = __webpack_require__(3800);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const html_1 = __webpack_require__(5013);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const util_1 = __webpack_require__(4992);
+const url_1 = __webpack_require__(1904);
+const dom_1 = __webpack_require__(394);
 const optspec = {
   rel: ['nofollow']
 };
@@ -6027,7 +6518,7 @@ function decode(uri) {
 
 /***/ }),
 
-/***/ 1076:
+/***/ 5381:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6037,13 +6528,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.mark = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const indexee_1 = __webpack_require__(5688);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const indexee_1 = __webpack_require__(7610);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('==', '='), (0, combinator_1.constraint)(4 /* State.mark */, false, (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('=='), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '=', [[/^\\?\n/, 9]]), exports.mark)]))))), (0, source_1.str)('=='), false, ([, bs], rest, {
   id
 }) => {
@@ -6057,7 +6548,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combi
 
 /***/ }),
 
-/***/ 4540:
+/***/ 2962:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6067,9 +6558,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.math = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const dom_1 = __webpack_require__(394);
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, combinator_1.creation)((0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)('$', (0, combinator_1.precedence)(6, bracket), '$'), (0, combinator_1.surround)(/^\$(?![\s{}])/, (0, combinator_1.precedence)(3, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.focus)(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, (0, combinator_1.some)(source_1.unescsource))]))), /^\$(?![0-9A-Za-z])/)]), ({
   source,
@@ -6093,7 +6584,7 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 
 /***/ }),
 
-/***/ 1064:
+/***/ 7478:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6103,15 +6594,15 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.linemedia = exports.media = void 0;
-const combinator_1 = __webpack_require__(7436);
-const link_1 = __webpack_require__(9596);
-const html_1 = __webpack_require__(1480);
-const htmlentity_1 = __webpack_require__(3740);
-const source_1 = __webpack_require__(4856);
-const util_1 = __webpack_require__(9224);
-const url_1 = __webpack_require__(3800);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const link_1 = __webpack_require__(3628);
+const html_1 = __webpack_require__(5013);
+const htmlentity_1 = __webpack_require__(470);
+const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
+const url_1 = __webpack_require__(1904);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 const optspec = {
   'width': [],
   'height': [],
@@ -6176,7 +6667,7 @@ function sanitize(target, uri, alt) {
 
 /***/ }),
 
-/***/ 1932:
+/***/ 9047:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6186,11 +6677,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reference = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const dom_1 = __webpack_require__(394);
 exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)('[[', (0, combinator_1.constraint)(128 /* State.reference */, false, (0, combinator_1.syntax)(128 /* Syntax.reference */, 6, 256 /* State.annotation */ | 128 /* State.reference */ | 8 /* State.media */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]]))]))), ']]', false, ([, ns], rest) => [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, visibility_1.trimNodeEnd)((0, dom_1.defrag)(ns)))])], rest])));
 // Chicago-Style
 const abbr = (0, combinator_1.creation)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/, true, ([, ns], rest) => ns ? [['\n', ns[0].trimEnd()], rest.replace(visibility_1.blank.start, '')] : [[''], `^${rest}`], ([,, rest]) => [[''], `^${rest}`]));
@@ -6219,7 +6710,7 @@ function attributes(ns) {
 
 /***/ }),
 
-/***/ 5188:
+/***/ 8948:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6229,12 +6720,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.remark = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const source_1 = __webpack_require__(4856);
-const memoize_1 = __webpack_require__(276);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const memoize_1 = __webpack_require__(6925);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (0, combinator_1.creation)((0, combinator_1.syntax)(0 /* Syntax.none */, 5, 0 /* State.none */, (0, combinator_1.match)(/^\[(%+)\s/, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, combinator_1.open)((0, source_1.str)(`[${fence}`), (0, combinator_1.some)(source_1.text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 5]]), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, /^\S/), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'remark'
 }, [(0, dom_1.html)('input', {
@@ -6243,7 +6734,7 @@ exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[%', (
 
 /***/ }),
 
-/***/ 8780:
+/***/ 7304:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6253,13 +6744,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.ruby = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const htmlentity_1 = __webpack_require__(3740);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const htmlentity_1 = __webpack_require__(470);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[', (0, combinator_1.creation)((0, combinator_1.syntax)(16 /* Syntax.ruby */, 2, -1 /* State.all */, (0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.sequence)([(0, combinator_1.surround)('[', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'), (0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')')]), ([texts, rubies], _, context) => [(0, parser_1.eval)(text({
   source: texts,
   context
@@ -6336,7 +6827,7 @@ function attributes(texts, rubies) {
 
 /***/ }),
 
-/***/ 8396:
+/***/ 5902:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6346,16 +6837,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.lineshortmedia = exports.shortmedia = void 0;
-const combinator_1 = __webpack_require__(7436);
-const url_1 = __webpack_require__(868);
-const media_1 = __webpack_require__(1064);
-const source_1 = __webpack_require__(4856);
+const combinator_1 = __webpack_require__(3484);
+const url_1 = __webpack_require__(2129);
+const media_1 = __webpack_require__(7478);
+const source_1 = __webpack_require__(8745);
 exports.shortmedia = (0, combinator_1.rewrite)((0, combinator_1.constraint)(8 /* State.media */, false, (0, combinator_1.open)('!', url_1.url)), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media])));
 exports.lineshortmedia = (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.focus)(/^!https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/, (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media]))));
 
 /***/ }),
 
-/***/ 8428:
+/***/ 6591:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6365,18 +6856,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.strong = void 0;
-const combinator_1 = __webpack_require__(7436);
-const inline_1 = __webpack_require__(2716);
-const emstrong_1 = __webpack_require__(5400);
-const source_1 = __webpack_require__(4856);
-const visibility_1 = __webpack_require__(5424);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const emstrong_1 = __webpack_require__(365);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)((0, source_1.str)('**', '*'), (0, combinator_1.syntax)(0 /* Syntax.none */, 1, 0 /* State.none */, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**'), [[/^\\?\n/, 9]]), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*', [[/^\\?\n/, 9]]), (0, combinator_1.union)([emstrong_1.emstrong, exports.strong]))])))), (0, source_1.str)('**'), false, ([, bs], rest) => [[(0, dom_1.html)('strong', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 
 /***/ }),
 
-/***/ 5872:
+/***/ 4510:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6386,10 +6877,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.template = void 0;
-const combinator_1 = __webpack_require__(7436);
-const source_1 = __webpack_require__(4856);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.surround)('{{', (0, combinator_1.syntax)(0 /* Syntax.none */, 6, -1 /* State.all */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}', [['}}', 6]])), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
 }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest])));
@@ -6397,7 +6888,7 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 
 /***/ }),
 
-/***/ 5712:
+/***/ 1657:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6407,12 +6898,12 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.figure = void 0;
-const label_1 = __webpack_require__(3640);
-const util_1 = __webpack_require__(9224);
-const queue_1 = __webpack_require__(9556);
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
-const query_1 = __webpack_require__(9252);
+const label_1 = __webpack_require__(2178);
+const util_1 = __webpack_require__(4992);
+const queue_1 = __webpack_require__(4110);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
+const query_1 = __webpack_require__(2282);
 function* figure(target, notes, opts = {}) {
   const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new Set();
@@ -6535,7 +7026,7 @@ function capitalize(label) {
 
 /***/ }),
 
-/***/ 6992:
+/***/ 165:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6545,10 +7036,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reference = exports.annotation = exports.note = void 0;
-const indexee_1 = __webpack_require__(5688);
-const util_1 = __webpack_require__(9224);
-const memoize_1 = __webpack_require__(276);
-const dom_1 = __webpack_require__(8200);
+const indexee_1 = __webpack_require__(7610);
+const util_1 = __webpack_require__(4992);
+const memoize_1 = __webpack_require__(6925);
+const dom_1 = __webpack_require__(394);
 function* note(target, notes, opts = {}, bottom = null) {
   yield* (0, exports.annotation)(target, notes?.annotations, opts, bottom);
   yield* (0, exports.reference)(target, notes?.references, opts, bottom);
@@ -6594,7 +7085,7 @@ function build(syntax, marker, splitter = '') {
       if (splitter) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
         if (!scope && el.parentNode !== target) continue;
-        if (el.tagName === 'OL' && el.nextElementSibling !== splitters[iSplitters + 1]) {
+        if (el.tagName === 'OL' && (el.nextElementSibling !== splitters[iSplitters + 1] || defs.size === 0)) {
           el.remove();
           continue;
         }
@@ -6704,7 +7195,7 @@ function equal(a, b) {
 
 /***/ }),
 
-/***/ 1284:
+/***/ 3967:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6714,14 +7205,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const heading_1 = __webpack_require__(6700);
-const codeblock_1 = __webpack_require__(8912);
-const mathblock_1 = __webpack_require__(8748);
-const extension_1 = __webpack_require__(9536);
-const source_1 = __webpack_require__(4856);
-exports.MAX_SEGMENT_SIZE = 100000; // 100,000 bytes (Max value size of FDB)
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const heading_1 = __webpack_require__(2778);
+const codeblock_1 = __webpack_require__(9194);
+const mathblock_1 = __webpack_require__(4903);
+const extension_1 = __webpack_require__(6193);
+const source_1 = __webpack_require__(8745);
+exports.MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB)
 exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE * 10;
 const parser = (0, combinator_1.union)([heading_1.segment, codeblock_1.segment, mathblock_1.segment, extension_1.segment, (0, combinator_1.some)(source_1.contentline, exports.MAX_SEGMENT_SIZE * 2), (0, combinator_1.some)(source_1.emptyline, exports.MAX_SEGMENT_SIZE * 2)]);
 function* segment(source) {
@@ -6748,7 +7239,7 @@ exports.validate = validate;
 
 /***/ }),
 
-/***/ 4856:
+/***/ 8745:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6758,7 +7249,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.anyline = exports.emptyline = exports.contentline = exports.str = exports.unescsource = exports.escsource = exports.linebreak = exports.txt = exports.text = void 0;
-var text_1 = __webpack_require__(2732);
+var text_1 = __webpack_require__(5655);
 Object.defineProperty(exports, "text", ({
   enumerable: true,
   get: function () {
@@ -6777,28 +7268,28 @@ Object.defineProperty(exports, "linebreak", ({
     return text_1.linebreak;
   }
 }));
-var escapable_1 = __webpack_require__(7228);
+var escapable_1 = __webpack_require__(3770);
 Object.defineProperty(exports, "escsource", ({
   enumerable: true,
   get: function () {
     return escapable_1.escsource;
   }
 }));
-var unescapable_1 = __webpack_require__(3544);
+var unescapable_1 = __webpack_require__(8407);
 Object.defineProperty(exports, "unescsource", ({
   enumerable: true,
   get: function () {
     return unescapable_1.unescsource;
   }
 }));
-var str_1 = __webpack_require__(7976);
+var str_1 = __webpack_require__(4017);
 Object.defineProperty(exports, "str", ({
   enumerable: true,
   get: function () {
     return str_1.str;
   }
 }));
-var line_1 = __webpack_require__(7020);
+var line_1 = __webpack_require__(702);
 Object.defineProperty(exports, "contentline", ({
   enumerable: true,
   get: function () {
@@ -6820,7 +7311,7 @@ Object.defineProperty(exports, "anyline", ({
 
 /***/ }),
 
-/***/ 7228:
+/***/ 3770:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6830,8 +7321,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.escsource = void 0;
-const combinator_1 = __webpack_require__(7436);
-const text_1 = __webpack_require__(2732);
+const combinator_1 = __webpack_require__(3484);
+const text_1 = __webpack_require__(5655);
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 exports.escsource = (0, combinator_1.creation)(1, false, ({
   source,
@@ -6869,7 +7360,7 @@ exports.escsource = (0, combinator_1.creation)(1, false, ({
 
 /***/ }),
 
-/***/ 7020:
+/***/ 702:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6879,14 +7370,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.contentline = exports.emptyline = exports.anyline = void 0;
-const combinator_1 = __webpack_require__(7436);
+const combinator_1 = __webpack_require__(3484);
 exports.anyline = (0, combinator_1.line)(() => [[], '']);
 exports.emptyline = (0, combinator_1.line)(i => (0, combinator_1.isBlank)(i.source) ? [[], ''] : undefined);
 exports.contentline = (0, combinator_1.line)(i => !(0, combinator_1.isBlank)(i.source) ? [[], ''] : undefined);
 
 /***/ }),
 
-/***/ 7976:
+/***/ 4017:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6896,7 +7387,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.str = void 0;
-const combinator_1 = __webpack_require__(7436);
+const combinator_1 = __webpack_require__(3484);
 function str(pattern, not) {
   return typeof pattern === 'string' ? (0, combinator_1.creation)(1, false, ({
     source
@@ -6917,7 +7408,7 @@ exports.str = str;
 
 /***/ }),
 
-/***/ 2732:
+/***/ 5655:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6927,9 +7418,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.delimiter = void 0;
-const combinator_1 = __webpack_require__(7436);
-const str_1 = __webpack_require__(7976);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const str_1 = __webpack_require__(4017);
+const dom_1 = __webpack_require__(394);
 exports.delimiter = /[\s\x00-\x7F（）［］｛｝“”‘’「」『』]|\S[#>]/u;
 exports.nonWhitespace = /[\S\n]|$/u;
 exports.nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/u;
@@ -6987,7 +7478,7 @@ exports.isAlphanumeric = isAlphanumeric;
 
 /***/ }),
 
-/***/ 3544:
+/***/ 8407:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6997,8 +7488,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.unescsource = void 0;
-const combinator_1 = __webpack_require__(7436);
-const text_1 = __webpack_require__(2732);
+const combinator_1 = __webpack_require__(3484);
+const text_1 = __webpack_require__(5655);
 exports.unescsource = (0, combinator_1.creation)(1, false, ({
   source,
   context
@@ -7026,7 +7517,7 @@ exports.unescsource = (0, combinator_1.creation)(1, false, ({
 
 /***/ }),
 
-/***/ 9224:
+/***/ 4992:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7036,8 +7527,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.lineable = void 0;
-const combinator_1 = __webpack_require__(7436);
-const dom_1 = __webpack_require__(8200);
+const combinator_1 = __webpack_require__(3484);
+const dom_1 = __webpack_require__(394);
 function lineable(parser) {
   return (0, combinator_1.convert)(source => `\r${source}`, parser);
 }
@@ -7077,7 +7568,7 @@ exports.stringify = stringify;
 
 /***/ }),
 
-/***/ 5424:
+/***/ 6364:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7087,13 +7578,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.trimNodeEnd = exports.trimBlankStart = exports.trimBlank = exports.isStartTightNodes = exports.isStartLooseNodes = exports.startTight = exports.blankWith = exports.visualize = exports.blank = void 0;
-const parser_1 = __webpack_require__(3232);
-const combinator_1 = __webpack_require__(7436);
-const htmlentity_1 = __webpack_require__(3740);
-const source_1 = __webpack_require__(4856);
-const normalize_1 = __webpack_require__(9588);
-const memoize_1 = __webpack_require__(276);
-const array_1 = __webpack_require__(8980);
+const parser_1 = __webpack_require__(605);
+const combinator_1 = __webpack_require__(3484);
+const htmlentity_1 = __webpack_require__(470);
+const source_1 = __webpack_require__(8745);
+const normalize_1 = __webpack_require__(4490);
+const memoize_1 = __webpack_require__(6925);
+const array_1 = __webpack_require__(6876);
 var blank;
 (function (blank) {
   blank.line = new RegExp(/^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
@@ -7250,7 +7741,7 @@ exports.trimNodeEnd = trimNodeEnd;
 
 /***/ }),
 
-/***/ 4652:
+/***/ 1625:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7260,7 +7751,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.render = void 0;
-var render_1 = __webpack_require__(8703);
+var render_1 = __webpack_require__(3268);
 Object.defineProperty(exports, "render", ({
   enumerable: true,
   get: function () {
@@ -7270,7 +7761,7 @@ Object.defineProperty(exports, "render", ({
 
 /***/ }),
 
-/***/ 8703:
+/***/ 3268:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7280,11 +7771,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.render = void 0;
-const code_1 = __webpack_require__(9040);
-const math_1 = __webpack_require__(9856);
-const media_1 = __webpack_require__(5772);
-const memoize_1 = __webpack_require__(276);
-const query_1 = __webpack_require__(9252);
+const code_1 = __webpack_require__(3042);
+const math_1 = __webpack_require__(3165);
+const media_1 = __webpack_require__(3567);
+const memoize_1 = __webpack_require__(6925);
+const query_1 = __webpack_require__(2282);
 const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
 const extend = (0, memoize_1.reduce)(opts => ({
   code: code_1.code,
@@ -7328,7 +7819,7 @@ function render_(base, source, opts) {
 
 /***/ }),
 
-/***/ 9040:
+/***/ 3042:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -7343,7 +7834,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.code = void 0;
-const prismjs_1 = __importDefault(__webpack_require__(9736));
+const prismjs_1 = __importDefault(__webpack_require__(293));
 function code(target, cache) {
   const source = target.textContent;
   prismjs_1.default.highlightElement(target, false, () => void cache?.set(`${target.getAttribute('data-lang') ?? ''}\n${source}`, target.cloneNode(true)));
@@ -7352,7 +7843,7 @@ exports.code = code;
 
 /***/ }),
 
-/***/ 9856:
+/***/ 3165:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7362,7 +7853,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.math = void 0;
-const dom_1 = __webpack_require__(8200);
+const dom_1 = __webpack_require__(394);
 function math(target, cache) {
   const source = target.textContent;
   queue(target, () => {
@@ -7380,7 +7871,7 @@ async function queue(target, callback = () => undefined) {
 
 /***/ }),
 
-/***/ 5772:
+/***/ 3567:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7390,14 +7881,14 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.media = void 0;
-const twitter_1 = __webpack_require__(2180);
-const youtube_1 = __webpack_require__(7954);
-const pdf_1 = __webpack_require__(7872);
-const video_1 = __webpack_require__(1488);
-const audio_1 = __webpack_require__(5323);
-const image_1 = __webpack_require__(7892);
-const url_1 = __webpack_require__(3800);
-const memoize_1 = __webpack_require__(276);
+const twitter_1 = __webpack_require__(1231);
+const youtube_1 = __webpack_require__(6713);
+const pdf_1 = __webpack_require__(4290);
+const video_1 = __webpack_require__(6991);
+const audio_1 = __webpack_require__(7086);
+const image_1 = __webpack_require__(8673);
+const url_1 = __webpack_require__(1904);
+const memoize_1 = __webpack_require__(6925);
 const extend = (0, memoize_1.reduce)(opts => ({
   twitter: twitter_1.twitter,
   youtube: youtube_1.youtube,
@@ -7416,7 +7907,7 @@ exports.media = media;
 
 /***/ }),
 
-/***/ 5323:
+/***/ 7086:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7426,7 +7917,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.audio = void 0;
-const dom_1 = __webpack_require__(8200);
+const dom_1 = __webpack_require__(394);
 const extensions = ['.oga', '.ogg'];
 function audio(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
@@ -7442,7 +7933,7 @@ exports.audio = audio;
 
 /***/ }),
 
-/***/ 7892:
+/***/ 8673:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7452,7 +7943,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.image = void 0;
-const dom_1 = __webpack_require__(8200);
+const dom_1 = __webpack_require__(394);
 function image(source, url, cache) {
   if (cache?.has(url.href)) return (0, dom_1.define)(cache.get(url.href).cloneNode(true), Object.fromEntries([...source.attributes].map(attr => [attr.name, attr.value])));
   (0, dom_1.define)(source, {
@@ -7467,7 +7958,7 @@ exports.image = image;
 
 /***/ }),
 
-/***/ 7872:
+/***/ 4290:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7477,8 +7968,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pdf = void 0;
-const parser_1 = __webpack_require__(8112);
-const dom_1 = __webpack_require__(8200);
+const parser_1 = __webpack_require__(3561);
+const dom_1 = __webpack_require__(394);
 const extensions = ['.pdf'];
 function pdf(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
@@ -7497,7 +7988,7 @@ exports.pdf = pdf;
 
 /***/ }),
 
-/***/ 2180:
+/***/ 1231:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -7512,9 +8003,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.twitter = void 0;
-const parser_1 = __webpack_require__(8112);
-const dom_1 = __webpack_require__(8200);
-const dompurify_1 = __importDefault(__webpack_require__(2282));
+const parser_1 = __webpack_require__(3561);
+const dom_1 = __webpack_require__(394);
+const dompurify_1 = __importDefault(__webpack_require__(611));
 const origins = ['https://twitter.com'];
 function twitter(source, url) {
   if (!origins.includes(url.origin)) return;
@@ -7556,7 +8047,7 @@ exports.twitter = twitter;
 
 /***/ }),
 
-/***/ 1488:
+/***/ 6991:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7566,7 +8057,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.video = void 0;
-const dom_1 = __webpack_require__(8200);
+const dom_1 = __webpack_require__(394);
 const extensions = ['.webm', '.ogv'];
 function video(source, url) {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop())) return;
@@ -7583,7 +8074,7 @@ exports.video = video;
 
 /***/ }),
 
-/***/ 7954:
+/***/ 6713:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7593,7 +8084,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.youtube = void 0;
-const dom_1 = __webpack_require__(8200);
+const dom_1 = __webpack_require__(394);
 function youtube(source, url) {
   const id = resolve(url);
   if (!id) return;
@@ -7620,7 +8111,7 @@ function resolve(url) {
 
 /***/ }),
 
-/***/ 9108:
+/***/ 2570:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7630,28 +8121,28 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.scope = exports.info = exports.toc = exports.quote = void 0;
-var quote_1 = __webpack_require__(3120);
+var quote_1 = __webpack_require__(4001);
 Object.defineProperty(exports, "quote", ({
   enumerable: true,
   get: function () {
     return quote_1.quote;
   }
 }));
-var toc_1 = __webpack_require__(6244);
+var toc_1 = __webpack_require__(7539);
 Object.defineProperty(exports, "toc", ({
   enumerable: true,
   get: function () {
     return toc_1.toc;
   }
 }));
-var info_1 = __webpack_require__(3888);
+var info_1 = __webpack_require__(6825);
 Object.defineProperty(exports, "info", ({
   enumerable: true,
   get: function () {
     return info_1.info;
   }
 }));
-var scope_1 = __webpack_require__(20);
+var scope_1 = __webpack_require__(7169);
 Object.defineProperty(exports, "scope", ({
   enumerable: true,
   get: function () {
@@ -7661,7 +8152,7 @@ Object.defineProperty(exports, "scope", ({
 
 /***/ }),
 
-/***/ 3888:
+/***/ 6825:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7671,7 +8162,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.info = void 0;
-const scope_1 = __webpack_require__(20);
+const scope_1 = __webpack_require__(7169);
 function info(source) {
   const match = (0, scope_1.scope)(source, '.invalid');
   return {
@@ -7699,7 +8190,7 @@ exports.info = info;
 
 /***/ }),
 
-/***/ 3120:
+/***/ 4001:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7709,8 +8200,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.quote = void 0;
-const parser_1 = __webpack_require__(3232);
-const cite_1 = __webpack_require__(1632);
+const parser_1 = __webpack_require__(605);
+const cite_1 = __webpack_require__(1200);
 //import { url } from '../parser/inline/autolink/url';
 function quote(anchor, range) {
   if ((0, parser_1.exec)((0, cite_1.cite)({
@@ -7794,7 +8285,7 @@ function trim(node) {
 
 /***/ }),
 
-/***/ 20:
+/***/ 7169:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -7825,7 +8316,7 @@ exports.scope = scope;
 
 /***/ }),
 
-/***/ 6244:
+/***/ 7539:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -7835,8 +8326,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.toc = void 0;
-const array_1 = __webpack_require__(8980);
-const dom_1 = __webpack_require__(8200);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
 const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
 function toc(source) {
   const hs = [];
@@ -7887,10 +8378,10 @@ function unlink(h) {
 
 /***/ }),
 
-/***/ 8200:
+/***/ 394:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.348 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.349 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -7900,7 +8391,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 5406:
+/***/ 5413:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7923,7 +8414,7 @@ exports.ObjectSetPrototypeOf = Object.setPrototypeOf;
 
 /***/ }),
 
-/***/ 5529:
+/***/ 1934:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7939,7 +8430,7 @@ exports.equal = equal;
 
 /***/ }),
 
-/***/ 1808:
+/***/ 6925:
 /***/ ((__unused_webpack_module, exports, __nested_webpack_require_3150__) => {
 
 
@@ -7948,8 +8439,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.reduce = exports.memoize = void 0;
-const alias_1 = __nested_webpack_require_3150__(5406);
-const compare_1 = __nested_webpack_require_3150__(5529);
+const alias_1 = __nested_webpack_require_3150__(5413);
+const compare_1 = __nested_webpack_require_3150__(1934);
 function memoize(f, identify, memory) {
   if (typeof identify === 'object') {
     memory = identify;
@@ -8016,7 +8507,7 @@ exports.reduce = reduce;
 
 /***/ }),
 
-/***/ 7521:
+/***/ 5761:
 /***/ ((__unused_webpack_module, exports, __nested_webpack_require_5013__) => {
 
 
@@ -8025,8 +8516,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.defrag = exports.prepend = exports.append = exports.isChildren = exports.define = exports.element = exports.text = exports.math = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
-const alias_1 = __nested_webpack_require_5013__(5406);
-const memoize_1 = __nested_webpack_require_5013__(1808);
+const alias_1 = __nested_webpack_require_5013__(5413);
+const memoize_1 = __nested_webpack_require_5013__(6925);
 var caches;
 (function (caches) {
   // Closed only.
@@ -8246,7 +8737,7 @@ exports.defrag = defrag;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_12534__(7521);
+/******/ 	var __nested_webpack_exports__ = __nested_webpack_require_12534__(5761);
 /******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
@@ -8255,10 +8746,10 @@ exports.defrag = defrag;
 
 /***/ }),
 
-/***/ 9252:
+/***/ 2282:
 /***/ (function(module) {
 
-/*! typed-dom v0.0.348 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! typed-dom v0.0.349 https://github.com/falsandtru/typed-dom | (c) 2016, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
@@ -8308,19 +8799,19 @@ exports.querySelectorAll = querySelectorAll;
 
 /***/ }),
 
-/***/ 2282:
+/***/ 611:
 /***/ ((module) => {
 
 "use strict";
-module.exports = __WEBPACK_EXTERNAL_MODULE__2282__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__611__;
 
 /***/ }),
 
-/***/ 9736:
+/***/ 293:
 /***/ ((module) => {
 
 "use strict";
-module.exports = __WEBPACK_EXTERNAL_MODULE__9736__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__293__;
 
 /***/ })
 
@@ -8368,7 +8859,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__9736__;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(8207);
+/******/ 	var __webpack_exports__ = __webpack_require__(8257);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
