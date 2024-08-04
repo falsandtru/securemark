@@ -9,29 +9,30 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, opt
   return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
 }
 
-const MAX = 120;
+const MAX = 60;
 const ELLIPSIS = '...';
-const PART = (MAX - ELLIPSIS.length * 2) / 3 | 0;
-const REM = MAX - PART * 3 - ELLIPSIS.length * 2;
+const PART = (MAX - ELLIPSIS.length) / 2 | 0;
+const REM = MAX - PART * 2 - ELLIPSIS.length;
 export function identity(
   id: string | undefined,
-  text: string, type: 'index' | 'mark' | '' = 'index',
+  text: string,
+  type: 'index' | 'mark' | '' = 'index',
 ): string | undefined {
   assert(!id?.match(/[^0-9a-z/-]/i));
   assert(!text.includes('\n'));
   if (id === '') return undefined;
-  text = text.trim().replace(/\s/g, '_');
+  text = text.trim();
   if (text === '') return undefined;
-  if (text.length <= MAX || type === '') return `${type}:${id ?? ''}:${text}`;
-  const cs = [...text];
-  if (cs.length <= MAX) return `${type}:${id ?? ''}:${text}`;
+  const str = text.replace(/\s/g, '_');
+  if (str.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
+  const cs = [...str];
+  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}`;
   switch (type) {
     case 'index':
     case 'mark':
-      const s1 = cs.slice(0, PART).join('');
-      const s3 = cs.slice(-PART).join('');
-      const s2 = cs.slice(cs.length / 2 - PART / 2 - REM | 0).slice(0, PART + REM).join('');
-      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}${ELLIPSIS}${s3}=${hash(text).toString(36)}`;
+      const s1 = cs.slice(0, PART + REM).join('');
+      const s2 = cs.slice(-PART).join('');
+      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text).toString(36)}`;
   }
   assert(false);
 }
@@ -47,14 +48,20 @@ function hash(source: string): number {
   return x >>> 0;
 }
 assert.deepStrictEqual(
-  identity(undefined, '0'.repeat(MAX - 1) + '1')!.slice(7),
-  '0'.repeat(MAX - 1) + '1');
+  identity(undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
+  `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
-  identity(undefined, '0'.repeat(MAX / 3) + '1'.repeat(MAX / 3) + '2'.repeat(MAX / 3) + '3')!.slice(7),
-  '0'.repeat(PART) + ELLIPSIS + '1'.repeat(PART + REM) + ELLIPSIS + '2'.repeat(PART - 1) + '3' + '=pbenrm');
+  identity(undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=x8ujbi`);
 assert.deepStrictEqual(
-  identity(undefined, '0'.repeat(MAX / 3 * 2) + '1'.repeat(MAX / 3) + '2'.repeat(MAX / 3 * 2) + '3')!.slice(7),
-  '0'.repeat(PART) + ELLIPSIS + '1'.repeat(PART + REM) + ELLIPSIS + '2'.repeat(PART - 1) + '3' + '=fllnep');
+  identity(undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=1c1m3g9`);
+assert.deepStrictEqual(
+  identity(undefined, ` ${'0 '.repeat(MAX)}`)!.slice(7),
+  identity(undefined, ` ${'0 '.repeat(MAX)}`.trim())!.slice(7));
+assert.notDeepStrictEqual(
+  identity(undefined, `${'0 '.repeat(MAX)}`)!.slice(7),
+  identity(undefined, `${'0_'.repeat(MAX)}`)!.slice(7));
 
 export function index(source: Element, optional = false): string {
   assert(!source.matches('.indexer'));
