@@ -24,14 +24,14 @@ export function identity(
   text = text.trim();
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
-  if (str.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
   const cs = [...str];
-  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}`;
+  if (cs.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
   switch (type) {
     case 'index':
     case 'mark':
       const s1 = cs.slice(0, PART + REM).join('');
       const s2 = cs.slice(-PART).join('');
+      assert([...`${s1}${ELLIPSIS}${s2}`].length === MAX);
       return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text).toString(36)}`;
   }
   assert(false);
@@ -70,11 +70,21 @@ export function index(source: Element, optional = false): string {
   assert(source.querySelectorAll(':scope > .indexer').length <= 1);
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
-  const index = indexer?.getAttribute('data-index');
-  if (index) return index.replace(/=\w+$/, '');
-  if (index === '' && optional) return '';
+  const text = indexer?.getAttribute('data-index');
+  if (text === '' && optional) return '';
+  if (text) return [...text].length <= MAX ? text : text.replace(/=\w{1,7}$/, '');
   return signature(source);
 }
+assert.deepStrictEqual(
+  index(define(document.createElement('b'), [
+    define(document.createElement('b'), { class: 'indexer', 'data-index': '0'.repeat(MAX - 2) + '=0' })
+  ])),
+  '0'.repeat(MAX - 2) + '=0');
+assert.deepStrictEqual(
+  index(define(document.createElement('b'), [
+    define(document.createElement('b'), { class: 'indexer', 'data-index': '0'.repeat(MAX) + '=0' })
+  ])),
+  '0'.repeat(MAX));
 
 export function signature(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
