@@ -37,11 +37,10 @@ export function identity(
   assert(false);
 }
 function hash(source: string): number {
-  let x = 1 << 16; // seed > 16bit(code)
-  assert(x !== 0);
+  let x = 0;
   for (let i = 0; i < source.length; ++i) {
-    x ^= source.charCodeAt(i); // 16bit
-    x ^= x << 13; // shift <= 32-16bit(code)
+    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
+    x ^= x << 13; // shift <= 32-17bit
     x ^= x >>> 17;
     x ^= x << 15;
   }
@@ -52,10 +51,10 @@ assert.deepStrictEqual(
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
   identity(undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=148wa3`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=mhy513`);
 assert.deepStrictEqual(
   identity(undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=m5pd2f`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=12jqtiv`);
 assert.deepStrictEqual(
   identity(undefined, ` ${'0 '.repeat(MAX)}`)!.slice(7),
   identity(undefined, ` ${'0 '.repeat(MAX)}`.trim())!.slice(7));
