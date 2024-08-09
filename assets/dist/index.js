@@ -6093,9 +6093,8 @@ function identity(id, text, type = 'index') {
   text = text.trim();
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
-  if (str.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
   const cs = [...str];
-  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}`;
+  if (cs.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
   switch (type) {
     case 'index':
     case 'mark':
@@ -6106,21 +6105,21 @@ function identity(id, text, type = 'index') {
 }
 exports.identity = identity;
 function hash(source) {
-  let x = 1;
+  let x = 0;
   for (let i = 0; i < source.length; ++i) {
-    x ^= x << 13;
+    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
+    x ^= x << 13; // shift <= 32-17bit
     x ^= x >>> 17;
     x ^= x << 15;
-    x ^= source.charCodeAt(i) << 11;
   }
   return x >>> 0;
 }
 function index(source, optional = false) {
   if (!source.firstChild) return '';
   const indexer = source.querySelector(':scope > .indexer');
-  const index = indexer?.getAttribute('data-index');
-  if (index) return index.replace(/=\w+$/, '');
-  if (index === '' && optional) return '';
+  const text = indexer?.getAttribute('data-index');
+  if (text === '' && optional) return '';
+  if (text) return [...text].length <= MAX ? text : text.replace(/=\w{1,7}$/, '');
   return signature(source);
 }
 exports.index = index;
