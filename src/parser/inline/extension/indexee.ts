@@ -18,7 +18,7 @@ export function identity(
   text: string,
   type: 'index' | 'mark' | '' = 'index',
 ): string | undefined {
-  assert(!id?.match(/[^0-9a-z/-]/i));
+  assert(id?.match(/^[0-9a-z/-]*$/i) ?? true);
   assert(!text.includes('\n'));
   if (id === '') return undefined;
   text = text.trim();
@@ -36,16 +36,6 @@ export function identity(
   }
   assert(false);
 }
-function hash(source: string): number {
-  let x = 0;
-  for (let i = 0; i < source.length; ++i) {
-    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
-    x ^= x << 13; // shift <= 32-17bit
-    x ^= x >>> 17;
-    x ^= x << 15;
-  }
-  return x >>> 0;
-}
 assert.deepStrictEqual(
   identity(undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
   `${'0'.repeat(MAX - 1)}1`);
@@ -61,6 +51,19 @@ assert.deepStrictEqual(
 assert.notDeepStrictEqual(
   identity(undefined, `${'0 '.repeat(MAX)}`)!.slice(7),
   identity(undefined, `${'0_'.repeat(MAX)}`)!.slice(7));
+function hash(source: string): number {
+  let x = 0;
+  for (let i = 0; i < source.length; ++i) {
+    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
+    x ^= x << 13; // shift <= 32-17bit
+    x ^= x >>> 17;
+    x ^= x << 15;
+  }
+  return x >>> 0;
+}
+assert(hash('\x00') !== 0);
+assert(hash('\x01') !== 0);
+assert(hash('\x00') !== hash(String.fromCharCode(1 << 15)));
 
 export function index(source: Element, optional = false): string {
   assert(!source.matches('.indexer'));
