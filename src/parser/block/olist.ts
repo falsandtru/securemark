@@ -39,7 +39,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
-      ns => [html('li', { 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))]), true),
+      ns => [html('li', { 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))])),
   ]))),
   es => [format(html('ol', es), type, form)]);
 

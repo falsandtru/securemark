@@ -4,9 +4,9 @@ import { fmap } from '../../../combinator';
 import { reduce } from 'spica/memoize';
 import { define } from 'typed-dom/dom';
 
-export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P, optional?: boolean): P;
-export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>, optional?: boolean): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, index(el, optional)) })]);
+export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
+export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, el) })]);
 }
 
 const MAX = 60;
@@ -15,16 +15,26 @@ const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
 export function identity(
   id: string | undefined,
-  text: string,
+  text: string | HTMLElement,
   type: 'index' | 'mark' | '' = 'index',
 ): string | undefined {
   assert(id?.match(/^[0-9a-z/-]*$/i) ?? true);
   if (id === '') return undefined;
+  if (typeof text !== 'string') {
+    const index = text.querySelector(':scope > .indexer')?.getAttribute('data-index');
+    if (index === '' && text.tagName === 'LI') return undefined;
+    return index
+      ? `${type}:${id ?? ''}:${index}`
+      : identity(id, signature(text), type);
+  }
   text = text.trim();
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
-  if (cs.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
+  if (type === '') return `${type}:${id ?? ''}:${str}`;
+  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}${
+    /_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text).toString(36)}` : ''
+  }`;
   switch (type) {
     case 'index':
     case 'mark':
@@ -66,27 +76,6 @@ function hash(source: string): number {
 assert(hash('\x00') !== 0);
 assert(hash('\x01') !== 0);
 assert(hash('\x00') !== hash(String.fromCharCode(1 << 15)));
-
-export function index(source: Element, optional = false): string {
-  assert(!source.matches('.indexer'));
-  assert(source.querySelectorAll(':scope > .indexer').length <= 1);
-  if (!source.firstChild) return '';
-  const indexer = source.querySelector(':scope > .indexer');
-  const text = indexer?.getAttribute('data-index');
-  if (text === '' && optional) return '';
-  if (text) return [...text].length <= MAX ? text : text.replace(/=\w{1,7}$/, '');
-  return signature(source);
-}
-assert.deepStrictEqual(
-  index(define(document.createElement('b'), [
-    define(document.createElement('b'), { class: 'indexer', 'data-index': '0'.repeat(MAX - 2) + '=0' })
-  ])),
-  '0'.repeat(MAX - 2) + '=0');
-assert.deepStrictEqual(
-  index(define(document.createElement('b'), [
-    define(document.createElement('b'), { class: 'indexer', 'data-index': '0'.repeat(MAX) + '=0' })
-  ])),
-  '0'.repeat(MAX));
 
 export function signature(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
