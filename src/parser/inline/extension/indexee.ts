@@ -46,6 +46,15 @@ export function identity(
   assert(false);
 }
 assert.deepStrictEqual(
+  identity('index', undefined, ' 0 '),
+  identity('index', undefined, ' 0 '.trim()));
+assert.notDeepStrictEqual(
+  identity('index', undefined, '0 0'),
+  identity('index', undefined, '0_0'));
+assert.notDeepStrictEqual(
+  identity('index', undefined, '0 0'),
+  identity('index', undefined, '0\t0'));
+assert.deepStrictEqual(
   identity('index', undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
@@ -54,15 +63,6 @@ assert.deepStrictEqual(
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
   `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=12jqtiv`);
-assert.deepStrictEqual(
-  identity('index', undefined, ` ${'0 '.repeat(MAX)}`),
-  identity('index', undefined, ` ${'0 '.repeat(MAX)}`.trim()));
-assert.notDeepStrictEqual(
-  identity('index', undefined, `${'0 '.repeat(MAX)}0`),
-  identity('index', undefined, `${'0_'.repeat(MAX)}0`));
-assert.notDeepStrictEqual(
-  identity('index', undefined, `${'0 '.repeat(MAX)}0`),
-  identity('index', undefined, `${'0\t'.repeat(MAX)}0`));
 function hash(source: string): number {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
