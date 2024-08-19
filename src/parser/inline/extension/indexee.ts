@@ -32,7 +32,7 @@ export function identity(
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
   if (type === '' || cs.length <= MAX) return `${type}:${id ?? ''}:${str}${
-    /_|[^\S ]/.test(text) ? `=${hash(text).toString(36)}` : ''
+    /_|[^\S ]/.test(text) ? `=${hash(text)}` : ''
   }`;
   switch (type) {
     case 'index':
@@ -40,7 +40,7 @@ export function identity(
       const s1 = cs.slice(0, PART + REM).join('');
       const s2 = cs.slice(-PART).join('');
       assert([...`${s1}${ELLIPSIS}${s2}`].length === MAX);
-      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text).toString(36)}`;
+      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text)}`;
   }
   assert(false);
 }
@@ -62,7 +62,7 @@ assert.deepStrictEqual(
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
   `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=12jqtiv`);
-function hash(source: string): number {
+function hash(source: string): string {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
     x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
@@ -70,10 +70,10 @@ function hash(source: string): number {
     x ^= x >>> 17;
     x ^= x << 15;
   }
-  return x >>> 0;
+  return (x >>> 0).toString(36);
 }
-assert(hash('\x00') !== 0);
-assert(hash('\x01') !== 0);
+assert(hash('\x00') !== '0');
+assert(hash('\x01') !== '0');
 assert(hash('\x00') !== hash(String.fromCharCode(1 << 15)));
 
 export function signature(source: Element | DocumentFragment): string {
