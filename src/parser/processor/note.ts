@@ -39,14 +39,14 @@ function build(
     const abbr = ref.getAttribute('data-abbr') ?? '';
     const identifier = abbr
       ? identity(
+          '',
           undefined,
           (
             abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ??
             abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
             abbr
-          ),
-          '')?.slice(2) || ''
-      : identity(undefined, signature(content), 'mark')?.slice(6) || '';
+          ))?.slice(2) || ''
+      : identity('mark', undefined, signature(content))?.slice(6) || '';
     return {
       content,
       identifier,

@@ -34,9 +34,9 @@ export const aside: ExtensionParser.AsideParser = block(validate('~~~', fmap(
       'data-invalid-type': 'content',
       'data-invalid-message': 'Missing the title at the first line',
     }, `${opener}${body}${closer}`)];
-    assert(identity(context.id, heading));
+    assert(identity('index', context.id, heading));
     return [
-      html('aside', { id: identity(context.id, heading), class: 'aside' }, [
+      html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
         document,
         html('h2', 'References'),
         references,

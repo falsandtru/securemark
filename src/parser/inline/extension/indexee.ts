@@ -6,7 +6,7 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity(id, el) })]);
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity('index', id, el) })]);
 }
 
 const MAX = 60;
@@ -14,9 +14,9 @@ const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
 export function identity(
+  type: 'index' | 'mark' | '',
   id: string | undefined,
   text: string | HTMLElement,
-  type: 'index' | 'mark' | '' = 'index',
 ): string | undefined {
   assert(id?.match(/^[0-9a-z/-]*$/i) ?? true);
   if (id === '') return undefined;
@@ -25,7 +25,7 @@ export function identity(
     if (index === '' && text.tagName === 'LI') return undefined;
     return index
       ? `${type}:${id ?? ''}:${index}`
-      : identity(id, signature(text), type);
+      : identity(type, id, signature(text));
   }
   text = text.trim();
   if (text === '') return undefined;
@@ -46,23 +46,23 @@ export function identity(
   assert(false);
 }
 assert.deepStrictEqual(
-  identity(undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
+  identity('index', undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
-  identity(undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
+  identity('index', undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
   `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=mhy513`);
 assert.deepStrictEqual(
-  identity(undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
+  identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
   `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=12jqtiv`);
 assert.deepStrictEqual(
-  identity(undefined, ` ${'0 '.repeat(MAX)}`),
-  identity(undefined, ` ${'0 '.repeat(MAX)}`.trim()));
+  identity('index', undefined, ` ${'0 '.repeat(MAX)}`),
+  identity('index', undefined, ` ${'0 '.repeat(MAX)}`.trim()));
 assert.notDeepStrictEqual(
-  identity(undefined, `${'0 '.repeat(MAX)}0`),
-  identity(undefined, `${'0_'.repeat(MAX)}0`));
+  identity('index', undefined, `${'0 '.repeat(MAX)}0`),
+  identity('index', undefined, `${'0_'.repeat(MAX)}0`));
 assert.notDeepStrictEqual(
-  identity(undefined, `${'0 '.repeat(MAX)}0`),
-  identity(undefined, `${'0\t'.repeat(MAX)}0`));
+  identity('index', undefined, `${'0 '.repeat(MAX)}0`),
+  identity('index', undefined, `${'0\t'.repeat(MAX)}0`));
 function hash(source: string): number {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {

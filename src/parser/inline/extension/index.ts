@@ -34,7 +34,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', c
   '|',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
-    html('span', { class: 'indexer', 'data-index': identity(undefined, ns.join(''))!.slice(7) }),
+    html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
   ]))));
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(union([

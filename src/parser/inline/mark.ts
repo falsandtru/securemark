@@ -20,7 +20,7 @@ export const mark: MarkParser = lazy(() => creation(surround(
   ([, bs], rest, { id }) => {
     const el = html('mark', defrag(bs));
     return [[
-      define(el, { id: identity(id, signature(el), 'mark') }),
+      define(el, { id: identity('mark', id, signature(el)) }),
       el.id && html('a', { href: `#${el.id}` }),
     ], rest];
   },
