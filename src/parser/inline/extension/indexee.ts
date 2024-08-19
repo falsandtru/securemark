@@ -31,9 +31,8 @@ export function identity(
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
-  if (type === '') return `${type}:${id ?? ''}:${str}`;
-  if (cs.length <= MAX) return `${type}:${id ?? ''}:${str}${
-    /_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text).toString(36)}` : ''
+  if (type === '' || cs.length <= MAX) return `${type}:${id ?? ''}:${str}${
+    /_|[^\S ]/.test(text) ? `=${hash(text).toString(36)}` : ''
   }`;
   switch (type) {
     case 'index':
