@@ -4437,7 +4437,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.validate)('~~~', (0, co
     'data-invalid-message': 'Missing the title at the first line'
   }, `${opener}${body}${closer}`)];
   return [(0, dom_1.html)('aside', {
-    id: (0, indexee_1.identity)(context.id, (0, indexee_1.index)(heading)),
+    id: (0, indexee_1.identity)('index', context.id, heading),
     class: 'aside'
   }, [document, (0, dom_1.html)('h2', 'References'), references])];
 })));
@@ -5199,7 +5199,7 @@ exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []))])));
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.lineable)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), ulist_1.invalid), ns => [(0, dom_1.html)('li', {
   'data-marker': ns.shift() || undefined
-}, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))]), true)]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
+}, (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))]))]))), es => [format((0, dom_1.html)('ol', es), type, form)]);
 const heads = {
   '.': (0, combinator_1.focus)(openers['.'], ({
     source
@@ -5523,7 +5523,7 @@ const visibility_1 = __webpack_require__(6364);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, exports.ulist_)));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.lineable)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]), true)])))), es => [format((0, dom_1.html)('ul', es))])));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^-(?=$|\s)/, (0, combinator_1.some)((0, combinator_1.creation)(1, false, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/^-(?:$|\s)/, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.lineable)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), exports.invalid), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)(fillFirstLine(ns)))]))])))), es => [format((0, dom_1.html)('ul', es))])));
 exports.checkbox = (0, combinator_1.creation)(1, false, (0, combinator_1.focus)(/^\[[xX ]\](?=$|\s)/, ({
   source
 }) => [[(0, dom_1.html)('span', {
@@ -6057,7 +6057,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('[#', (0
 })]))));
 exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.creation)((0, combinator_1.fmap)((0, combinator_1.open)('|', (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'))), ns => [(0, dom_1.html)('span', {
   class: 'indexer',
-  'data-index': (0, indexee_1.identity)(undefined, ns.join('')).slice(7)
+  'data-index': (0, indexee_1.identity)('index', undefined, ns.join('')).slice(7)
 })]))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(3, (0, combinator_1.some)(source_1.txt, '"')), (0, source_1.str)('"'), true)])));
 
@@ -6072,15 +6072,15 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, comb
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.text = exports.signature = exports.index = exports.identity = exports.indexee = void 0;
+exports.text = exports.signature = exports.identity = exports.indexee = void 0;
 const combinator_1 = __webpack_require__(3484);
 const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
-function indexee(parser, optional) {
+function indexee(parser) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
     id
   }) => [(0, dom_1.define)(el, {
-    id: identity(id, index(el, optional))
+    id: identity('index', id, el)
   })]);
 }
 exports.indexee = indexee;
@@ -6088,20 +6088,23 @@ const MAX = 60;
 const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
-function identity(id, text, type = 'index') {
+function identity(type, id, text) {
   if (id === '') return undefined;
+  if (typeof text !== 'string') {
+    const index = text.querySelector(':scope > .indexer')?.getAttribute('data-index');
+    if (index === '' && text.tagName === 'LI') return undefined;
+    return index ? `${type}:${id ?? ''}:${index}` : identity(type, id, signature(text));
+  }
   text = text.trim();
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
-  if (cs.length <= MAX || type === '') return `${type}:${id ?? ''}:${str}`;
-  switch (type) {
-    case 'index':
-    case 'mark':
-      const s1 = cs.slice(0, PART + REM).join('');
-      const s2 = cs.slice(-PART).join('');
-      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text).toString(36)}`;
+  if (type === '' || cs.length <= MAX) {
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]/.test(text) ? `=${hash(text)}` : ''}`;
   }
+  const s1 = cs.slice(0, PART + REM).join('');
+  const s2 = cs.slice(-PART).join('');
+  return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text)}`;
 }
 exports.identity = identity;
 function hash(source) {
@@ -6112,17 +6115,8 @@ function hash(source) {
     x ^= x >>> 17;
     x ^= x << 15;
   }
-  return x >>> 0;
+  return (x >>> 0).toString(36);
 }
-function index(source, optional = false) {
-  if (!source.firstChild) return '';
-  const indexer = source.querySelector(':scope > .indexer');
-  const text = indexer?.getAttribute('data-index');
-  if (text === '' && optional) return '';
-  if (text) return [...text].length <= MAX ? text : text.replace(/=\w{1,7}$/, '');
-  return signature(source);
-}
-exports.index = index;
 function signature(source) {
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
@@ -6539,7 +6533,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creation)((0, combi
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)(bs));
   return [[(0, dom_1.define)(el, {
-    id: (0, indexee_1.identity)(id, (0, indexee_1.signature)(el), 'mark')
+    id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el))
   }), el.id && (0, dom_1.html)('a', {
     href: `#${el.id}`
   })], rest];
@@ -7054,7 +7048,7 @@ function build(syntax, marker, splitter = '') {
     const content = ref.firstElementChild;
     content.replaceWith(content.cloneNode());
     const abbr = ref.getAttribute('data-abbr') ?? '';
-    const identifier = abbr ? (0, indexee_1.identity)(undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr, '')?.slice(2) || '' : (0, indexee_1.identity)(undefined, (0, indexee_1.signature)(content), 'mark')?.slice(6) || '';
+    const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(content))?.slice(6) || '';
     return {
       content,
       identifier,
