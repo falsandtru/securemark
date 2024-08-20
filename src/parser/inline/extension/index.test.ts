@@ -44,14 +44,14 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a ]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a  ]')), [['<a class="index" href="#index::a">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#a b]')), [['<a class="index" href="#index::a_b">a b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#a  b]')), [['<a class="index" href="#index::a__b">a  b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a \\ ]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a &nbsp;]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a <wbr>]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a [% b %]]')), [['<a class="index" href="#index::a">a <span class="remark"><input type="checkbox"><span>[% b %]</span></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a\\ ]')), [['<a class="index" href="#index::a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a\\ b]')), [['<a class="index" href="#index::a_b">a b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a b]')), [['<a class="index" href="#index::a_b">a b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a  b]')), [['<a class="index" href="#index::a__b">a  b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#[]]')), [['<a class="index" href="#index::[]">[]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#\\]]')), [['<a class="index" href="#index::]">]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#\\\\]')), [['<a class="index" href="#index::\\">\\</a>'], '']);
