@@ -31,18 +31,13 @@ export function identity(
   if (text === '') return undefined;
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
-  if (type === '' || cs.length <= MAX) return `${type}:${id ?? ''}:${str}${
-    /_|[^\S ]/.test(text) ? `=${hash(text)}` : ''
-  }`;
-  switch (type) {
-    case 'index':
-    case 'mark':
-      const s1 = cs.slice(0, PART + REM).join('');
-      const s2 = cs.slice(-PART).join('');
-      assert([...`${s1}${ELLIPSIS}${s2}`].length === MAX);
-      return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text)}`;
+  if (type === '' || cs.length <= MAX) {
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]/.test(text) ? `=${hash(text)}` : ''}`;
   }
-  assert(false);
+  const s1 = cs.slice(0, PART + REM).join('');
+  const s2 = cs.slice(-PART).join('');
+  assert([...`${s1}${ELLIPSIS}${s2}`].length === MAX);
+  return `${type}:${id ?? ''}:${s1}${ELLIPSIS}${s2}=${hash(text)}`;
 }
 assert.deepStrictEqual(
   identity('index', undefined, ' 0 '),
