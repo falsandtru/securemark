@@ -1,13 +1,16 @@
+import { max } from 'spica/alias';
+
 export class Memo {
   constructor(
     public readonly targets = ~0,
     public readonly margin = 0,
   ) {
   }
-  private memory: Record<number, Record<number, readonly [any[], number] | readonly []>>[/* pos */] = [];
+  private memory: Record<number, Record<number, Record<number, readonly [any[], number] | readonly []>> | undefined> = {};
   private count = 0;
+  private $length = 0;
   public get length(): number {
-    return this.memory.length;
+    return this.$length;
   }
   public get(
     position: number,
@@ -30,8 +33,8 @@ export class Memo {
     offset: number,
   ): void {
     assert(position > 0);
-    this.count += +!this.memory[position - 1];
-    const record = this.memory[position - 1] ??= {};
+    this.$length = max(this.$length, position);
+    const record = this.memory[position - 1] ??= (++this.count, {});
     assert(!record[syntax]?.[state]);
     (record[syntax] ??= {})[state] = nodes
       ? [nodes.slice(), offset]
@@ -40,13 +43,15 @@ export class Memo {
   }
   public resize(position: number): void {
     const memory = this.memory;
-    for (let i = memory.length; i > position; --i) {
-      this.count -= +memory.pop()!;
+    for (let i = this.$length; i > position; this.$length = --i) {
+      if (!(i in memory)) continue;
+      memory[i] &&= (--this.count, undefined);
     }
     //console.log('resize', position + 1);
   }
   public clear(): void {
-    this.memory = [];
+    this.memory = {};
     this.count = 0;
+    this.$length = 0;
   }
 }
