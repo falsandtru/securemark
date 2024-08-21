@@ -78,7 +78,7 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser?: 
     if (stateOuter && !cache && syntax & memo.targets) {
       memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
     }
-    else if (!stateOuter && result && memo.length! >= position + memo.margin) {
+    else if (!stateOuter && result && memo.length >= position + memo.margin) {
       memo.resize(position + memo.margin);
     }
     context.state = stateOuter;
