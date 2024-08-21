@@ -1,6 +1,5 @@
 import { MarkdownParser } from '../../markdown';
 import { union, reset, creation, open, fallback, recover } from '../combinator';
-import { Memo } from '../combinator/data/parser/context/memo';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
@@ -17,7 +16,6 @@ import { blockquote } from './block/blockquote';
 import { mediablock } from './block/mediablock';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
-import { Syntax } from './context';
 import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom/dom';
 
@@ -41,7 +39,6 @@ export import ParagraphParser = BlockParser.ParagraphParser;
 export const block: BlockParser = creation(0, false,
   reset({
     resources: { clock: 20000, recursion: 20 + 1 },
-    memo: new Memo(Syntax.targets, 2),
   },
   error(union([
     emptyline,

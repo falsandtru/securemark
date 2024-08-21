@@ -39,3 +39,5 @@ export const enum State {
     | State.mark
     | State.autolink,
 }
+
+export const Margin = 2;

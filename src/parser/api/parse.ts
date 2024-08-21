@@ -1,6 +1,8 @@
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
+import { Memo } from '../../combinator/data/parser/context/memo';
+import { Syntax, Margin } from '../context';
 import { segment, validate, MAX_SEGMENT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -25,12 +27,12 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     id: opts.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources,
+    memo: new Memo(Syntax.targets, Margin),
   };
   assert(!context.offset);
   assert(!context.precedence);
   assert(!context.delimiters);
   assert(!context.state);
-  assert(!context.memo);
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();

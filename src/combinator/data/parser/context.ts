@@ -24,6 +24,7 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
 
 function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
 function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
+  reset && context.memo?.clear();
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -34,7 +35,6 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
         assert(!context.precedence);
         assert(!context.delimiters);
         assert(!context.state);
-        assert(!context.memo);
         context[prop as string] ??= ObjectCreate(change[1] as object);
         continue;
     }
@@ -48,10 +48,6 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
     switch (prop) {
       case 'resources':
         assert(reset);
-        break;
-      case 'memo':
-        assert(reset);
-        context.memo!.clear();
         break;
     }
     context[prop] = values[i];

@@ -1,6 +1,8 @@
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
+import { Memo } from '../../combinator/data/parser/context/memo';
+import { Syntax, Margin } from '../context';
 import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -22,12 +24,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
+    memo: new Memo(Syntax.targets, Margin),
   };
   assert(!context.offset);
   assert(!context.precedence);
   assert(!context.delimiters);
   assert(!context.state);
-  assert(!context.memo);
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
