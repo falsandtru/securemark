@@ -6,7 +6,7 @@ export class Memo {
     public readonly margin = 0,
   ) {
   }
-  private memory: Record<number, Record<number, Record<number, readonly [any[], number] | readonly []>> | undefined> = {};
+  private memory: Record<number, Record<number, Record<number, readonly [unknown[], number] | readonly []>> | undefined> = {};
   private count = 0;
   private $length = 0;
   public get length(): number {
@@ -16,7 +16,7 @@ export class Memo {
     position: number,
     syntax: number,
     state: number,
-  ): readonly [any[], number] | readonly [] | undefined {
+  ): readonly [unknown[], number] | readonly [] | undefined {
     assert(position > 0);
     if (this.count === 0) return;
     //console.log('get', position, syntax, state, this.memory[position - 1]?.[syntax]?.[state]);
@@ -29,7 +29,7 @@ export class Memo {
     position: number,
     syntax: number,
     state: number,
-    nodes: any[] | undefined,
+    nodes: unknown[] | undefined,
     offset: number,
   ): void {
     assert(position > 0);

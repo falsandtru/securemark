@@ -73,7 +73,7 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser?: 
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
-        : [cache[0], source.slice(cache[1])]
+        : [cache[0] as T[], source.slice(cache[1])]
       : parser!({ source, context });
     if (stateOuter && !cache && syntax & memo.targets) {
       memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
