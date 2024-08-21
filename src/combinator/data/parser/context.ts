@@ -61,7 +61,7 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
 }
 
 export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, state: number, parser: P): P;
-export function syntax<T>(syntax: number, prec: number, state: number, parser?: Parser<T>): Parser<T> {
+export function syntax<T>(syntax: number, prec: number, state: number, parser: Parser<T>): Parser<T> {
   return precedence(prec, ({ source, context }) => {
     if (source === '') return;
     const memo = context.memo ??= new Memo();
@@ -74,7 +74,7 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser?: 
       ? cache.length === 0
         ? undefined
         : [cache[0] as T[], source.slice(cache[1])]
-      : parser!({ source, context });
+      : parser({ source, context });
     if (stateOuter && !cache && syntax & memo.targets) {
       memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
     }
