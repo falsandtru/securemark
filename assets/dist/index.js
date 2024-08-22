@@ -3169,6 +3169,7 @@ function context(base, parser) {
 }
 exports.context = context;
 function apply(parser, source, context, changes, values, reset = false) {
+  reset && context.memo?.clear();
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -3189,9 +3190,6 @@ function apply(parser, source, context, changes, values, reset = false) {
     const prop = change[0];
     switch (prop) {
       case 'resources':
-        break;
-      case 'memo':
-        context.memo.clear();
         break;
     }
     context[prop] = values[i];
@@ -3441,7 +3439,7 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
 /***/ }),
 
 /***/ 1074:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -3450,15 +3448,17 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Memo = void 0;
+const alias_1 = __webpack_require__(5413);
 class Memo {
   constructor(targets = ~0, margin = 0) {
     this.targets = targets;
     this.margin = margin;
-    this.memory = [];
+    this.memory = {};
     this.count = 0;
+    this.$length = 0;
   }
   get length() {
-    return this.memory.length;
+    return this.$length;
   }
   get(position, syntax, state) {
     if (this.count === 0) return;
@@ -3467,21 +3467,23 @@ class Memo {
     return cache?.length === 2 ? [cache[0].slice(), cache[1]] : cache;
   }
   set(position, syntax, state, nodes, offset) {
-    this.count += +!this.memory[position - 1];
-    const record = this.memory[position - 1] ??= {};
+    this.$length = (0, alias_1.max)(this.$length, position);
+    const record = this.memory[position - 1] ??= (++this.count, {});
     (record[syntax] ??= {})[state] = nodes ? [nodes.slice(), offset] : [];
     //console.log('set', position, syntax, state, record[syntax]?.[state]);
   }
   resize(position) {
     const memory = this.memory;
-    for (let i = memory.length; i > position; --i) {
-      this.count -= +memory.pop();
+    for (let i = this.$length; i > position; this.$length = --i) {
+      if (!(i in memory)) continue;
+      memory[i] &&= (--this.count, undefined);
     }
     //console.log('resize', position + 1);
   }
   clear() {
-    this.memory = [];
+    this.memory = {};
     this.count = 0;
+    this.$length = 0;
   }
 }
 exports.Memo = Memo;
@@ -3787,6 +3789,8 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.bind = void 0;
 const parser_1 = __webpack_require__(605);
+const memo_1 = __webpack_require__(1074);
+const context_1 = __webpack_require__(8669);
 const segment_1 = __webpack_require__(3967);
 const header_1 = __webpack_require__(3009);
 const block_1 = __webpack_require__(7099);
@@ -3799,7 +3803,8 @@ const array_1 = __webpack_require__(6876);
 function bind(target, settings) {
   let context = {
     ...settings,
-    host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin)
+    host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
+    memo: new memo_1.Memo(508 /* Syntax.targets */, context_1.Margin)
   };
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
@@ -4124,6 +4129,8 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.parse = void 0;
 const parser_1 = __webpack_require__(605);
+const memo_1 = __webpack_require__(1074);
+const context_1 = __webpack_require__(8669);
 const segment_1 = __webpack_require__(3967);
 const header_1 = __webpack_require__(3009);
 const block_1 = __webpack_require__(7099);
@@ -4142,7 +4149,8 @@ function parse(source, opts = {}, context) {
     url: url ? new url_1.ReadonlyURL(url) : context?.url,
     id: opts.id ?? context?.id,
     caches: context?.caches,
-    resources: context?.resources
+    resources: context?.resources,
+    memo: new memo_1.Memo(508 /* Syntax.targets */, context_1.Margin)
   };
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
@@ -4196,7 +4204,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.block = void 0;
 const combinator_1 = __webpack_require__(3484);
-const memo_1 = __webpack_require__(1074);
 const source_1 = __webpack_require__(8745);
 const pagebreak_1 = __webpack_require__(2946);
 const heading_1 = __webpack_require__(2778);
@@ -4219,8 +4226,7 @@ exports.block = (0, combinator_1.creation)(0, false, (0, combinator_1.reset)({
   resources: {
     clock: 20000,
     recursion: 20 + 1
-  },
-  memo: new memo_1.Memo(508 /* Syntax.targets */, 2)
+  }
 }, error((0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, mediablock_1.mediablock, reply_1.reply, paragraph_1.paragraph]))));
 function error(parser) {
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)('\x07', ({
@@ -5549,6 +5555,20 @@ function format(list) {
   }
   return list;
 }
+
+/***/ }),
+
+/***/ 8669:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Margin = void 0;
+exports.Margin = 2;
 
 /***/ }),
 
