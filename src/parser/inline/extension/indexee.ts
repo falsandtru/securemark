@@ -32,7 +32,7 @@ export function identity(
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
   if (type === '' || cs.length <= MAX) {
-    return `${type}:${id ?? ''}:${str}${/_|[^\S ]/.test(text) ? `=${hash(text)}` : ''}`;
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text)}` : ''}`;
   }
   const s1 = cs.slice(0, PART + REM).join('');
   const s2 = cs.slice(-PART).join('');
@@ -48,6 +48,9 @@ assert.notDeepStrictEqual(
 assert.notDeepStrictEqual(
   identity('index', undefined, '0 0'),
   identity('index', undefined, '0\t0'));
+assert.notDeepStrictEqual(
+  identity('index', undefined, '0_0'),
+  identity('index', undefined, identity('index', undefined, '0_0')!.slice(7).replace('_', ' ')));
 assert.deepStrictEqual(
   identity('index', undefined, `${'0'.repeat(MAX - 1)}1`)!.slice(7),
   `${'0'.repeat(MAX - 1)}1`);

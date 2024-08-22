@@ -30,7 +30,7 @@ describe('Unit: parser/inline/mark', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('==a==')), [['<mark id="mark::a">a</mark>', '<a href="#mark::a"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('==a=b==')), [['<mark id="mark::a=b">a=b</mark>', '<a href="#mark::a=b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('==a=b==')), [['<mark id="mark::a=b=1aef5x1">a=b</mark>', '<a href="#mark::a=b=1aef5x1"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==\\===')), [['<mark id="mark::=">=</mark>', '<a href="#mark::="></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a===')), [['<mark id="mark::a">a</mark>', '<a href="#mark::a"></a>'], '=']);
     });
