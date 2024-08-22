@@ -6120,7 +6120,7 @@ function identity(type, id, text) {
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
   if (type === '' || cs.length <= MAX) {
-    return `${type}:${id ?? ''}:${str}${/_|[^\S ]/.test(text) ? `=${hash(text)}` : ''}`;
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text)}` : ''}`;
   }
   const s1 = cs.slice(0, PART + REM).join('');
   const s2 = cs.slice(-PART).join('');
