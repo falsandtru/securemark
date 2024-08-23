@@ -13,6 +13,12 @@ const MAX = 60;
 const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
+const table = [
+  ...[...Array(36)].map((_, i) => i.toString(36)),
+  ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26),
+  '-', '=',
+].join('');
+assert(table.length === 64);
 export function identity(
   type: 'index' | 'mark' | '',
   id: string | undefined,
@@ -32,7 +38,7 @@ export function identity(
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
   if (type === '' || cs.length <= MAX) {
-    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text)}` : ''}`;
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9A-Za-z]{1,6}$/.test(text) ? `=${hash(text)}` : ''}`;
   }
   const s1 = cs.slice(0, PART + REM).join('');
   const s2 = cs.slice(-PART).join('');
@@ -56,10 +62,10 @@ assert.deepStrictEqual(
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=mhy513`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=1u46Kr`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=12jqtiv`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=2xK81V`);
 function hash(source: string): string {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
@@ -68,11 +74,30 @@ function hash(source: string): string {
     x ^= x >>> 17;
     x ^= x << 15;
   }
-  return (x >>> 0).toString(36);
+  return baseR(x >>> 0, 62);
 }
 assert(hash('\x00') !== '0');
 assert(hash('\x01') !== '0');
 assert(hash('\x00') !== hash(String.fromCharCode(1 << 15)));
+// 62も64も最大6桁
+function baseR(n: number, r: number): string {
+  assert(n >= 0);
+  assert(Math.floor(n) === n);
+  assert(r <= 64);
+  let acc = '';
+  do {
+    const mod = n % r;
+    n = (n - mod) / r;
+    assert(Math.floor(n) === n);
+    acc = table[mod] + acc;
+  } while (n > 0)
+  assert(acc !== '');
+  return acc;
+}
+assert(baseR(0, 36) === (0).toString(36));
+assert(baseR(~0 >>> 0, 36) === (~0 >>> 0).toString(36));
+assert(baseR(61, 62) === 'Z');
+assert(baseR(62, 62) === '10');
 
 export function signature(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));

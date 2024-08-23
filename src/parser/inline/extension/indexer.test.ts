@@ -25,8 +25,8 @@ describe('Unit: parser/inline/extension/indexer', () => {
       assert.deepStrictEqual(inspect(parser(' [|a  ]')), [['<span class="indexer" data-index="a"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|a b]')), [['<span class="indexer" data-index="a_b"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|a  b]')), [['<span class="indexer" data-index="a__b"></span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [|a\tb]')), [['<span class="indexer" data-index="a_b=1eu1tj4"></span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [|a_b]')), [['<span class="indexer" data-index="a_b=10dxc9b"></span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [|a\tb]')), [['<span class="indexer" data-index="a_b=3m1hao"></span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [|a_b]')), [['<span class="indexer" data-index="a_b=2oTHtl"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|A]')), [['<span class="indexer" data-index="A"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|*A*]')), [['<span class="indexer" data-index="*A*"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|`A`]')), [['<span class="indexer" data-index="`A`"></span>'], '']);
