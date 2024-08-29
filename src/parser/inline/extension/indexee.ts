@@ -65,14 +65,16 @@ assert.deepStrictEqual(
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=1u46Kr`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=MYkmc`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=2xK81V`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=3bF8VU`);
 function hash(source: string): string {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
-    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
+    const c = source.charCodeAt(i);
+    x = x ^ c << 1 || ~x ^ c << 1; // 16+1bit
+    assert(x !== 0);
     x ^= x << 13; // shift <= 32-17bit
     x ^= x >>> 17;
     x ^= x << 15;
