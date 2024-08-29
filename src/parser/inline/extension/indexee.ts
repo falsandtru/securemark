@@ -50,6 +50,9 @@ assert.deepStrictEqual(
   identity('index', undefined, ' 0 '.trim()));
 assert.notDeepStrictEqual(
   identity('index', undefined, '0 0'),
+  identity('index', undefined, '0  0'));
+assert.notDeepStrictEqual(
+  identity('index', undefined, '0 0'),
   identity('index', undefined, '0_0'));
 assert.notDeepStrictEqual(
   identity('index', undefined, '0 0'),
