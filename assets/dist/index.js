@@ -6108,6 +6108,7 @@ const MAX = 60;
 const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
+const table = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '='].join('');
 function identity(type, id, text) {
   if (id === '') return undefined;
   if (typeof text !== 'string') {
@@ -6120,7 +6121,7 @@ function identity(type, id, text) {
   const str = text.replace(/\s/g, '_');
   const cs = [...str];
   if (type === '' || cs.length <= MAX) {
-    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9a-z]{1,7}$/.test(text) ? `=${hash(text)}` : ''}`;
+    return `${type}:${id ?? ''}:${str}${/_|[^\S ]|=[0-9A-Za-z]{1,6}$/.test(text) ? `=${hash(text)}` : ''}`;
   }
   const s1 = cs.slice(0, PART + REM).join('');
   const s2 = cs.slice(-PART).join('');
@@ -6130,12 +6131,24 @@ exports.identity = identity;
 function hash(source) {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
-    x ^= source.charCodeAt(i) << 1 | 1; // 16+1bit
+    const c = source.charCodeAt(i);
+    x = x ^ c << 1 || ~x ^ c << 1; // 16+1bit
+
     x ^= x << 13; // shift <= 32-17bit
     x ^= x >>> 17;
     x ^= x << 15;
   }
-  return (x >>> 0).toString(36);
+  return baseR(x >>> 0, 62);
+}
+// 62も64も最大6桁
+function baseR(n, r) {
+  let acc = '';
+  do {
+    const mod = n % r;
+    n = (n - mod) / r;
+    acc = table[mod] + acc;
+  } while (n > 0);
+  return acc;
 }
 function signature(source) {
   const target = source.cloneNode(true);
