@@ -586,11 +586,20 @@
   .anchor {
     color: limegreen;
   }
+  .annotation, .reference,
+  :is(.annotations, .references) > li > sup:last-child {
+    user-select: none;
+  }
   .index {
     font-style: italic;
   }
   em :is(em, .index) {
     font-style: normal;
+  }
+  mark {
+    background-color: initial;
+    background-image: linear-gradient(transparent 60%, #fbfb00 0%);
+    padding: 0 0.2em;
   }
   mark + a:empty:after {
     content: "📍";
@@ -628,11 +637,6 @@
   del::before {
     content: "del";
     color: blue;
-  }
-  mark {
-    background-color: initial;
-    background-image: linear-gradient(transparent 60%, #fbfb00 0%);
-    padding: 0 0.2em;
   }
   code {
     background-color: #f0f0f0;
