@@ -11,7 +11,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate
   body,
 ])));
 
-export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creation(fmap(
+export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creation(1, false, fmap(
   constraint(State.label, false,
   union([
     surround('[', body, ']'),

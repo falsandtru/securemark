@@ -6,7 +6,7 @@ import { Syntax, State } from '../context';
 import { blank, trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => creation(surround(
+export const reference: ReferenceParser = lazy(() => creation(1, false, surround(
   '[[',
   constraint(State.reference, false,
   syntax(Syntax.reference, 6, State.annotation | State.reference | State.media,
@@ -19,7 +19,7 @@ export const reference: ReferenceParser = lazy(() => creation(surround(
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest])));
 
 // Chicago-Style
-const abbr: ReferenceParser.AbbrParser = creation(surround(
+const abbr: ReferenceParser.AbbrParser = creation(1, false, surround(
   '^',
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/,

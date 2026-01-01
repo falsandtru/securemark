@@ -3,7 +3,7 @@ import { union, creation, validate, focus, fmap } from '../../combinator';
 import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(validate('&', focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(1, false, validate('&', focus(
   /^&[0-9A-Za-z]+;/,
   ({ source }) => [[parse(source) ?? `\x1B${source}`], ''])));
 

@@ -5,7 +5,7 @@ import { Syntax, State } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => creation(surround(
+export const annotation: AnnotationParser = lazy(() => creation(1, false, surround(
   '((',
   constraint(State.annotation, false,
   syntax(Syntax.annotation, 6, State.annotation | State.media,

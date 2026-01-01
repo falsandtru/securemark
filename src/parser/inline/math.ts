@@ -5,7 +5,7 @@ import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
-export const math: MathParser = lazy(() => validate('$', creation(rewrite(
+export const math: MathParser = lazy(() => validate('$', creation(1, false, rewrite(
   union([
     surround('$', precedence(6, bracket), '$'),
     surround(
