@@ -13,10 +13,10 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K}')), [['<a class="invalid">data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{any:alert}')), [['<a class="invalid">any:alert</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{"}')), [['<a class="url" href="&quot;">"</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{<}')), [['<a class="url" href="<">&lt;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{<}')), [['<a class="url" href="&lt;">&lt;</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{\\}')), [['<a class="url" href="\\">\\</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{\\"}')), [['<a class="url" href="\\&quot;">\\"</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{\\<}')), [['<a class="url" href="\\<">\\&lt;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{\\<}')), [['<a class="url" href="\\&lt;">\\&lt;</a>'], '']);
     });
 
     it('fishing', () => {

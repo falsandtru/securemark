@@ -115,8 +115,8 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$(0, 1]$)')), [['<span class="math" translate="no" data-src="$(0, 1]$">$(0, 1]$</span>'], ')']);
       assert.deepStrictEqual(inspect(parser('$\\{0,1\\}$')), [['<span class="math" translate="no" data-src="$\\{0,1\\}$">$\\{0,1\\}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$n=1$')), [['<span class="math" translate="no" data-src="$n=1$">$n=1$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$n<m$')), [['<span class="math" translate="no" data-src="$n<m$">$n&lt;m$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$n>m$')), [['<span class="math" translate="no" data-src="$n>m$">$n&gt;m$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$n<m$')), [['<span class="math" translate="no" data-src="$n&lt;m$">$n&lt;m$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$n>m$')), [['<span class="math" translate="no" data-src="$n&gt;m$">$n&gt;m$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$E = mc^2$')), [['<span class="math" translate="no" data-src="$E = mc^2$">$E = mc^2$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$f(x)$')), [['<span class="math" translate="no" data-src="$f(x)$">$f(x)$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$f: x \\to y$')), [['<span class="math" translate="no" data-src="$f: x \\to y$">$f: x \\to y$</span>'], '']);
@@ -143,7 +143,7 @@ describe('Unit: parser/inline/math', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('${*a*}$')), [['<span class="math" translate="no" data-src="${*a*}$">${*a*}$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('${<wbr>}$')), [['<span class="math" translate="no" data-src="${<wbr>}$">${&lt;wbr&gt;}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${<wbr>}$')), [['<span class="math" translate="no" data-src="${&lt;wbr&gt;}$">${&lt;wbr&gt;}$</span>'], '']);
     });
 
   });

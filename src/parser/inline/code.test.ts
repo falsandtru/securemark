@@ -37,7 +37,7 @@ describe('Unit: parser/inline/code', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('`<wbr>`')), [['<code data-src="`<wbr>`">&lt;wbr&gt;</code>'], '']);
+      assert.deepStrictEqual(inspect(parser('`<wbr>`')), [['<code data-src="`&lt;wbr&gt;`">&lt;wbr&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`*u*`')), [['<code data-src="`*u*`">*u*</code>'], '']);
     });
 
