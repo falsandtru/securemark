@@ -351,9 +351,10 @@ describe('Unit: parser/api/parse', () => {
     it('recovery', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`!>> ${'['.repeat(20)}${'{a}'.repeat(518)}\n> ${'{a}'.repeat(4)}\n\na`).children].map(el => el.outerHTML),
+        [...parse(`${'['.repeat(22)}\n\na`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          `<blockquote><blockquote><section><p>${'['.repeat(20)}${'<a class="url" href="a">a</a>'.repeat(518)}</p><h2>References</h2><ol class="references"></ol></section></blockquote><section><h1 class="error">Error: Too many creations</h1><pre class="error" translate="no">{a}{a}{a}{a}</pre><h2>References</h2><ol class="references"></ol></section></blockquote>`,
+          `<h1 id="error:rnd" class="error">Error: Too much recursion</h1>`,
+          `<pre class="error" translate="no">${'['.repeat(22)}\n</pre>`,
           '<p>a</p>',
         ]);
     });
