@@ -87,9 +87,10 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       push(adds, es.map(el => [el, base] as const));
+      adds.reverse();
       while (adds.length > 0) {
         assert(rev === revision);
-        const [el, base] = adds.shift()!;
+        const [el, base] = adds.pop()!;
         target.insertBefore(el, base);
         assert(el.parentNode);
         yield { type: 'block', value: el };
@@ -103,17 +104,19 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       push(dels, es.map(el => [el]));
     }
     assert(blocks.length === sourceSegments.length);
+    adds.reverse();
     while (adds.length > 0) {
       assert(rev === revision);
-      const [el, base] = adds.shift()!;
+      const [el, base] = adds.pop()!;
       target.insertBefore(el, base);
       assert(el.parentNode);
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
+    dels.reverse();
     while (dels.length > 0) {
       assert(rev === revision);
-      const [el] = dels.shift()!;
+      const [el] = dels.pop()!;
       el.parentNode?.removeChild(el);
       assert(!el.parentNode);
       yield { type: 'block', value: el };
