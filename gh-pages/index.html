@@ -46,7 +46,7 @@
       */
     background-color: #fdfdfd;
   }
-  :not(em) :is(em, .index) {
+  .index {
     font-family:
       -apple-system,
       Segoe UI,
@@ -590,11 +590,18 @@
   :is(.annotations, .references) > li > sup:last-child {
     user-select: none;
   }
-  .index {
+  .index,
+  .index em {
     font-style: italic;
   }
-  em :is(em, .index) {
+  em {
     font-style: normal;
+    font-weight: bolder;
+  }
+  strong {
+    font-weight: inherit;
+    /* リンクの下線と競合しないよう枠線を使用 */
+    border-bottom: solid 1px;
   }
   mark {
     background-color: initial;
