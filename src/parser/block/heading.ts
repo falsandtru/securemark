@@ -11,6 +11,7 @@ export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   some(line(({ source }) => [[source], ''])))));
 
 export const heading: HeadingParser = block(rewrite(segment,
+  // その他の表示制御は各所のCSSで行う。
   state(State.annotation | State.reference | State.index | State.label | State.link | State.media,
   line(indexee(fmap(union([
     open(
