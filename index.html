@@ -46,7 +46,7 @@
       */
     background-color: #fdfdfd;
   }
-  :not(em) :is(em, .index) {
+  .index {
     font-family:
       -apple-system,
       Segoe UI,
@@ -586,11 +586,27 @@
   .anchor {
     color: limegreen;
   }
-  .index {
+  .annotation, .reference,
+  :is(.annotations, .references) > li > sup:last-child {
+    user-select: none;
+  }
+  .index,
+  .index em {
     font-style: italic;
   }
-  em :is(em, .index) {
+  em {
     font-style: normal;
+    font-weight: bolder;
+  }
+  strong {
+    font-weight: inherit;
+    /* リンクの下線と競合しないよう枠線を使用 */
+    border-bottom: solid 1px;
+  }
+  mark {
+    background-color: initial;
+    background-image: linear-gradient(transparent 60%, #fbfb00 0%);
+    padding: 0 0.2em;
   }
   mark + a:empty:after {
     content: "📍";
@@ -628,11 +644,6 @@
   del::before {
     content: "del";
     color: blue;
-  }
-  mark {
-    background-color: initial;
-    background-image: linear-gradient(transparent 60%, #fbfb00 0%);
-    padding: 0 0.2em;
   }
   code {
     background-color: #f0f0f0;
