@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { union, reset, creation, open, fallback, recover } from '../combinator';
+import { union, reset, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
@@ -16,6 +16,7 @@ import { blockquote } from './block/blockquote';
 import { mediablock } from './block/mediablock';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
+import { Recursion } from './context';
 import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom/dom';
 
@@ -36,9 +37,19 @@ export import MediaBlockParser = BlockParser.MediaBlockParser;
 export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = creation(0, false,
-  reset({
-    resources: { clock: 20000, recursion: 20 + 1 },
+export const block: BlockParser = reset(
+  {
+    resources: {
+      clock: 20000,
+      recursion: [
+        10 || Recursion.block,
+        20 || Recursion.blockquote,
+        40 || Recursion.listitem,
+        20 || Recursion.inline,
+        20 || Recursion.bracket,
+        20 || Recursion.terminal,
+      ],
+    },
   },
   error(union([
     emptyline,
@@ -57,7 +68,7 @@ export const block: BlockParser = creation(0, false,
     mediablock,
     reply,
     paragraph
-  ]))));
+  ])));
 
 function error(parser: BlockParser): BlockParser {
   return recover<BlockParser>(fallback(

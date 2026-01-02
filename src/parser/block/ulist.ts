@@ -5,6 +5,7 @@ import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee } from '../inline';
 import { contentline } from '../source';
+import { Recursion } from '../context';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
@@ -16,7 +17,7 @@ export const ulist: UListParser = lazy(() => block(validate(
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /^-(?=$|\s)/,
-  some(creation(1, false, union([
+  some(creation(0, Recursion.listitem, union([
     indexee(fmap(fallback(
       inits([
         line(open(/^-(?:$|\s)/, subsequence([
@@ -30,11 +31,11 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
   ])))),
   es => [format(html('ul', es))])));
 
-export const checkbox = creation(1, false, focus(
+export const checkbox = focus(
   /^\[[xX ]\](?=$|\s)/,
   ({ source }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
-  ], '']));
+  ], '']);
 
 export const invalid = rewrite(
   inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),

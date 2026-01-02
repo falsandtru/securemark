@@ -3,13 +3,13 @@ import { union, inits, some, syntax, creation, precedence, constraint, validate,
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
-import { Syntax, State } from '../../context';
+import { Syntax, State, Recursion } from '../../context';
 import { startTight, trimNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => validate('[#', creation(1, false, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   constraint(State.index, false,
   syntax(Syntax.index, 2, State.linkers | State.media,
@@ -30,14 +30,14 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, false, f
       }),
   ]))));
 
-export const signature: IndexParser.SignatureParser = lazy(() => validate('|', creation(1, false, fmap(open(
+export const signature: IndexParser.SignatureParser = lazy(() => validate('|', creation(1, Recursion.ignore, fmap(open(
   '|',
   startTight(some(union([bracket, txt]), ']'))),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
   ]))));
 
-const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(union([
+const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true),
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),

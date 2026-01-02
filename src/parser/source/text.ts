@@ -1,6 +1,7 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { union, creation, focus } from '../../combinator';
 import { str } from './str';
+import { Recursion } from '../context';
 import { html } from 'typed-dom/dom';
 
 export const delimiter = /[\s\x00-\x7F（）［］｛｝“”‘’「」『』]|\S[#>]/u;
@@ -8,7 +9,7 @@ export const nonWhitespace = /[\S\n]|$/u;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/u;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = creation(1, false, ({ source, context }) => {
+export const text: TextParser = creation(1, Recursion.ignore, ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {

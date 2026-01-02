@@ -3,12 +3,12 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, syntax, creation, validate, verify, surround, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
-import { Syntax, State } from '../context';
+import { Syntax, State, Recursion } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => validate('[', creation(1, false, syntax(Syntax.ruby, 2, State.all, fmap(verify(fmap(
+export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(Syntax.ruby, 2, State.all, fmap(verify(fmap(
   sequence([
     surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'),
     surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')'),
@@ -51,7 +51,7 @@ export const ruby: RubyParser = lazy(() => validate('[', creation(1, false, synt
     }
   })))));
 
-const text: RubyParser.TextParser = creation(1, false, ({ source, context }) => {
+const text: RubyParser.TextParser = creation(1, Recursion.ignore, ({ source, context }) => {
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');

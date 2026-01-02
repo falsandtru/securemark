@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, creation, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
@@ -25,7 +25,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     ]),
   ])));
 
-const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creation(1, false, fallback(fmap(
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
   es => [html('tr', es)]),
   rewrite(contentline, ({ source }) => [[
@@ -35,9 +35,9 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
       'data-invalid-type': 'syntax',
       'data-invalid-message': 'Missing the start symbol of the table row',
     }, [html('td', source.replace('\n', ''))])
-  ], ''])));
+  ], '']));
 
-const align: AlignParser = creation(1, false, fmap(open(
+const align: AlignParser = fmap(open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),
@@ -45,7 +45,7 @@ const align: AlignParser = creation(1, false, fmap(open(
     focus(/^-+:/, () => [['end'], '']),
     focus(/^-+/, () => [[''], '']),
   ])),
-  ns => [html('td', defrag(ns))]));
+  ns => [html('td', defrag(ns))]);
 
 const cell: CellParser = surround(
   /^\|\s*(?=\S)/,
@@ -57,13 +57,13 @@ const cell: CellParser = surround(
   ])),
   /^[^|]*/, true);
 
-const head: CellParser.HeadParser = creation(1, false, fmap(
+const head: CellParser.HeadParser = fmap(
   cell,
-  ns => [html('th', trimNodeEnd(defrag(ns)))]));
+  ns => [html('th', trimNodeEnd(defrag(ns)))]);
 
-const data: CellParser.DataParser = creation(1, false, fmap(
+const data: CellParser.DataParser = fmap(
   cell,
-  ns => [html('td', trimNodeEnd(defrag(ns)))]));
+  ns => [html('td', trimNodeEnd(defrag(ns)))]);
 
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
   const aligns = rows[0].className === 'invalid'

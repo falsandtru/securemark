@@ -1,6 +1,7 @@
 import { ObjectCreate } from 'spica/alias';
 import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../../data/parser';
 import { Memo } from './context/memo';
+import { clone } from 'spica/assign';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
@@ -35,7 +36,7 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
         assert(!context.precedence);
         assert(!context.delimiters);
         assert(!context.state);
-        context[prop as string] ??= ObjectCreate(change[1] as object);
+        context[prop as string] ??= clone({}, change[1] as object);
         continue;
     }
     values[i] = context[prop];
@@ -82,22 +83,18 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser: P
   });
 }
 
-export function creation<P extends Parser<unknown>>(parser: P): P;
-export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
-export function creation<P extends Parser<unknown>>(cost: number, recursion: boolean, parser: P): P;
-export function creation(cost: number | Parser<unknown>, recursion?: boolean | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
-  if (typeof cost === 'function') return creation(1, true, cost);
-  if (typeof recursion === 'function') return creation(cost, true, recursion);
+export function creation<P extends Parser<unknown>>(cost: number, recursion: number, parser: P): P;
+export function creation(cost: number, recursion: number, parser: Parser<unknown>): Parser<unknown> {
   assert(cost >= 0);
   assert(recursion !== undefined);
   return ({ source, context }) => {
     assert([recursion = recursion!]);
-    const resources = context.resources ?? { clock: cost || 1, recursion: 1 };
+    const resources = context.resources ?? { clock: cost || 1, recursion: [] };
     if (resources.clock <= 0) throw new Error('Too many creations');
-    if (resources.recursion < +recursion) throw new Error('Too much recursion');
-    recursion && --resources.recursion;
-    const result = parser!({ source, context });
-    recursion && ++resources.recursion;
+    if (recursion && resources.recursion[recursion - 1] < 1) throw new Error('Too much recursion');
+    recursion && --resources.recursion[recursion - 1];
+    const result = parser({ source, context });
+    recursion && ++resources.recursion[recursion - 1];
     if (result) {
       resources.clock -= cost;
     }

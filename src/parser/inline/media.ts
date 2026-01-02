@@ -4,7 +4,7 @@ import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
-import { Syntax, State } from '../context';
+import { Syntax, State, Recursion } from '../context';
 import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
@@ -18,7 +18,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(10, open(
+export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(10, Recursion.ignore, open(
   '!',
   constraint(State.media, false,
   syntax(Syntax.none, 2, ~State.link,
@@ -55,7 +55,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(10,
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
     if (context.state! & State.link) return [[el], rest];
-    if (cache && cache.tagName !== 'IMG') return creation(10, false, _ => [[el!], rest])({ source: '!', context });
+    if (cache && cache.tagName !== 'IMG') return [[el], rest];
     return fmap(
       unsafelink as MediaParser,
       ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
@@ -67,7 +67,7 @@ export const linemedia: MediaParser.LineMediaParser = surround(
   union([media]),
   /^(?=[^\S\n]*(?:$|\n))/);
 
-const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(union([
+const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
     undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,

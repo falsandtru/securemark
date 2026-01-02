@@ -5,6 +5,7 @@ import { ilist_ } from './ilist';
 import { inline, indexee, indexer } from '../inline';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
+import { Recursion } from '../context';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -30,7 +31,7 @@ export const olist_: OListParser = lazy(() => block(union([
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  some(creation(1, false, union([
+  some(creation(0, Recursion.listitem, union([
     indexee(fmap(fallback(
       inits([
         line(open(heads[form], subsequence([

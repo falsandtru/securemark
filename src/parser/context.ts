@@ -40,4 +40,14 @@ export const enum State {
     | State.autolink,
 }
 
+export const enum Recursion {
+  ignore,
+  block,
+  blockquote,
+  listitem,
+  inline,
+  bracket,
+  terminal,
+}
+
 export const Margin = 2;

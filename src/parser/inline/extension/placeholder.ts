@@ -2,7 +2,7 @@ import { ExtensionParser } from '../../inline';
 import { union, some, syntax, creation, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { Syntax, State } from '../../context';
+import { Syntax, State, Recursion } from '../../context';
 import { startTight } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
   syntax(Syntax.placeholder, 2, State.none,
   startTight(some(union([inline]), ']', [[']', 2]]))),

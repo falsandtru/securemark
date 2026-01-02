@@ -2,6 +2,7 @@ import { AutolinkParser } from '../../inline';
 import { union, tails, some, creation, precedence, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
+import { Recursion } from '../../context';
 
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 
@@ -24,9 +25,9 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
         unsafelink)),
   ])));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(precedence(2, union([
-  surround('(', some(union([bracket, unescsource]), ')'), ')', true),
-  surround('[', some(union([bracket, unescsource]), ']'), ']', true),
-  surround('{', some(union([bracket, unescsource]), '}'), '}', true),
-  surround('"', precedence(3, some(unescsource, '"')), '"', true),
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(0, Recursion.terminal, precedence(2, union([
+  surround(str('('), some(union([bracket, unescsource]), ')'), str(')'), true),
+  surround(str('['), some(union([bracket, unescsource]), ']'), str(']'), true),
+  surround(str('{'), some(union([bracket, unescsource]), '}'), str('}'), true),
+  surround(str('"'), precedence(3, some(unescsource, '"')), str('"'), true),
 ]))));

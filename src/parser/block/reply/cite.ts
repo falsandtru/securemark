@@ -1,10 +1,10 @@
 import { ReplyParser } from '../../block';
-import { union, tails, creation, line, validate, focus, reverse, fmap } from '../../../combinator';
+import { union, tails, line, validate, focus, reverse, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const cite: ReplyParser.CiteParser = creation(1, false, line(fmap(validate(
+export const cite: ReplyParser.CiteParser = line(fmap(validate(
   '>>',
   reverse(tails([
     str(/^>*(?=>>[^>\s]+\s*$)/),
@@ -23,4 +23,4 @@ export const cite: ReplyParser.CiteParser = creation(1, false, line(fmap(validat
       define(el, { 'data-depth': `${quotes.length + 1}` }, el.innerText.slice(1)),
     ])),
     html('br'),
-  ])));
+  ]));

@@ -1,11 +1,11 @@
 import { AnnotationParser } from '../inline';
 import { union, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { Syntax, State } from '../context';
+import { Syntax, State, Recursion } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => creation(1, false, surround(
+export const annotation: AnnotationParser = lazy(() => creation(1, Recursion.ignore, surround(
   '((',
   constraint(State.annotation, false,
   syntax(Syntax.annotation, 6, State.annotation | State.media,

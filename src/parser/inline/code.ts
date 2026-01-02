@@ -1,8 +1,9 @@
 import { CodeParser } from '../inline';
 import { creation, validate, match } from '../../combinator';
+import { Recursion } from '../context';
 import { html } from 'typed-dom/dom';
 
-export const code: CodeParser = creation(1, false, validate('`', match(
+export const code: CodeParser = creation(1, Recursion.ignore, validate('`', match(
   /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
   ([whole, , body]) => ({ source }) =>
     [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)])));

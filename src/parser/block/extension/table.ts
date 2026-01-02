@@ -1,7 +1,7 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Tree, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, creation, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { lineable } from '../../util';
@@ -78,7 +78,7 @@ const align: AlignParser = line(fmap(
 
 const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
 
-const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
+const head: CellParser.HeadParser = block(fmap(open(
   str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
   rewrite(
     inits([
@@ -93,9 +93,9 @@ const head: CellParser.HeadParser = creation(1, false, block(fmap(open(
     ])),
   true),
   ns => [html('th', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
-  false));
+  false);
 
-const data: CellParser.DataParser = creation(1, false, block(fmap(open(
+const data: CellParser.DataParser = block(fmap(open(
   str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
   rewrite(
     inits([
@@ -110,15 +110,15 @@ const data: CellParser.DataParser = creation(1, false, block(fmap(open(
     ])),
   true),
   ns => [html('td', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
-  false));
+  false);
 
-const dataline: CellParser.DatalineParser = creation(1, false, line(
+const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
       validate(/^!+\s/, convert(source => `:${source}`, data)),
       convert(source => `: ${source}`, data),
-    ]))));
+    ])));
 
 function attributes(source: string): Record<string, string | undefined> {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] =

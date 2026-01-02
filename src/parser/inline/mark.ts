@@ -4,11 +4,11 @@ import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
 import { str } from '../source';
 import { startTight, blankWith } from '../visibility';
-import { Syntax, State } from '../context';
+import { Syntax, State, Recursion } from '../context';
 import { unshift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const mark: MarkParser = lazy(() => creation(surround(
+export const mark: MarkParser = lazy(() => creation(1, Recursion.inline, surround(
   str('==', '='),
   constraint(State.mark, false,
   syntax(Syntax.none, 1, State.none,

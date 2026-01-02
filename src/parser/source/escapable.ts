@@ -1,10 +1,11 @@
 import { EscapableSourceParser } from '../source';
 import { creation } from '../../combinator';
 import { nonWhitespace } from './text';
+import { Recursion } from '../context';
 
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
-export const escsource: EscapableSourceParser = creation(1, false, ({ source, context }) => {
+export const escsource: EscapableSourceParser = creation(1, Recursion.ignore, ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {
