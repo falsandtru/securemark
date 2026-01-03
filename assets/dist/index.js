@@ -5698,19 +5698,22 @@ function creation(cost, recursion, parser) {
   }) => {
     const resources = context.resources ?? {
       clock: cost || 1,
-      recursion: []
+      recursions: [1]
     };
-    if (resources.clock <= 0) throw new Error('Too many creations');
-    if (recursion && resources.recursion[recursion - 1] < 1) throw new Error('Too much recursion');
-    recursion && --resources.recursion[recursion - 1];
+    const {
+      recursions
+    } = resources;
+    const rec = (0, alias_1.min)(recursion, recursions.length);
+    if (rec > 0 && recursions[rec - 1] < 1) throw new Error('Too much recursion');
+    rec > 0 && --recursions[rec - 1];
     const result = parser({
       source,
       context
     });
-    recursion && ++resources.recursion[recursion - 1];
-    if (result) {
-      resources.clock -= cost;
-    }
+    rec > 0 && ++recursions[rec - 1];
+    if (result === undefined) return;
+    if (resources.clock < cost) throw new Error('Too many creations');
+    resources.clock -= cost;
     return result;
   };
 }
@@ -6871,7 +6874,7 @@ const dom_1 = __webpack_require__(394);
 exports.block = (0, combinator_1.reset)({
   resources: {
     clock: 20000,
-    recursion: [10 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
+    recursions: [10 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
   }
 }, error((0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, mediablock_1.mediablock, reply_1.reply, paragraph_1.paragraph])));
 function error(parser) {
