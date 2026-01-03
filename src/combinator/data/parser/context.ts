@@ -92,14 +92,13 @@ export function creation(cost: number, recursion: number, parser: Parser<unknown
     const { recursions } = resources;
     assert(recursions.length > 0);
     const rec = min(recursion, recursions.length);
-    if (resources.clock <= 0) throw new Error('Too many creations');
     if (rec > 0 && recursions[rec - 1] < 1) throw new Error('Too much recursion');
     rec > 0 && --recursions[rec - 1];
     const result = parser({ source, context });
     rec > 0 && ++recursions[rec - 1];
-    if (result !== undefined) {
-      resources.clock -= cost;
-    }
+    if (result === undefined) return;
+    if (resources.clock < cost) throw new Error('Too many creations');
+    resources.clock -= cost;
     return result;
   };
 }
