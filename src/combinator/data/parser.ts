@@ -14,7 +14,7 @@ export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
 export interface Ctx {
   readonly resources?: {
     clock: number;
-    recursion: number[];
+    recursions: number[];
   };
   offset?: number;
   precedence?: number;

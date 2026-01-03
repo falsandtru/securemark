@@ -41,7 +41,7 @@ export const block: BlockParser = reset(
   {
     resources: {
       clock: 20000,
-      recursion: [
+      recursions: [
         10 || Recursion.block,
         20 || Recursion.blockquote,
         40 || Recursion.listitem,

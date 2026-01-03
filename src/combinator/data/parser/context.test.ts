@@ -13,7 +13,7 @@ describe('Unit: combinator/data/parser/context', () => {
       ({ source, context }) => [[context.resources?.clock ?? NaN], source.slice(1)]));
 
     it('root', () => {
-      const base: Context = { resources: { clock: 3, recursion: [1] } };
+      const base: Context = { resources: { clock: 3, recursions: [1] } };
       const ctx: Context = {};
       assert.deepStrictEqual(reset(base, parser)({ source: '123', context: ctx }), [[3, 2, 1], '']);
       assert(base.resources?.clock === 3);
@@ -24,8 +24,8 @@ describe('Unit: combinator/data/parser/context', () => {
     });
 
     it('node', () => {
-      const base: Context = { resources: { clock: 3, recursion: [1] } };
-      const ctx: Context = { resources: { clock: 1, recursion: [1] } };
+      const base: Context = { resources: { clock: 3, recursions: [1] } };
+      const ctx: Context = { resources: { clock: 1, recursions: [1] } };
       assert.deepStrictEqual(reset(base, parser)({ source: '1', context: ctx }), [[1], '']);
       assert(base.resources?.clock === 3);
       assert(ctx.resources?.clock === 0);
@@ -41,7 +41,7 @@ describe('Unit: combinator/data/parser/context', () => {
 
     it('', () => {
       const base: Context = { status: true };
-      const ctx: Context = { resources: { clock: 3, recursion: [1] } };
+      const ctx: Context = { resources: { clock: 3, recursions: [1] } };
       assert.deepStrictEqual(context(base, parser)({ source: '123', context: ctx }), [[true, true, true], '']);
       assert(ctx.resources?.clock === 0);
       assert(ctx.status === undefined);

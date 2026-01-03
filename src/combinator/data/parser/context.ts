@@ -1,4 +1,4 @@
-import { ObjectCreate } from 'spica/alias';
+import { ObjectCreate, min } from 'spica/alias';
 import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../../data/parser';
 import { Memo } from './context/memo';
 import { clone } from 'spica/assign';
@@ -86,16 +86,18 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser: P
 export function creation<P extends Parser<unknown>>(cost: number, recursion: number, parser: P): P;
 export function creation(cost: number, recursion: number, parser: Parser<unknown>): Parser<unknown> {
   assert(cost >= 0);
-  assert(recursion !== undefined);
+  assert(recursion >= 0);
   return ({ source, context }) => {
-    assert([recursion = recursion!]);
-    const resources = context.resources ?? { clock: cost || 1, recursion: [] };
+    const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
+    const { recursions } = resources;
+    assert(recursions.length > 0);
+    const rec = min(recursion, recursions.length);
     if (resources.clock <= 0) throw new Error('Too many creations');
-    if (recursion && resources.recursion[recursion - 1] < 1) throw new Error('Too much recursion');
-    recursion && --resources.recursion[recursion - 1];
+    if (rec > 0 && recursions[rec - 1] < 1) throw new Error('Too much recursion');
+    rec > 0 && --recursions[rec - 1];
     const result = parser({ source, context });
-    recursion && ++resources.recursion[recursion - 1];
-    if (result) {
+    rec > 0 && ++recursions[rec - 1];
+    if (result !== undefined) {
       resources.clock -= cost;
     }
     return result;
