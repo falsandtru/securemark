@@ -66,7 +66,9 @@ export function syntax<T>(syntax: number, prec: number, state: number, parser: P
     const position = source.length + context.offset!;
     const stateOuter = context.state ?? 0;
     const stateInner = context.state = stateOuter | state;
-    const cache = syntax & memo.targets && stateInner && memo.get(position, syntax, stateInner);
+    const cache = syntax & memo.targets && stateInner
+      ? memo.get(position, syntax, stateInner)
+      : undefined;
     const result: Result<T> = cache
       ? cache.length === 0
         ? undefined
