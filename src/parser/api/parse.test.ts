@@ -286,16 +286,6 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<br>b</p>']);
     });
 
-    it('backtrack', () => {
-      assert.deepStrictEqual(
-        [...parse('"[% '.repeat(100) + '\n\na').children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'"[% '.repeat(100)}\n</pre>`,
-          '<p>a</p>',
-        ]);
-    });
-
     it('recursion', () => {
       assert.deepStrictEqual(
         [...parse(`${'{'.repeat(20)}a`).children].map(el => el.outerHTML),
@@ -329,6 +319,16 @@ describe('Unit: parser/api/parse', () => {
         [`<p>${'['.repeat(22)}<br>a</p>`]);
     });
 
+    it('recovery', () => {
+      assert.deepStrictEqual(
+        [...parse(`${'{'.repeat(21)}\n\na`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [
+          `<h1 id="error:rnd" class="error">Error: Too much recursion</h1>`,
+          `<pre class="error" translate="no">${'{'.repeat(21)}\n</pre>`,
+          '<p>a</p>',
+        ]);
+    });
+
     if (!navigator.userAgent.includes('Chrome')) return;
 
     it('creation', function () {
@@ -344,18 +344,24 @@ describe('Unit: parser/api/parse', () => {
         [...parse('.'.repeat(20001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
-          `<pre class="error" translate="no">${'.'.repeat(1000).slice(0, 997)}...</pre>`,
+          `<pre class="error" translate="no">${'.'.repeat(1000 - 3)}...</pre>`,
         ]);
     });
 
-    it('recovery', function () {
+    it('backtrack', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(21)}\n\na`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`((${'['.repeat(23)}${'.'.repeat(3959)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [`<p>((${'['.repeat(23)}${'.'.repeat(3959)}</p>`]);
+    });
+
+    it('backtrack error', function () {
+      this.timeout(5000);
+      assert.deepStrictEqual(
+        [...parse(`((${'['.repeat(23)}${'.'.repeat(3960)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
-          `<h1 id="error:rnd" class="error">Error: Too much recursion</h1>`,
-          `<pre class="error" translate="no">${'{'.repeat(21)}\n</pre>`,
-          '<p>a</p>',
+          '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
+          `<pre class="error" translate="no">((${'['.repeat(23)}${'.'.repeat(1000 - 2 - 23 - 3)}...</pre>`,
         ]);
     });
 
