@@ -64,7 +64,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n~ c\n: d\n~ e\n: f')), [['<dl><dt id="index::a">a</dt><dd>b</dd><dt id="index::c">c</dt><dd>d</dd><dt id="index::e">e</dt><dd>f</dd></dl>'], '']);
     });
 
-    it('index', () => {
+    it('indexer', () => {
       assert.deepStrictEqual(inspect(parser('~ a [|b]')), [['<dl><dt id="index::b">a<span class="indexer" data-index="b"></span></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a [|b]\\')), [['<dl><dt id="index::a_b">a <span class="invalid">b</span></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ A')), [['<dl><dt id="index::A">A</dt><dd></dd></dl>'], '']);
