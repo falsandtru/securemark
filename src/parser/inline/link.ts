@@ -29,7 +29,11 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recurs
       trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.bracket)),
-    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
+    dup(surround(
+      /^{(?![{}])/,
+      inits([uri, some(option)]),
+      /^[^\S\n]*}/,
+      false, undefined, undefined, 3 | Backtrack.link)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
