@@ -819,8 +819,8 @@ export namespace MarkdownParser {
       // [AB](a b)
       Inline<'ruby'>,
       Parser<HTMLElement, Context, [
-        SourceParser.StrParser,
-        SourceParser.StrParser,
+        Parser<string[], Context, []>,
+        Parser<string[], Context, []>,
       ]> {
     }
     export namespace RubyParser {

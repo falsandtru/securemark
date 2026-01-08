@@ -1,25 +1,26 @@
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, syntax, creation, validate, verify, surround, lazy, fmap } from '../../combinator';
+import { sequence, syntax, creation, validate, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
-import { State, Recursion } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(2, State.all, fmap(verify(fmap(
+export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(2, State.all, fmap(
   sequence([
-    surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']'),
-    surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')'),
+    bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
+      const ns = eval(text({ source, context }), [undefined])[0];
+      ns && ns[ns.length - 1] === '' && ns.pop();
+      return ns && isStartTightNodes(ns) ? [[ns], rest] : undefined;
+    }),
+    bind(surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
+      const ns = eval(text({ source, context }), [undefined])[0];
+      return ns && [[ns], rest];
+    }),
   ]),
-  ([texts, rubies], _, context) => [
-    eval(text({ source: texts, context }), [])[0] ?? '',
-    eval(text({ source: rubies, context }), [])[0] ?? '',
-  ]),
-  ([texts, rubies]) => texts && rubies && isStartTightNodes(texts)),
   ([texts, rubies]) => {
-    texts[texts.length - 1] === '' && texts.pop();
     switch (true) {
       case rubies.length <= texts.length:
         return [

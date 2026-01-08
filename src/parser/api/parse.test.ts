@@ -351,14 +351,14 @@ describe('Unit: parser/api/parse', () => {
     it('backtrack', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`((${'['.repeat(23)}${'.'.repeat(3959)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [`<p>((${'['.repeat(23)}${'.'.repeat(3959)}</p>`]);
+        [...parse(`((${'['.repeat(23)}${'.'.repeat(3960)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [`<p>((${'['.repeat(23)}${'.'.repeat(3960)}</p>`]);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`((${'['.repeat(23)}${'.'.repeat(3960)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`((${'['.repeat(23)}${'.'.repeat(3961)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">((${'['.repeat(23)}${'.'.repeat(1000 - 2 - 23 - 3)}...</pre>`,

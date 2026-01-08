@@ -77,7 +77,7 @@ export function surround<T>(
     if (rest.length === lmr_.length) return;
     if (log & 2 && rr === undefined) {
       const { logger = {}, offset = 0 } = context;
-      logger[source.length + offset] = 1 << (log >>> 2);
+      logger[source.length + offset] |= 1 << (log >>> 2);
     }
     return rr
       ? f
