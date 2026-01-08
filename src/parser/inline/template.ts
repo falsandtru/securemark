@@ -5,7 +5,7 @@ import { Syntax, State, Recursion } from '../context';
 import { unshift } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
-export const template: TemplateParser = lazy(() => creation(1, Recursion.inline, surround(
+export const template: TemplateParser = lazy(() => creation(1, Recursion.ignore, surround(
   '{{',
   syntax(Syntax.none, 6, State.all, some(union([bracket, escsource]), '}', [['}}', 6]])),
   '}}',
