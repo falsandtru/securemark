@@ -30,12 +30,12 @@ export function surround<T>(
   switch (typeof opener) {
     case 'string':
     case 'object':
-      return surround(match(opener), parser, closer, optional, f, g);
+      opener = match(opener);
   }
   switch (typeof closer) {
     case 'string':
     case 'object':
-      return surround(opener, parser, match(closer), optional, f, g);
+      closer = match(closer);
   }
   return ({ source, context }) => {
     const lmr_ = source;
