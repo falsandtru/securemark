@@ -25,7 +25,7 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
 function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
 function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
   if (reset) {
-    context.log = {};
+    context.logger = {};
   }
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];

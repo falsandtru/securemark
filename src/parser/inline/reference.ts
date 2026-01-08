@@ -2,7 +2,7 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { State, Recursion } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { blank, trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -17,7 +17,7 @@ export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignor
   ']]',
   false,
   ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest],
-  undefined, 1)));
+  undefined, 1 | Backtrack.bracket)));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = creation(1, Recursion.ignore, surround(

@@ -19,7 +19,7 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
-  log?: Record<number, 0>;
+  logger?: Record<number, number>;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;

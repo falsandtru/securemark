@@ -29,3 +29,7 @@ export const enum Recursion {
   bracket,
   terminal,
 }
+
+export const enum Backtrack {
+  bracket = 1 << 2,
+}

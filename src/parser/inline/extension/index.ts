@@ -3,7 +3,7 @@ import { union, inits, some, syntax, creation, precedence, constraint, validate,
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
-import { State, Recursion } from '../../context';
+import { State, Recursion, Backtrack } from '../../context';
 import { startTight, trimNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -21,7 +21,7 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   ']',
   false,
   ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))], rest],
-  undefined, 1)),
+  undefined, 1 | Backtrack.bracket)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {

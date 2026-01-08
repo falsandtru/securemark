@@ -4,7 +4,7 @@ import { union, inits, tails, sequence, some, constraint, syntax, creation, prec
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
-import { State, Recursion } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
@@ -28,7 +28,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recurs
       '[',
       trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
       ']',
-      true, undefined, undefined, 1)),
+      true, undefined, undefined, 1 | Backtrack.bracket)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {

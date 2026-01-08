@@ -1,7 +1,7 @@
 import { AnnotationParser } from '../inline';
 import { union, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { State, Recursion } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -13,4 +13,4 @@ export const annotation: AnnotationParser = lazy(() => creation(1, Recursion.ign
   '))',
   false,
   ([, ns], rest) => [[html('sup', { class: 'annotation' }, [html('span', trimNodeEnd(defrag(ns)))])], rest],
-  undefined, 1)));
+  undefined, 1 | Backtrack.bracket)));
