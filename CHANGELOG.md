@@ -2,6 +2,7 @@
 
 ## 0.283.0
 
+- Refine backtracking control.
 - Refine recursion control.
 
 ## 0.282.0

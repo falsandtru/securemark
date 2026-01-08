@@ -2,7 +2,7 @@ import { ExtensionParser } from '../../inline';
 import { union, some, syntax, creation, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { Syntax, State, Recursion } from '../../context';
+import { State, Recursion } from '../../context';
 import { startTight } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -13,7 +13,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
-  syntax(Syntax.placeholder, 2, State.none,
+  syntax(2, State.none,
   startTight(some(union([inline]), ']', [[']', 2]]))),
   str(']'), false,
   ([, bs], rest) => [[
@@ -24,4 +24,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validat
       'data-invalid-message': `Invalid start symbol or linebreak`,
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest]))));
+  ([as, bs], rest) => [unshift(as, bs), rest], 3))));

@@ -1,8 +1,6 @@
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
-import { Memo } from '../../combinator/data/parser/context/memo';
-import { Syntax, Margin } from '../context';
 import { segment, validate, MAX_SEGMENT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -27,7 +25,6 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     id: opts.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources,
-    memo: new Memo(Syntax.targets, Margin),
   };
   assert(!context.offset);
   assert(!context.precedence);

@@ -2,7 +2,7 @@ import { HTMLParser } from '../inline';
 import { union, subsequence, some, syntax, creation, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { Syntax, State, Recursion } from '../context';
+import { State, Recursion } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { Clock } from 'spica/clock';
@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline, syntax(Syntax.none, 4, State.none, union([
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline, syntax(4, State.none, union([
   focus(
     /^<wbr[^\S\n]*>/i,
     () => [[h('wbr')], '']),

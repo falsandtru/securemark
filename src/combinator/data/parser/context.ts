@@ -1,6 +1,5 @@
 import { ObjectCreate, min } from 'spica/alias';
-import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../../data/parser';
-import { Memo } from './context/memo';
+import { Parser, Result, Ctx, Tree, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
@@ -25,7 +24,9 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
 
 function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
 function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
-  reset && context.memo?.clear();
+  if (reset) {
+    context.log = {};
+  }
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -57,29 +58,14 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
   return result;
 }
 
-export function syntax<P extends Parser<unknown>>(syntax: number, precedence: number, state: number, parser: P): P;
-export function syntax<T>(syntax: number, prec: number, state: number, parser: Parser<T>): Parser<T> {
+export function syntax<P extends Parser<unknown>>(precedence: number, state: number, parser: P): P;
+export function syntax<T>(prec: number, state: number, parser: Parser<T>): Parser<T> {
   return precedence(prec, ({ source, context }) => {
     if (source === '') return;
-    const memo = context.memo ??= new Memo();
     context.offset ??= 0;
-    const position = source.length + context.offset!;
     const stateOuter = context.state ?? 0;
-    const stateInner = context.state = stateOuter | state;
-    const cache = syntax & memo.targets && stateInner
-      ? memo.get(position, syntax, stateInner)
-      : undefined;
-    const result: Result<T> = cache
-      ? cache.length === 0
-        ? undefined
-        : [cache[0] as T[], source.slice(cache[1])]
-      : parser({ source, context });
-    if (stateOuter && !cache && syntax & memo.targets) {
-      memo.set(position, syntax, stateInner, eval(result), source.length - exec(result, '').length);
-    }
-    else if (!stateOuter && result && memo.length >= position + memo.margin) {
-      memo.resize(position + memo.margin);
-    }
+    context.state = stateOuter | state;
+    const result: Result<T> = parser({ source, context });
     context.state = stateOuter;
     return result;
   });

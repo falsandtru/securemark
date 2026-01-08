@@ -6,6 +6,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>, optional?: false,
   f?: (rss: [S[], SubTree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
+  log?: 0 | 1 | 2 | 3,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>, optional?: boolean,
@@ -16,16 +17,19 @@ export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>, optional?: false,
   f?: (rss: [S[], Tree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
+  log?: 0 | 1 | 2 | 3,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>, optional?: boolean,
   f?: (rss: [S[], Tree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
+  log?: 0 | 1 | 2 | 3,
 ): P;
 export function surround<T>(
   opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false,
   f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T>,
   g?: (rss: [T[], T[], string], rest: string, context: Ctx) => Result<T>,
+  log: 0 | 1 | 2 | 3 = 0,
 ): Parser<T> {
   switch (typeof opener) {
     case 'string':
@@ -45,6 +49,13 @@ export function surround<T>(
     if (res1 === undefined) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
+    if (log & 1) {
+      const { log = {}, offset = 0 } = context;
+      for (let i = 0; i < source.length - mr_.length; ++i) {
+        if (source[i] !== source[0]) break;
+        if (source.length + offset - i in log) return;
+      }
+    }
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
     assert(check(mr_, res2));
     const rm = eval(res2);
@@ -55,6 +66,10 @@ export function surround<T>(
     const rr = eval(res3);
     const rest = exec(res3, r_);
     if (rest.length === lmr_.length) return;
+    if (log & 2 && rr === undefined) {
+      const { log = {}, offset = 0 } = context;
+      log[source.length + offset] = 0;
+    }
     return rr
       ? f
         ? f([rl, rm!, rr], rest, context)

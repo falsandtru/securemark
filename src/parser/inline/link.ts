@@ -4,7 +4,7 @@ import { union, inits, tails, sequence, some, constraint, syntax, creation, prec
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
-import { Syntax, State, Recursion } from '../context';
+import { State, Recursion } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
@@ -22,13 +22,13 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
 
 export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recursion.ignore,
   constraint(State.link, false,
-  syntax(Syntax.link, 2, State.linkers | State.media,
+  syntax(2, State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
       '[',
       trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
       ']',
-      true)),
+      true, undefined, undefined, 1)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
@@ -40,7 +40,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recurs
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => creation(1, Recursion.ignore,
   constraint(State.link | State.media, false,
-  syntax(Syntax.link, 2, State.linkers,
+  syntax(2, State.linkers,
   bind(reverse(sequence([
     dup(surround(
       '[',

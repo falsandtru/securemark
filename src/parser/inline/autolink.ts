@@ -8,13 +8,13 @@ import { hashtag, emoji } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
-import { Syntax, State } from '../context';
+import { State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>
   validate(/^(?:[@#>0-9a-z]|\S[#>]|[\r\n]!?https?:\/\/)/iu,
   constraint(State.autolink, false,
-  syntax(Syntax.autolink, 1, ~State.shortcut,
+  syntax(1, ~State.shortcut,
   union([
     some(union([lineurl])),
     fmap(some(union([

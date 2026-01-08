@@ -4,7 +4,7 @@ import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
-import { Syntax, State, Recursion } from '../context';
+import { State, Recursion } from '../context';
 import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
@@ -21,7 +21,7 @@ Object.setPrototypeOf(optspec, null);
 export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, Recursion.ignore, open(
   '!',
   constraint(State.media, false,
-  syntax(Syntax.none, 2, ~State.link,
+  syntax(2, ~State.link,
   bind(verify(fmap(tails([
     dup(surround(
       '[',

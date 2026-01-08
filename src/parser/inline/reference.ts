@@ -2,21 +2,22 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { Syntax, State, Recursion } from '../context';
+import { State, Recursion } from '../context';
 import { blank, trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignore, surround(
   '[[',
   constraint(State.reference, false,
-  syntax(Syntax.reference, 6, State.annotation | State.reference | State.media,
+  syntax(6, State.annotation | State.reference | State.media,
   subsequence([
     abbr,
     trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 2], [']]', 6]])),
   ]))),
   ']]',
   false,
-  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest])));
+  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest],
+  undefined, 1)));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = creation(1, Recursion.ignore, surround(

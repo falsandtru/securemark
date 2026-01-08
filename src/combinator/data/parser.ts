@@ -1,5 +1,4 @@
 import { Delimiters } from './parser/context/delimiter';
-import { Memo } from './parser/context/memo';
 
 export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (input: Input<C>) => Result<T, C, D>;
@@ -20,7 +19,7 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
-  memo?: Memo;
+  log?: Record<number, 0>;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
