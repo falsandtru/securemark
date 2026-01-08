@@ -4,7 +4,7 @@ import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
-import { State, Recursion } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
@@ -27,7 +27,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, 
       '[',
       some(union([unsafehtmlentity, bracket, txt]), ']', [[/^\\?\n/, 9]]),
       ']',
-      true)),
+      true, undefined, undefined, 1 | Backtrack.media)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ]),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
@@ -69,12 +69,13 @@ export const linemedia: MediaParser.LineMediaParser = surround(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('"'), precedence(3, some(union([unsafehtmlentity, txt]), '"')), str('"'), true),
+    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
+  surround(str('"'), precedence(3, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
+    undefined, undefined, 3 | Backtrack.media),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
