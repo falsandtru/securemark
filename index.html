@@ -596,17 +596,16 @@
   }
   em {
     font-style: normal;
-    font-weight: bolder;
+    /* リンクの下線と競合しないよう枠線を使用 */
+    border-bottom: solid 1px red;
   }
   strong {
-    font-weight: inherit;
-    /* リンクの下線と競合しないよう枠線を使用 */
-    border-bottom: solid 1px;
+    font-weight: bolder;
   }
   mark {
     background-color: initial;
     background-image: linear-gradient(transparent 60%, #fbfb00 0%);
-    padding: 0 0.2em;
+    padding: 0;
   }
   mark + a:empty:after {
     content: "📍";
@@ -649,7 +648,7 @@
     background-color: #f0f0f0;
     margin: 0;
     border-radius: 3px;
-    padding: .15em .3em;
+    padding: 0 .3em;
     white-space: break-spaces;
     letter-spacing: normal;
     font-size: 90%;
@@ -859,7 +858,7 @@
     '',
     '## Heading',
     '',
-    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==*second level headings such as chapters must be level 2 headings*==.',
+    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==***second level headings such as chapters must be level 2 headings***==.',
     '',
     '~~~',
     '# Example',
