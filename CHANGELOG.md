@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.283.1
+
+- Fix bracket parser.
+
 ## 0.283.0
 
 - Refine backtracking control.
