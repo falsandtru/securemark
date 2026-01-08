@@ -1,6 +1,6 @@
 import { DListParser } from '../block';
 import { union, inits, some, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
-import { inline, indexee, indexer } from '../inline';
+import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
 import { State } from '../context';
 import { lineable } from '../util';
@@ -21,7 +21,7 @@ const term: DListParser.TermParser = line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
   visualize(trimBlankStart(some(union([indexer, inline])))),
   true),
-  ns => [html('dt', trimNodeEnd(defrag(ns)))])));
+  ns => [html('dt', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,

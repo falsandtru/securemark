@@ -1,6 +1,6 @@
 import { HeadingParser } from '../block';
 import { union, some, state, block, line, validate, focus, rewrite, open, fmap } from '../../combinator';
-import { inline, indexee, indexer } from '../inline';
+import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
 import { State } from '../context';
 import { visualize, trimBlankStart, trimNodeEnd } from '../visibility';
@@ -24,7 +24,7 @@ export const heading: HeadingParser = block(rewrite(segment,
   ]),
   ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
     h.length <= 6
-      ? html(`h${h.length as 1}`, trimNodeEnd(defrag(ns)))
+      ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))
       : html(`h6`, {
           class: 'invalid',
           'data-invalid-syntax': 'heading',

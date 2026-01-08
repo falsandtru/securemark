@@ -3,7 +3,7 @@ import { Parser } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
-import { inline, indexer, indexee } from '../inline';
+import { inline, indexer, indexee, dataindex } from '../inline';
 import { contentline } from '../source';
 import { Recursion } from '../context';
 import { lineable } from '../util';
@@ -27,7 +27,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
-      ns => [html('li', defrag(fillFirstLine(ns)))])),
+      ns => [html('li', { 'data-index': dataindex(ns) }, defrag(fillFirstLine(ns)))])),
   ])))),
   es => [format(html('ul', es))])));
 

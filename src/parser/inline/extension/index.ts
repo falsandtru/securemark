@@ -20,7 +20,7 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   ]), ']', [[/^\\?\n/, 9], [']', 2]])))),
   ']',
   false,
-  ([, ns], rest) => [[html('a', trimNodeEnd(defrag(ns)))], rest])),
+  ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))], rest])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
@@ -43,3 +43,14 @@ const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(0
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),
   surround(str('"'), precedence(3, some(txt, '"')), str('"'), true),
 ])));
+
+export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
+  if (ns.length === 0) return;
+  for (let i = ns.length - 1; i >= 0; --i) {
+    const node = ns[i];
+    if (typeof node === 'string') return;
+    if (i === ns.length - 1 && ['UL', 'OL'].includes(node.tagName)) continue;
+    if (!node.classList.contains('indexer')) return;
+    return node.getAttribute('data-index') ?? undefined;
+  }
+}

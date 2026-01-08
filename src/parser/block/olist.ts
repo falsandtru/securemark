@@ -2,7 +2,7 @@ import { OListParser } from '../block';
 import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
-import { inline, indexee, indexer } from '../inline';
+import { inline, indexee, indexer, dataindex } from '../inline';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { Recursion } from '../context';
@@ -40,7 +40,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       invalid),
-      ns => [html('li', { 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))])),
+      ns => [html('li', { 'data-index': dataindex(ns), 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))])),
   ]))),
   es => [format(html('ol', es), type, form)]);
 

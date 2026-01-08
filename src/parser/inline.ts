@@ -70,6 +70,7 @@ export const inline: InlineParser = lazy(() => union([
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';
+export { dataindex } from './inline/extension/index';
 export { medialink } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';

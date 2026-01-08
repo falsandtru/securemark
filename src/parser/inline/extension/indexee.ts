@@ -6,7 +6,7 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity('index', id, el) })]);
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity('index', id, el), 'data-index': null })]);
 }
 
 const MAX = 60;
@@ -27,7 +27,7 @@ export function identity(
   assert(id?.match(/^[0-9a-z/-]*$/i) ?? true);
   if (id === '') return undefined;
   if (typeof text !== 'string') {
-    const index = text.querySelector(':scope > .indexer')?.getAttribute('data-index');
+    const index = text.getAttribute('data-index') ?? undefined;
     if (index === '' && text.tagName === 'LI') return undefined;
     return index
       ? `${type}:${id ?? ''}:${index}`
