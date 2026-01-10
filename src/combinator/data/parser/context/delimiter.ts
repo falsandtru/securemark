@@ -84,7 +84,7 @@ export class Delimiters {
   }
   public match(source: string, precedence = 1): boolean {
     const { delimiters } = this;
-    for (let i = 0; i < delimiters.length; ++i) {
+    for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
       if (precedence >= delimiter.precedence) continue;
       switch (delimiter.matcher(source)) {
