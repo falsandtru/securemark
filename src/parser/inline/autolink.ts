@@ -14,7 +14,7 @@ import { stringify } from '../util';
 export const autolink: AutolinkParser = lazy(() =>
   validate(/^(?:[@#>0-9a-z]|\S[#>]|[\r\n]!?https?:\/\/)/iu,
   constraint(State.autolink, false,
-  syntax(1, ~State.shortcut,
+  syntax(0, ~State.shortcut,
   union([
     some(union([lineurl])),
     fmap(some(union([

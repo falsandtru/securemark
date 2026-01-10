@@ -21,7 +21,7 @@ Object.setPrototypeOf(optspec, null);
 export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, Recursion.ignore, open(
   '!',
   constraint(State.media, false,
-  syntax(2, ~State.link,
+  syntax(1, ~State.link,
   bind(verify(fmap(tails([
     dup(surround(
       '[',
@@ -78,7 +78,7 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(0, Rec
     undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
     undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
-  surround(str('"'), precedence(3, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
+  surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
     undefined, undefined, 3 | Backtrack.media),
 ])));
 

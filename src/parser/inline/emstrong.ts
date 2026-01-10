@@ -29,7 +29,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 
 export const emstrong: EmStrongParser = lazy(() => creation(1, Recursion.inline, surround(
   str('***'),
-  syntax(1, State.none,
+  syntax(0, State.none,
   startTight(some(union([
     some(inline, blankWith('*')),
     open(some(inline, '*'), inline),

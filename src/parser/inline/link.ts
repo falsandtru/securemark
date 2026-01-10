@@ -22,11 +22,11 @@ export const link: LinkParser = lazy(() => validate(['[', '{'], union([
 
 export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recursion.ignore,
   constraint(State.link, false,
-  syntax(2, State.linkers | State.media,
+  syntax(1, State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
       '[',
-      trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 2]])),
+      trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 1]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.bracket)),
     dup(surround(
@@ -44,7 +44,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recurs
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => creation(1, Recursion.ignore,
   constraint(State.link | State.media, false,
-  syntax(2, State.linkers,
+  syntax(1, State.linkers,
   bind(reverse(sequence([
     dup(surround(
       '[',
@@ -61,7 +61,7 @@ export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   /^(?=[^\S\n]*(?:$|\n))/);
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
-  creation(1, Recursion.ignore, precedence(2,
+  creation(1, Recursion.ignore, precedence(1,
   bind(reverse(tails([
     dup(surround(
       '[',

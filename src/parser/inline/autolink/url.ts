@@ -25,9 +25,9 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
         unsafelink)),
   ])));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(0, Recursion.terminal, precedence(2, union([
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(0, Recursion.terminal, precedence(1, union([
   surround(str('('), some(union([bracket, unescsource]), ')'), str(')'), true, undefined, undefined, 3 | Backtrack.url),
   surround(str('['), some(union([bracket, unescsource]), ']'), str(']'), true, undefined, undefined, 3 | Backtrack.url),
   surround(str('{'), some(union([bracket, unescsource]), '}'), str('}'), true, undefined, undefined, 3 | Backtrack.url),
-  surround(str('"'), precedence(3, some(unescsource, '"')), str('"'), true, undefined, undefined, 3 | Backtrack.url),
+  surround(str('"'), precedence(2, some(unescsource, '"')), str('"'), true, undefined, undefined, 3 | Backtrack.url),
 ]))));

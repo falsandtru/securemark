@@ -9,7 +9,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const deletion: DeletionParser = lazy(() => creation(1, Recursion.inline, surround(
   str('~~', '~'),
-  syntax(1, State.none,
+  syntax(0, State.none,
   some(union([
     some(inline, blankWith('\n', '~~')),
     open('\n', some(inline, '~'), true),

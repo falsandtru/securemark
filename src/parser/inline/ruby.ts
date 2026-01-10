@@ -8,7 +8,7 @@ import { isStartTightNodes } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(2, State.all, fmap(
+export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(1, State.all, fmap(
   sequence([
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];

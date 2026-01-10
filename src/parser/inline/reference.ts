@@ -9,10 +9,10 @@ import { html, defrag } from 'typed-dom/dom';
 export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignore, surround(
   '[[',
   constraint(State.reference, false,
-  syntax(6, State.annotation | State.reference | State.media,
+  syntax(5, State.annotation | State.reference | State.media,
   subsequence([
     abbr,
-    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 2]])),
+    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 1]])),
   ]))),
   ']]',
   false,

@@ -12,12 +12,12 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   constraint(State.index, false,
-  syntax(2, State.linkers | State.media,
+  syntax(1, State.linkers | State.media,
   startTight(
   some(inits([
     inline,
     signature,
-  ]), ']', [[/^\\?\n/, 9], [']', 2]])))),
+  ]), ']', [[/^\\?\n/, 9], [']', 1]])))),
   ']',
   false,
   ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))], rest],
@@ -42,7 +42,7 @@ const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(0
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true, undefined, undefined, 3 | Backtrack.index),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true, undefined, undefined, 3 | Backtrack.index),
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true, undefined, undefined, 3 | Backtrack.index),
-  surround(str('"'), precedence(3, some(txt, '"')), str('"'), true, undefined, undefined, 3 | Backtrack.index),
+  surround(str('"'), precedence(2, some(txt, '"')), str('"'), true, undefined, undefined, 3 | Backtrack.index),
 ])));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {

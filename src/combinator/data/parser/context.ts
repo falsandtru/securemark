@@ -93,7 +93,7 @@ export function creation(cost: number, recursion: number, parser: Parser<unknown
 
 export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
 export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
-  assert(precedence > 0);
+  assert(precedence >= 0);
   return ({ source, context }) => {
     const p = context.precedence;
     context.precedence = precedence;

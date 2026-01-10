@@ -8,10 +8,10 @@ const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => validate('$', creation(1, Recursion.ignore, rewrite(
   union([
-    surround('$', precedence(6, bracket), '$'),
+    surround('$', precedence(5, bracket), '$'),
     surround(
       /^\$(?![\s{}])/,
-      precedence(3, some(union([
+      precedence(2, some(union([
         bracket,
         focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
       ]))),

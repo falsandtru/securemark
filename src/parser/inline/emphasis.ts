@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const emphasis: EmphasisParser = lazy(() => creation(1, Recursion.inline, surround(
   str('*', '*'),
-  syntax(1, State.none,
+  syntax(0, State.none,
   startTight(some(union([
     strong,
     some(inline, blankWith('*')),

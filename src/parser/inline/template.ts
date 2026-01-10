@@ -7,7 +7,7 @@ import { html } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => creation(1, Recursion.ignore, surround(
   '{{',
-  syntax(6, State.all, some(union([bracket, escsource]), '}')),
+  syntax(5, State.all, some(union([bracket, escsource]), '}')),
   '}}',
   true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest],
@@ -20,6 +20,6 @@ const bracket: TemplateParser.BracketParser = lazy(() => creation(0, Recursion.t
     undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.template),
   surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true,
     undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.template),
-  surround(str('"'), precedence(3, some(escsource, /^"|^\\?\n/)), str('"'), true,
+  surround(str('"'), precedence(2, some(escsource, /^"|^\\?\n/)), str('"'), true,
     undefined, undefined, 3 | Backtrack.template),
 ])));

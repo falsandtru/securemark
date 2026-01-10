@@ -13,8 +13,8 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
-  syntax(2, State.none,
-  startTight(some(union([inline]), ']', [[']', 2]]))),
+  syntax(1, State.none,
+  startTight(some(union([inline]), ']', [[']', 1]]))),
   str(']'), false,
   ([, bs], rest) => [[
     html('span', {
