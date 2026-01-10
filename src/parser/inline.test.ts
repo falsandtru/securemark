@@ -150,7 +150,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><span><span class="paren">((a))</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((${))}$')), [['(', '(', '<span class="math" translate="no" data-src="${))}$">${))}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<span class="paren">(<span class="paren">(a<br>b)</span>)</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('"((""))')), [['"', '<sup class="annotation"><span>""</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('"((""))')), [['"', '(', '(', '"', '"', ')', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]')), [['[', '<sup class="reference"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]')), [['[', '[', '<sup class="reference"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), [['<sup class="reference"><span>[[a]]</span></sup>'], '']);
@@ -159,7 +159,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[[a]{b}]]')), [['<sup class="reference"><span><a class="link" href="b">a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a class="link" href="#"><span class="paren">(<span class="paren">([a]{#})</span>)</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[${]]}$')), [['[', '[', '<span class="math" translate="no" data-src="${]]}$">${]]}$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '<sup class="reference"><span>""</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('"[[""]]')), [['"', '[', '[', '"', '"', ']', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[==a==]{b}')), [['<a class="link" href="b">==a==</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a](b)]{c}')), [['<a class="link" href="c"><ruby>a<rp>(</rp><rt>b</rt><rp>)</rp></ruby></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[[[[{a}')), [['[', '[', '[', '[', '[', '[', '[', '<a class="url" href="a">a</a>'], '']);
@@ -171,6 +171,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[^a@b')), [['[^', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('"[% *"*"*')), [['"', '[%', ' ', '*', '"', '*', '"', '*'], '']);
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]')), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('"{{""}}')), [['"', '{', '{', '"', '"', '}', '}'], '']);
     });
 
     it('uri', () => {
