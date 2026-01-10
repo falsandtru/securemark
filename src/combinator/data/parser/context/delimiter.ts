@@ -33,7 +33,7 @@ export class Delimiters {
     this.signature);
   private readonly registry = memoize<(signature: string) => Delimiter[]>(() => []);
   private readonly delimiters: Delimiter[] = [];
-  private readonly order: number[] = [];
+  private readonly stack: number[] = [];
   private readonly states: (readonly number[])[] = [];
   public push(
     delims: readonly {
@@ -42,14 +42,14 @@ export class Delimiters {
       readonly precedence: number;
     }[]
   ): void {
-    const { registry, delimiters, order } = this;
-    // 構文数x優先順位数以下
+    const { registry, delimiters, stack } = this;
+    // シグネチャ数以下
     assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
       const { signature, matcher, precedence } = delims[i];
-      const stack = registry(signature);
-      const index = stack[0]?.index ?? delimiters.length;
-      if (stack.length === 0 || precedence > delimiters[index].precedence) {
+      const memory = registry(signature);
+      const index = memory[0]?.index ?? delimiters.length;
+      if (memory.length === 0 || precedence > delimiters[index].precedence) {
         const delimiter: Delimiter = {
           index,
           signature,
@@ -58,34 +58,34 @@ export class Delimiters {
           state: true,
         };
         delimiters[index] = delimiter;
-        stack.push(delimiter);
-        order.push(index);
+        memory.push(delimiter);
+        stack.push(index);
       }
       else {
-        order.push(-1);
+        stack.push(-1);
       }
       // 現状各優先順位は固定
-      assert(stack.length === 1);
+      assert(memory.length === 1);
     }
   }
   public pop(count: number): void {
     assert(count > 0);
-    const { registry, delimiters, order } = this;
+    const { registry, delimiters, stack } = this;
     for (let i = 0; i < count; ++i) {
-      assert(this.order.length > 0);
-      const index = order.pop()!;
+      assert(this.stack.length > 0);
+      const index = stack.pop()!;
       if (index === -1) continue;
-      const stack = registry(delimiters[index].signature);
-      assert(stack.length > 0);
-      if (stack.length === 1) {
+      const memory = registry(delimiters[index].signature);
+      assert(memory.length > 0);
+      if (memory.length === 1) {
         assert(index === delimiters.length - 1);
-        assert(stack[0] === delimiters.at(-1));
-        stack.pop();
+        assert(memory[0] === delimiters.at(-1));
+        memory.pop();
         delimiters.pop();
       }
       else {
-        stack.pop();
-        delimiters[index] = stack.at(-1)!;
+        memory.pop();
+        delimiters[index] = memory.at(-1)!;
       }
     }
   }
