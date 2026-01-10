@@ -14,8 +14,8 @@ export const emphasis: EmphasisParser = lazy(() => creation(1, Recursion.inline,
   syntax(1, State.none,
   startTight(some(union([
     strong,
-    some(inline, blankWith('*'), [[/^\\?\n/, 9]]),
-    open(some(inline, '*', [[/^\\?\n/, 9]]), union([
+    some(inline, blankWith('*')),
+    open(some(inline, '*'), union([
       emstrong,
       strong,
       emphasis,

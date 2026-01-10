@@ -11,16 +11,16 @@ import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
-  some(inline, blankWith('**'), [[/^\\?\n/, 9]]),
-  open(some(inline, '*', [[/^\\?\n/, 9]]), union([
+  some(inline, blankWith('**')),
+  open(some(inline, '*'), union([
     emstrong,
     strong,
   ])),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
-  some(inline, blankWith('*'), [[/^\\?\n/, 9]]),
-  open(some(inline, '*', [[/^\\?\n/, 9]]), union([
+  some(inline, blankWith('*')),
+  open(some(inline, '*'), union([
     emstrong,
     strong,
     emphasis,
@@ -31,8 +31,8 @@ export const emstrong: EmStrongParser = lazy(() => creation(1, Recursion.inline,
   str('***'),
   syntax(1, State.none,
   startTight(some(union([
-    some(inline, blankWith('*'), [[/^\\?\n/, 9]]),
-    open(some(inline, '*', [[/^\\?\n/, 9]]), inline),
+    some(inline, blankWith('*')),
+    open(some(inline, '*'), inline),
   ])))),
   str(/^\*{1,3}/), false,
   ([, bs, cs], rest, context): Result<HTMLElement | string, typeof context> => {
