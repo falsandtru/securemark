@@ -13,8 +13,8 @@ export const mark: MarkParser = lazy(() => creation(1, Recursion.inline, surroun
   constraint(State.mark, false,
   syntax(1, State.none,
   startTight(some(union([
-    some(inline, blankWith('=='), [[/^\\?\n/, 9]]),
-    open(some(inline, '=', [[/^\\?\n/, 9]]), mark),
+    some(inline, blankWith('==')),
+    open(some(inline, '='), mark),
   ]))))),
   str('=='), false,
   ([, bs], rest, { id }) => {

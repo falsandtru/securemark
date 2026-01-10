@@ -105,7 +105,7 @@ assert(baseR(61, 62) === 'Z');
 assert(baseR(62, 62) === '10');
 
 export function signature(source: Element | DocumentFragment): string {
-  assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
+  assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))') || source.nodeName === 'MARK');
   const target = source.cloneNode(true) as typeof source;
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
@@ -116,10 +116,12 @@ export function signature(source: Element | DocumentFragment): string {
         continue;
       case 'RT':
       case 'RP':
-      case 'BR':
       case 'UL':
       case 'OL':
         el.remove();
+        continue;
+      case 'BR':
+        el.replaceWith('\n');
         continue;
     }
     switch (el.className) {
