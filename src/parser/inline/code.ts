@@ -10,7 +10,7 @@ export const code: CodeParser = creation(1, Recursion.ignore, validate('`', matc
 
 function format(text: string): string {
   assert(text.length > 0);
-  return `${text[0]}${text[text.length - 1]}` === '  '
+  return `${text[0]}${text.at(-1)}` === '  '
       && text.trimStart()
     ? text.slice(1, -1)
     : text;

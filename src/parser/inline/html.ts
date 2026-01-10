@@ -208,7 +208,7 @@ const TAGS = Object.freeze([
 
 function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
   assert(as.length > 0);
-  assert(as[0][0] === '<' && as[as.length - 1].slice(-1) === '>');
+  assert(as[0][0] === '<' && as.at(-1)!.slice(-1) === '>');
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
   if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
   if (bs.length === 0) return invalid('content', `Missing the content`, as, bs, cs);

@@ -12,7 +12,7 @@ export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.i
   sequence([
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];
-      ns && ns[ns.length - 1] === '' && ns.pop();
+      ns && ns.at(-1) === '' && ns.pop();
       return ns && isStartTightNodes(ns) ? [[ns], rest] : undefined;
     }),
     bind(surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {

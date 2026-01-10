@@ -32,7 +32,7 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
 
 function trimBlockEnd(block: string): string {
   return block === ''
-      || block[block.length - 1] !== '\n'
+      || block.at(-1) !== '\n'
     ? block
     : block.slice(0, -1);
 }

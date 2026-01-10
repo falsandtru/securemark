@@ -120,7 +120,7 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
 }
 //export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
 //  if (nodes.length === 0) return true;
-//  return isVisible(nodes[nodes.length - 1], -1);
+//  return isVisible(nodes.at(-1)!, -1);
 //}
 function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   switch (typeof node) {
@@ -186,11 +186,11 @@ function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser
 //}
 export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
-    typeof nodes[nodes.length - 1] === 'object' &&
-    nodes[nodes.length - 1]['className'] === 'indexer'
+    typeof nodes.at(-1) === 'object' &&
+    nodes.at(-1)!['className'] === 'indexer'
     ? [nodes.pop()!]
     : [];
-  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
+  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes.at(-1)!, -1);) {
     if (typeof node === 'string') {
       const pos = node.trimEnd().length;
       if (pos > 0) {
