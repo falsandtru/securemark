@@ -597,7 +597,7 @@
   em {
     font-style: normal;
     /* リンクの下線と競合しないよう枠線を使用 */
-    border-bottom: solid 1px red;
+    border-block-end: solid 1px red;
   }
   strong {
     font-weight: bolder;
@@ -624,10 +624,14 @@
     text-decoration: inherit;
   }
   ins {
-    background-image: linear-gradient(transparent 70%, #acf2bd 0%);
+    background-image: linear-gradient(transparent 80%, #acf2bd 0%);
   }
   del {
-    background-image: linear-gradient(transparent 70%, #b8e4fd 0%);
+    background-image: linear-gradient(transparent 80%, #b8e4fd 0%);
+  }
+  :is(ins, del) :is(ins, del) {
+    background-image: none;
+    margin-inline: .1em;
   }
   :is(ins, del)::before {
     position: relative;
@@ -644,6 +648,32 @@
     content: "del";
     color: blue;
   }
+  :is(ins, del) ins {
+    border-block-start: solid 1px green;
+  }
+  :is(ins, del) del {
+    border-block-start: dotted 1px blue;
+  }
+  :is(ins, del) :is(ins, del) {
+    padding-block-start: 0px;
+  }
+  :is(ins, del) :is(ins, del) :is(ins, del) {
+    padding-block-start: 2px;
+  }
+  :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) {
+    padding-block-start: 4px;
+  }
+  :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) {
+    padding-block-start: 6px;
+  }
+  :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) {
+    padding-block-start: 8px;
+    line-height: 1.6;
+  }
+  :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) :is(ins, del) {
+    padding-block-start: 10px;
+    line-height: 1.7;
+  }
   code {
     background-color: #f0f0f0;
     margin: 0;
@@ -657,15 +687,34 @@
   :is(ins, del) code {
     background-image: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
-  .paren {
-    color: #444;
+  .paren:has(.paren),
+  .paren .paren {
+    border-block-end: dashed 1px #aaa;
   }
-  .paren > .paren {
-    font-size: 95%;
-    color: #666;
+  .paren:has(.paren) {
+    padding-block-end: 2px;
   }
-  .remark .paren {
-    color: inherit;
+  .paren .paren {
+    padding-block-end: 4px;
+  }
+  .paren .paren .paren {
+    padding-block-end: 6px;
+  }
+  .paren .paren .paren .paren {
+    padding-block-end: 8px;
+    line-height: 1.6;
+  }
+  .paren .paren .paren .paren .paren {
+    padding-block-end: 10px;
+    line-height: 1.7;
+  }
+  .paren .paren .paren .paren .paren .paren {
+    padding-block-end: 12px;
+    line-height: 1.9;
+  }
+  .paren .paren .paren .paren .paren .paren .paren {
+    padding-block-end: 14px;
+    line-height: 2.0;
   }
   .remark {
     font-style: initial;
