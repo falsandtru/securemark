@@ -31,6 +31,7 @@ export const bracket: BracketParser = lazy(() => union([
   surround(str('｛'), creation(0, Recursion.bracket, syntax(2, State.none, some(inline, '｝', [['｝', 2]]))), str('｝'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
   surround(str('"'), creation(0, Recursion.bracket, syntax(3, State.none, some(inline, '"', [[/^\\?\n/, 9], ['"', 3]]))), str('"'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),

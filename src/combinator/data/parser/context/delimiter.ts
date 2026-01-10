@@ -41,6 +41,8 @@ export class Delimiters {
     }[]
   ): void {
     const { registry, delimiters, order } = this;
+    // 構文数x優先順位数以下
+    assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
       const { signature, matcher, precedence } = delims[i];
       const stack = registry(signature);
@@ -59,6 +61,8 @@ export class Delimiters {
       else {
         order.push(-1);
       }
+      // 現状各優先順位は固定
+      assert(stack.length === 1);
     }
   }
   public pop(count: number): void {
