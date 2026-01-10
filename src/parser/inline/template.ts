@@ -7,7 +7,7 @@ import { html } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => creation(1, Recursion.ignore, surround(
   '{{',
-  syntax(6, State.all, some(union([bracket, escsource]), '}', [['}}', 6]])),
+  syntax(6, State.all, some(union([bracket, escsource]), '}')),
   '}}',
   true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('').replace(/\x1B/g, '')}}}`)], rest],
