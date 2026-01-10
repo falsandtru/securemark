@@ -32,10 +32,10 @@ export const enum Recursion {
 
 export const enum Backtrack {
   template = 7 << 2,
-  media = 6 << 2,
+  index = 6 << 2,
   ruby = 5 << 2,
   link = 4 << 2,
-  index = 3 << 2,
+  media = 3 << 2,
   url = 2 << 2,
   bracket = 1 << 2,
 }
