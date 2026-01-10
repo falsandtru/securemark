@@ -95,9 +95,12 @@ export function precedence<P extends Parser<unknown>>(precedence: number, parser
 export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
   assert(precedence >= 0);
   return ({ source, context }) => {
-    const p = context.precedence;
+    const { delimiters, precedence: p = 0 } = context;
+    const shift = precedence > p;
     context.precedence = precedence;
+    shift && delimiters?.shift(precedence);
     const result = parser({ source, context });
+    shift && delimiters?.unshift();
     context.precedence = p;
     return result;
   };

@@ -5,6 +5,7 @@ interface Delimiter {
   readonly signature: string;
   readonly matcher: (source: string) => boolean | undefined;
   readonly precedence: number;
+  state: boolean;
 }
 
 export class Delimiters {
@@ -33,6 +34,7 @@ export class Delimiters {
   private readonly registry = memoize<(signature: string) => Delimiter[]>(() => []);
   private readonly delimiters: Delimiter[] = [];
   private readonly order: number[] = [];
+  private readonly states: (readonly number[])[] = [];
   public push(
     delims: readonly {
       readonly signature: string;
@@ -53,6 +55,7 @@ export class Delimiters {
           signature,
           matcher,
           precedence,
+          state: true,
         };
         delimiters[index] = delimiter;
         stack.push(delimiter);
@@ -86,11 +89,29 @@ export class Delimiters {
       }
     }
   }
+  public shift(precedence: number): void {
+    const { delimiters } = this;
+    const indexes: number[] = [];
+    for (let i = delimiters.length; i--;) {
+      const delimiter = delimiters[i];
+      if (delimiter.precedence >= precedence || !delimiter.state) continue;
+      delimiter.state = false;
+      indexes.push(i)
+    }
+    this.states.push(indexes);
+  }
+  public unshift(): void {
+    const { delimiters } = this;
+    const indexes = this.states.pop()!;
+    for (let i = indexes.length; i--;) {
+      delimiters[indexes[i]].state = true;
+    }
+  }
   public match(source: string, precedence = 0): boolean {
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
-      if (precedence >= delimiter.precedence) continue;
+      if (delimiter.precedence <= precedence || !delimiter.state) continue;
       switch (delimiter.matcher(source)) {
         case true:
           return true;
