@@ -59,10 +59,10 @@ export function surround<T>(
       const { logger = {}, offset = 0 } = context;
       for (let i = 0; i < source.length - mr_.length; ++i) {
         if (source[i] !== source[0]) break;
-        const j = source.length + offset - i;
-        if (!(j in logger)) continue;
+        const pos = source.length + offset - i - 1;
+        if (!(pos in logger)) continue;
         assert(log >>> 2);
-        if (logger[j] & 1 << (log >>> 2)) return;
+        if (logger[pos] & 1 << (log >>> 2)) return;
       }
     }
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
@@ -77,7 +77,7 @@ export function surround<T>(
     if (rest.length === lmr_.length) return;
     if (log & 2 && rr === undefined) {
       const { logger = {}, offset = 0 } = context;
-      logger[source.length + offset] |= 1 << (log >>> 2);
+      logger[source.length + offset - 1] |= 1 << (log >>> 2);
     }
     return rr
       ? f
