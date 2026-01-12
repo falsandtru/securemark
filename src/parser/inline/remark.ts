@@ -1,6 +1,6 @@
 import { RemarkParser } from '../inline';
 import { State, Recursion } from '../context';
-import { union, some, syntax, creation, validate, surround, open, close, match, lazy } from '../../combinator';
+import { union, some, syntax, creation, validate, surround, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { memoize } from 'spica/memoize';
@@ -12,7 +12,7 @@ export const remark: RemarkParser = lazy(() => validate('[%', creation(1, Recurs
   memoize(
   ([, fence]) =>
     surround(
-      open(str(`[${fence}`), some(text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true),
+      str(`[${fence}`),
       syntax(4, State.none, some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]])),
       close(some(text, '%'), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
