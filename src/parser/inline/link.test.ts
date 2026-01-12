@@ -1,10 +1,15 @@
-import { link } from './link';
-import { some } from '../../combinator';
+import { LinkParser } from '../inline';
+import { textlink, medialink } from './link';
+import { some, union } from '../../combinator';
 import { inspect } from '../../debug.test';
 import { MarkdownParser } from '../../../markdown';
 
 describe('Unit: parser/inline/link', () => {
   describe('link', () => {
+    const link: LinkParser = union([
+      medialink,
+      textlink,
+    ]);
     const parser = (source: string, context: MarkdownParser.Context = {}) => some(link)({ source, context });
 
     it('xss', () => {

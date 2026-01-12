@@ -15,11 +15,6 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => union([
-  medialink,
-  textlink,
-]));
-
 export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
   constraint(State.link, false,
   syntax(1, State.linkers | State.media,
