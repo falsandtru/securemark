@@ -1,6 +1,6 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command, CmdRegExp } from '../context';
-import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -24,7 +24,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, 
   bind(verify(fmap(tails([
     dup(surround(
       '[',
-      syntax(1, ~State.link,
+      precedence(1,
       some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.media)),
