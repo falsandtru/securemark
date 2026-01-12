@@ -1,6 +1,6 @@
 import { HTMLParser } from '../inline';
-import { State, Recursion } from '../context';
-import { union, subsequence, some, syntax, creation, validate, focus, surround, open, match, lazy } from '../../combinator';
+import { Recursion } from '../context';
+import { union, subsequence, some, creation, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isStartLooseNodes, blankWith } from '../visibility';
@@ -36,7 +36,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-          syntax(3, State.none,
+          precedence(3,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
@@ -54,7 +54,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(surround(
           str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-          syntax(3, State.none,
+          precedence(3,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(inline, `</${tag}>`, [[`</${tag}>`, 3]]),

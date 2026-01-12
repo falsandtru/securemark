@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
-import { State, Recursion, Backtrack } from '../../context';
-import { union, some, syntax, creation, validate, surround, lazy } from '../../../combinator';
+import { Recursion, Backtrack } from '../../context';
+import { union, some, creation, precedence, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight } from '../../visibility';
@@ -13,7 +13,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
-  syntax(1, State.none,
+  precedence(1,
   startTight(some(union([inline]), ']', [[']', 1]]))),
   str(']'), false,
   ([, bs], rest) => [[

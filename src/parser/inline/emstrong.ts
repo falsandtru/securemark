@@ -1,7 +1,7 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
-import { State, Recursion } from '../context';
+import { Recursion } from '../context';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, syntax, creation, some, surround, open, lazy, bind } from '../../combinator';
+import { union, creation, precedence, some, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
@@ -29,7 +29,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 
 export const emstrong: EmStrongParser = lazy(() => creation(1, Recursion.inline, surround(
   str('***'),
-  syntax(0, State.none,
+  precedence(0,
   startTight(some(union([
     some(inline, blankWith('*')),
     open(some(inline, '*'), inline),

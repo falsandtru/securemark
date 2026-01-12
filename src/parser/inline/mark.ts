@@ -1,6 +1,6 @@
 import { MarkParser } from '../inline';
 import { State, Recursion } from '../context';
-import { union, some, syntax, creation, constraint, surround, open, lazy } from '../../combinator';
+import { union, some, creation, precedence, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
 import { str } from '../source';
@@ -11,7 +11,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 export const mark: MarkParser = lazy(() => creation(1, Recursion.inline, surround(
   str('==', '='),
   constraint(State.mark, false,
-  syntax(0, State.none,
+  precedence(0,
   startTight(some(union([
     some(inline, blankWith('==')),
     open(some(inline, '='), mark),

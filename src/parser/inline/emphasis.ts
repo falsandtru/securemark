@@ -1,6 +1,6 @@
 import { EmphasisParser } from '../inline';
-import { State, Recursion } from '../context';
-import { union, some, syntax, creation, surround, open, lazy } from '../../combinator';
+import { Recursion } from '../context';
+import { union, some, creation, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { strong } from './strong';
@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const emphasis: EmphasisParser = lazy(() => creation(1, Recursion.inline, surround(
   str('*', '*'),
-  syntax(0, State.none,
+  precedence(0,
   startTight(some(union([
     strong,
     some(inline, blankWith('*')),

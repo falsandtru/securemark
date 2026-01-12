@@ -1,6 +1,6 @@
 import { DeletionParser } from '../inline';
-import { State, Recursion } from '../context';
-import { union, some, syntax, creation, surround, open, lazy } from '../../combinator';
+import { Recursion } from '../context';
+import { union, some, creation, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { blankWith } from '../visibility';
@@ -9,7 +9,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const deletion: DeletionParser = lazy(() => creation(1, Recursion.inline, surround(
   str('~~', '~'),
-  syntax(0, State.none,
+  precedence(0,
   some(union([
     some(inline, blankWith('\n', '~~')),
     open('\n', some(inline, '~'), true),
