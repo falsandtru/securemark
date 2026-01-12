@@ -12,12 +12,12 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   constraint(State.index, false,
-  state(State.linkers | State.media,
+  precedence(1, state(State.linkers | State.media,
   startTight(
   some(inits([
     inline,
     signature,
-  ]), ']', [['\n', 9], [']', 1]])))),
+  ]), ']', [['\n', 9], [']', 1]]))))),
   ']',
   false,
   ([, ns], rest) =>
