@@ -1,5 +1,5 @@
 import { RubyParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
 import { sequence, syntax, creation, validate, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
@@ -91,8 +91,8 @@ function attributes(texts: string[], rubies: string[]): Record<string, string> {
   let attrs: Record<string, string> | undefined;
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
-      if (!ss[i].includes('\x1B')) continue;
-      ss[i] = ss[i].replace(/\x1B/g, '');
+      if (!ss[i].includes(Command.Escape)) continue;
+      ss[i] = ss[i].replace(CmdRegExp.Escape, '');
       attrs ??= {
         class: 'invalid',
         'data-invalid-syntax': 'ruby',

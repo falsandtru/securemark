@@ -1,5 +1,5 @@
 import { EscapableSourceParser } from '../source';
-import { Recursion } from '../context';
+import { Recursion, Command } from '../context';
 import { creation } from '../../combinator';
 import { nonWhitespace } from './text';
 
@@ -17,7 +17,7 @@ export const escsource: EscapableSourceParser = creation(1, Recursion.ignore, ({
           assert(!source.includes('\r', 1));
           context.resources && ++context.resources.clock;
           return [[], source.slice(1)];
-        case '\x1B':
+        case Command.Escape:
           return [[source.slice(1, 2)], source.slice(2)];
         case '\\':
           switch (source[1]) {

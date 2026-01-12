@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, Command, CmdRegExp } from '../context';
 import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
@@ -105,8 +105,8 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
       markInvalid(target, 'media', 'argument', 'Invalid protocol');
       return false;
   }
-  if (alt.includes('\x1B')) {
-    define(target, { alt: target.getAttribute('alt')?.replace(/\x1B/g, '') });
+  if (alt.includes(Command.Escape)) {
+    define(target, { alt: target.getAttribute('alt')?.replace(CmdRegExp.Escape, '') });
     markInvalid(target, 'media', 'content',
       `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`);
     return false;

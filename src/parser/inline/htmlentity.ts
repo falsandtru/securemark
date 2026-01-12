@@ -1,17 +1,17 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
-import { Recursion } from '../context';
+import { Recursion, Command } from '../context';
 import { union, creation, validate, focus, fmap } from '../../combinator';
 import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(1, Recursion.ignore, validate('&', focus(
   /^&[0-9A-Za-z]{1,99};/,
-  ({ source }) => [[parse(source) ?? `\x1B${source}`], ''])));
+  ({ source }) => [[parse(source) ?? `${Command.Escape}${source}`], ''])));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([text]) => [
-    text[0] === '\x1B'
+    text[0] === Command.Escape
       ? html('span', {
           class: 'invalid',
           'data-invalid-syntax': 'htmlentity',

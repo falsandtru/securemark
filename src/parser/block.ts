@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { Recursion } from './context';
+import { Recursion, Command } from './context';
 import { union, reset, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
@@ -71,8 +71,9 @@ export const block: BlockParser = reset(
   ])));
 
 function error(parser: BlockParser): BlockParser {
+  const reg = new RegExp(String.raw`^${Command.Error}.*\n`)
   return recover<BlockParser>(fallback(
-    open('\x07', ({source}) => { throw new Error(source.split('\n', 1)[0]); }),
+    open(Command.Error, ({ source }) => { throw new Error(source.split('\n', 1)[0]); }),
     parser),
     ({ source, context: { id } }, reason) => [[
       html('h1',
@@ -89,7 +90,7 @@ function error(parser: BlockParser): BlockParser {
           translate: 'no',
         },
         source
-          .replace(/^\x07.*\n/, '')
+          .replace(reg, '')
           .slice(0, 1001)
           .replace(/^(.{997}).{4}$/s, '$1...') || undefined),
     ], '']);

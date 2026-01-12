@@ -1,4 +1,5 @@
 import { MarkdownParser } from '../../markdown';
+import { Command } from './context';
 import { Parser, Input, eval } from '../combinator/data/parser';
 import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
@@ -21,7 +22,7 @@ export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return union([
     convert(
-      source => source.replace(blank.line, line => line.replace(/[\\&<]/g, '\x1B$&')),
+      source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${Command.Escape}$&`)),
       verify(parser, (ns, rest) => !rest && hasVisible(ns))),
     some(union([linebreak, unescsource])),
   ]);
@@ -64,7 +65,7 @@ export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): Reg
 //}
 //const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
 //  return isStartTight({ source: source.replace(blank.start, ''), context }, except);
-//}, ({ source }, except = '') => `${source}\x1E${except}`);
+//}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
 export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
 export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
@@ -103,7 +104,7 @@ const isStartTight = reduce(({ source, context }: Input<MarkdownParser.Context>,
     default:
       return source[0].trimStart() !== '';
   }
-}, ({ source }, except = '') => `${source}\x1E${except}`);
+}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
 export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;

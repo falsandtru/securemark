@@ -38,3 +38,13 @@ export const enum Backtrack {
   url = 2 << 2,
   bracket = 1 << 2,
 }
+
+export const enum Command {
+  Error = '\x07',
+  Escape = '\x1B',
+  Separator = '\x1F',
+}
+
+export const CmdRegExp = {
+  Escape: /\x1B/g,
+} as const;

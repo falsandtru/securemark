@@ -1,5 +1,5 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { Recursion } from '../context';
+import { Recursion, Command } from '../context';
 import { union, creation, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
@@ -21,12 +21,12 @@ export const text: TextParser = creation(1, Recursion.ignore, ({ source, context
           assert(!source.includes('\r', 1));
           context.resources && ++context.resources.clock;
           return [[], source.slice(1)];
-        case '\x1B':
+        case Command.Escape:
         case '\\':
           switch (source[1]) {
             case undefined:
             case '\n':
-              assert(source[0] !== '\x1B');
+              assert(source[0] !== Command.Escape);
               return [[], source.slice(1)];
             default:
               return [[source.slice(1, 2)], source.slice(2)];
