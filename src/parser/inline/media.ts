@@ -24,8 +24,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, 
   bind(verify(fmap(tails([
     dup(surround(
       '[',
-      precedence(1,
-      some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]])),
+      precedence(1, some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.media)),
     dup(surround(
