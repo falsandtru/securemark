@@ -26,15 +26,17 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
       () => [[h('wbr')], '']),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), some(union([attribute])), str(/^[^\S\n]*>/), true,
+      str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i),
+      some(union([attribute])),
+      str(/^[^\S\n]*>/), true,
       ([as, bs = [], cs], rest) =>
         [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
     match(
       new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
       memoize(
       ([, tag]) =>
-        surround<HTMLParser.TagParser, string>(surround(
-          str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
+        surround<HTMLParser.TagParser, string>(
+          surround(str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
