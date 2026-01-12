@@ -603,7 +603,7 @@ export namespace MarkdownParser {
         Block<'reply/cite'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
           SourceParser.StrParser,
-          Parser<HTMLAnchorElement, Context, [
+          Parser<string | HTMLAnchorElement, Context, [
             InlineParser.AutolinkParser.AnchorParser,
             Parser<HTMLAnchorElement, Context, []>,
             Parser<HTMLAnchorElement, Context, []>,
@@ -1147,8 +1147,9 @@ export namespace MarkdownParser {
       export interface UrlParser extends
         // https://host
         Inline<'url'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export namespace UrlParser {
@@ -1156,7 +1157,10 @@ export namespace MarkdownParser {
           Inline<'url/lineurl'>,
           Parser<string | HTMLElement, Context, [
             SourceParser.StrParser,
-            InlineParser.LinkParser.UnsafeLinkParser,
+            Parser<string | HTMLElement, Context, [
+              InlineParser.LinkParser.UnsafeLinkParser,
+              Parser<string, Context, []>,
+            ]>,
           ]> {
         }
         export interface BracketParser extends
@@ -1188,7 +1192,7 @@ export namespace MarkdownParser {
       export interface ChannelParser extends
         // @user#tag
         Inline<'channel'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           InlineParser.AutolinkParser.AccountParser,
           InlineParser.AutolinkParser.HashtagParser,
         ]> {
@@ -1196,29 +1200,33 @@ export namespace MarkdownParser {
       export interface AccountParser extends
         // @user
         Inline<'account'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export interface HashnumParser extends
         // #1
         Inline<'hashnum'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
     }

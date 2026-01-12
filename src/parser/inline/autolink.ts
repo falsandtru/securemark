@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, syntax, constraint, validate, lazy, fmap } from '../../combinator';
+import { union, some, syntax, validate, lazy, fmap } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -13,8 +13,7 @@ import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>
   validate(/^(?:[@#>0-9a-z]|\S[#>]|[\r\n]!?https?:\/\/)/iu,
-  constraint(State.autolink, false,
-  syntax(0, ~State.shortcut,
+  syntax(0, ~State.shortcut ^ State.autolink,
   union([
     some(union([lineurl])),
     fmap(some(union([
@@ -37,4 +36,4 @@ export const autolink: AutolinkParser = lazy(() =>
       anchor,
     ])),
     ns => ns.length === 1 ? ns : [stringify(ns)]),
-  ])))));
+  ]))));

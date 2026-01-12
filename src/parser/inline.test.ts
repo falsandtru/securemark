@@ -173,6 +173,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"[% *"*"*')), [['"', '[%', ' ', '*', '"', '*', '"', '*'], '']);
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]')), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('"{{""}}')), [['"', '{', '{', '"', '"', '}', '}'], '']);
+      assert.deepStrictEqual(inspect(parser('[#http://a/(<bdi>)]</bdi>')), [['<a class="index" href="#index::http://a/(&lt;bdi&gt;)">http://a/(&lt;bdi&gt;)</a>', '<', '/', 'bdi', '>'], '']);
     });
 
     it('uri', () => {
