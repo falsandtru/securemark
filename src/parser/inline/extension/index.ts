@@ -4,7 +4,7 @@ import { union, inits, some, syntax, creation, precedence, constraint, validate,
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, trimNodeEnd } from '../../visibility';
+import { startTight, trimBlankNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -20,7 +20,7 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   ]), ']', [['\n', 9], [']', 1]])))),
   ']',
   false,
-  ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))], rest],
+  ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimBlankNodeEnd(defrag(ns)))], rest],
   undefined, 1 | Backtrack.bracket)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,

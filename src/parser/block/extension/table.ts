@@ -5,7 +5,7 @@ import { union, subsequence, inits, some, block, line, validate, fence, rewrite,
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { lineable } from '../../util';
-import { visualize, trimBlankStart, trimNodeEnd } from '../../visibility';
+import { visualize, trimBlankStart, trimBlankNodeEnd } from '../../visibility';
 import { unshift, splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -92,7 +92,7 @@ const head: CellParser.HeadParser = block(fmap(open(
       open(/^(?:\s*\n|\s)/, visualize(trimBlankStart(some(inline))), true),
     ])),
   true),
-  ns => [html('th', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
+  ns => [html('th', attributes(ns.shift()! as string), trimBlankNodeEnd(defrag(ns)))]),
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
@@ -109,7 +109,7 @@ const data: CellParser.DataParser = block(fmap(open(
       open(/^(?:\s*\n|\s)/, visualize(lineable(some(inline))), true),
     ])),
   true),
-  ns => [html('td', attributes(ns.shift()! as string), trimNodeEnd(defrag(ns)))]),
+  ns => [html('td', attributes(ns.shift()! as string), trimBlankNodeEnd(defrag(ns)))]),
   false);
 
 const dataline: CellParser.DatalineParser = line(

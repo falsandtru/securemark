@@ -2,7 +2,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
-import { trimBlankStart, trimNodeEnd } from '../visibility';
+import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -59,11 +59,11 @@ const cell: CellParser = surround(
 
 const head: CellParser.HeadParser = fmap(
   cell,
-  ns => [html('th', trimNodeEnd(defrag(ns)))]);
+  ns => [html('th', trimBlankNodeEnd(defrag(ns)))]);
 
 const data: CellParser.DataParser = fmap(
   cell,
-  ns => [html('td', trimNodeEnd(defrag(ns)))]);
+  ns => [html('td', trimBlankNodeEnd(defrag(ns)))]);
 
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
   const aligns = rows[0].className === 'invalid'

@@ -3,7 +3,7 @@ import { State, Recursion, Backtrack } from '../context';
 import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { blank, trimBlankStart, trimNodeEnd } from '../visibility';
+import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignore, surround(
@@ -16,7 +16,7 @@ export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignor
   ]))),
   ']]',
   false,
-  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimNodeEnd(defrag(ns)))])], rest],
+  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimBlankNodeEnd(defrag(ns)))])], rest],
   undefined, 1 | Backtrack.bracket)));
 
 // Chicago-Style

@@ -163,12 +163,12 @@ function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
 function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return fmap(
     parser,
-    trimNodeEnd);
+    trimBlankNodeEnd);
 }
-//export function trimNode<T extends HTMLElement | string>(nodes: T[]): T[] {
-//  return trimNodeStart(trimNodeEnd(nodes));
+//export function trimBlankNode<T extends HTMLElement | string>(nodes: T[]): T[] {
+//  return trimBlankNodeStart(trimBlankNodeEnd(nodes));
 //}
-//function trimNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
+//function trimBlankNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
 //  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
 //    if (typeof node === 'string') {
 //      const pos = node.trimStart().length;
@@ -184,7 +184,7 @@ function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser
 //  }
 //  return nodes;
 //}
-export function trimNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
+export function trimBlankNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
   const skip = nodes.length > 0 &&
     typeof nodes.at(-1) === 'object' &&
     nodes.at(-1)!['className'] === 'indexer'

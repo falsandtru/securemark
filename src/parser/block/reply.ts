@@ -5,7 +5,7 @@ import { quote, syntax as delimiter } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { lineable } from '../util';
-import { visualize, trimNodeEnd } from '../visibility';
+import { visualize, trimBlankNodeEnd } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -30,4 +30,4 @@ export const reply: ReplyParser = block(validate('>', fmap(
         ns => push(ns, [html('br')])),
     ])),
   ]),
-  ns => [html('p', trimNodeEnd(defrag(ns)))])));
+  ns => [html('p', trimBlankNodeEnd(defrag(ns)))])));

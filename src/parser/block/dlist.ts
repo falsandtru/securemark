@@ -4,7 +4,7 @@ import { union, inits, some, state, block, line, validate, rewrite, open, lazy, 
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
 import { lineable } from '../util';
-import { visualize, trimBlankStart, trimNodeEnd } from '../visibility';
+import { visualize, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -21,7 +21,7 @@ const term: DListParser.TermParser = line(indexee(fmap(open(
   /^~[^\S\n]+(?=\S)/,
   visualize(trimBlankStart(some(union([indexer, inline])))),
   true),
-  ns => [html('dt', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))])));
+  ns => [html('dt', { 'data-index': dataindex(ns) }, trimBlankNodeEnd(defrag(ns)))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
@@ -29,7 +29,7 @@ const desc: DListParser.DescriptionParser = block(fmap(open(
     some(anyline, /^[~:][^\S\n]+\S/),
     visualize(lineable(some(union([inline]))))),
   true),
-  ns => [html('dd', trimNodeEnd(defrag(ns)))]),
+  ns => [html('dd', trimBlankNodeEnd(defrag(ns)))]),
   false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {

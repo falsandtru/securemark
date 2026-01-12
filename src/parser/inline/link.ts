@@ -5,7 +5,7 @@ import { union, inits, tails, sequence, some, constraint, syntax, creation, prec
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
-import { trimBlankStart, trimNodeEnd } from '../visibility';
+import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -33,7 +33,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     assert(content[0] !== '');
-    if (content.length !== 0 && trimNodeEnd(content = defrag(content)).length === 0) return;
+    if (content.length !== 0 && trimBlankNodeEnd(content = defrag(content)).length === 0) return;
     return [[parse(content, params, context)], rest];
   }))))));
 

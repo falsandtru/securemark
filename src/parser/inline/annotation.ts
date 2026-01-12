@@ -2,7 +2,7 @@ import { AnnotationParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
 import { union, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { trimBlankStart, trimNodeEnd } from '../visibility';
+import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => creation(1, Recursion.ignore, surround(
@@ -12,5 +12,5 @@ export const annotation: AnnotationParser = lazy(() => creation(1, Recursion.ign
   trimBlankStart(some(union([inline]), ')', [['\n', 9], [')', 1]])))),
   '))',
   false,
-  ([, ns], rest) => [[html('sup', { class: 'annotation' }, [html('span', trimNodeEnd(defrag(ns)))])], rest],
+  ([, ns], rest) => [[html('sup', { class: 'annotation' }, [html('span', trimBlankNodeEnd(defrag(ns)))])], rest],
   undefined, 1 | Backtrack.bracket)));
