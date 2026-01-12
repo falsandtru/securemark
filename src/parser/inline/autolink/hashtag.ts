@@ -11,13 +11,12 @@ import { define } from 'typed-dom/dom';
 export const emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
 
 export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
-  constraint(State.shortcut, false,
   open(
     '#',
     str(new RegExp([
       /^(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|')))/u.source,
       /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
-    ].join('').replace(/emoji/g, emoji), 'u')))),
+    ].join('').replace(/emoji/g, emoji), 'u'))),
   union([
     constraint(State.autolink, false, syntax(0, State.autolink, fmap(convert(
       source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,

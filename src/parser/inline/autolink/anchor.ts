@@ -15,7 +15,6 @@ import { define } from 'typed-dom/dom';
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
 
 export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
-  constraint(State.shortcut, false,
   focus(
     /^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i,
     union([
@@ -28,4 +27,4 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
         unsafelink),
         ([el]) => [define(el, { class: 'anchor' })]))),
       ({ source }) => [[source], ''],
-    ])))));
+    ]))));

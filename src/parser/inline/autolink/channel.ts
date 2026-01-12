@@ -9,7 +9,7 @@ import { define } from 'typed-dom/dom';
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 
 export const channel: AutolinkParser.ChannelParser = validate('@',
-  constraint(State.autolink | State.shortcut, false, bind(
+  constraint(State.autolink, false, bind(
   sequence([
     account,
     some(hashtag),
