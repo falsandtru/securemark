@@ -61,7 +61,8 @@ export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   /^(?=[^\S\n]*(?:$|\n))/);
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
-  creation(1, Recursion.ignore, precedence(1,
+  creation(1, Recursion.ignore,
+  precedence(1,
   bind(reverse(tails([
     dup(surround(
       '[',

@@ -8,7 +8,8 @@ import { isStartTightNodes } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, syntax(1, State.all, fmap(
+export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, fmap(
+  syntax(1, State.all,
   sequence([
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];
@@ -19,7 +20,7 @@ export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.i
       const ns = eval(text({ source, context }), [undefined])[0];
       return ns && [[ns], rest];
     }),
-  ]),
+  ])),
   ([texts, rubies]) => {
     switch (true) {
       case rubies.length <= texts.length:
@@ -50,7 +51,7 @@ export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.i
             [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]))),
         ];
     }
-  })))));
+  }))));
 
 const text: RubyParser.TextParser = creation(1, Recursion.ignore, ({ source, context }) => {
   const acc = [''];

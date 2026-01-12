@@ -18,48 +18,50 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline, syntax(3, State.none, union([
-  focus(
-    /^<wbr[^\S\n]*>/i,
-    () => [[h('wbr')], '']),
-  surround(
-    // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-    str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), some(union([attribute])), str(/^[^\S\n]*>/), true,
-    ([as, bs = [], cs], rest) =>
-      [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
-  match(
-    new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
-    memoize(
-    ([, tag]) =>
-      surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-        subsequence([
-          focus(/^[^\S\n]*\n/, some(inline)),
-          some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
-        ]),
-        str(`</${tag}>`), true,
-        ([as, bs = [], cs], rest) =>
-          [[elem(tag, as, bs, cs)], rest],
-        ([as, bs = []], rest) =>
-          [[elem(tag, as, bs, [])], rest]))),
-  match(
-    /^<([a-z]+)(?=[^\S\n]|>)/i,
-    memoize(
-    ([, tag]) =>
-      surround<HTMLParser.TagParser, string>(surround(
-        str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-        subsequence([
-          focus(/^[^\S\n]*\n/, some(inline)),
-          some(inline, `</${tag}>`, [[`</${tag}>`, 3]]),
-        ]),
-        str(`</${tag}>`), true,
-        ([as, bs = [], cs], rest) =>
-          [[elem(tag, as, bs, cs)], rest],
-        ([as, bs = []], rest) =>
-          [[elem(tag, as, bs, [])], rest]),
-    ([, tag]) => tag,
-    new Clock(10000))),
-]))))));
+export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline,
+  syntax(3, State.none,
+  union([
+    focus(
+      /^<wbr[^\S\n]*>/i,
+      () => [[h('wbr')], '']),
+    surround(
+      // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+      str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i), some(union([attribute])), str(/^[^\S\n]*>/), true,
+      ([as, bs = [], cs], rest) =>
+        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
+    match(
+      new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
+      memoize(
+      ([, tag]) =>
+        surround<HTMLParser.TagParser, string>(surround(
+          str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
+          subsequence([
+            focus(/^[^\S\n]*\n/, some(inline)),
+            some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
+          ]),
+          str(`</${tag}>`), true,
+          ([as, bs = [], cs], rest) =>
+            [[elem(tag, as, bs, cs)], rest],
+          ([as, bs = []], rest) =>
+            [[elem(tag, as, bs, [])], rest]))),
+    match(
+      /^<([a-z]+)(?=[^\S\n]|>)/i,
+      memoize(
+      ([, tag]) =>
+        surround<HTMLParser.TagParser, string>(surround(
+          str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
+          subsequence([
+            focus(/^[^\S\n]*\n/, some(inline)),
+            some(inline, `</${tag}>`, [[`</${tag}>`, 3]]),
+          ]),
+          str(`</${tag}>`), true,
+          ([as, bs = [], cs], rest) =>
+            [[elem(tag, as, bs, cs)], rest],
+          ([as, bs = []], rest) =>
+            [[elem(tag, as, bs, [])], rest]),
+      ([, tag]) => tag,
+      new Clock(10000))),
+  ]))))));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),
