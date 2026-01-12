@@ -107,6 +107,25 @@ export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> 
   };
 }
 
+export function state<P extends Parser<unknown>>(state: number, parser: P): P;
+export function state<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
+export function state<T>(state: number, positive: boolean | Parser<T>, parser?: Parser<T>): Parser<T> {
+  if (typeof positive === 'function') {
+    parser = positive;
+    positive = true;
+  }
+  assert(state);
+  return ({ source, context }) => {
+    const s = context.state ?? 0;
+    context.state = positive
+      ? s | state
+      : s & ~state;
+    const result = parser!({ source, context });
+    context.state = s;
+    return result;
+  };
+}
+
 export function guard<P extends Parser<unknown>>(f: (context: Context<P>) => boolean | number, parser: P): P;
 export function guard<T>(f: (context: Ctx) => boolean | number, parser: Parser<T>): Parser<T> {
   return ({ source, context }) =>
@@ -132,36 +151,3 @@ export function constraint<T>(state: number, positive: boolean | Parser<T>, pars
       : undefined;
   };
 }
-
-export function state<P extends Parser<unknown>>(state: number, parser: P): P;
-export function state<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
-export function state<T>(state: number, positive: boolean | Parser<T>, parser?: Parser<T>): Parser<T> {
-  if (typeof positive === 'function') {
-    parser = positive;
-    positive = true;
-  }
-  assert(state);
-  return ({ source, context }) => {
-    const s = context.state ?? 0;
-    context.state = positive
-      ? s | state
-      : s & ~state;
-    const result = parser!({ source, context });
-    context.state = s;
-    return result;
-  };
-}
-
-//export function log<P extends Parser<unknown>>(log: number, parser: P, cond?: (ns: readonly Tree<P>[]) => boolean): P;
-//export function log<T>(log: number, parser: Parser<T>, cond: (ns: readonly T[]) => boolean = () => true): Parser<T> {
-//  assert(log);
-//  return ({ source, context }) => {
-//    const l = context.log ?? 0;
-//    context.log = 0;
-//    const result = parser!({ source, context });
-//    context.log = result && cond(eval(result))
-//      ? l | log
-//      : l;
-//    return result;
-//  };
-//}
