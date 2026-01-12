@@ -114,14 +114,6 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
   };
 }
 
-export function guard<P extends Parser<unknown>>(f: (context: Context<P>) => boolean | number, parser: P): P;
-export function guard<T>(f: (context: Ctx) => boolean | number, parser: Parser<T>): Parser<T> {
-  return ({ source, context }) =>
-    f(context)
-      ? parser({ source, context })
-      : undefined;
-}
-
 export function constraint<P extends Parser<unknown>>(state: number, parser: P): P;
 export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
 export function constraint<T>(state: number, positive: boolean | Parser<T>, parser?: Parser<T>): Parser<T> {

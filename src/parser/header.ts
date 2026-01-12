@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { union, inits, some, guard, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
+import { union, inits, some, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
 import { segment } from './segment';
 import { str } from './source';
 import { normalize } from './api/normalize';
@@ -13,7 +13,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
         [[], context.header ?? true ? source.slice(segment(source).next().value!.length) : ''],
       block(
         union([
-          guard(context => context.header ?? true,
+          validate(({ context }) => context.header ?? true,
           focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
           convert(source =>
             normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
