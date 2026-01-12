@@ -16,7 +16,10 @@ export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignor
   ]))),
   ']]',
   false,
-  ([, ns], rest) => [[html('sup', attributes(ns), [html('span', trimBlankNodeEnd(defrag(ns)))])], rest],
+  ([, ns], rest) =>
+    trimBlankNodeEnd(ns).length > 0
+      ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
+      : undefined,
   undefined, 1 | Backtrack.bracket)));
 
 // Chicago-Style

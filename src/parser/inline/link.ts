@@ -33,8 +33,8 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     assert(content[0] !== '');
-    if (content.length !== 0 && trimBlankNodeEnd(content = defrag(content)).length === 0) return;
-    return [[parse(content, params, context)], rest];
+    if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
+    return [[parse(defrag(content), params, context)], rest];
   }))))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,

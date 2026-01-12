@@ -192,9 +192,9 @@ export function trimBlankNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[
     : [];
   for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes.at(-1)!, -1);) {
     if (typeof node === 'string') {
-      const pos = node.trimEnd().length;
-      if (pos > 0) {
-        nodes[nodes.length - 1] = node.slice(0, pos) as T;
+      const len = node.trimEnd().length;
+      if (len > 0) {
+        nodes[nodes.length - 1] = node.slice(0, len) as T;
         break;
       }
     }

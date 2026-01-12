@@ -20,7 +20,10 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   ]), ']', [['\n', 9], [']', 1]])))),
   ']',
   false,
-  ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimBlankNodeEnd(defrag(ns)))], rest],
+  ([, ns], rest) =>
+    trimBlankNodeEnd(ns).length > 0
+      ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
+      : undefined,
   undefined, 1 | Backtrack.bracket)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
