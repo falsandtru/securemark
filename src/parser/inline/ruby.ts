@@ -1,7 +1,7 @@
 import { RubyParser } from '../inline';
-import { State, Recursion, Backtrack, Command, CmdRegExp } from '../context';
+import { Recursion, Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, syntax, creation, validate, surround, lazy, fmap, bind } from '../../combinator';
+import { sequence, creation, validate, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
 import { isStartTightNodes } from '../visibility';
@@ -9,7 +9,6 @@ import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.ignore, fmap(
-  syntax(1, State.all,
   sequence([
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];
@@ -20,7 +19,7 @@ export const ruby: RubyParser = lazy(() => validate('[', creation(1, Recursion.i
       const ns = eval(text({ source, context }), [undefined])[0];
       return ns && [[ns], rest];
     }),
-  ])),
+  ]),
   ([texts, rubies]) => {
     switch (true) {
       case rubies.length <= texts.length:

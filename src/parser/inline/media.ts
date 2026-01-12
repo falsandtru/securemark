@@ -21,11 +21,11 @@ Object.setPrototypeOf(optspec, null);
 export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, Recursion.ignore, open(
   '!',
   constraint(State.media, false,
-  syntax(1, ~State.link,
   bind(verify(fmap(tails([
     dup(surround(
       '[',
-      some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]]),
+      syntax(1, ~State.link,
+      some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.media)),
     dup(surround(
@@ -64,7 +64,7 @@ export const media: MediaParser = lazy(() => validate(['![', '!{'], creation(1, 
       unsafelink as MediaParser,
       ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
       ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
-  })))))));
+  }))))));
 
 export const linemedia: MediaParser.LineMediaParser = surround(
   linebreak,
