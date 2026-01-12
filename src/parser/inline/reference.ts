@@ -12,7 +12,7 @@ export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignor
   syntax(1, State.annotation | State.reference | State.media,
   subsequence([
     abbr,
-    trimBlankStart(some(inline, ']', [[/^\\?\n/, 9], [']', 1]])),
+    trimBlankStart(some(inline, ']', [['\n', 9], [']', 1]])),
   ]))),
   ']]',
   false,

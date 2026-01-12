@@ -17,7 +17,7 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   some(inits([
     inline,
     signature,
-  ]), ']', [[/^\\?\n/, 9], [']', 1]])))),
+  ]), ']', [['\n', 9], [']', 1]])))),
   ']',
   false,
   ([, ns], rest) => [[html('a', { 'data-index': dataindex(ns) }, trimNodeEnd(defrag(ns)))], rest],

@@ -21,7 +21,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'
   bind(reverse(tails([
     dup(surround(
       '[',
-      trimBlankStart(some(union([inline]), ']', [[/^\\?\n/, 9], [']', 1]])),
+      trimBlankStart(some(union([inline]), ']', [['\n', 9], [']', 1]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.bracket)),
     dup(surround(
