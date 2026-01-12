@@ -15,12 +15,12 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => validate(['[', '{'], union([
+export const link: LinkParser = lazy(() => union([
   medialink,
   textlink,
-])));
+]));
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recursion.ignore,
+export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
   constraint(State.link, false,
   syntax(1, State.linkers | State.media,
   bind(reverse(tails([
@@ -40,9 +40,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => creation(1, Recurs
     assert(content[0] !== '');
     if (content.length !== 0 && trimNodeEnd(content = defrag(content)).length === 0) return;
     return [[parse(content, params, context)], rest];
-  })))));
+  }))))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => creation(1, Recursion.ignore,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
   constraint(State.link | State.media, false,
   syntax(1, State.linkers,
   bind(reverse(sequence([
@@ -53,7 +53,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => creation(1, Recu
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) =>
-    [[parse(defrag(content), params, context)], rest])))));
+    [[parse(defrag(content), params, context)], rest]))))));
 
 export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   linebreak,
