@@ -11,15 +11,14 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate
   body,
 ])));
 
-export const label: ExtensionParser.LabelParser = validate(['[$', '$'], creation(1, Recursion.ignore, fmap(
-  constraint(State.label, false,
+export const label: ExtensionParser.LabelParser = constraint(State.label, false, validate(['[$', '$'], creation(1, Recursion.ignore, fmap(
   union([
     surround('[', body, ']'),
     body,
-  ])),
+  ]),
   ([text]) => [
     html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text),
-  ])));
+  ]))));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

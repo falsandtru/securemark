@@ -6,21 +6,20 @@ import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignore, surround(
+export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, creation(1, Recursion.ignore, surround(
   '[[',
-  constraint(State.reference, false,
   precedence(1, state(State.annotation | State.reference | State.media,
   subsequence([
     abbr,
     trimBlankStart(some(inline, ']', [['\n', 9], [']', 1]])),
-  ])))),
+  ]))),
   ']]',
   false,
   ([, ns], rest) =>
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.bracket)));
+  undefined, 1 | Backtrack.bracket))));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = creation(1, Recursion.ignore, surround(

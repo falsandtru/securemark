@@ -10,7 +10,7 @@ import { define } from 'typed-dom/dom';
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 export const emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
 
-export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
+export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State.autolink, false, rewrite(
   open(
     '#',
     str(new RegExp([
@@ -18,9 +18,8 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
     ].join('').replace(/emoji/g, emoji), 'u'))),
   union([
-    constraint(State.autolink, false, state(State.autolink, fmap(convert(
+    state(State.autolink, fmap(convert(
       source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
       unsafelink),
-      ([el]) => [define(el, { class: 'hashtag' })]))),
-    ({ source }) => [[source], ''],
-  ])));
+      ([el]) => [define(el, { class: 'hashtag' })])),
+  ]))));

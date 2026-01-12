@@ -5,15 +5,14 @@ import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => creation(1, Recursion.ignore, surround(
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, false, creation(1, Recursion.ignore, surround(
   '((',
-  constraint(State.annotation, false,
   precedence(1, state(State.annotation | State.media,
-  trimBlankStart(some(union([inline]), ')', [['\n', 9], [')', 1]]))))),
+  trimBlankStart(some(union([inline]), ')', [['\n', 9], [')', 1]])))),
   '))',
   false,
   ([, ns], rest) =>
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', { class: 'annotation' }, [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.bracket)));
+  undefined, 1 | Backtrack.bracket))));

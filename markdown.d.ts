@@ -1192,7 +1192,7 @@ export namespace MarkdownParser {
       export interface ChannelParser extends
         // @user#tag
         Inline<'channel'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           InlineParser.AutolinkParser.AccountParser,
           InlineParser.AutolinkParser.HashtagParser,
         ]> {
@@ -1200,33 +1200,29 @@ export namespace MarkdownParser {
       export interface AccountParser extends
         // @user
         Inline<'account'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface HashnumParser extends
         // #1
         Inline<'hashnum'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
     }

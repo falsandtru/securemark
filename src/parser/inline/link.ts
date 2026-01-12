@@ -15,8 +15,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
-  constraint(State.link, false,
+export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, false, validate(['[', '{'], creation(1, Recursion.ignore,
   precedence(1, state(State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
@@ -37,8 +36,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'
     return [[parse(defrag(content), params, context)], rest];
   })))))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
-  constraint(State.link | State.media, false,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, false, validate(['[', '{'], creation(1, Recursion.ignore,
   state(State.linkers,
   bind(reverse(sequence([
     dup(surround(
