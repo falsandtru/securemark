@@ -98,6 +98,7 @@ export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> 
     const { delimiters, precedence: p = 0 } = context;
     const shift = delimiters && precedence > p;
     context.precedence = precedence;
+    // デリミタはシフト後に設定しなければならない
     shift && delimiters.shift(precedence);
     const result = parser({ source, context });
     shift && delimiters.unshift();
