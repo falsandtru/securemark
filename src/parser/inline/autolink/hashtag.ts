@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State } from '../../context';
-import { union, syntax, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, state, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
@@ -18,7 +18,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'|_(?=[^\p{C}\p{S}\p{P}\s]|emoji|'))+/u.source,
     ].join('').replace(/emoji/g, emoji), 'u'))),
   union([
-    constraint(State.autolink, false, syntax(0, State.autolink, fmap(convert(
+    constraint(State.autolink, false, state(State.autolink, fmap(convert(
       source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
       unsafelink),
       ([el]) => [define(el, { class: 'hashtag' })]))),

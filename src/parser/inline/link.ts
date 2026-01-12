@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
-import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, sequence, some, constraint, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
@@ -17,7 +17,7 @@ Object.setPrototypeOf(optspec, null);
 
 export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
   constraint(State.link, false,
-  syntax(1, State.linkers | State.media,
+  precedence(1, state(State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
       '[',
@@ -35,11 +35,11 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => validate(['[', '{'
     assert(content[0] !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
     return [[parse(defrag(content), params, context)], rest];
-  }))))));
+  })))))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => validate(['[', '{'], creation(1, Recursion.ignore,
   constraint(State.link | State.media, false,
-  syntax(1, State.linkers,
+  state(State.linkers,
   bind(reverse(sequence([
     dup(surround(
       '[',
@@ -57,7 +57,6 @@ export const linemedialink: LinkParser.LineMediaLinkParser = surround(
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(1, Recursion.ignore,
-  precedence(1,
   bind(reverse(tails([
     dup(surround(
       '[',
@@ -66,7 +65,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
   ])),
   ([params, content = []], rest, context) =>
-    [[parse(defrag(content), params, context)], rest]))));
+    [[parse(defrag(content), params, context)], rest])));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/^[^\S\n]+/, str(/^\S+/)),

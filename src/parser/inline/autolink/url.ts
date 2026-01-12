@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
-import { union, tails, some, syntax, creation, precedence, constraint, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
+import { union, tails, some, creation, precedence, state, constraint, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
 
@@ -11,7 +11,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     /^https?:\/\/(?=[\x21-\x7E])/,
     focus(/^[\x21-\x7E]+/, precedence(1, some(union([bracket, some(unescsource, closer)]))))),
   union([
-    constraint(State.autolink, false, syntax(0, State.autolink, convert(
+    constraint(State.autolink, false, state(State.autolink, convert(
       url => `{ ${url} }`,
       unsafelink))),
     ({ source }) => [[source], ''],
@@ -24,7 +24,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
     tails([
       str('!'),
       union([
-        constraint(State.autolink, false, syntax(0, State.autolink, convert(
+        constraint(State.autolink, false, state(State.autolink, convert(
           url => `{ ${url} }`,
           unsafelink))),
         ({ source }) => [[source], ''],

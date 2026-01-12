@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
-import { union, inits, some, syntax, creation, precedence, constraint, validate, surround, open, lazy, fmap } from '../../../combinator';
+import { union, inits, some, creation, precedence, state, constraint, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
@@ -12,7 +12,7 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   constraint(State.index, false,
-  syntax(1, State.linkers | State.media,
+  state(State.linkers | State.media,
   startTight(
   some(inits([
     inline,

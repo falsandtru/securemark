@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State } from '../../context';
-import { union, syntax, constraint, validate, focus, convert, fmap, lazy } from '../../../combinator';
+import { union, state, constraint, validate, focus, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { define } from 'typed-dom/dom';
 
@@ -18,7 +18,7 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
   focus(
     /^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i,
     union([
-      constraint(State.autolink, false, syntax(0, State.autolink, fmap(convert(
+      constraint(State.autolink, false, state(State.autolink, fmap(convert(
         source =>
           `[${source}]{ ${source.includes('/')
             ? `/@${source.slice(2).replace('/', '/timeline?at=')}`

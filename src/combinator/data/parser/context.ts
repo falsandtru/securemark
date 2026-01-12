@@ -58,19 +58,6 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
   return result;
 }
 
-export function syntax<P extends Parser<unknown>>(precedence: number, state: number, parser: P): P;
-export function syntax<T>(prec: number, state: number, parser: Parser<T>): Parser<T> {
-  return precedence(prec, ({ source, context }) => {
-    if (source === '') return;
-    context.offset ??= 0;
-    const stateOuter = context.state ?? 0;
-    context.state = stateOuter | state;
-    const result: Result<T> = parser({ source, context });
-    context.state = stateOuter;
-    return result;
-  });
-}
-
 export function creation<P extends Parser<unknown>>(cost: number, recursion: number, parser: P): P;
 export function creation(cost: number, recursion: number, parser: Parser<unknown>): Parser<unknown> {
   assert(cost >= 0);

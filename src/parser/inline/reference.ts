@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
-import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
+import { union, subsequence, some, creation, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
@@ -9,11 +9,11 @@ import { html, defrag } from 'typed-dom/dom';
 export const reference: ReferenceParser = lazy(() => creation(1, Recursion.ignore, surround(
   '[[',
   constraint(State.reference, false,
-  syntax(1, State.annotation | State.reference | State.media,
+  precedence(1, state(State.annotation | State.reference | State.media,
   subsequence([
     abbr,
     trimBlankStart(some(inline, ']', [['\n', 9], [']', 1]])),
-  ]))),
+  ])))),
   ']]',
   false,
   ([, ns], rest) =>

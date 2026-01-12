@@ -7,7 +7,6 @@ export const enum State {
   media = 1 << 2,
   mark = 1 << 1,
   autolink = 1 << 0,
-  //none = 0,
   all = ~0,
   linkers = 0
     | State.annotation

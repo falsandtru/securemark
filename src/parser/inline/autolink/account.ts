@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State } from '../../context';
-import { union, tails, syntax, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, tails, state, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
@@ -15,7 +15,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
       str(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i),
     ])),
   union([
-    constraint(State.autolink, false, syntax(0, State.autolink, fmap(convert(
+    constraint(State.autolink, false, state(State.autolink, fmap(convert(
       source =>
         `[${source}]{ ${source.includes('/')
           ? `https://${source.slice(1).replace('/', '/@')}`
