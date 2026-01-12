@@ -102,12 +102,13 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
     positive = true;
   }
   assert(state);
+  assert(parser = parser!);
   return ({ source, context }) => {
     const s = context.state ?? 0;
     context.state = positive
       ? s | state
       : s & ~state;
-    const result = parser!({ source, context });
+    const result = parser({ source, context });
     context.state = s;
     return result;
   };
@@ -129,12 +130,13 @@ export function constraint<T>(state: number, positive: boolean | Parser<T>, pars
     positive = true;
   }
   assert(state);
+  assert(parser = parser!);
   return ({ source, context }) => {
     const s = positive
       ? state & context.state!
       : state & ~context.state!;
     return s === state
-      ? parser!({ source, context })
+      ? parser({ source, context })
       : undefined;
   };
 }

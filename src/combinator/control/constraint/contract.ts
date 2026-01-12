@@ -13,7 +13,7 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   if (!isArray(patterns)) return validate([patterns], has, parser!);
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^') : true));
-  assert(parser);
+  assert(parser = parser!);
   const match: (source: string) => boolean = global.eval([
     'source =>',
     patterns.map(pattern =>
@@ -24,7 +24,7 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   return ({ source, context }) => {
     if (source === '') return;
     if (!match(source)) return;
-    const result = parser!({ source, context });
+    const result = parser({ source, context });
     assert(check(source, result));
     if (result === undefined) return;
     assert(exec(result).length < source.length);
