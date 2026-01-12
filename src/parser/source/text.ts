@@ -1,7 +1,7 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
+import { Recursion } from '../context';
 import { union, creation, focus } from '../../combinator';
 import { str } from './str';
-import { Recursion } from '../context';
 import { html } from 'typed-dom/dom';
 
 export const delimiter = /[\s\x00-\x7F（）［］｛｝“”‘’「」『』]|\S[#>]/u;

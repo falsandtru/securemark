@@ -1,9 +1,9 @@
 import { RubyParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
 import { sequence, syntax, creation, validate, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { isStartTightNodes } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';

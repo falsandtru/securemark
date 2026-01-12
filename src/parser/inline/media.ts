@@ -1,10 +1,10 @@
 import { MediaParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, inits, tails, some, syntax, creation, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';

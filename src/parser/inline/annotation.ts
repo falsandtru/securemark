@@ -1,7 +1,7 @@
 import { AnnotationParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 

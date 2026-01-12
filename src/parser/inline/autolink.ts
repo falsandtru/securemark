@@ -1,4 +1,5 @@
 import { AutolinkParser } from '../inline';
+import { State } from '../context';
 import { union, some, syntax, validate, lazy, fmap } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
@@ -8,7 +9,6 @@ import { hashtag, emoji } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
-import { State } from '../context';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>

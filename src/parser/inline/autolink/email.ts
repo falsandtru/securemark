@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
+import { State, Recursion } from '../../context';
 import { syntax, creation, constraint, verify, rewrite } from '../../../combinator';
 import { str } from '../../source';
-import { State, Recursion } from '../../context';
 import { html } from 'typed-dom/dom';
 
 // https://html.spec.whatwg.org/multipage/input.html

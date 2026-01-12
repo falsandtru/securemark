@@ -1,9 +1,9 @@
 import { ExtensionParser } from '../../inline';
+import { State, Recursion, Backtrack } from '../../context';
 import { union, inits, some, syntax, creation, precedence, constraint, validate, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
-import { State, Recursion, Backtrack } from '../../context';
 import { startTight, trimNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 

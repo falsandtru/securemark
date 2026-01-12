@@ -1,7 +1,7 @@
 import { MathParser } from '../inline';
+import { Recursion } from '../context';
 import { union, some, creation, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource, str } from '../source';
-import { Recursion } from '../context';
 import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;

@@ -1,7 +1,7 @@
 import { UnescapableSourceParser } from '../source';
+import { Recursion } from '../context';
 import { creation } from '../../combinator';
 import { delimiter, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
-import { Recursion } from '../context';
 
 export const unescsource: UnescapableSourceParser = creation(1, Recursion.ignore, ({ source, context }) => {
   assert(source[0] !== '\x1B');

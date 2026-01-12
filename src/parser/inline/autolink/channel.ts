@@ -1,8 +1,8 @@
 import { AutolinkParser } from '../../inline';
+import { State } from '../../context';
 import { sequence, some, constraint, validate, bind } from '../../../combinator';
 import { account } from './account';
 import { hashtag } from './hashtag';
-import { State } from '../../context';
 import { stringify } from '../../util';
 import { define } from 'typed-dom/dom';
 

@@ -1,7 +1,7 @@
 import { StrParser } from '../source';
+import { Recursion } from '../context';
 import { Parser, Context } from '../../combinator/data/parser';
 import { creation } from '../../combinator';
-import { Recursion } from '../context';
 
 export function str(pattern: string | RegExp, not?: string): StrParser;
 export function str(pattern: string | RegExp, not?: string): Parser<string, Context<StrParser>, []> {

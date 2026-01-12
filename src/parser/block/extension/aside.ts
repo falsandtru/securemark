@@ -1,7 +1,7 @@
 import { ExtensionParser } from '../../block';
+import { Recursion } from '../../context';
 import { creation, block, validate, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
-import { Recursion } from '../../context';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 

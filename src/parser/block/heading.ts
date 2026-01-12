@@ -1,8 +1,8 @@
 import { HeadingParser } from '../block';
+import { State } from '../context';
 import { union, some, state, block, line, validate, focus, rewrite, open, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
-import { State } from '../context';
 import { visualize, trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 

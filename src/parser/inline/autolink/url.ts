@@ -1,8 +1,8 @@
 import { AutolinkParser } from '../../inline';
+import { State, Recursion, Backtrack } from '../../context';
 import { union, tails, some, syntax, creation, precedence, constraint, validate, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
-import { State, Recursion, Backtrack } from '../../context';
 
 const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|$)/;
 

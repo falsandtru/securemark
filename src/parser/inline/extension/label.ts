@@ -1,7 +1,7 @@
 import { ExtensionParser } from '../../inline';
+import { State, Recursion } from '../../context';
 import { union, constraint, creation, validate, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
-import { State, Recursion } from '../../context';
 import { html } from 'typed-dom/dom';
 
 const body = str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);

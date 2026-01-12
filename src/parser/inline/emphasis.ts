@@ -1,10 +1,10 @@
 import { EmphasisParser } from '../inline';
+import { State, Recursion } from '../context';
 import { union, some, syntax, creation, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { strong } from './strong';
 import { str } from '../source';
-import { State, Recursion } from '../context';
 import { startTight, blankWith } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';

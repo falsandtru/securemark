@@ -1,8 +1,8 @@
 import { HTMLParser } from '../inline';
+import { State, Recursion } from '../context';
 import { union, subsequence, some, syntax, creation, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { State, Recursion } from '../context';
 import { isStartLooseNodes, blankWith } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { Clock } from 'spica/clock';

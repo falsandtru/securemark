@@ -1,4 +1,5 @@
 import { MarkdownParser } from '../../markdown';
+import { Recursion } from './context';
 import { union, reset, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
@@ -16,7 +17,6 @@ import { blockquote } from './block/blockquote';
 import { mediablock } from './block/mediablock';
 import { reply } from './block/reply';
 import { paragraph } from './block/paragraph';
-import { Recursion } from './context';
 import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom/dom';
 

@@ -1,11 +1,11 @@
 import { UListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
+import { Recursion } from '../context';
 import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee, dataindex } from '../inline';
 import { contentline } from '../source';
-import { Recursion } from '../context';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';

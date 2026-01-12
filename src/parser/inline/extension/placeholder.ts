@@ -1,8 +1,8 @@
 import { ExtensionParser } from '../../inline';
+import { State, Recursion, Backtrack } from '../../context';
 import { union, some, syntax, creation, validate, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { State, Recursion, Backtrack } from '../../context';
 import { startTight } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';

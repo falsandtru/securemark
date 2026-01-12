@@ -1,11 +1,11 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
+import { State, Recursion } from '../context';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
 import { union, syntax, creation, some, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { State, Recursion } from '../context';
 import { startTight, blankWith } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';

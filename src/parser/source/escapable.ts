@@ -1,7 +1,7 @@
 import { EscapableSourceParser } from '../source';
+import { Recursion } from '../context';
 import { creation } from '../../combinator';
 import { nonWhitespace } from './text';
-import { Recursion } from '../context';
 
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 

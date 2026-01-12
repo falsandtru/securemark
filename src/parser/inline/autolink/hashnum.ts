@@ -1,9 +1,9 @@
 import { AutolinkParser } from '../../inline';
+import { State } from '../../context';
 import { union, syntax, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { emoji } from './hashtag';
 import { str } from '../../source';
-import { State } from '../../context';
 import { define } from 'typed-dom/dom';
 
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(

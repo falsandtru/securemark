@@ -1,9 +1,9 @@
 import { ExtensionParser } from '../../block';
+import { Recursion } from '../../context';
 import { eval } from '../../../combinator/data/parser';
 import { creation, block, validate, fence, fmap } from '../../../combinator';
-import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
-import { Recursion } from '../../context';
+import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
 const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;

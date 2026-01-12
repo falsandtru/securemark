@@ -1,8 +1,8 @@
 import { AutolinkParser } from '../../inline';
+import { State } from '../../context';
 import { union, tails, syntax, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
-import { State } from '../../context';
 import { define } from 'typed-dom/dom';
 
 // https://example/@user must be a user page or a redirect page going there.

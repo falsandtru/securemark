@@ -1,9 +1,9 @@
 import { ShortMediaParser } from '../inline';
+import { State } from '../context';
 import { union, constraint, focus, rewrite, open, convert } from '../../combinator';
 import { url } from './autolink/url';
 import { media } from './media';
 import { linebreak } from '../source';
-import { State } from '../context';
 
 export const shortmedia: ShortMediaParser = rewrite(
   constraint(State.media, false,

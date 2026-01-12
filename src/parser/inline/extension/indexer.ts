@@ -1,7 +1,7 @@
 import { ExtensionParser } from '../../inline';
+import { Recursion } from '../../context';
 import { union, creation, focus, surround } from '../../../combinator';
 import { signature } from './index';
-import { Recursion } from '../../context';
 import { html } from 'typed-dom/dom';
 
 export const indexer: ExtensionParser.IndexerParser = surround(

@@ -1,8 +1,8 @@
 import { BracketParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, some, syntax, creation, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 

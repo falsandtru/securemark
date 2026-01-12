@@ -1,7 +1,7 @@
 import { TemplateParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, some, syntax, creation, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { unshift } from 'spica/array';
 import { html } from 'typed-dom/dom';
 

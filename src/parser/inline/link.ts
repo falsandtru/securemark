@@ -1,10 +1,10 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, inits, tails, sequence, some, constraint, syntax, creation, precedence, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { trimBlankStart, trimNodeEnd } from '../visibility';
 import { stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';

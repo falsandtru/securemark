@@ -1,8 +1,8 @@
 import { SidefenceParser } from '../block';
+import { Recursion } from '../context';
 import { union, some, creation, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
-import { Recursion } from '../context';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(

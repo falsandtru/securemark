@@ -1,6 +1,6 @@
 import { CodeParser } from '../inline';
-import { creation, validate, match } from '../../combinator';
 import { Recursion } from '../context';
+import { creation, validate, match } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = creation(1, Recursion.ignore, validate('`', match(

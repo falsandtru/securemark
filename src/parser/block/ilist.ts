@@ -1,9 +1,9 @@
 import { IListParser } from '../block';
+import { Recursion } from '../context';
 import { union, inits, some, creation, block, line, validate, indent, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, invalid, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
-import { Recursion } from '../context';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';

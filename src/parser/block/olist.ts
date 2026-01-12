@@ -1,11 +1,11 @@
 import { OListParser } from '../block';
+import { Recursion } from '../context';
 import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
-import { Recursion } from '../context';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
 

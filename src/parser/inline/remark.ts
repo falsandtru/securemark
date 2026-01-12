@@ -1,8 +1,8 @@
 import { RemarkParser } from '../inline';
+import { State, Recursion } from '../context';
 import { union, some, syntax, creation, validate, surround, open, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
-import { State, Recursion } from '../context';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';

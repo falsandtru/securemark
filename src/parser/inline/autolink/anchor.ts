@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
+import { State } from '../../context';
 import { union, syntax, constraint, validate, focus, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
-import { State } from '../../context';
 import { define } from 'typed-dom/dom';
 
 // Timeline(pseudonym): user/tid

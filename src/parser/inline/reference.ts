@@ -1,8 +1,8 @@
 import { ReferenceParser } from '../inline';
+import { State, Recursion, Backtrack } from '../context';
 import { union, subsequence, some, syntax, creation, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { State, Recursion, Backtrack } from '../context';
 import { blank, trimBlankStart, trimNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 

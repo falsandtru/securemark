@@ -1,8 +1,8 @@
 import { DListParser } from '../block';
+import { State } from '../context';
 import { union, inits, some, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
-import { State } from '../context';
 import { lineable } from '../util';
 import { visualize, trimBlankStart, trimNodeEnd } from '../visibility';
 import { push } from 'spica/array';
