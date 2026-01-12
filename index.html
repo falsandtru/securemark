@@ -623,10 +623,12 @@
     position: relative;
     text-decoration: inherit;
   }
-  ins {
+  ins,
+  ins code {
     background-image: linear-gradient(transparent 80%, #acf2bd 0%);
   }
-  del {
+  del,
+  del code {
     background-image: linear-gradient(transparent 80%, #b8e4fd 0%);
   }
   :is(ins, del) :is(ins, del) {
@@ -683,9 +685,6 @@
     letter-spacing: normal;
     font-size: 90%;
     color: inherit;
-  }
-  :is(ins, del) code {
-    background-image: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
   .paren:has(.paren),
   .paren .paren {
