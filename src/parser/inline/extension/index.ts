@@ -32,8 +32,8 @@ export const index: IndexParser = lazy(() => validate('[#', creation(1, Recursio
   ]))));
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', creation(1, Recursion.ignore, fmap(open(
-  '|',
-  startTight(some(union([bracket, txt]), ']'))),
+  /^\|(?!\\?\s)/,
+  some(union([bracket, txt]), ']')),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
   ]))));
