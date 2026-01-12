@@ -14,7 +14,7 @@ export const remark: RemarkParser = lazy(() => validate('[%', creation(1, Recurs
     surround(
       open(str(`[${fence}`), some(text, new RegExp(String.raw`^\s+${fence}\]|^\S`)), true),
       syntax(4, State.none, some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]])),
-      close(some(text, /^\S/), str(`${fence}]`)), true,
+      close(some(text, '%'), str(`${fence}]`)), true,
       ([as, bs = [], cs], rest) => [[
         html('span', { class: 'remark' }, [
           html('input', { type: 'checkbox' }),
