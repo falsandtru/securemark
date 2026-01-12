@@ -12,7 +12,7 @@ import { table, segment_ as seg_table } from './table';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
-import { visualize, trimBlankStart, trimBlankNodeEnd } from '../../visibility';
+import { visualize, trimBlank } from '../../visibility';
 import { memoize } from 'spica/memoize';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -63,7 +63,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         line(shortmedia),
       ])),
       emptyline,
-      block(visualize(trimBlankStart(some(inline)))),
+      block(visualize(trimBlank(some(inline)))),
     ]),
   ])),
   ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [
@@ -72,7 +72,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       [
         html('figcaption', [
           html('span', { class: 'figindex' }),
-          html('span', { class: 'figtext' }, trimBlankNodeEnd(defrag(caption))),
+          html('span', { class: 'figtext' }, defrag(caption)),
         ]),
         html('div', [content]),
       ])

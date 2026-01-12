@@ -159,8 +159,8 @@ export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
     source => source.replace(blank.start, ''),
     parser);
 }
-function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
-function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return fmap(
     parser,
     trimBlankNodeEnd);

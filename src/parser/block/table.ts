@@ -2,7 +2,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
-import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { trimBlank } from '../visibility';
 import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -53,17 +53,17 @@ const cell: CellParser = surround(
     close(medialink, /^\s*(?=\||$)/),
     close(media, /^\s*(?=\||$)/),
     close(shortmedia, /^\s*(?=\||$)/),
-    trimBlankStart(some(inline, /^\|/, [[/^[|\\]?\s*$/, 9]])),
+    trimBlank(some(inline, /^\|/, [[/^[|\\]?\s*$/, 9]])),
   ])),
   /^[^|]*/, true);
 
 const head: CellParser.HeadParser = fmap(
   cell,
-  ns => [html('th', trimBlankNodeEnd(defrag(ns)))]);
+  ns => [html('th', defrag(ns))]);
 
 const data: CellParser.DataParser = fmap(
   cell,
-  ns => [html('td', trimBlankNodeEnd(defrag(ns)))]);
+  ns => [html('td', defrag(ns))]);
 
 function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
   const aligns = rows[0].className === 'invalid'

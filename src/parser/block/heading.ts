@@ -3,7 +3,7 @@ import { State } from '../context';
 import { union, some, state, block, line, validate, focus, rewrite, open, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
-import { visualize, trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { visualize, trimBlank } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
@@ -16,19 +16,19 @@ export const heading: HeadingParser = block(rewrite(segment,
   line(indexee(fmap(union([
     open(
       str(/^##+/),
-      visualize(trimBlankStart(some(union([indexer, inline])))), true),
+      visualize(trimBlank(some(union([indexer, inline])))), true),
     open(
       str('#'),
       state(State.linkers,
-      visualize(trimBlankStart(some(union([indexer, inline]))))), true),
+      visualize(trimBlank(some(union([indexer, inline]))))), true),
   ]),
   ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
     h.length <= 6
-      ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, trimBlankNodeEnd(defrag(ns)))
+      ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, defrag(ns))
       : html(`h6`, {
           class: 'invalid',
           'data-invalid-syntax': 'heading',
           'data-invalid-type': 'syntax',
           'data-invalid-message': 'Heading level must be up to 6',
-        }, trimBlankNodeEnd(defrag(ns)))
+        }, defrag(ns))
   ]))))));
