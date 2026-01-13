@@ -8,12 +8,13 @@ import { define } from 'typed-dom/dom';
 
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 
-export const channel: AutolinkParser.ChannelParser = constraint(State.autolink, false, validate('@', bind(
+export const channel: AutolinkParser.ChannelParser = validate('@',
+  constraint(State.autolink, false, bind(
   sequence([
     account,
     some(hashtag),
   ]),
-  (es, rest) => {
+  (es: [HTMLAnchorElement], rest) => {
     const source = stringify(es);
     const el = es[0];
     const url = `${el.getAttribute('href')}?ch=${source.slice(source.indexOf('#') + 1).replace(/#/g, '+')}`;

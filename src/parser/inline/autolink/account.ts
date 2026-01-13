@@ -7,7 +7,7 @@ import { define } from 'typed-dom/dom';
 
 // https://example/@user must be a user page or a redirect page going there.
 
-export const account: AutolinkParser.AccountParser = lazy(() => constraint(State.autolink, false, rewrite(
+export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
   open(
     '@',
     tails([
@@ -15,12 +15,13 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
       str(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i),
     ])),
   union([
-    state(State.autolink, fmap(convert(
+    constraint(State.autolink, false, state(State.autolink, fmap(convert(
       source =>
         `[${source}]{ ${source.includes('/')
           ? `https://${source.slice(1).replace('/', '/@')}`
           : `/${source}`
         } }`,
       unsafelink),
-      ([el]) => [define(el, { class: 'account' })])),
-  ]))));
+      ([el]) => [define(el, { class: 'account' })]))),
+    ({ source }) => [[source], ''],
+  ])));

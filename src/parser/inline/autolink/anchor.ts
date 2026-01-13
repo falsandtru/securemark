@@ -14,16 +14,17 @@ import { define } from 'typed-dom/dom';
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
 
-export const anchor: AutolinkParser.AnchorParser = lazy(() => constraint(State.autolink, false, validate('>>',
+export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
   focus(
     /^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i,
     union([
-      state(State.autolink, fmap(convert(
+      constraint(State.autolink, false, state(State.autolink, fmap(convert(
         source =>
           `[${source}]{ ${source.includes('/')
             ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
             : `?at=${source.slice(2)}`
           } }`,
         unsafelink),
-        ([el]) => [define(el, { class: 'anchor' })])),
-    ])))));
+        ([el]) => [define(el, { class: 'anchor' })]))),
+      ({ source }) => [[source], ''],
+    ]))));
