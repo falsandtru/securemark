@@ -62,14 +62,15 @@ export function creation<P extends Parser<unknown>>(cost: number, recursion: num
 export function creation(cost: number, recursion: number, parser: Parser<unknown>): Parser<unknown> {
   assert(cost >= 0);
   assert(recursion >= 0);
-  return ({ source, context }) => {
+  return input => {
+    const { context } = input;
     const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
     const { recursions } = resources;
     assert(recursions.length > 0);
     const rec = min(recursion, recursions.length);
     if (rec > 0 && recursions[rec - 1] < 1) throw new Error('Too much recursion');
     rec > 0 && --recursions[rec - 1];
-    const result = parser({ source, context });
+    const result = parser(input);
     rec > 0 && ++recursions[rec - 1];
     if (result === undefined) return;
     if (resources.clock < cost) throw new Error('Too many creations');
@@ -81,13 +82,14 @@ export function creation(cost: number, recursion: number, parser: Parser<unknown
 export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
 export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
   assert(precedence >= 0);
-  return ({ source, context }) => {
+  return input => {
+    const { context } = input;
     const { delimiters, precedence: p = 0 } = context;
     const shift = delimiters && precedence > p;
     context.precedence = precedence;
     // デリミタはシフト後に設定しなければならない
     shift && delimiters.shift(precedence);
-    const result = parser({ source, context });
+    const result = parser(input);
     shift && delimiters.unshift();
     context.precedence = p;
     return result;
@@ -103,12 +105,13 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
   }
   assert(state);
   assert(parser = parser!);
-  return ({ source, context }) => {
+  return input => {
+    const { context } = input;
     const s = context.state ?? 0;
     context.state = positive
       ? s | state
       : s & ~state;
-    const result = parser({ source, context });
+    const result = parser(input);
     context.state = s;
     return result;
   };
@@ -123,12 +126,13 @@ export function constraint<T>(state: number, positive: boolean | Parser<T>, pars
   }
   assert(state);
   assert(parser = parser!);
-  return ({ source, context }) => {
+  return input => {
+    const { context } = input;
     const s = positive
       ? state & context.state!
       : state & ~context.state!;
     return s === state
-      ? parser({ source, context })
+      ? parser(input)
       : undefined;
   };
 }

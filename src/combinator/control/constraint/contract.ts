@@ -23,10 +23,11 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[] | ((
         ? `|| source.slice(0, ${pattern.length}) === '${pattern}'`
         : `|| /${pattern.source}/${pattern.flags}.test(source)`).join('').slice(2),
   ].join(''));
-  return ({ source, context }) => {
+  return input => {
+    const { source } = input;
     if (source === '') return;
     if (!match(source)) return;
-    const result = parser({ source, context });
+    const result = parser(input);
     assert(check(source, result));
     if (result === undefined) return;
     assert(exec(result).length < source.length);
@@ -47,9 +48,10 @@ function guard<T>(f: (input: Input<Ctx>) => boolean, parser: Parser<T>): Parser<
 export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Tree<P>[], rest: string, context: Context<P>) => boolean): P;
 export function verify<T>(parser: Parser<T>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
   assert(parser);
-  return ({ source, context }) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
-    const result = parser({ source, context });
+    const result = parser(input);
     assert(check(source, result));
     if (result === undefined) return;
     if (!cond(eval(result), exec(result), context)) return;

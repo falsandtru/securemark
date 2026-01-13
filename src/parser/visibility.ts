@@ -74,7 +74,8 @@ export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
       ? parser(input)
       : undefined;
 }
-const isStartTight = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
+const isStartTight = reduce((input: Input<MarkdownParser.Context>, except?: string): boolean => {
+  const { source } = input;
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
   switch (source[0]) {
@@ -89,7 +90,7 @@ const isStartTight = reduce(({ source, context }: Input<MarkdownParser.Context>,
       switch (true) {
         case source.length > 2
           && source[1] !== ' '
-          && eval(unsafehtmlentity({ source, context }))?.[0]?.trimStart() === '':
+          && eval(unsafehtmlentity(input))?.[0]?.trimStart() === '':
           return false;
       }
       return true;

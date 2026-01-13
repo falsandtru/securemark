@@ -32,13 +32,14 @@ export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Contex
 export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T> {
   assert(scope);
   assert(parser);
-  return ({ source, context }) => {
+  return input => {
+    const { source, context } = input;
     if (source === '') return;
     const { logger } = context;
     context.logger = {};
     //const { resources = { clock: 0 } } = context;
     //const clock = resources.clock;
-    const res1 = scope({ source, context });
+    const res1 = scope(input);
     assert(check(source, res1));
     //resources.clock = clock;
     context.logger = logger;
