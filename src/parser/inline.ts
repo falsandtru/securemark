@@ -46,27 +46,61 @@ export import BracketParser = InlineParser.BracketParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
 export const inline: InlineParser = lazy(() => union([
-  annotation,
-  reference,
-  template,
-  remark,
-  extension,
-  ruby,
-  textlink,
-  html,
-  insertion,
-  deletion,
-  mark,
-  emstrong,
-  strong,
-  emphasis,
-  math,
-  code,
-  htmlentity,
+  input => {
+    const { source } = input;
+    if (source === '') return;
+    switch (source.slice(0, 2)) {
+      case '((':
+        return annotation(input);
+      case '[[':
+        return reference(input)
+            || textlink(input);
+      case '{{':
+        return template(input);
+      case '[%':
+        return remark(input)
+            || textlink(input);
+      case '[#':
+      case '[$':
+      case '[:':
+      case '[^':
+      case '[|':
+        return extension(input)
+            || textlink(input);
+      case '${':
+        return math(input);
+      case '++':
+        return insertion(input);
+      case '~~':
+        return deletion(input);
+      case '==':
+        return mark(input);
+    }
+    switch (source[0]) {
+      case '[':
+        return ruby(input)
+            || textlink(input);
+      case '{':
+        return textlink(input);
+      case '<':
+        return html(input);
+      case '$':
+        return extension(input)
+            || math(input);
+      case '`':
+        return code(input);
+      case '*':
+        return emstrong(input)
+            || strong(input)
+            || emphasis(input);
+      case '&':
+        return htmlentity(input);
+    }
+  },
   bracket,
   autolink,
   text
-]));
+])) as any;
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';

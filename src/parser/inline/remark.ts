@@ -1,13 +1,13 @@
 import { RemarkParser } from '../inline';
 import { Recursion } from '../context';
-import { union, some, creation, precedence, validate, surround, close, match, lazy } from '../../combinator';
+import { union, some, creation, precedence, surround, close, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
 import { memoize } from 'spica/memoize';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const remark: RemarkParser = lazy(() => validate('[%', creation(1, Recursion.inline, match(
+export const remark: RemarkParser = lazy(() => creation(1, Recursion.inline, match(
   /^\[(%+)\s/,
   memoize(
   ([, fence]) =>
@@ -22,4 +22,4 @@ export const remark: RemarkParser = lazy(() => validate('[%', creation(1, Recurs
         ]),
       ], rest],
       ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ([, fence]) => fence.length, {})))));
+  ([, fence]) => fence.length, {}))));

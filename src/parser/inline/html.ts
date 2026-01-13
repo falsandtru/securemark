@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline,
+export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline,
   union([
     focus(
       /^<wbr[^\S\n]*>/i,
@@ -66,7 +66,7 @@ export const html: HTMLParser = lazy(() => validate('<', validate(/^<[a-z]+(?=[^
             [[elem(tag, as, bs, [])], rest]),
       ([, tag]) => tag,
       new Clock(10000))),
-  ])))));
+  ]))));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),

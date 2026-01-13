@@ -9,7 +9,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => validate('[#', constraint(State.index, false, creation(1, Recursion.ignore, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => constraint(State.index, false, creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   precedence(1, state(State.linkers | State.media,
   startTight(
@@ -31,7 +31,7 @@ export const index: IndexParser = lazy(() => validate('[#', constraint(State.ind
         class: 'index',
         href: el.id ? `#${el.id}` : undefined,
       }),
-  ])))));
+  ]))));
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', creation(1, Recursion.ignore, fmap(open(
   /^\|(?!\\?\s)/,

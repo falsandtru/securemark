@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { Recursion, Backtrack } from '../../context';
-import { union, some, creation, precedence, validate, surround, lazy } from '../../../combinator';
+import { union, some, creation, precedence, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight } from '../../visibility';
@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validate('[', creation(1, Recursion.inline, surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
   precedence(1,
   startTight(some(union([inline]), ']', [[']', 1]]))),
@@ -24,4 +24,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => validat
       'data-invalid-message': `Invalid start symbol or linebreak`,
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest], 3 | Backtrack.bracket))));
+  ([as, bs], rest) => [unshift(as, bs), rest], 3 | Backtrack.bracket)));

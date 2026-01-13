@@ -1,24 +1,24 @@
 import { ExtensionParser } from '../../inline';
 import { State, Recursion } from '../../context';
-import { union, constraint, creation, validate, surround, clear, fmap } from '../../../combinator';
+import { union, constraint, creation, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 
 const body = str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 
-export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate(['[$', '$'], union([
+export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
   surround('[', body, ']'),
   body,
-])));
+]));
 
-export const label: ExtensionParser.LabelParser = constraint(State.label, false, validate(['[$', '$'], creation(1, Recursion.ignore, fmap(
+export const label: ExtensionParser.LabelParser = constraint(State.label, false, creation(1, Recursion.ignore, fmap(
   union([
     surround('[', body, ']'),
     body,
   ]),
   ([text]) => [
     html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text),
-  ]))));
+  ])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)
