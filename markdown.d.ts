@@ -664,8 +664,8 @@ export namespace MarkdownParser {
       InlineParser.MathParser,
       InlineParser.CodeParser,
       InlineParser.HTMLEntityParser,
-      InlineParser.AutolinkParser,
       InlineParser.BracketParser,
+      InlineParser.AutolinkParser,
       SourceParser.TextParser,
     ]> {
   }
@@ -1121,6 +1121,28 @@ export namespace MarkdownParser {
         ]> {
       }
     }
+    export interface BracketParser extends
+      // ()
+      // []
+      // {}
+      // ""
+      Inline<'bracket'>,
+      Parser<HTMLElement | string, Context, [
+        SourceParser.StrParser,
+        InlineParser,
+        SourceParser.StrParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+        InlineParser,
+      ]> {
+    }
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLElement | string, Context, [
@@ -1225,28 +1247,6 @@ export namespace MarkdownParser {
           LinkParser.UnsafeLinkParser,
         ]> {
       }
-    }
-    export interface BracketParser extends
-      // ()
-      // []
-      // {}
-      // ""
-      Inline<'bracket'>,
-      Parser<HTMLElement | string, Context, [
-        SourceParser.StrParser,
-        InlineParser,
-        SourceParser.StrParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-        InlineParser,
-      ]> {
     }
   }
   export interface AutolinkParser extends

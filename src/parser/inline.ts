@@ -17,8 +17,8 @@ import { emphasis } from './inline/emphasis';
 import { math } from './inline/math';
 import { code } from './inline/code';
 import { htmlentity } from './inline/htmlentity';
-import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
+import { autolink } from './inline/autolink';
 import { text } from './source';
 
 export import InlineParser = MarkdownParser.InlineParser;
@@ -42,8 +42,8 @@ export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import UnsafeHTMLEntityParser = InlineParser.UnsafeHTMLEntityParser;
 export import ShortMediaParser = InlineParser.ShortMediaParser;
-export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;
+export import AutolinkParser = InlineParser.AutolinkParser;
 
 export const inline: InlineParser = lazy(() => union([
   annotation,
@@ -63,8 +63,8 @@ export const inline: InlineParser = lazy(() => union([
   math,
   code,
   htmlentity,
-  autolink,
   bracket,
+  autolink,
   text
 ]));
 
