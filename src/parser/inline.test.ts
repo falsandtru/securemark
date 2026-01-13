@@ -174,7 +174,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"[% *"*"*')), [['"', '[%', ' ', '*', '"', '*', '"', '*'], '']);
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]')), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('"{{""}}')), [['"', '{', '{', '"', '"', '}', '}'], '']);
-      assert.deepStrictEqual(inspect(parser('[#http://a/(<bdi>)]</bdi>')), [['<a class="index" href="#index::http://a/(&lt;bdi&gt;)">http://a/(&lt;bdi&gt;)</a>', '<', '/', 'bdi', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#http://host/(<bdi>)]</bdi>')), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/(&lt;bdi&gt;)</a>', '<', '/', 'bdi', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>')), [[ '[', '#@a/http', ':', '/', '/', 'host', '/', '(', '<bdi>)]</bdi>' ], '']);
     });
 
     it('uri', () => {

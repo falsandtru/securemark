@@ -24,7 +24,7 @@ export const autolink: AutolinkParser = lazy(() =>
       channel,
       account,
       // Escape unmatched account-like strings.
-      str(/^@+[0-9a-z]*(?:[-.][0-9a-z]+)*/i),
+      str(/^@+[0-9a-z]*(?:[-./][0-9a-z]+)*/i),
       // Escape invalid leading characters.
       str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', emoji), 'u')),
       hashtag,
