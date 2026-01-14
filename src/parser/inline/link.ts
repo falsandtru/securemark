@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
-import { union, inits, tails, sequence, some, constraint, creation, precedence, state, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, sequence, some, creation, precedence, state, constraint, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';

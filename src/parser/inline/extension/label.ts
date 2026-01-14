@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Recursion } from '../../context';
-import { union, constraint, creation, surround, clear, fmap } from '../../../combinator';
+import { union, creation, constraint, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 
