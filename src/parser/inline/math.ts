@@ -36,7 +36,7 @@ const bracket: MathParser.BracketParser = lazy(() => creation(0, Recursion.termi
   str('{'),
   some(union([
     bracket,
-    some(escsource, /^(?:[{}$]|\\?\n)/),
+    some(escsource, /^[{}$\n]/),
   ])),
   str('}'),
   true)));
