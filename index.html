@@ -19,7 +19,7 @@
     font-family: Meiryo Italic;
     src: local('Meiryo');
   }
-  body, .remark {
+  body {
     font-family:
       -apple-system,
       Segoe UI,
@@ -718,7 +718,15 @@
   .remark {
     font-style: initial;
     font-weight: initial;
-    color: gray;
+    /* 編集時に見落とさないよう編集画面でのみ着色し強調 */
+    color: red;
+    /* color: gray; */
+  }
+  .remark .remark {
+    color: green;
+  }
+  .remark .remark .remark {
+    color: blue;
   }
   .remark > input {
     display: inline;
@@ -1010,9 +1018,9 @@
     '',
     '## Remark',
     '',
-    'Remark syntax provides a communication method among authors and ***editors***[% Remarks can collapse by clicking the red dagger mark. %].',
+    'Remark syntax is the syntax to write ***editorial*** annotation comments[% TODO: Remarks collapse when clicking the red dagger mark. %].',
     '',
-    '\tDo not use remark syntax to write comments for readers [comments for readers should be written within brackets or parentheses as this].',
+    '\tDo not use remark syntax to write annotations or comments for readers [comments for readers should be written within parentheses or brackets as this].',
     '',
     '## Link',
     '',
