@@ -96,6 +96,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('***a****')), [['<em><strong>a</strong></em>', '*'], '']);
       assert.deepStrictEqual(inspect(parser('****a***')), [['****', 'a', '***'], '']);
       assert.deepStrictEqual(inspect(parser('****a****')), [['****', 'a', '****'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a//////')), [['//////', 'a', '//////'], '']);
       assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em><span class="paren">(<em>a</em>)</span></em>'], '']);
       assert.deepStrictEqual(inspect(parser('**(**a**)**')), [['<strong><span class="paren">(<strong>a</strong>)</span></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*++ ++*')), [['<em><ins> </ins></em>'], '']);
@@ -175,13 +176,13 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]')), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('"{{""}}')), [['"', '{', '{', '"', '"', '}', '}'], '']);
       assert.deepStrictEqual(inspect(parser('[#http://host/(<bdi>)]</bdi>')), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/(&lt;bdi&gt;)</a>', '<', '/', 'bdi', '>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>')), [[ '[', '#@a/http', ':', '/', '/', 'host', '/', '(', '<bdi>)]</bdi>' ], '']);
+      assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>')), [[ '[', '#@a/http', ':', '//', 'host', '/', '(', '<bdi>)]</bdi>' ], '']);
     });
 
     it('uri', () => {
       assert.deepStrictEqual(inspect(parser('\nhttp://host')), [['<br>', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('0http://host')), [['0http', ':', '/', '/', 'host'], '']);
-      assert.deepStrictEqual(inspect(parser('0aAhttp://host')), [['0aAhttp', ':', '/', '/', 'host'], '']);
+      assert.deepStrictEqual(inspect(parser('0http://host')), [['0http', ':', '//', 'host'], '']);
+      assert.deepStrictEqual(inspect(parser('0aAhttp://host')), [['0aAhttp', ':', '//', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('?http://host')), [['?', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('0!http://host')), [['0', '!', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('0?http://host')), [['0', '?', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);

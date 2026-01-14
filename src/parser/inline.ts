@@ -14,6 +14,7 @@ import { mark } from './inline/mark';
 import { emstrong } from './inline/emstrong';
 import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
+import { italic } from './inline/italic';
 import { math } from './inline/math';
 import { code } from './inline/code';
 import { htmlentity } from './inline/htmlentity';
@@ -36,6 +37,7 @@ export import MarkParser = InlineParser.MarkParser;
 export import EmStrongParser = InlineParser.EmStrongParser;
 export import StrongParser = InlineParser.StrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
+export import ItalicParser = InlineParser.ItalicParser;
 export import MathParser = InlineParser.MathParser;
 export import CodeParser = InlineParser.CodeParser;
 export import MediaParser = InlineParser.MediaParser;
@@ -75,6 +77,8 @@ export const inline: InlineParser = lazy(() => union([
         return deletion(input);
       case '==':
         return mark(input);
+      case '//':
+        return italic(input);
     }
     switch (source[0]) {
       case '[':

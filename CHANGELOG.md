@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.284.0
+
+- Add italic syntax.
+
 ## 0.283.7
 
 - Refactoring.

@@ -661,6 +661,7 @@ export namespace MarkdownParser {
       InlineParser.EmStrongParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
+      InlineParser.ItalicParser,
       InlineParser.MathParser,
       InlineParser.CodeParser,
       InlineParser.HTMLEntityParser,
@@ -1064,6 +1065,14 @@ export namespace MarkdownParser {
           StrongParser,
           EmphasisParser,
         ]>,
+      ]> {
+    }
+    export interface ItalicParser extends
+      // ///abc///
+      Inline<'italic'>,
+      Parser<HTMLElement | string, Context, [
+        InlineParser,
+        ItalicParser,
       ]> {
     }
     export interface MathParser extends

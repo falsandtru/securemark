@@ -589,6 +589,8 @@
   .annotation, .reference,
   :is(.annotations, .references) > li > sup:last-child {
     user-select: none;
+    font-style: normal;
+    font-weight: normal;
   }
   .index,
   .index em {
@@ -601,6 +603,9 @@
   }
   strong {
     font-weight: bolder;
+  }
+  i {
+    font-style: italic;
   }
   mark {
     background-color: initial;
@@ -914,7 +919,7 @@
     '',
     '## Heading',
     '',
-    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==***second level headings such as chapters must be level 2 headings***==.',
+    'Level 2 headings(##) increment the chapter number of figure numbers. Therefore ==***///second level headings such as chapters must be level 2 headings///***==.',
     '',
     '~~~',
     '# Example',
