@@ -2426,7 +2426,7 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, 
   'data-invalid-type': 'content',
   'data-invalid-message': `"${source.match(forbiddenCommand)[0]}" command is forbidden`
 }, source)], '']))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(0, 6 /* Recursion.terminal */, (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /^(?:[{}$]|\\?\n)/)])), (0, source_1.str)('}'), true)));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(0, 6 /* Recursion.terminal */, (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /^[{}$\n]/)])), (0, source_1.str)('}'), true)));
 
 /***/ },
 
@@ -3917,6 +3917,28 @@ MultiHeap.min = Heap.min;
 
 /***/ },
 
+/***/ 3744
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.italic = void 0;
+const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
+const source_1 = __webpack_require__(8745);
+const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
+// 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
+// ある程度の長さのある文に使うのが望ましい。
+exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, 4 /* Recursion.inline */, (0, combinator_1.surround)((0, source_1.str)('///', '/'), (0, combinator_1.precedence)(0, (0, visibility_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('///')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '/'), exports.italic)])))), (0, source_1.str)('///'), false, ([, bs], rest) => [[(0, dom_1.html)('i', (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
+
+/***/ },
+
 /***/ 3770
 (__unused_webpack_module, exports, __webpack_require__) {
 
@@ -4959,7 +4981,7 @@ const dom_1 = __webpack_require__(394);
 exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(1, 0 /* Recursion.ignore */, (0, combinator_1.surround)('{{', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
 }, `{{${ns.join('')}}}`)], rest], undefined, 3 | 28 /* Backtrack.template */)));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(0, 6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)(source_1.escsource, /^"|^\\?\n/)), (0, source_1.str)('"'), true, undefined, undefined, 3 | 28 /* Backtrack.template */)])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(0, 6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')'), (0, source_1.str)(')'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']'), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}'), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)(source_1.escsource, /^["\n]/)), (0, source_1.str)('"'), true, undefined, undefined, 3 | 28 /* Backtrack.template */)])));
 
 /***/ },
 
@@ -5435,6 +5457,7 @@ exports.text = (0, combinator_1.creation)(1, 0 /* Recursion.ignore */, ({
         case '\n':
           return [[(0, dom_1.html)('br')], source.slice(1)];
         case '*':
+        case '/':
         case '+':
         case '~':
         case '=':
@@ -7674,6 +7697,7 @@ const mark_1 = __webpack_require__(5381);
 const emstrong_1 = __webpack_require__(365);
 const strong_1 = __webpack_require__(6591);
 const emphasis_1 = __webpack_require__(1354);
+const italic_1 = __webpack_require__(3744);
 const math_1 = __webpack_require__(2962);
 const code_1 = __webpack_require__(3481);
 const htmlentity_1 = __webpack_require__(470);
@@ -7708,6 +7732,8 @@ exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input => 
       return (0, deletion_1.deletion)(input);
     case '==':
       return (0, mark_1.mark)(input);
+    case '//':
+      return (0, italic_1.italic)(input);
   }
   switch (source[0]) {
     case '[':
