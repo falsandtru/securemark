@@ -26,7 +26,8 @@ export const ruby: RubyParser = lazy(() => creation(1, Recursion.ignore, fmap(
         return [
           html('ruby', attributes(texts, rubies), defrag(texts
             .reduce((acc, _, i) =>
-              push(acc, unshift([texts[i]],
+              push(acc, unshift(
+                [texts[i]],
                 i < rubies.length && rubies[i]
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
@@ -36,7 +37,8 @@ export const ruby: RubyParser = lazy(() => creation(1, Recursion.ignore, fmap(
         return [
           html('ruby', attributes(texts, rubies), defrag([...texts[0]]
             .reduce((acc, _, i, texts) =>
-              push(acc, unshift([texts[i]],
+              push(acc, unshift(
+                [texts[i]],
                 i < rubies.length && rubies[i]
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
