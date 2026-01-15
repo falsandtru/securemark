@@ -45,14 +45,17 @@ function hasVisible(
 }
 
 export function blankWith(delimiter: string | RegExp): RegExp;
-export function blankWith(starting: '' | '\n', delimiter: string | RegExp): RegExp;
-export function blankWith(starting: '' | '\n', delimiter?: string | RegExp): RegExp {
-  if (delimiter === undefined) return blankWith('', starting);
+export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp;
+export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
+  if (delimiter === undefined) return blankWith('', starts);
   return new RegExp(String.raw
-    `^(?:(?=${
-      starting
-    })(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${starting && '+'})?${
-      typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source
+    `^(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
+      // 空行除去
+      starts && '+'
+    })?${
+      typeof delimiter === 'string'
+        ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
+        : delimiter.source
     }`);
 }
 
