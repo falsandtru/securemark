@@ -5,14 +5,14 @@ import { inline } from '../inline';
 import { emstrong } from './emstrong';
 import { strong } from './strong';
 import { str } from '../source';
-import { startTight, blankWith } from '../visibility';
+import { tightStart, blankWith } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 export const emphasis: EmphasisParser = lazy(() => creation(1, Recursion.inline, surround(
   str('*', '*'),
   precedence(0,
-  startTight(some(union([
+  tightStart(some(union([
     strong,
     some(inline, blankWith('*')),
     open(some(inline, '*'), union([

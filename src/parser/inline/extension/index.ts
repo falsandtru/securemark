@@ -4,7 +4,7 @@ import { union, inits, some, creation, precedence, state, constraint, validate, 
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, trimBlankNodeEnd } from '../../visibility';
+import { tightStart, trimBlankNodeEnd } from '../../visibility';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -12,7 +12,7 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => constraint(State.index, false, creation(1, Recursion.ignore, fmap(indexee(surround(
   '[#',
   precedence(1, state(State.linkers | State.media,
-  startTight(
+  tightStart(
   some(inits([
     inline,
     signature,

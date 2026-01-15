@@ -3,7 +3,7 @@ import { Recursion, Backtrack } from '../../context';
 import { union, some, creation, precedence, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { startTight } from '../../visibility';
+import { tightStart } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -14,7 +14,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creation(1, Recursion.inline, surround(
   str(/^\[[:^|]/),
   precedence(1,
-  startTight(some(union([inline]), ']', [[']', 1]]))),
+  tightStart(some(union([inline]), ']', [[']', 1]]))),
   str(']'), false,
   ([, bs], rest) => [[
     html('span', {

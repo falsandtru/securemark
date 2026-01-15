@@ -4,7 +4,7 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, creation, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
-import { isStartTightNodes } from '../visibility';
+import { isTightNodeStart } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -13,7 +13,7 @@ export const ruby: RubyParser = lazy(() => creation(1, Recursion.ignore, fmap(
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];
       ns && ns.at(-1) === '' && ns.pop();
-      return ns && isStartTightNodes(ns) ? [[ns], rest] : undefined;
+      return ns && isTightNodeStart(ns) ? [[ns], rest] : undefined;
     }),
     bind(surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];

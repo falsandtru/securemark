@@ -3,7 +3,7 @@ import { Recursion } from '../context';
 import { union, subsequence, some, creation, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { isStartLooseNodes, blankWith } from '../visibility';
+import { isLooseNodeStart, blankWith } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { Clock } from 'spica/clock';
 import { unshift, push, splice } from 'spica/array';
@@ -219,7 +219,7 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
   if (cs.length === 0) return invalid('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
   if (bs.length === 0) return invalid('content', `Missing the content`, as, bs, cs);
-  if (!isStartLooseNodes(bs)) return invalid('content', `Missing the visible content in the same line`, as, bs, cs);
+  if (!isLooseNodeStart(bs)) return invalid('content', `Missing the visible content in the same line`, as, bs, cs);
   const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
   return 'data-invalid-syntax' in attrs
     ? invalid('attribute', 'Invalid HTML attribute', as, bs, cs)

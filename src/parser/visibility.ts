@@ -59,25 +59,25 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
     }`);
 }
 
-//export function startLoose<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
-//export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
+//export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
+//export function looseStart<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
 //  return input =>
-//    isStartLoose(input, except)
+//    isLooseStart(input, except)
 //      ? parser(input)
 //      : undefined;
 //}
-//const isStartLoose = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
-//  return isStartTight({ source: source.replace(blank.start, ''), context }, except);
+//const isLooseStart = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
+//  return isTightStart({ source: source.replace(blank.start, ''), context }, except);
 //}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
-export function startTight<P extends Parser<unknown>>(parser: P, except?: string): P;
-export function startTight<T>(parser: Parser<T>, except?: string): Parser<T> {
+export function tightStart<P extends Parser<unknown>>(parser: P, except?: string): P;
+export function tightStart<T>(parser: Parser<T>, except?: string): Parser<T> {
   return input =>
-    isStartTight(input, except)
+    isTightStart(input, except)
       ? parser(input)
       : undefined;
 }
-const isStartTight = reduce((input: Input<MarkdownParser.Context>, except?: string): boolean => {
+const isTightStart = reduce((input: Input<MarkdownParser.Context>, except?: string): boolean => {
   const { source } = input;
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
@@ -110,7 +110,7 @@ const isStartTight = reduce((input: Input<MarkdownParser.Context>, except?: stri
   }
 }, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
-export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isLooseNodeStart(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
@@ -119,11 +119,11 @@ export function isStartLooseNodes(nodes: readonly (HTMLElement | string)[]): boo
   }
   return false;
 }
-export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isTightNodeStart(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
 }
-//export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
+//export function isTightNodeEnd(nodes: readonly (HTMLElement | string)[]): boolean {
 //  if (nodes.length === 0) return true;
 //  return isVisible(nodes.at(-1)!, -1);
 //}

@@ -6,7 +6,7 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { startTight, blankWith } from '../visibility';
+import { tightStart, blankWith } from '../visibility';
 import { repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
@@ -33,7 +33,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 export const emstrong: EmStrongParser = lazy(() => creation(1, Recursion.inline, validate('***',
   precedence(0, repeat('***', surround(
     '',
-    startTight(some(union([
+    tightStart(some(union([
       some(inline, blankWith('*')),
       open(some(inline, '*'), inline),
     ]))),
