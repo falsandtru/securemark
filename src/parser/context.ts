@@ -34,8 +34,8 @@ export const enum Backtrack {
   ruby = 5 << 2,
   link = 4 << 2,
   media = 3 << 2,
-  url = 2 << 2,
-  bracket = 1 << 2,
+  bracket = 2 << 2,
+  url = 1 << 2,
 }
 
 export const enum Command {
