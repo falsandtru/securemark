@@ -1016,7 +1016,7 @@ export namespace MarkdownParser {
       Inline<'insertion'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
+        InsertionParser,
       ]> {
     }
     export interface DeletionParser extends
@@ -1024,7 +1024,7 @@ export namespace MarkdownParser {
       Inline<'deletion'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
+        DeletionParser,
       ]> {
     }
     export interface MarkParser extends

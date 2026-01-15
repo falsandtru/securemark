@@ -34,10 +34,6 @@ export const text: TextParser = creation(1, Recursion.ignore, ({ source, context
         case '\n':
           return [[html('br')], source.slice(1)];
         case '*':
-        case '/':
-        case '+':
-        case '~':
-        case '=':
         case '`':
           return source[1] === source[0]
             ? repeat({ source, context })

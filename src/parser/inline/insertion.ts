@@ -1,19 +1,20 @@
 import { InsertionParser } from '../inline';
-import { Recursion } from '../context';
-import { union, some, creation, precedence, surround, open, lazy } from '../../combinator';
+import { Recursion, Command } from '../context';
+import { union, some, creation, precedence, validate, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { str } from '../source';
 import { blankWith } from '../visibility';
-import { unshift } from 'spica/array';
+import { repeat } from '../util';
+import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const insertion: InsertionParser = lazy(() => creation(1, Recursion.inline, surround(
-  str('++', '+'),
-  precedence(0,
-  some(union([
-    some(inline, blankWith('\n', '++')),
-    open('\n', some(inline, '+'), true),
-  ]))),
-  str('++'), false,
-  ([, bs], rest) => [[html('ins', defrag(bs))], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+export const insertion: InsertionParser = lazy(() => creation(1, Recursion.inline, validate('++',
+  precedence(0, repeat('++', surround(
+    '',
+    some(union([
+      some(inline, blankWith('\n', '++')),
+      open('\n', some(insertion, '+'), true),
+    ])),
+    '++', false,
+    ([, bs], rest) => [bs, rest],
+    ([, bs], rest) => [push(bs, [Command.Escape]), rest]),
+    nodes => [html('ins', defrag(nodes))])))));

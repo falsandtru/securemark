@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.285.0
+
+- Refine parsing of repeated symbols.
+
 ## 0.284.0
 
 - Add italic syntax.

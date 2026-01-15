@@ -1,10 +1,75 @@
-import { Parser } from '../combinator/data/parser';
+import { min } from 'spica/alias';
+import { Command } from './context';
+import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../combinator/data/parser';
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
 export function lineable<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function lineable<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return convert(source => `\r${source}`, parser);
+}
+
+export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Tree<P>[], context: Context<P>) => Tree<P>[], termination?: (acc: Tree<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Tree<P>>): P;
+export function repeat<T extends HTMLElement | string>(symbol: string, parser: Parser<T>, cons: (nodes: T[], context: Ctx) => T[], termination: (acc: T[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | T> = (acc, rest, prefix, postfix) => {
+  const nodes = [];
+  if (prefix > 0) {
+    nodes.push(symbol[0].repeat(prefix));
+  }
+  for (let i = 0; i < acc.length; ++i) {
+    nodes.push(...acc[i]);
+  }
+  if (postfix > 0) {
+    nodes.push(rest.slice(0, postfix));
+    rest = rest.slice(postfix);
+  }
+  return [nodes, rest];
+}): Parser<string | T> {
+  return input => {
+    const { source, context } = input;
+    assert(source.startsWith(symbol));
+    let acc: T[][] = [];
+    let i = symbol.length;
+    while (source[i] === source[0]) ++i;
+    let rest = source.slice(i);
+    let state = false;
+    for (; i >= symbol.length; i -= symbol.length) {
+      if (acc.length > 0 && rest.startsWith(symbol)) {
+        acc = [cons(acc.flat(), context)];
+        rest = rest.slice(symbol.length);
+        continue;
+      }
+      const result = parser({ source: rest, context });
+      if (result === undefined) break;
+      const nodes = eval(result);
+      rest = exec(result);
+      acc.push(nodes);
+      switch (nodes.at(-1)) {
+        case Command.Escape:
+          assert(!rest.startsWith(symbol));
+          nodes.pop();
+          state = false;
+          break;
+        case Command.Separator:
+          assert(!rest.startsWith(symbol));
+          nodes.pop();
+          state = true;
+          continue;
+        default:
+          acc = [cons(acc.flat(), context)];
+          state = true;
+          continue;
+      }
+      break;
+    }
+    if (acc.length === 0) return;
+    const prefix = i;
+    i = 0;
+    for (let len = min(prefix, rest.length); i < len && rest[i] === symbol[0];) {
+      ++i;
+    }
+    const postfix = i;
+    return termination(acc, rest, prefix, postfix, state);
+  };
 }
 
 export function markInvalid<T extends Element>(

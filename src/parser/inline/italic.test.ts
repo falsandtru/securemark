@@ -15,8 +15,8 @@ describe('Unit: parser/inline/italic', () => {
       assert.deepStrictEqual(inspect(parser('///a\\ ///')), [['///', 'a'], '\\ ///']);
       assert.deepStrictEqual(inspect(parser('///a\\\n///')), [['///', 'a'], '\\\n///']);
       assert.deepStrictEqual(inspect(parser('///a/b')), [['///', 'a', '/', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('///a//b')), [['///', 'a', '//', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('///a*b///')), [['///', 'a', '*', 'b', '///'], '']);
+      assert.deepStrictEqual(inspect(parser('///a//b')), [['///', 'a', '/', '/', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('///a*b///')), [['///', 'a', '*', 'b', '/', '/', '/'], '']);
       assert.deepStrictEqual(inspect(parser('/// ///')), undefined);
       assert.deepStrictEqual(inspect(parser('/// a///')), undefined);
       assert.deepStrictEqual(inspect(parser('/// a ///')), undefined);
@@ -25,8 +25,6 @@ describe('Unit: parser/inline/italic', () => {
       assert.deepStrictEqual(inspect(parser('///\\ a///')), undefined);
       assert.deepStrictEqual(inspect(parser('///\\\na///')), undefined);
       assert.deepStrictEqual(inspect(parser('///<wbr>a///')), undefined);
-      assert.deepStrictEqual(inspect(parser('////a////')), undefined);
-      assert.deepStrictEqual(inspect(parser('/////a/////')), undefined);
       assert.deepStrictEqual(inspect(parser(' ///a///')), undefined);
     });
 
@@ -39,8 +37,29 @@ describe('Unit: parser/inline/italic', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('////a///')), [['/', '<i>a</i>'], '']);
+      assert.deepStrictEqual(inspect(parser('////a///b')), [['/', '<i>a</i>'], 'b']);
+      assert.deepStrictEqual(inspect(parser('////a////')), [['/', '<i>a</i>', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('////a////b')), [['/', '<i>a</i>', '/'], 'b']);
+      assert.deepStrictEqual(inspect(parser('/////a///')), [['//', '<i>a</i>'], '']);
+      assert.deepStrictEqual(inspect(parser('/////a///b')), [['//', '<i>a</i>'], 'b']);
+      assert.deepStrictEqual(inspect(parser('/////a////')), [['//', '<i>a</i>', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('/////a////b')), [['//', '<i>a</i>', '/'], 'b']);
+      assert.deepStrictEqual(inspect(parser('/////a/////')), [['//', '<i>a</i>', '//'], '']);
+      assert.deepStrictEqual(inspect(parser('/////a/////b')), [['//', '<i>a</i>', '//'], 'b']);
+      assert.deepStrictEqual(inspect(parser('//////a///')), [['///', '<i>a</i>'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a///b')), [['///', '<i>a</i>', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a////')), [['///', '<i>a</i>', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a////b')), [['///', '<i>a</i>', '/', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a/////')), [['///', '<i>a</i>', '/', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a/////b')), [['///', '<i>a</i>', '/', '/', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a//////')), [['<i><i>a</i></i>'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a///b///')), [['<i><i>a</i>b</i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a ///b//////')), [['<i>a <i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a\\ ///b//////')), [['<i>a <i>b</i></i>'], '']);
+      assert.deepStrictEqual(inspect(parser('///a //////b/////////')), [['<i>a <i><i>b</i></i></i>'], '']);
+      assert.deepStrictEqual(inspect(parser('///a ///b///c///')), [['<i>a <i>b</i>c</i>'], '']);
+      assert.deepStrictEqual(inspect(parser('///a ///b ///c/////////')), [['<i>a <i>b <i>c</i></i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a&Tab;///b//////')), [['<i>a\t<i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a<wbr>///b//////')), [['<i>a<wbr><i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///`a`///')), [['<i><code data-src="`a`">a</code></i>'], '']);
