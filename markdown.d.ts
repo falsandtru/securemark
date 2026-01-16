@@ -652,8 +652,8 @@ export namespace MarkdownParser {
       InlineParser.TemplateParser,
       InlineParser.RemarkParser,
       InlineParser.ExtensionParser,
-      InlineParser.RubyParser,
       InlineParser.LinkParser.TextLinkParser,
+      InlineParser.RubyParser,
       InlineParser.HTMLParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
@@ -816,20 +816,6 @@ export namespace MarkdownParser {
         ]> {
       }
     }
-    export interface RubyParser extends
-      // [AB](a b)
-      Inline<'ruby'>,
-      Parser<HTMLElement, Context, [
-        Parser<string[], Context, []>,
-        Parser<string[], Context, []>,
-      ]> {
-    }
-    export namespace RubyParser {
-      export interface TextParser extends
-        Inline<'ruby/text'>,
-        Parser<string[], Context, []> {
-      }
-    }
     export interface LinkParser extends
       // { uri }
       // [abc]{uri nofollow}
@@ -977,6 +963,20 @@ export namespace MarkdownParser {
             LinkParser.ParameterParser.OptionParser,
           ]> {
         }
+      }
+    }
+    export interface RubyParser extends
+      // [AB](a b)
+      Inline<'ruby'>,
+      Parser<HTMLElement, Context, [
+        Parser<string[], Context, []>,
+        Parser<string[], Context, []>,
+      ]> {
+    }
+    export namespace RubyParser {
+      export interface TextParser extends
+        Inline<'ruby/text'>,
+        Parser<string[], Context, []> {
       }
     }
     export interface HTMLParser extends

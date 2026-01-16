@@ -5,8 +5,8 @@ import { reference } from './inline/reference';
 import { template } from './inline/template';
 import { remark } from './inline/remark';
 import { extension } from './inline/extension';
-import { ruby } from './inline/ruby';
 import { textlink } from './inline/link';
+import { ruby } from './inline/ruby';
 import { html } from './inline/html';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
@@ -28,8 +28,8 @@ export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
 export import RemarkParser = InlineParser.RemarkParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
-export import RubyParser = InlineParser.RubyParser;
 export import LinkParser = InlineParser.LinkParser;
+export import RubyParser = InlineParser.RubyParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
@@ -82,8 +82,8 @@ export const inline: InlineParser = lazy(() => union([
     }
     switch (source[0]) {
       case '[':
-        return ruby(input)
-            || textlink(input);
+        return textlink(input)
+            || ruby(input);
       case '{':
         return textlink(input);
       case '<':
