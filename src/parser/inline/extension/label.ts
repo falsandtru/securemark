@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { State, Recursion } from '../../context';
+import { State, Recursion, Backtrack } from '../../context';
 import { union, creation, constraint, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
@@ -13,7 +13,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
 
 export const label: ExtensionParser.LabelParser = constraint(State.label, false, creation(1, Recursion.ignore, fmap(
   union([
-    surround('[', body, ']'),
+    surround('[', body, ']', false, undefined, undefined, 1 | Backtrack.bracket),
     body,
   ]),
   ([text]) => [
