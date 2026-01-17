@@ -1,4 +1,5 @@
 import { Parser, Ctx } from './src/combinator/data/parser';
+import { Command } from './src/parser/context';
 import { Dict } from 'spica/dict';
 
 declare abstract class Markdown<T> {
@@ -1196,8 +1197,8 @@ export namespace MarkdownParser {
         }
         export interface BracketParser extends
           Inline<'url/bracket'>,
-          Parser<string, Context, [
-            Parser<string, Context, [
+          Parser<string | Command.Escape, Context, [
+            Parser<string | Command.Escape, Context, [
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ]>,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.285.1
+
+- Fix backtracking control.
+
 ## 0.285.0
 
 - Refine parsing of repeated symbols.

@@ -1,8 +1,8 @@
 import { isArray } from 'spica/alias';
 import { Parser, Input, Ctx, Tree, Context, eval, exec, check } from '../../data/parser';
 
-//export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
-//export function contract<T>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T>, cond: (results: readonly T[], rest: string) => boolean): Parser<T> {
+//export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
+//export function contract<T>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T>, cond: (nodes: readonly T[], rest: string) => boolean): Parser<T> {
 //  return verify(validate(patterns, parser), cond);
 //}
 
@@ -45,8 +45,8 @@ function guard<T>(f: (input: Input<Ctx>) => boolean, parser: Parser<T>): Parser<
       : undefined;
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Tree<P>[], rest: string, context: Context<P>) => boolean): P;
-export function verify<T>(parser: Parser<T>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
+export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Tree<P>[], rest: string, context: Context<P>) => boolean): P;
+export function verify<T>(parser: Parser<T>, cond: (nodes: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
   assert(parser);
   return input => {
     const { source, context } = input;
