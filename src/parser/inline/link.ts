@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, BacktrackState } from '../context';
 import { union, inits, tails, sequence, some, creation, precedence, state, constraint, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
@@ -22,7 +22,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       '[',
       trimBlankStart(some(union([inline]), ']', [['\n', 9], [']', 1]])),
       ']',
-      true, undefined, undefined, 1 | Backtrack.bracket)),
+      true, undefined, undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)),
     dup(surround(
       /^{(?![{}])/,
       inits([uri, some(option)]),

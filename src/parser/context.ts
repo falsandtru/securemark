@@ -29,14 +29,19 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  template = 7 << 2,
-  index = 6 << 2,
-  link = 5 << 2,
-  ruby = 4 << 2,
-  media = 3 << 2,
+  template = 8 << 2,
+  index = 7 << 2,
+  link = 6 << 2,
+  ruby = 5 << 2,
+  media = 4 << 2,
+  linebracket = 3 << 2,
   bracket = 2 << 2,
   url = 1 << 2,
 }
+export const enum BacktrackState {
+  nobreak = 1,
+}
+assert(Backtrack.linebracket === Backtrack.bracket + (BacktrackState.nobreak << 2));
 
 export const enum Command {
   Error = '\x07',

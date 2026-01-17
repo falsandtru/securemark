@@ -1,5 +1,5 @@
 import { AnnotationParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, BacktrackState } from '../context';
 import { union, some, creation, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
@@ -15,4 +15,4 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', { class: 'annotation' }, [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.bracket))));
+  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak))));

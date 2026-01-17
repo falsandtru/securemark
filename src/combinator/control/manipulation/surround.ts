@@ -8,6 +8,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubTree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtrack?: number,
+  bstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
@@ -15,6 +16,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubTree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtrack?: number,
+  bstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -22,6 +24,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Tree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtrack?: number,
+  bstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -29,6 +32,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Tree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtrack?: number,
+  bstate?: number,
 ): P;
 export function surround<T>(
   opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>,
@@ -36,6 +40,7 @@ export function surround<T>(
   f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T>,
   g?: (rss: [T[], T[], string], rest: string, context: Ctx) => Result<T>,
   backtrack: number = 0,
+  bstate: number = 0,
 ): Parser<T> {
   switch (typeof opener) {
     case 'string':
@@ -56,17 +61,22 @@ export function surround<T>(
     const rl = eval(res1);
     const mr_ = exec(res1);
     if (backtrack & 1) {
-      const { backtracks = {}, offset = 0 } = context;
+      const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
       for (let i = 0; i < source.length - mr_.length; ++i) {
         if (source[i] !== source[0]) break;
         const pos = source.length + offset - i - 1;
         if (!(pos in backtracks)) continue;
         assert(backtrack >>> 2);
-        if (backtracks[pos] & 1 << (backtrack >>> 2)) return;
+        // bracket only
+        const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
+        if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;
       }
     }
+    const { backtrack: state = 0 } = context;
+    context.backtrack = state | bstate;
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
     assert(check(mr_, res2));
+    context.backtrack = state;
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
     if (!rm && !optional) return;
@@ -76,8 +86,10 @@ export function surround<T>(
     const rest = exec(res3, r_);
     if (rest.length === lmr_.length) return;
     if (backtrack & 2 && rr === undefined) {
-      const { backtracks = {}, offset = 0 } = context;
-      backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2);
+      const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
+      // bracket only
+      const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
+      backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
     }
     return rr
       ? f

@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, BacktrackState } from '../context';
 import { union, subsequence, some, creation, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -19,7 +19,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.bracket))));
+  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak))));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = creation(1, Recursion.ignore, surround(

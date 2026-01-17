@@ -18,6 +18,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
   }));
   return ({ source, context }) => {
     if (source === '') return;
+    assert(context.backtracks ??= {});
     let rest = source;
     let nodes: T[] | undefined;
     if (delims.length > 0) {

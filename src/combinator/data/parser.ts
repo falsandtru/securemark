@@ -20,6 +20,7 @@ export interface Ctx {
   delimiters?: Delimiters;
   state?: number;
   backtracks?: Record<number, number>;
+  backtrack?: number;
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
