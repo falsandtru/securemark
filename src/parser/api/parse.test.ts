@@ -351,17 +351,17 @@ describe('Unit: parser/api/parse', () => {
     it('backtrack', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(5876)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [`<p>..((${'['.repeat(16)}http://{{${'.'.repeat(5876)}</p>`]);
+        [...parse(`${'.'.repeat(8)}((${'['.repeat(16)}http://{{${'.'.repeat(7684)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [`<p>${'.'.repeat(8)}((${'['.repeat(16)}http://{{${'.'.repeat(7684)}</p>`]);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(5877)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'.'.repeat(8)}((${'['.repeat(16)}http://{{${'.'.repeat(7685)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
-          `<pre class="error" translate="no">..((${'['.repeat(16)}http://{{${'.'.repeat(1000 - 2 - 2 - 16 - 9 - 3)}...</pre>`,
+          `<pre class="error" translate="no">${'.'.repeat(8)}((${'['.repeat(16)}http://{{${'.'.repeat(1000 - 8 - 2 - 16 - 9 - 3)}...</pre>`,
         ]);
     });
 

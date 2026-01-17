@@ -37,11 +37,12 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
   return input => {
     const { source, context } = input;
     if (source === '') return;
-    const { backtracks } = context;
-    context.backtracks = {};
+    // 影響する使用はないはず
+    //const { backtracks } = context;
+    //context.backtracks = {};
     const res1 = scope(input);
     assert(check(source, res1));
-    context.backtracks = backtracks;
+    //context.backtracks = backtracks;
     if (res1 === undefined || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');

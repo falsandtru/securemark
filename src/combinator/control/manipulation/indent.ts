@@ -20,10 +20,12 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), {}), false), separation),
     (lines, rest, context) => {
       assert(parser = parser as Parser<T>);
-      const { backtracks } = context;
-      context.backtracks = {};
+      // 影響する使用はないはず
+      //const { backtracks } = context;
+      //context.backtracks = {};
       const result = parser({ source: trimBlockEnd(lines.join('')), context });
-      context.backtracks = backtracks;
+      //context.backtracks = backtracks;
+      assert(result);
       return result && exec(result) === ''
         ? [eval(result), rest]
         : undefined;
