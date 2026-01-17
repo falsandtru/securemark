@@ -17,7 +17,7 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
     memoize(
     ([indent]) =>
       some(line(open(indent, ({ source }) => [[source], '']))),
-    ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation),
+    ([indent]) => indent.length * 2 + +(indent[0] === ' '), {}), false), separation),
     (lines, rest, context) => {
       assert(parser = parser as Parser<T>);
       const { backtracks } = context;

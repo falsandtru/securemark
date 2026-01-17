@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack, Command } from '../../context';
-import { union, tails, some, creation, precedence, state, constraint, validate, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
+import { union, tails, some, recursion, precedence, state, constraint, validate, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
 
@@ -34,7 +34,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
       ]),
     ]))));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([bracket, unescsource]), ')'), str(')'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.url),
   surround(str('['), some(union([bracket, unescsource]), ']'), str(']'), true,

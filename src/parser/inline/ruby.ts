@@ -1,14 +1,14 @@
 import { RubyParser } from '../inline';
-import { Recursion, Backtrack, Command, CmdRegExp } from '../context';
+import { Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, creation, surround, lazy, fmap, bind } from '../../combinator';
+import { sequence, surround, lazy, fmap, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
 import { isTightNodeStart } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => creation(1, Recursion.ignore, fmap(
+export const ruby: RubyParser = lazy(() => fmap(
   sequence([
     bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
       const ns = eval(text({ source, context }), [undefined])[0];
@@ -52,9 +52,9 @@ export const ruby: RubyParser = lazy(() => creation(1, Recursion.ignore, fmap(
             [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]))),
         ];
     }
-  })));
+  }));
 
-const text: RubyParser.TextParser = creation(1, Recursion.ignore, ({ source, context }) => {
+const text: RubyParser.TextParser = ({ source, context }) => {
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');
@@ -86,7 +86,7 @@ const text: RubyParser.TextParser = creation(1, Recursion.ignore, ({ source, con
   return acc.join('').trimStart()
     ? [[acc], '']
     : undefined;
-});
+};
 
 function attributes(texts: string[], rubies: string[]): Record<string, string> {
   let attrs: Record<string, string> | undefined;

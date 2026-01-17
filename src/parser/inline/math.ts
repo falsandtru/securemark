@@ -1,12 +1,12 @@
 import { MathParser } from '../inline';
 import { Recursion } from '../context';
-import { union, some, creation, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
+import { union, some, recursion, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource, str } from '../source';
 import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
-export const math: MathParser = lazy(() => validate('$', creation(1, Recursion.ignore, rewrite(
+export const math: MathParser = lazy(() => validate('$', rewrite(
   union([
     surround('$', precedence(5, bracket), '$'),
     surround(
@@ -30,9 +30,9 @@ export const math: MathParser = lazy(() => validate('$', creation(1, Recursion.i
             'data-invalid-message': `"${source.match(forbiddenCommand)![0]}" command is forbidden`,
           },
       source)
-  ], '']))));
+  ], ''])));
 
-const bracket: MathParser.BracketParser = lazy(() => creation(0, Recursion.terminal, surround(
+const bracket: MathParser.BracketParser = lazy(() => recursion(Recursion.terminal, surround(
   str('{'),
   some(union([
     bracket,

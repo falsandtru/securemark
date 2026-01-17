@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
-import { State, Recursion, Backtrack } from '../../context';
-import { union, creation, constraint, surround, clear, fmap } from '../../../combinator';
+import { State, Backtrack } from '../../context';
+import { union, constraint, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 
@@ -11,14 +11,14 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
   body,
 ]));
 
-export const label: ExtensionParser.LabelParser = constraint(State.label, false, creation(1, Recursion.ignore, fmap(
+export const label: ExtensionParser.LabelParser = constraint(State.label, false, fmap(
   union([
     surround('[', body, ']', false, undefined, undefined, 1 | Backtrack.bracket),
     body,
   ]),
   ([text]) => [
     html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text),
-  ])));
+  ]));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

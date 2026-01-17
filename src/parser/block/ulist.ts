@@ -1,7 +1,7 @@
 import { UListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
 import { Recursion } from '../context';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline, indexer, indexee, dataindex } from '../inline';
@@ -17,7 +17,7 @@ export const ulist: UListParser = lazy(() => block(validate(
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /^-(?=$|\s)/,
-  some(creation(0, Recursion.listitem, union([
+  some(recursion(Recursion.listitem, union([
     indexee(fmap(fallback(
       inits([
         line(open(/^-(?:$|\s)/, subsequence([
@@ -35,7 +35,7 @@ export const checkbox = focus(
   /^\[[xX ]\](?=$|\s)/,
   ({ source }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
-  ], '']);
+  ], ''], false);
 
 export const invalid = rewrite(
   inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),

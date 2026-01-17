@@ -1,6 +1,6 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { Recursion, Command } from '../context';
-import { union, creation, focus } from '../../combinator';
+import { Command } from '../context';
+import { union, consume, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
@@ -9,17 +9,18 @@ export const nonWhitespace = /[\S\n]|$/u;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/u;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = creation(1, Recursion.ignore, ({ source, context }) => {
+export const text: TextParser = ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {
     case -1:
+      consume(source.length, context);
       return [[source], ''];
     case 0:
+      consume(1, context);
       switch (source[0]) {
         case '\r':
           assert(!source.includes('\r', 1));
-          context.resources && ++context.resources.clock;
           return [[], source.slice(1)];
         case Command.Escape:
         case '\\':
@@ -29,6 +30,7 @@ export const text: TextParser = creation(1, Recursion.ignore, ({ source, context
               assert(source[0] !== Command.Escape);
               return [[], source.slice(1)];
             default:
+              consume(1, context);
               return [[source.slice(1, 2)], source.slice(2)];
           }
         case '\n':
@@ -46,6 +48,7 @@ export const text: TextParser = creation(1, Recursion.ignore, ({ source, context
             : 1;
           assert(i > 0);
           assert(!['\\', '\n'].includes(source[0]));
+          consume(i - 1, context);
           return b && i === source.length
               || b && source[i] === '\n'
               || b && source[i] === '\\' && source[i + 1] === '\n'
@@ -53,9 +56,10 @@ export const text: TextParser = creation(1, Recursion.ignore, ({ source, context
             : [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
     default:
+      consume(i, context);
       return [[source.slice(0, i)], source.slice(i)];
   }
-});
+};
 
 export const txt: TxtParser = union([
   text,

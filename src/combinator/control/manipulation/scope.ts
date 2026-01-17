@@ -1,7 +1,8 @@
 import { Parser, Context, eval, exec, check } from '../../data/parser';
+import { consume } from '../../../combinator';
 
-export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;
-export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
+export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
+export function focus<T>(scope: string | RegExp, parser: Parser<T>, cost = true): Parser<T> {
   assert(scope instanceof RegExp ? !scope.flags.match(/[gmy]/) && scope.source.startsWith('^') : scope);
   assert(parser);
   const match: (source: string) => string = typeof scope === 'string'
@@ -12,6 +13,7 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
     const src = match(source);
     assert(source.startsWith(src));
     if (src === '') return;
+    cost && consume(src.length, context);
     const offset = source.length - src.length;
     assert(offset >= 0);
     context.offset ??= 0;
@@ -37,11 +39,8 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
     if (source === '') return;
     const { backtracks } = context;
     context.backtracks = {};
-    //const { resources = { clock: 0 } } = context;
-    //const clock = resources.clock;
     const res1 = scope(input);
     assert(check(source, res1));
-    //resources.clock = clock;
     context.backtracks = backtracks;
     if (res1 === undefined || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);

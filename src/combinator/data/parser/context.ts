@@ -58,13 +58,33 @@ function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: read
   return result;
 }
 
-export function creation<P extends Parser<unknown>>(cost: number, recursion: number, parser: P): P;
-export function creation(cost: number, recursion: number, parser: Parser<unknown>): Parser<unknown> {
+export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
+export function creation(cost: number, parser: Parser<unknown>): Parser<unknown> {
   assert(cost >= 0);
-  assert(recursion >= 0);
   return input => {
     const { context } = input;
     const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
+    const { recursions } = resources;
+    assert(recursions.length > 0);
+    const result = parser(input);
+    if (result === undefined) return;
+    consume(cost, context);
+    return result;
+  };
+}
+export function consume(cost: number, context: Ctx): void {
+  const { resources } = context;
+  if (!resources) return;
+  if (resources.clock < cost) throw new Error('Too many creations');
+  resources.clock -= cost;
+}
+
+export function recursion<P extends Parser<unknown>>(recursion: number, parser: P): P;
+export function recursion(recursion: number, parser: Parser<unknown>): Parser<unknown> {
+  assert(recursion >= 0);
+  return input => {
+    const { context } = input;
+    const resources = context.resources ?? { clock: 1, recursions: [1] };
     const { recursions } = resources;
     assert(recursions.length > 0);
     const rec = min(recursion, recursions.length);
@@ -72,9 +92,6 @@ export function creation(cost: number, recursion: number, parser: Parser<unknown
     rec > 0 && --recursions[rec - 1];
     const result = parser(input);
     rec > 0 && ++recursions[rec - 1];
-    if (result === undefined) return;
-    if (resources.clock < cost) throw new Error('Too many creations');
-    resources.clock -= cost;
     return result;
   };
 }

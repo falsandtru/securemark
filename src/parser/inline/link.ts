@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { State, Recursion, Backtrack, BacktrackState } from '../context';
+import { State, Backtrack, BacktrackState } from '../context';
 import { union, inits, tails, sequence, some, creation, precedence, state, constraint, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
@@ -15,7 +15,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, false, creation(1, Recursion.ignore,
+export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, false, creation(10,
   precedence(1, state(State.linkers | State.media,
   bind(reverse(tails([
     dup(surround(
@@ -36,7 +36,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     return [[parse(defrag(content), params, context)], rest];
   }))))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, false, validate(['[', '{'], creation(1, Recursion.ignore,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, false, validate(['[', '{'], creation(10,
   state(State.linkers,
   bind(reverse(sequence([
     dup(surround(
@@ -54,7 +54,7 @@ export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   /^(?=[^\S\n]*(?:$|\n))/);
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
-  creation(1, Recursion.ignore,
+  creation(10,
   bind(reverse(tails([
     dup(surround(
       '[',

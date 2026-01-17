@@ -1,6 +1,6 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
-import { union, subsequence, some, creation, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
+import { union, subsequence, some, recursion, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isLooseNodeStart, blankWith } from '../visibility';
@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, creation(1, Recursion.inline,
+export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, recursion(Recursion.inline,
   union([
     focus(
       /^<wbr[^\S\n]*>/i,

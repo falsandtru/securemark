@@ -1,11 +1,11 @@
 import { AnnotationParser } from '../inline';
-import { State, Recursion, Backtrack, BacktrackState } from '../context';
-import { union, some, creation, precedence, state, constraint, surround, lazy } from '../../combinator';
+import { State, Backtrack, BacktrackState } from '../context';
+import { union, some, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, false, creation(1, Recursion.ignore, surround(
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, false, surround(
   '((',
   precedence(1, state(State.annotation | State.media,
   trimBlankStart(some(union([inline]), ')', [['\n', 9], [')', 1]])))),
@@ -15,4 +15,4 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', { class: 'annotation' }, [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak))));
+  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)));

@@ -1,7 +1,7 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
 import { Result, IntermediateParser } from '../../combinator/data/parser';
-import { union, some, creation, precedence, validate, surround, open, lazy, bind } from '../../combinator';
+import { union, some, recursion, precedence, validate, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
@@ -30,7 +30,7 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-export const emstrong: EmStrongParser = lazy(() => creation(1, Recursion.inline, validate('***',
+export const emstrong: EmStrongParser = lazy(() => recursion(Recursion.inline, validate('***',
   precedence(0, repeat('***', surround(
     '',
     tightStart(some(union([

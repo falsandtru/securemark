@@ -251,8 +251,6 @@ export namespace MarkdownParser {
         Parser<HTMLTableCellElement, Context, [
           SourceParser.StrParser,
           SourceParser.StrParser,
-          SourceParser.StrParser,
-          SourceParser.StrParser,
         ]> {
       }
       export type CellParser

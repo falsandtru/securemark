@@ -1,22 +1,24 @@
 import { UnescapableSourceParser } from '../source';
-import { Recursion, Command } from '../context';
-import { creation } from '../../combinator';
+import { Command } from '../context';
+import { consume } from '../../combinator';
 import { delimiter, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
 
-export const unescsource: UnescapableSourceParser = creation(1, Recursion.ignore, ({ source, context }) => {
+export const unescsource: UnescapableSourceParser = ({ source, context }) => {
   if (source === '') return;
   const i = source.search(delimiter);
   switch (i) {
     case -1:
+      consume(source.length, context);
       return [[source], ''];
     case 0: {
+      consume(1, context);
       switch (source[0]) {
         case '\r':
           assert(!source.includes('\r', 1));
-          context.resources && ++context.resources.clock;
           return [[], source.slice(1)];
         case Command.Escape:
           assert(source[0] !== Command.Escape);
+          consume(1, context);
           return [[source.slice(1, 2)], source.slice(2)];
       }
       const b = source[0] !== '\n' && source[0].trimStart() === '';
@@ -24,9 +26,11 @@ export const unescsource: UnescapableSourceParser = creation(1, Recursion.ignore
         ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
         : 1;
       assert(i > 0);
+      consume(i - 1, context);
       return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
     }
     default:
+      consume(i, context);
       return [[source.slice(0, i)], source.slice(i)];
   }
-});
+};

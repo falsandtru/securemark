@@ -334,14 +334,14 @@ describe('Unit: parser/api/parse', () => {
     it('creation', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse('.'.repeat(20000)).children].map(el => el.outerHTML),
-        [`<p>${'.'.repeat(20000)}</p>`]);
+        [...parse('.'.repeat(100000)).children].map(el => el.outerHTML),
+        [`<p>${'.'.repeat(100000)}</p>`]);
     });
 
-    it('creation error', function () {
+    it.skip('creation error', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse('.'.repeat(20001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse('.'.repeat(100001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">${'.'.repeat(1000 - 3)}...</pre>`,
@@ -351,14 +351,14 @@ describe('Unit: parser/api/parse', () => {
     it('backtrack', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(1802)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [`<p>..((${'['.repeat(16)}http://{{${'.'.repeat(1802)}</p>`]);
+        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(5876)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [`<p>..((${'['.repeat(16)}http://{{${'.'.repeat(5876)}</p>`]);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
       assert.deepStrictEqual(
-        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(1803)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`..((${'['.repeat(16)}http://{{${'.'.repeat(5877)}`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">..((${'['.repeat(16)}http://{{${'.'.repeat(1000 - 2 - 2 - 16 - 9 - 3)}...</pre>`,

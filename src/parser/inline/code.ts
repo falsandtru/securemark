@@ -1,12 +1,11 @@
 import { CodeParser } from '../inline';
-import { Recursion } from '../context';
-import { creation, match } from '../../combinator';
+import { match } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const code: CodeParser = creation(1, Recursion.ignore, match(
+export const code: CodeParser = match(
   /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
   ([whole, , body]) => ({ source }) =>
-    [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)]));
+    [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)]);
 
 function format(text: string): string {
   assert(text.length > 0);

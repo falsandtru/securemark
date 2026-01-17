@@ -1,12 +1,15 @@
 import { min } from 'spica/alias';
 import { Command } from './context';
 import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../combinator/data/parser';
-import { convert } from '../combinator';
+import { consume, convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
 export function lineable<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function lineable<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return convert(source => `\r${source}`, parser);
+  return convert((source, context) => {
+    consume(-1, context);
+    return `\r${source}`;
+  }, parser);
 }
 
 export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Tree<P>[], context: Context<P>) => Tree<P>[], termination?: (acc: Tree<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Tree<P>>): P;

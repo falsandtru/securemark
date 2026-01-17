@@ -9,7 +9,7 @@ describe('Unit: combinator/data/parser/context', () => {
   }
 
   describe('reset', () => {
-    const parser: Parser<number> = some(creation(1, 1,
+    const parser: Parser<number> = some(creation(1,
       ({ source, context }) => [[context.resources?.clock ?? NaN], source.slice(1)]));
 
     it('root', () => {
@@ -36,7 +36,7 @@ describe('Unit: combinator/data/parser/context', () => {
   });
 
   describe('context', () => {
-    const parser: Parser<boolean, Context> = some(creation(1, 1,
+    const parser: Parser<boolean, Context> = some(creation(1,
       ({ source, context }) => [[context.status!], source.slice(1)]));
 
     it('', () => {

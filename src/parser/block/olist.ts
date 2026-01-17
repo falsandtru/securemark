@@ -1,6 +1,6 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
-import { union, inits, subsequence, some, creation, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline, indexee, indexer, dataindex } from '../inline';
@@ -24,14 +24,14 @@ export const olist: OListParser = lazy(() => block(validate(
 export const olist_: OListParser = lazy(() => block(union([
   match(
     openers['.'],
-    memoize(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])),
+    memoize(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), []), false),
   match(
     openers['('],
-    memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), [])),
+    memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []), false),
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  some(creation(0, Recursion.listitem, union([
+  some(recursion(Recursion.listitem, union([
     indexee(fmap(fallback(
       inits([
         line(open(heads[form], subsequence([
@@ -47,10 +47,10 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    ({ source }) => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
+    ({ source }) => [[source.trimEnd().split('.', 1)[0] + '.'], ''], false),
   '(': focus(
     openers['('],
-    ({ source }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
+    ({ source }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], ''], false),
 } as const;
 
 function idx(value: string): number {

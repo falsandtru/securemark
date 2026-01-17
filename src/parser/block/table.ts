@@ -40,10 +40,10 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
 const align: AlignParser = fmap(open(
   '|',
   union([
-    focus(/^:-+:/, () => [['center'], '']),
-    focus(/^:-+/, () => [['start'], '']),
-    focus(/^-+:/, () => [['end'], '']),
-    focus(/^-+/, () => [[''], '']),
+    focus(/^:-+:?/, ({ source }) =>
+      [[source[source.length - 1] === ':' ? 'center' : 'start'], ''], false),
+    focus(/^-+:?/, ({ source }) =>
+      [[source[source.length - 1] === ':' ? 'end' : ''], ''], false),
   ])),
   ns => [html('td', defrag(ns))]);
 

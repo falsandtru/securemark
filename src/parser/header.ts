@@ -26,7 +26,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
                     ...es,
                   ])),
                 ]),
-              ])))),
+              ])), false)),
           ({ source }) => [[
             html('pre', {
               class: 'invalid',

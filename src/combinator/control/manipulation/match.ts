@@ -1,14 +1,16 @@
 import { Parser, exec, check } from '../../data/parser';
+import { consume } from '../../../combinator';
 
-export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;
-export function match<T>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<T>): Parser<T> {
+export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P, cost?: boolean): P;
+export function match<T>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<T>, cost = true): Parser<T> {
   assert(!pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^'));
   return input => {
-    const { source } = input;
+    const { source, context } = input;
     if (source === '') return;
     const param = source.match(pattern);
     if (!param) return;
     assert(source.startsWith(param[0]));
+    cost && consume(param.length, context);
     const result = f(param)(input);
     assert(check(source, result, false));
     if (result === undefined) return;

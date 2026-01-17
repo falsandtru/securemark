@@ -1,12 +1,12 @@
 import { ReferenceParser } from '../inline';
-import { State, Recursion, Backtrack, BacktrackState } from '../context';
-import { union, subsequence, some, creation, precedence, state, constraint, surround, lazy } from '../../combinator';
+import { State, Backtrack, BacktrackState } from '../context';
+import { union, subsequence, some, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, creation(1, Recursion.ignore, surround(
+export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, surround(
   '[[',
   precedence(1, state(State.annotation | State.reference | State.media,
   subsequence([
@@ -19,16 +19,16 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak))));
+  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)));
 
 // Chicago-Style
-const abbr: ReferenceParser.AbbrParser = creation(1, Recursion.ignore, surround(
+const abbr: ReferenceParser.AbbrParser = surround(
   '^',
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/,
   true,
   ([, ns], rest) => ns ? [['\n', ns[0].trimEnd()], rest.replace(blank.start, '')] : [[''], `^${rest}`],
-  ([, , rest]) => [[''], `^${rest}`]));
+  ([, , rest]) => [[''], `^${rest}`]);
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   switch (ns[0]) {

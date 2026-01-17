@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Recursion, Backtrack, BacktrackState, Command } from '../../context';
-import { union, inits, some, creation, precedence, state, constraint, validate, verify, surround, open, lazy, fmap } from '../../../combinator';
+import { union, inits, some, recursion, precedence, state, constraint, validate, verify, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { txt, str } from '../../source';
@@ -9,7 +9,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => constraint(State.index, false, creation(1, Recursion.ignore, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => constraint(State.index, false, fmap(indexee(surround(
   '[#',
   precedence(1, state(State.linkers | State.media,
   tightStart(
@@ -31,16 +31,16 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, crea
         class: 'index',
         href: el.id ? `#${el.id}` : undefined,
       }),
-  ]))));
+  ])));
 
-export const signature: IndexParser.SignatureParser = lazy(() => validate('|', creation(1, Recursion.ignore, fmap(open(
+export const signature: IndexParser.SignatureParser = lazy(() => validate('|', fmap(open(
   /^\|(?!\\?\s)/,
   some(verify(union([bracket, txt]), ns => ns[0] !== Command.Escape), ']')),
   ns => [
     html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
-  ]))));
+  ])));
 
-const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
+const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true,

@@ -1,12 +1,12 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
-import { Recursion, Command } from '../context';
-import { union, creation, validate, focus, fmap } from '../../combinator';
+import { Command } from '../context';
+import { union, validate, focus, fmap } from '../../combinator';
 import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = creation(1, Recursion.ignore, validate('&', focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
   /^&[0-9A-Za-z]{1,99};/,
-  ({ source }) => [[parse(source) ?? `${Command.Escape}${source}`], ''])));
+  ({ source }) => [[parse(source) ?? `${Command.Escape}${source}`], '']));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),

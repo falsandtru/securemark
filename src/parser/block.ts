@@ -40,7 +40,7 @@ export import ParagraphParser = BlockParser.ParagraphParser;
 export const block: BlockParser = reset(
   {
     resources: {
-      clock: 20000,
+      clock: 100000,
       recursions: [
         10 || Recursion.block,
         20 || Recursion.blockquote,
