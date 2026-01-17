@@ -7,7 +7,7 @@ import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
 import { markInvalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
-import { unshift, push } from 'spica/array';
+import { push } from 'spica/array';
 import { html, define } from 'typed-dom/dom';
 
 const optspec = {
@@ -23,7 +23,11 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
   bind(verify(fmap(tails([
     dup(surround(
       '[',
-      precedence(1, some(union([unsafehtmlentity, bracket, txt]), ']', [['\n', 9]])),
+      precedence(1, some(verify(union([
+        unsafehtmlentity,
+        bracket,
+        txt,
+      ]), ns => ns[0] !== Command.Escape), ']', [['\n', 9]])),
       ']',
       true, undefined, undefined, 1 | Backtrack.media)),
     dup(surround(
@@ -71,13 +75,13 @@ export const linemedia: MediaParser.LineMediaParser = surround(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creation(0, Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, ([as, bs = []], rest) => [unshift(as, bs), rest], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
   surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
-    undefined, undefined, 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([

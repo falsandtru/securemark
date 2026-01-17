@@ -12,7 +12,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     focus(/^[\x21-\x7E]+/, precedence(1, some(verify(union([
       bracket,
       some(unescsource, closer),
-    ]), nodes => nodes[0] !== Command.Escape))))),
+    ]), ns => ns[0] !== Command.Escape))))),
   union([
     constraint(State.autolink, false, state(State.autolink, convert(
       url => `{ ${url} }`,
