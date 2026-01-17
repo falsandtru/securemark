@@ -35,14 +35,14 @@ export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T>
   return input => {
     const { source, context } = input;
     if (source === '') return;
-    const { logger } = context;
-    context.logger = {};
+    const { backtracks } = context;
+    context.backtracks = {};
     //const { resources = { clock: 0 } } = context;
     //const clock = resources.clock;
     const res1 = scope(input);
     assert(check(source, res1));
     //resources.clock = clock;
-    context.logger = logger;
+    context.backtracks = backtracks;
     if (res1 === undefined || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');

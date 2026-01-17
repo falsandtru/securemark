@@ -8,11 +8,11 @@ export function convert<T>(conv: (source: string, context: Ctx) => string, parse
     const src = conv(source, context);
     if (src === '') return empty ? [[], ''] : undefined;
     const sub = source.endsWith(src);
-    const { logger } = context;
-    context.logger = sub ? logger : {};
+    const { backtracks } = context;
+    context.backtracks = sub ? backtracks : {};
     const result = parser({ source: src, context });
     assert(check(src, result));
-    context.logger = logger;
+    context.backtracks = backtracks;
     return result;
   };
 }

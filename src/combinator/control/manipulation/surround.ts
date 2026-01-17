@@ -7,35 +7,35 @@ export function surround<P extends Parser<unknown>, S = string>(
   optional?: false,
   f?: (rss: [S[], SubTree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
-  log?: number,
+  backtrack?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
   f?: (rss: [S[], SubTree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
-  log?: number,
+  backtrack?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
   f?: (rss: [S[], Tree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
-  log?: number,
+  backtrack?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
   f?: (rss: [S[], Tree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
-  log?: number,
+  backtrack?: number,
 ): P;
 export function surround<T>(
   opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>,
   optional: boolean = false,
   f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T>,
   g?: (rss: [T[], T[], string], rest: string, context: Ctx) => Result<T>,
-  log: number = 0,
+  backtrack: number = 0,
 ): Parser<T> {
   switch (typeof opener) {
     case 'string':
@@ -55,14 +55,14 @@ export function surround<T>(
     if (res1 === undefined) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
-    if (log & 1) {
-      const { logger = {}, offset = 0 } = context;
+    if (backtrack & 1) {
+      const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < source.length - mr_.length; ++i) {
         if (source[i] !== source[0]) break;
         const pos = source.length + offset - i - 1;
-        if (!(pos in logger)) continue;
-        assert(log >>> 2);
-        if (logger[pos] & 1 << (log >>> 2)) return;
+        if (!(pos in backtracks)) continue;
+        assert(backtrack >>> 2);
+        if (backtracks[pos] & 1 << (backtrack >>> 2)) return;
       }
     }
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
@@ -75,9 +75,9 @@ export function surround<T>(
     const rr = eval(res3);
     const rest = exec(res3, r_);
     if (rest.length === lmr_.length) return;
-    if (log & 2 && rr === undefined) {
-      const { logger = {}, offset = 0 } = context;
-      logger[source.length + offset - 1] |= 1 << (log >>> 2);
+    if (backtrack & 2 && rr === undefined) {
+      const { backtracks = {}, offset = 0 } = context;
+      backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2);
     }
     return rr
       ? f
