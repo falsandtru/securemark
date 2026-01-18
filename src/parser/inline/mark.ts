@@ -1,6 +1,6 @@
 import { MarkParser } from '../inline';
 import { State, Recursion, Command } from '../context';
-import { union, some, recursion, precedence, constraint, validate, surround, open, lazy } from '../../combinator';
+import { union, some, recursion, precedence, state, constraint, validate, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
 import { tightStart, blankWith } from '../visibility';
@@ -8,8 +8,8 @@ import { repeat } from '../util';
 import { push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const mark: MarkParser = lazy(() => constraint(State.mark, false, recursion(Recursion.inline, validate('==',
-  precedence(0, repeat('==', surround(
+export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, false, recursion(Recursion.inline, validate('==',
+  precedence(0, state(State.mark, repeat('==', surround(
     '',
     tightStart(some(union([
       some(inline, blankWith('==')),
@@ -24,4 +24,4 @@ export const mark: MarkParser = lazy(() => constraint(State.mark, false, recursi
       return el.id
         ? [el, el.id && html('a', { href: `#${el.id}` })]
         : [el];
-    }))))));
+    })))))));
