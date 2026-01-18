@@ -995,15 +995,15 @@ function indent(opener, parser, separation = false) {
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, ({
     source
   }) => [[source], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), {}), false), separation), (lines, rest, context) => {
-    const {
-      backtracks
-    } = context;
-    context.backtracks = {};
+    // 影響する使用はないはず
+    //const { backtracks } = context;
+    //context.backtracks = {};
     const result = parser({
       source: trimBlockEnd(lines.join('')),
       context
     });
-    context.backtracks = backtracks;
+    //context.backtracks = backtracks;
+
     return result && (0, parser_1.exec)(result) === '' ? [(0, parser_1.eval)(result), rest] : undefined;
   });
 }
@@ -7804,12 +7804,11 @@ function rewrite(scope, parser) {
       context
     } = input;
     if (source === '') return;
-    const {
-      backtracks
-    } = context;
-    context.backtracks = {};
+    // 影響する使用はないはず
+    //const { backtracks } = context;
+    //context.backtracks = {};
     const res1 = scope(input);
-    context.backtracks = backtracks;
+    //context.backtracks = backtracks;
     if (res1 === undefined || (0, parser_1.exec)(res1).length >= source.length) return;
     const src = source.slice(0, source.length - (0, parser_1.exec)(res1).length);
     const offset = source.length - src.length;
