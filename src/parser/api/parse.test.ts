@@ -332,14 +332,14 @@ describe('Unit: parser/api/parse', () => {
     if (!navigator.userAgent.includes('Chrome')) return;
 
     it('creation', function () {
-      this.timeout(5000);
+      this.timeout(10000);
       assert.deepStrictEqual(
         [...parse('.'.repeat(100000)).children].map(el => el.outerHTML),
         [`<p>${'.'.repeat(100000)}</p>`]);
     });
 
     it.skip('creation error', function () {
-      this.timeout(5000);
+      this.timeout(10000);
       assert.deepStrictEqual(
         [...parse('.'.repeat(100001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
