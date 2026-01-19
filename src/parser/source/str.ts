@@ -6,7 +6,7 @@ export function str(pattern: string | RegExp, not?: string): StrParser;
 export function str(pattern: string | RegExp, not?: string): Parser<string, Context<StrParser>, []> {
   assert(pattern);
   const count = typeof pattern === 'object'
-    ? pattern.source.length > 9 || /[^^\\*+][*+]/.test(pattern.source)
+    ? /[^^\\*+][*+]/.test(pattern.source)
     : false;
   return typeof pattern === 'string'
     ? ({ source }) => {
