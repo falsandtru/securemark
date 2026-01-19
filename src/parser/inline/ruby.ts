@@ -1,7 +1,7 @@
 import { RubyParser } from '../inline';
 import { Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, surround, lazy, fmap, bind } from '../../combinator';
+import { sequence, surround, dup, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
 import { isTightNodeStart } from '../visibility';
@@ -10,15 +10,21 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const ruby: RubyParser = lazy(() => fmap(
   sequence([
-    bind(surround('[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
-      const ns = eval(text({ source, context }), [undefined])[0];
-      ns && ns.at(-1) === '' && ns.pop();
-      return ns && isTightNodeStart(ns) ? [[ns], rest] : undefined;
-    }),
-    bind(surround('(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false, undefined, undefined, 3 | Backtrack.ruby), ([source], rest, context) => {
-      const ns = eval(text({ source, context }), [undefined])[0];
-      return ns && [[ns], rest];
-    }),
+    dup(surround(
+      '[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false,
+      ([, [source]], rest, context) => {
+        const ns = eval(text({ source, context }), [undefined])[0];
+        ns && ns.at(-1) === '' && ns.pop();
+        return ns && isTightNodeStart(ns) ? [ns, rest] : undefined;
+      },
+      undefined, 3 | Backtrack.ruby)),
+    dup(surround(
+      '(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false,
+      ([, [source]], rest, context) => {
+        const ns = eval(text({ source, context }), [undefined])[0];
+        return ns && [ns, rest];
+      },
+      undefined, 3 | Backtrack.ruby)),
   ]),
   ([texts, rubies]) => {
     switch (true) {
