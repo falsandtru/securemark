@@ -7,14 +7,15 @@ import { repeat } from '../util';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const insertion: InsertionParser = lazy(() => recursion(Recursion.inline, validate('++',
+export const insertion: InsertionParser = lazy(() => validate('++',
   precedence(0, repeat('++', surround(
     '',
+    recursion(Recursion.inline,
     some(union([
       some(inline, blankWith('\n', '++')),
       open('\n', some(insertion, '+'), true),
-    ])),
+    ]))),
     '++', false,
     ([, bs], rest) => [bs, rest],
     ([, bs], rest) => [push(bs, [Command.Escape]), rest]),
-    nodes => [html('ins', defrag(nodes))])))));
+    nodes => [html('ins', defrag(nodes))]))));

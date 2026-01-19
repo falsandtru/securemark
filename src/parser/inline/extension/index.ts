@@ -40,16 +40,16 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', f
     html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
   ])));
 
-const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
-  surround(str('('), some(union([bracket, txt]), ')'), str(')'), true,
+const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => union([
+  surround(str('('), recursion(Recursion.terminal, some(union([bracket, txt]), ')')), str(')'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
-  surround(str('['), some(union([bracket, txt]), ']'), str(']'), true,
+  surround(str('['), recursion(Recursion.terminal, some(union([bracket, txt]), ']')), str(']'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
-  surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true,
+  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, txt]), '}')), str('}'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
-  surround(str('"'), precedence(2, some(txt, '"')), str('"'), true,
+  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(txt, '"'))), str('"'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
-])));
+]));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;

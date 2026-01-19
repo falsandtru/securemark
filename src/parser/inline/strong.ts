@@ -8,16 +8,16 @@ import { tightStart, blankWith } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const strong: StrongParser = lazy(() => recursion(Recursion.inline, surround(
+export const strong: StrongParser = lazy(() => surround(
   str('**', '*'),
-  precedence(0,
+  precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
     some(inline, blankWith('**')),
     open(some(inline, '*'), union([
       emstrong,
       strong,
     ])),
-  ])))),
+  ]))))),
   str('**'), false,
   ([, bs], rest) => [[html('strong', defrag(bs))], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest]));

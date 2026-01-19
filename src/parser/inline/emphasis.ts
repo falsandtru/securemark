@@ -9,9 +9,9 @@ import { tightStart, blankWith } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const emphasis: EmphasisParser = lazy(() => recursion(Recursion.inline, surround(
+export const emphasis: EmphasisParser = lazy(() => surround(
   str('*', '*'),
-  precedence(0,
+  precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
     strong,
     some(inline, blankWith('*')),
@@ -20,7 +20,7 @@ export const emphasis: EmphasisParser = lazy(() => recursion(Recursion.inline, s
       strong,
       emphasis,
     ])),
-  ])))),
+  ]))))),
   str('*'), false,
   ([, bs], rest) => [[html('em', defrag(bs))], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest]));

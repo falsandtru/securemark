@@ -32,11 +32,12 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
       source)
   ], ''])));
 
-const bracket: MathParser.BracketParser = lazy(() => recursion(Recursion.terminal, surround(
+const bracket: MathParser.BracketParser = lazy(() => surround(
   str('{'),
+  recursion(Recursion.terminal,
   some(union([
     bracket,
     some(escsource, /^[{}$\n]/),
-  ])),
+  ]))),
   str('}'),
-  true)));
+  true));

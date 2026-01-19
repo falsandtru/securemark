@@ -11,10 +11,10 @@ import { html, defrag } from 'typed-dom/dom';
 
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => recursion(Recursion.inline, surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surround(
   str(/^\[[:^|]/),
-  precedence(1,
-  tightStart(some(union([inline]), ']', [[']', 1]]))),
+  precedence(1, recursion(Recursion.inline,
+  tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'), false,
   ([, bs], rest) => [[
     html('span', {
@@ -24,4 +24,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => recursi
       'data-invalid-message': `Invalid start symbol or linebreak`,
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest], 3 | Backtrack.bracket)));
+  ([as, bs], rest) => [unshift(as, bs), rest], 3 | Backtrack.bracket));

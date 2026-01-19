@@ -12,13 +12,13 @@ export const template: TemplateParser = lazy(() => surround(
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest],
   undefined, 3 | Backtrack.template));
 
-const bracket: TemplateParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
-  surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true,
+const bracket: TemplateParser.BracketParser = lazy(() => union([
+  surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
-  surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true,
+  surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
-  surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true,
+  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
-  surround(str('"'), precedence(2, some(escsource, /^["\n]/)), str('"'), true,
+  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, /^["\n]/))), str('"'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
-])));
+]));

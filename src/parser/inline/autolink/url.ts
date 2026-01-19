@@ -34,13 +34,13 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
       ]),
     ]))));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
-  surround(str('('), some(union([bracket, unescsource]), ')'), str(')'), true,
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
+  surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.url),
-  surround(str('['), some(union([bracket, unescsource]), ']'), str(']'), true,
+  surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.url),
-  surround(str('{'), some(union([bracket, unescsource]), '}'), str('}'), true,
+  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.url),
-  surround(str('"'), precedence(2, some(unescsource, '"')), str('"'), true,
+  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'), true,
     undefined, () => [[Command.Escape], ''], 3 | Backtrack.url),
-])));
+]));

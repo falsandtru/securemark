@@ -7,14 +7,15 @@ import { repeat } from '../util';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const deletion: DeletionParser = lazy(() => recursion(Recursion.inline, validate('~~',
+export const deletion: DeletionParser = lazy(() => validate('~~',
   precedence(0, repeat('~~', surround(
     '',
+    recursion(Recursion.inline,
     some(union([
       some(inline, blankWith('\n', '~~')),
       open('\n', some(deletion, '~'), true),
-    ])),
+    ]))),
     '~~', false,
     ([, bs], rest) => [bs, rest],
     ([, bs], rest) => [push(bs, [Command.Escape]), rest]),
-    nodes => [html('del', defrag(nodes))])))));
+    nodes => [html('del', defrag(nodes))]))));

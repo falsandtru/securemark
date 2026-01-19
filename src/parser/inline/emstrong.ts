@@ -30,13 +30,14 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
 
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-export const emstrong: EmStrongParser = lazy(() => recursion(Recursion.inline, validate('***',
+export const emstrong: EmStrongParser = lazy(() => validate('***',
   precedence(0, repeat('***', surround(
     '',
+    recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('*')),
       open(some(inline, '*'), inline),
-    ]))),
+    ])))),
     str(/^\*{1,3}/), false,
     ([, bs, cs], rest, context): Result<HTMLElement | string, typeof context> => {
       assert(cs.length === 1);
@@ -93,4 +94,4 @@ export const emstrong: EmStrongParser = lazy(() => recursion(Recursion.inline, v
         rest = rest.slice(postfix);
       }
       return [nodes, rest];
-    })))));
+    }))));

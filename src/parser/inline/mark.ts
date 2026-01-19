@@ -8,13 +8,14 @@ import { repeat } from '../util';
 import { push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, false, recursion(Recursion.inline, validate('==',
+export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, false, validate('==',
   precedence(0, state(State.mark, repeat('==', surround(
     '',
+    recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('==')),
       open(some(inline, '='), mark),
-    ]))),
+    ])))),
     '==', false,
     ([, bs], rest) => [bs, rest],
     ([, bs], rest) => [push(bs, [Command.Escape]), rest]),
@@ -24,4 +25,4 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
       return el.id
         ? [el, el.id && html('a', { href: `#${el.id}` })]
         : [el];
-    })))))));
+    }))))));

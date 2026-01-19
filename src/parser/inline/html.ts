@@ -18,7 +18,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, recursion(Recursion.inline,
+export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
   union([
     focus(
       /^<wbr[^\S\n]*>/i,
@@ -36,11 +36,11 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, re
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-          precedence(3,
+          precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
-          ])),
+          ]))),
           str(`</${tag}>`), true,
           ([as, bs = [], cs], rest) =>
             [[elem(tag, as, bs, cs)], rest],
@@ -54,11 +54,11 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, re
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(surround(
           str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
-          precedence(3,
+          precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(inline, `</${tag}>`, [[`</${tag}>`, 3]]),
-          ])),
+          ]))),
           str(`</${tag}>`), true,
           ([as, bs = [], cs], rest) =>
             [[elem(tag, as, bs, cs)], rest],
@@ -66,7 +66,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i, re
             [[elem(tag, as, bs, [])], rest]),
       ([, tag]) => tag,
       new Clock(10000))),
-  ]))));
+  ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),
