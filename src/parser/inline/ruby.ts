@@ -11,7 +11,8 @@ import { html, defrag } from 'typed-dom/dom';
 export const ruby: RubyParser = lazy(() => fmap(
   sequence([
     dup(surround(
-      '[', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ']', false,
+      '[', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ']',
+      false,
       ([, [source]], rest, context) => {
         const ns = eval(text({ source, context }), [undefined])[0];
         ns && ns.at(-1) === '' && ns.pop();
@@ -19,7 +20,8 @@ export const ruby: RubyParser = lazy(() => fmap(
       },
       undefined, 3 | Backtrack.ruby)),
     dup(surround(
-      '(', str(/^(?:\\[^\n]|[^\\[\](){}"\n])+/), ')', false,
+      '(', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ')',
+      false,
       ([, [source]], rest, context) => {
         const ns = eval(text({ source, context }), [undefined])[0];
         return ns && [ns, rest];
