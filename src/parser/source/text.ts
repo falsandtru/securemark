@@ -4,9 +4,9 @@ import { union, consume, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /[\s\x00-\x7F（）［］｛｝“”‘’「」『』]|\S[#>]/u;
+export const delimiter = /[\s\x00-\x7F（）［］｛｝“”‘’「」『』]|\S#|[0-9A-Za-z]>/u;
 export const nonWhitespace = /[\S\n]|$/u;
-export const nonAlphanumeric = /[^0-9A-Za-z]|\S[#>]|$/u;
+export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|[0-9A-Za-z]>|$/u;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = ({ source, context }) => {

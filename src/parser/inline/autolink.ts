@@ -12,7 +12,7 @@ import { str } from '../source';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>
-  validate(/^(?:[@#>0-9a-z]|\S[#>]|[\r\n]!?https?:\/\/)/iu,
+  validate(/^(?:[@#>0-9a-z]|\S#|[0-9a-z]>|[\r\n]!?https?:\/\/)/iu,
   state(~State.autolink,
   union([
     some(union([lineurl])),
@@ -20,17 +20,17 @@ export const autolink: AutolinkParser = lazy(() =>
       url,
       email,
       // Escape unmatched email-like strings.
-      str(/^[0-9a-z]+(?:[_.+-][0-9a-z]+)*(?:@(?:[0-9a-z]+(?:[.-][0-9a-z]+)*)?)*/i),
+      str(/^[0-9a-z]+(?:[_.+-][0-9a-z]+|@(?=@))*/i),
       channel,
       account,
       // Escape unmatched account-like strings.
-      str(/^@+[0-9a-z]*(?:[-.][0-9a-z]+)*/i),
+      str(/^@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/i),
       // Escape invalid leading characters.
-      str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])(?=#)/u.source.replace('emoji', emoji), 'u')),
+      str(new RegExp(/^(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/u.source.replace('emoji', emoji), 'u')),
       hashtag,
       hashnum,
       // Escape unmatched hashtag-like strings.
-      str(new RegExp(/^#+(?:[^\p{C}\p{S}\p{P}\s]|emoji|['_])*/u.source.replace('emoji', emoji), 'u')),
+      str(new RegExp(/^#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/u.source.replace(/emoji/g, emoji), 'u')),
       // Escape invalid leading characters.
       str(/^[0-9a-z](?=>)/iu),
       anchor,
