@@ -5,6 +5,7 @@ import { inline } from '../inline';
 import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
+import { unshift } from 'spica/array';
 
 export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, surround(
   '[[',
@@ -19,7 +20,11 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,
-  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)));
+  ([as, bs], rest, { state = 0 }) =>
+    state & State.annotation
+      ? [unshift(as, bs), rest]
+      : undefined,
+  1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = surround(
