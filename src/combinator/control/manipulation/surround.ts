@@ -66,7 +66,6 @@ export function surround<T>(
         if (source[i] !== source[0]) break;
         const pos = source.length + offset - i - 1;
         if (!(pos in backtracks)) continue;
-        assert(backtrack >>> 2);
         // bracket only
         const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
         if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;

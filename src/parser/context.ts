@@ -29,15 +29,17 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  template = 8 << 2,
-  index = 7 << 2,
-  link = 6 << 2,
-  ruby = 5 << 2,
-  media = 4 << 2,
-  linebracket = 3 << 2,
-  bracket = 2 << 2,
-  url = 1 << 2,
+  template = 7 << 2,
+  index = 6 << 2,
+  link = 5 << 2,
+  ruby = 4 << 2,
+  media = 3 << 2,
+  linebracket = 2 << 2,
+  bracket = 1 << 2,
+  url = 0 << 2,
 }
+// バックトラックを削減するため括弧派生構文を改行禁止し
+// 括弧派生構文内のバックトラック状態を統一する。
 export const enum BacktrackState {
   nobreak = 1,
 }
