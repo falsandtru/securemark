@@ -29,12 +29,12 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
         txt,
       ]), ns => ns[0] !== Command.Escape), ']', [['\n', 9]])),
       ']',
-      true, undefined, undefined, 1 | Backtrack.media)),
+      true, undefined, undefined, [1 | Backtrack.escbracket])),
     dup(surround(
       /^{(?![{}])/,
       inits([uri, some(option)]),
       /^[^\S\n]*}/,
-      false, undefined, undefined, 3 | Backtrack.link)),
+      false, undefined, undefined, [3 | Backtrack.link])),
   ]),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
@@ -75,13 +75,13 @@ export const linemedia: MediaParser.LineMediaParser = surround(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.media),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([

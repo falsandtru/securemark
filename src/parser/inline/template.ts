@@ -10,15 +10,15 @@ export const template: TemplateParser = lazy(() => surround(
   '}}',
   true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest],
-  undefined, 1 | Backtrack.bracket, Backtrack.bracket));
+  undefined, [1 | Backtrack.bracket], Backtrack.bracket));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, /^["\n]/))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.template),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
 ]));

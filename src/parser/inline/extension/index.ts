@@ -23,7 +23,7 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, fmap
     trimBlankNodeEnd(ns).length > 0
       ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
       : undefined,
-  undefined, 1 | Backtrack.linebracket, Backtrack.bracket | BacktrackState.nobreak)),
+  undefined, [1 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
@@ -42,13 +42,13 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', f
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, txt]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, txt]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, txt]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(txt, '"'))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], 3 | Backtrack.index),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
 ]));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
