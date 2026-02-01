@@ -10,7 +10,7 @@ export const template: TemplateParser = lazy(() => surround(
   '}}',
   true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest],
-  undefined, 3 | Backtrack.template));
+  undefined, 1 | Backtrack.bracket, Backtrack.bracket));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,

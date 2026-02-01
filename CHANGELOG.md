@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.286.4
+
+- Fix template parser.
+
 ## 0.286.3
 
 - Refactoring.
