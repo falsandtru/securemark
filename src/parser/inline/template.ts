@@ -20,6 +20,6 @@ const bracket: TemplateParser.BracketParser = lazy(() => union([
     undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
     undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
-  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, /^["\n]/))), str('"'), true,
+  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, '"'))), str('"'), true,
     undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
 ]));
