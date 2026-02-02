@@ -17,6 +17,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
       switch (source[0]) {
         case '\r':
           assert(!source.includes('\r', 1));
+          consume(-1, context);
           return [[], source.slice(1)];
         case Command.Escape:
           consume(1, context);
