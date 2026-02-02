@@ -1194,8 +1194,8 @@ export namespace MarkdownParser {
         }
         export interface BracketParser extends
           Inline<'url/bracket'>,
-          Parser<string | Command.Escape, Context, [
-            Parser<string | Command.Escape, Context, [
+          Parser<string, Context, [
+            Parser<string, Context, [
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ]>,
