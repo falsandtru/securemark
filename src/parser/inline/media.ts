@@ -29,7 +29,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
         txt,
       ]), ns => ns[0] !== Command.Escape), ']', [['\n', 9]])),
       ']',
-      true, undefined, undefined, [1 | Backtrack.lineescbracket])),
+      true, undefined, undefined, [3 | Backtrack.lineescbracket])),
     dup(surround(
       /^{(?![{}])/,
       inits([uri, some(option)]),

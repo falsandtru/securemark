@@ -42,13 +42,13 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', f
 
 const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, txt]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, txt]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, txt]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(txt, '"'))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.index]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
 ]));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
