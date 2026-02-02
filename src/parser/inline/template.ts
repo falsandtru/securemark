@@ -6,19 +6,20 @@ import { html } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => surround(
   '{{',
-  precedence(1, some(verify(union([bracket, escsource]), ns => ns[0] !== Command.Escape), '}')),
+  precedence(1,
+  some(verify(union([bracket, escsource]), ns => ns[0] !== Command.Escape), '}', [['\n', 9]])),
   '}}',
   true,
   ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest],
-  undefined, [1 | Backtrack.bracket], Backtrack.bracket));
+  undefined, [3 | Backtrack.linedoublebracket, 1 | Backtrack.lineescbracket], Backtrack.bracket));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, /^["\n]/))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
 ]));

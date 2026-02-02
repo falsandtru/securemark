@@ -36,11 +36,11 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.unescbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineunescbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.unescbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineunescbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.unescbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineunescbracket]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.unescbracket]),
+    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineunescbracket]),
 ]));

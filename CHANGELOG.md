@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.287.0
+
+- Change template syntax to disallow linebreaks.
+
 ## 0.286.4
 
 - Fix template parser.

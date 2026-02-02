@@ -29,13 +29,14 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  index = 6 << 2,
-  link = 5 << 2,
-  ruby = 4 << 2,
+  index = 7 << 2,
+  link = 6 << 2,
+  ruby = 5 << 2,
+  linedoublebracket = 4 << 2,
   linebracket = 3 << 2,
   bracket = 2 << 2,
-  escbracket = 1 << 2,
-  unescbracket = 0 << 2,
+  lineescbracket = 1 << 2,
+  lineunescbracket = 0 << 2,
 }
 // バックトラックを削減するため括弧派生構文を改行禁止し
 // 括弧派生構文内のバックトラック状態を統一する。

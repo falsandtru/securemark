@@ -127,7 +127,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('((${))}$')), [['(', '(', '<span class="math" translate="no" data-src="${))}$">${))}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<span class="paren">(<span class="paren">(a<br>b)</span>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(((a\nb)))')), [['<span class="paren">(<span class="paren">(<span class="paren">(a<br>b)</span>)</span>)</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('(({{\n}}')), [['(', '(', '<span class="template">{{\n}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('"((""))')), [['"', '(', '(', '"', '"', ')', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]')), [['[', '<sup class="reference"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]')), [['[', '[', '<sup class="reference"><span>a</span></sup>'], '']);
