@@ -2002,7 +2002,7 @@ exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(['http://'
 exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.focus)(/^!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, false, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink))), ({
   source
 }) => [[source], '']])]))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 0 /* Backtrack.url */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 0 /* Backtrack.url */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 0 /* Backtrack.url */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 0 /* Backtrack.url */)]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 0 /* Backtrack.lineunescbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 0 /* Backtrack.lineunescbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 0 /* Backtrack.lineunescbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 0 /* Backtrack.lineunescbracket */])]));
 
 /***/ },
 
@@ -2076,7 +2076,7 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body]));
-exports.label = (0, combinator_1.constraint)(16 /* State.label */, false, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, undefined, undefined, 1 | 4 /* Backtrack.bracket */), body]), ([text]) => [(0, dom_1.html)('a', {
+exports.label = (0, combinator_1.constraint)(16 /* State.label */, false, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, undefined, undefined, [1 | 12 /* Backtrack.linebracket */, 1]), body]), ([text]) => [(0, dom_1.html)('a', {
   class: 'label',
   'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
 }, text)]));
@@ -3274,7 +3274,7 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, false, (0, combinator_1.creation)(10, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */ | 4 /* State.media */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [['\n', 9], [']', 1]])), ']', true, undefined, undefined, 1 | 8 /* Backtrack.linebracket */, 4 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/, false, undefined, undefined, 3 | 20 /* Backtrack.link */))])), ([params, content = []], rest, context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, false, (0, combinator_1.creation)(10, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */ | 4 /* State.media */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [['\n', 9], [']', 1]])), ']', true, undefined, undefined, [1 | 12 /* Backtrack.linebracket */], 8 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /^[^\S\n]*}/, false, undefined, undefined, [3 | 24 /* Backtrack.link */]))])), ([params, content = []], rest, context) => {
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
   return [[parse((0, dom_1.defrag)(content), params, context)], rest];
 }))))));
@@ -4007,6 +4007,7 @@ const escsource = ({
       (0, combinator_1.consume)(1, context);
       switch (source[0]) {
         case '\r':
+          (0, combinator_1.consume)(-1, context);
           return [[], source.slice(1)];
         case "\u001B" /* Command.Escape */:
           (0, combinator_1.consume)(1, context);
@@ -4360,7 +4361,7 @@ const visibility_1 = __webpack_require__(6364);
 const dom_1 = __webpack_require__(394);
 exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, false, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 4 /* State.media */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [['\n', 9], [')', 1]])))), '))', false, ([, ns], rest) => (0, visibility_1.trimBlankNodeEnd)(ns).length > 0 ? [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])], rest] : undefined, undefined, 1 | 8 /* Backtrack.linebracket */, 4 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)));
+}, [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])], rest] : undefined, undefined, [3 | 16 /* Backtrack.linedoublebracket */, 1 | 12 /* Backtrack.linebracket */], 8 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)));
 
 /***/ },
 
@@ -5027,10 +5028,10 @@ exports.template = void 0;
 const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.union)([bracket, source_1.escsource]), ns => ns[0] !== "\u001B" /* Command.Escape */), '}')), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
+exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)('{{', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.union)([bracket, source_1.escsource]), ns => ns[0] !== "\u001B" /* Command.Escape */), '}', [['\n', 9]])), '}}', true, ([, ns = []], rest) => [[(0, dom_1.html)('span', {
   class: 'template'
-}, `{{${ns.join('')}}}`)], rest], undefined, 1 | 4 /* Backtrack.bracket */, 4 /* Backtrack.bracket */));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 28 /* Backtrack.template */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /^["\n]/))), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 28 /* Backtrack.template */)]));
+}, `{{${ns.join('')}}}`)], rest], undefined, [3 | 16 /* Backtrack.linedoublebracket */, 1 | 4 /* Backtrack.lineescbracket */], 8 /* Backtrack.bracket */));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /^["\n]/))), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */])]));
 
 /***/ },
 
@@ -5071,11 +5072,11 @@ const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*(?=\))/;
 const indexF = new RegExp(indexA.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)|\)(?=\)$)/g, c => String.fromCodePoint(c.codePointAt(0) + 0xFEE0)));
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexA))), (0, source_1.str)(')'), false, undefined, undefined, 3 | 4 /* Backtrack.bracket */), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexA))), (0, source_1.str)(')'), false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 4 /* Backtrack.bracket */), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexF))), (0, source_1.str)('）'), false, undefined, undefined, 3 | 4 /* Backtrack.bracket */), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexF))), (0, source_1.str)('）'), false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 4 /* Backtrack.bracket */), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 4 /* Backtrack.bracket */), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
 // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
 (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '"', [['\n', 9], ['"', 2]]))), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('“'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '”', [['\n', 9], ['”', 2]]))), (0, source_1.str)('”'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('‘'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '’', [['\n', 9], ['’', 2]]))), (0, source_1.str)('’'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('「'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '」', [['\n', 9], ['」', 2]]))), (0, source_1.str)('」'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('『'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '』', [['\n', 9], ['』', 2]]))), (0, source_1.str)('』'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
 
@@ -5156,19 +5157,22 @@ const inline_1 = __webpack_require__(7973);
 const indexee_1 = __webpack_require__(7610);
 const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, false, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)('[#', (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */ | 4 /* State.media */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [['\n', 9], [']', 1]])))), ']', false, ([, ns], rest) => (0, visibility_1.trimBlankNodeEnd)(ns).length > 0 ? [[(0, dom_1.html)('a', {
   'data-index': dataindex(ns)
-}, (0, dom_1.defrag)(ns))], rest] : undefined, undefined, 1 | 8 /* Backtrack.linebracket */, 4 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)), ([el]) => [(0, dom_1.define)(el, {
+}, (0, dom_1.defrag)(ns))], rest] : undefined, undefined, [3 | 12 /* Backtrack.linebracket */], 8 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)), ([el]) => [(0, dom_1.define)(el, {
   id: el.id ? null : undefined,
   class: 'index',
   href: el.id ? `#${el.id}` : undefined
 })])));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.fmap)((0, combinator_1.open)(/^\|(?!\\?\s)/, (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.union)([bracket, source_1.txt]), ns => ns[0] !== "\u001B" /* Command.Escape */), ']')), ns => [(0, dom_1.html)('span', {
-  class: 'indexer',
-  'data-index': (0, indexee_1.identity)('index', undefined, ns.join('')).slice(7)
-})])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ')')), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 24 /* Backtrack.index */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), ']')), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 24 /* Backtrack.index */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.txt]), '}')), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 24 /* Backtrack.index */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.txt, '"'))), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 24 /* Backtrack.index */)]));
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/^\|(?!\\?\s)/), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']'), /^(?=])/, false, ([as, bs], rest) => {
+  const index = (0, indexee_1.identity)('index', undefined, (0, indexee_1.text)((0, dom_1.frag)(bs)))?.slice(7);
+  return index ? [[(0, dom_1.html)('span', {
+    class: 'indexer',
+    'data-index': index
+  })], rest] : [(0, array_1.unshift)(as, bs), rest];
+}, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 function dataindex(ns) {
   if (ns.length === 0) return;
   for (let i = ns.length - 1; i >= 0; --i) {
@@ -5280,10 +5284,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
 function lineable(parser) {
-  return (0, combinator_1.convert)((source, context) => {
-    (0, combinator_1.consume)(-1, context);
-    return `\r${source}`;
-  }, parser);
+  return (0, combinator_1.convert)(source => `\r${source}`, parser);
 }
 exports.lineable = lineable;
 function repeat(symbol, parser, cons, termination = (acc, rest, prefix, postfix) => {
@@ -5565,6 +5566,7 @@ const text = ({
       (0, combinator_1.consume)(1, context);
       switch (source[0]) {
         case '\r':
+          (0, combinator_1.consume)(-1, context);
           return [[], source.slice(1)];
         case "\u001B" /* Command.Escape */:
         case '\\':
@@ -5945,7 +5947,7 @@ exports.clear = exports.close = exports.open = exports.surround = void 0;
 const parser_1 = __webpack_require__(605);
 const fmap_1 = __webpack_require__(2705);
 const array_1 = __webpack_require__(6876);
-function surround(opener, parser, closer, optional = false, f, g, backtrack = 0, bstate = 0) {
+function surround(opener, parser, closer, optional = false, f, g, backtracks = [], bstate = 0) {
   switch (typeof opener) {
     case 'string':
     case 'object':
@@ -5969,19 +5971,21 @@ function surround(opener, parser, closer, optional = false, f, g, backtrack = 0,
     if (res1 === undefined) return;
     const rl = (0, parser_1.eval)(res1);
     const mr_ = (0, parser_1.exec)(res1);
-    if (backtrack & 1) {
-      const {
-        backtracks = {},
-        backtrack: state = 0,
-        offset = 0
-      } = context;
-      for (let i = 0; i < source.length - mr_.length; ++i) {
-        if (source[i] !== source[0]) break;
-        const pos = source.length + offset - i - 1;
-        if (!(pos in backtracks)) continue;
-        // bracket only
-        const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-        if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;
+    for (const backtrack of backtracks) {
+      if (backtrack & 1) {
+        const {
+          backtracks = {},
+          backtrack: state = 0,
+          offset = 0
+        } = context;
+        for (let i = 0; i < source.length - mr_.length; ++i) {
+          if (source[i] !== source[0]) break;
+          const pos = source.length + offset - i - 1;
+          if (!(pos in backtracks)) continue;
+          // bracket only
+          const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
+          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;
+        }
       }
     }
     const {
@@ -6003,15 +6007,17 @@ function surround(opener, parser, closer, optional = false, f, g, backtrack = 0,
     const rr = (0, parser_1.eval)(res3);
     const rest = (0, parser_1.exec)(res3, r_);
     if (rest.length === lmr_.length) return;
-    if (backtrack & 2 && rr === undefined) {
-      const {
-        backtracks = {},
-        backtrack: state = 0,
-        offset = 0
-      } = context;
-      // bracket only
-      const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-      backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
+    for (const backtrack of backtracks) {
+      if (backtrack & 2 && rr === undefined) {
+        const {
+          backtracks = {},
+          backtrack: state = 0,
+          offset = 0
+        } = context;
+        // bracket only
+        const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
+        backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
+      }
     }
     return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
   };
@@ -6214,7 +6220,7 @@ exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0
   'data-invalid-syntax': 'extension',
   'data-invalid-type': 'syntax',
   'data-invalid-message': `Invalid start symbol or linebreak`
-}, (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest], 3 | 4 /* Backtrack.bracket */));
+}, (0, dom_1.defrag)(bs))], rest], ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]));
 
 /***/ },
 
@@ -7158,13 +7164,13 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinato
   }), [undefined])[0];
   ns && ns.at(-1) === '' && ns.pop();
   return ns && (0, visibility_1.isTightNodeStart)(ns) ? [ns, rest] : undefined;
-}, undefined, 3 | 16 /* Backtrack.ruby */)), (0, combinator_1.dup)((0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ')', false, ([, [source]], rest, context) => {
+}, undefined, [3 | 20 /* Backtrack.ruby */])), (0, combinator_1.dup)((0, combinator_1.surround)('(', (0, source_1.str)(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ')', false, ([, [source]], rest, context) => {
   const ns = (0, parser_1.eval)(text({
     source,
     context
   }), [undefined])[0];
   return ns && [ns, rest];
-}, undefined, 3 | 16 /* Backtrack.ruby */))]), ([texts, rubies]) => {
+}, undefined, [3 | 20 /* Backtrack.ruby */]))]), ([texts, rubies]) => {
   switch (true) {
     case rubies.length <= texts.length:
       return [(0, dom_1.html)('ruby', attributes(texts, rubies), (0, dom_1.defrag)(texts.reduce((acc, _, i) => (0, array_1.push)(acc, (0, array_1.unshift)([texts[i]], i < rubies.length && rubies[i] ? [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies[i]), (0, dom_1.html)('rp', ')')] : [(0, dom_1.html)('rt')])), [])))];
@@ -7312,7 +7318,7 @@ const optspec = {
   rel: undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, false, (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ns => ns[0] !== "\u001B" /* Command.Escape */), ']', [['\n', 9]])), ']', true, undefined, undefined, 1 | 12 /* Backtrack.media */)), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/, false, undefined, undefined, 3 | 20 /* Backtrack.link */))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, false, (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ns => ns[0] !== "\u001B" /* Command.Escape */), ']', [['\n', 9]])), ']', true, undefined, undefined, [3 | 4 /* Backtrack.lineescbracket */])), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/, false, undefined, undefined, [3 | 24 /* Backtrack.link */]))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
   let cache;
@@ -7339,7 +7345,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
   });
 }))))));
 exports.linemedia = (0, combinator_1.surround)(source_1.linebreak, (0, combinator_1.union)([exports.media]), /^(?=[^\S\n]*(?:$|\n))/);
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 12 /* Backtrack.media */), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 12 /* Backtrack.media */), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 12 /* Backtrack.media */), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], 3 | 12 /* Backtrack.media */)])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, undefined, () => [["\u001B" /* Command.Escape */], ''], [3 | 4 /* Backtrack.lineescbracket */])])));
 const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]), (0, combinator_1.fmap)((0, source_1.str)(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]), link_1.option]));
 function sanitize(target, uri, alt) {
   switch (uri.protocol) {
@@ -8333,6 +8339,7 @@ const unescsource = ({
         (0, combinator_1.consume)(1, context);
         switch (source[0]) {
           case '\r':
+            (0, combinator_1.consume)(-1, context);
             return [[], source.slice(1)];
           case "\u001B" /* Command.Escape */:
             (0, combinator_1.consume)(1, context);
@@ -8907,7 +8914,7 @@ const dom_1 = __webpack_require__(394);
 const array_1 = __webpack_require__(6876);
 exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, false, (0, combinator_1.surround)('[[', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 4 /* State.media */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [['\n', 9], [']', 1]]))]))), ']]', false, ([, ns], rest) => (0, visibility_1.trimBlankNodeEnd)(ns).length > 0 ? [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])], rest] : undefined, ([as, bs], rest, {
   state = 0
-}) => state & 128 /* State.annotation */ ? [(0, array_1.unshift)(as, bs), rest] : undefined, 1 | 8 /* Backtrack.linebracket */, 4 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)));
+}) => state & 128 /* State.annotation */ ? [(0, array_1.unshift)(as, bs), rest] : undefined, [3 | 16 /* Backtrack.linedoublebracket */, 1 | 12 /* Backtrack.linebracket */], 8 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)));
 // Chicago-Style
 const abbr = (0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/, true, ([, ns], rest) => ns ? [['\n', ns[0].trimEnd()], rest.replace(visibility_1.blank.start, '')] : [[''], `^${rest}`], ([,, rest]) => [[''], `^${rest}`]);
 function attributes(ns) {
