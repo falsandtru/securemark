@@ -1,11 +1,12 @@
 import { ExtensionParser } from '../../inline';
-import { State, Recursion, Backtrack, BacktrackState, Command } from '../../context';
-import { union, inits, some, recursion, precedence, state, constraint, validate, verify, surround, open, lazy, fmap } from '../../../combinator';
+import { State, Backtrack, BacktrackState } from '../../context';
+import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
-import { indexee, identity } from './indexee';
-import { txt, str } from '../../source';
+import { indexee, identity, text } from './indexee';
+import { str } from '../../source';
 import { tightStart, trimBlankNodeEnd } from '../../visibility';
-import { html, define, defrag } from 'typed-dom/dom';
+import { unshift } from 'spica/array';
+import { frag, html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
@@ -23,7 +24,7 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, fmap
     trimBlankNodeEnd(ns).length > 0
       ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
       : undefined,
-  undefined, [1 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)),
+  undefined, [3 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
@@ -33,23 +34,18 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, fmap
       }),
   ])));
 
-export const signature: IndexParser.SignatureParser = lazy(() => validate('|', fmap(open(
-  /^\|(?!\\?\s)/,
-  some(verify(union([bracket, txt]), ns => ns[0] !== Command.Escape), ']')),
-  ns => [
-    html('span', { class: 'indexer', 'data-index': identity('index', undefined, ns.join(''))!.slice(7) }),
-  ])));
-
-const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => union([
-  surround(str('('), recursion(Recursion.terminal, some(union([bracket, txt]), ')')), str(')'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
-  surround(str('['), recursion(Recursion.terminal, some(union([bracket, txt]), ']')), str(']'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
-  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, txt]), '}')), str('}'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
-  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(txt, '"'))), str('"'), true,
-    undefined, () => [[Command.Escape], ''], [3 | Backtrack.lineescbracket]),
-]));
+export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
+  str(/^\|(?!\\?\s)/),
+  some(union([inline]), ']'),
+  /^(?=])/,
+  false,
+  ([as, bs], rest) => {
+    const index = identity('index', undefined, text(frag(bs)))?.slice(7);
+    return index
+      ? [[html('span', { class: 'indexer', 'data-index': index })], rest]
+      : [unshift(as, bs), rest];
+  },
+  ([as, bs], rest) => [unshift(as, bs), rest])));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;

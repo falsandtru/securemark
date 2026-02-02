@@ -754,9 +754,8 @@ export namespace MarkdownParser {
       export namespace IndexParser {
         export interface SignatureParser extends
           Inline<'extension/index/signature'>,
-          Parser<HTMLElement, Context, [
-            SignatureParser.BracketParser,
-            SourceParser.TxtParser,
+          Parser<string | HTMLElement, Context, [
+            InlineParser,
           ]> {
         }
         export namespace SignatureParser {

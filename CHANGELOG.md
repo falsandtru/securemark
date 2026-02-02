@@ -3,6 +3,7 @@
 ## 0.287.0
 
 - Change template syntax to disallow linebreaks.
+- Change signature syntax to parse texts with inline syntax.
 
 ## 0.286.4
 

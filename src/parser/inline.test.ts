@@ -154,6 +154,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"{{""}}')), [['"', '{', '{', '"', '"', '}', '}'], '']);
       assert.deepStrictEqual(inspect(parser('[#http://host/(<bdi>)]</bdi>')), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/(&lt;bdi&gt;)</a>', '<', '/', 'bdi', '>'], '']);
       assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>')), [[ '[', '#@a/http', ':', '/', '/', 'host', '/', '(', '<bdi>)]</bdi>' ], '']);
+      assert.deepStrictEqual(inspect(parser('[#a|<bdi>]</bdi>')), [['[', '<a class="hashtag" href="/hashtags/a">#a</a>', '|', '<bdi>]</bdi>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[#a|<bdi>]</bdi>')), [['[', '[', '<a class="hashtag" href="/hashtags/a">#a</a>', '|', '<bdi>]</bdi>'], '']);
     });
 
     it('uri', () => {
