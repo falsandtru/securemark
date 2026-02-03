@@ -20,7 +20,6 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>>01@')), undefined);
       assert.deepStrictEqual(inspect(parser('>>http://')), undefined);
       assert.deepStrictEqual(inspect(parser('>>tel:1234567890')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>..')), undefined);
       assert.deepStrictEqual(inspect(parser('>> 0')), undefined);
       assert.deepStrictEqual(inspect(parser(' >>0')), undefined);
       assert.deepStrictEqual(inspect(parser('\\>>0')), undefined);
@@ -38,10 +37,8 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>>0\n>>>1')), [['<span class="cite">&gt;<a class="anchor" href="?at=0" data-depth="1">&gt;0</a></span>', '<br>', '<span class="cite">&gt;&gt;<a class="anchor" href="?at=1" data-depth="2">&gt;1</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>>0\n>>')), [['<span class="cite">&gt;&gt;<a class="anchor" href="?at=0" data-depth="2">&gt;0</a></span>', '<br>'], '>>']);
       assert.deepStrictEqual(inspect(parser('>>>0\n>>1')), [['<span class="cite">&gt;&gt;<a class="anchor" href="?at=0" data-depth="2">&gt;0</a></span>', '<br>', '<span class="cite">&gt;<a class="anchor" href="?at=1" data-depth="1">&gt;1</a></span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>.')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;.</a></span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>. ')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;.</a></span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>.\n')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;.</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#</a></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>># ')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#\n')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#a')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#a</a></span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>>#index::a')), [['<span class="cite">&gt;<a class="anchor" data-depth="1">&gt;#index::a</a></span>', '<br>'], '']);
