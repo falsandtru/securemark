@@ -14,12 +14,12 @@ describe('Unit: parser/block/reply/cite', () => {
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
       assert.deepStrictEqual(inspect(parser('>> ')), undefined);
       assert.deepStrictEqual(inspect(parser('>>0 a')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>/')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>\\')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>01#')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>01@')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>http://')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>tel:1234567890')), undefined);
+      assert.deepStrictEqual(inspect(parser('>>/')), [['<span class="cite invalid">&gt;&gt;/</span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>\\')), [['<span class="cite invalid">&gt;&gt;\\</span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>01#')), [['<span class="cite invalid">&gt;&gt;01#</span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>01@')), [['<span class="cite invalid">&gt;&gt;01@</span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>http://')), [['<span class="cite invalid">&gt;&gt;http://</span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>tel:1234567890')), [['<span class="cite invalid">&gt;&gt;tel:1234567890</span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('>> 0')), undefined);
       assert.deepStrictEqual(inspect(parser(' >>0')), undefined);
       assert.deepStrictEqual(inspect(parser('\\>>0')), undefined);

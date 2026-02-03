@@ -587,51 +587,29 @@ export namespace MarkdownParser {
       // abc
       Block<'reply'>,
       Parser<HTMLParagraphElement, Context, [
-        Parser<HTMLElement, Context, [
-          ReplyParser.CiteParser,
-          ReplyParser.QuoteParser,
-        ]>,
-        Parser<HTMLElement | string, Context, [
-          ReplyParser.QuoteParser,
-          InlineParser,
-        ]>,
+        ReplyParser.CiteParser,
+        ReplyParser.QuoteParser,
+        InlineParser,
       ]> {
     }
     export namespace ReplyParser {
       export interface CiteParser extends
         Block<'reply/cite'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
-          SourceParser.StrParser,
-          Parser<string | HTMLAnchorElement, Context, [
-            InlineParser.AutolinkParser.AnchorParser,
-            Parser<HTMLAnchorElement, Context, []>,
-            Parser<HTMLAnchorElement, Context, []>,
-          ]>,
+          InlineParser.AutolinkParser.AnchorParser,
+          Parser<HTMLAnchorElement, Context, []>,
+          Parser<HTMLAnchorElement, Context, []>,
+          Parser<string, Context, []>,
         ]> {
       }
       export interface QuoteParser extends
         Block<'reply/quote'>,
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
-          QuoteParser.BlockParser,
-          QuoteParser.PlaceholderParser,
+          InlineParser.MathParser,
+          InlineParser.AutolinkParser,
+          SourceParser.LinebreakParser,
+          SourceParser.UnescapableSourceParser,
         ]> {
-      }
-      export namespace QuoteParser {
-        export interface BlockParser extends
-          Block<'reply/quote/block'>,
-          Parser<string | HTMLElement, Context, [
-            InlineParser.MathParser,
-            InlineParser.AutolinkParser,
-            SourceParser.LinebreakParser,
-            SourceParser.UnescapableSourceParser,
-          ]> {
-        }
-        export interface PlaceholderParser extends
-          Block<'reply/quote/placeholder'>,
-          Parser<string | HTMLElement, Context, [
-            SourceParser.StrParser,
-          ]> {
-        }
       }
     }
     export interface ParagraphParser extends

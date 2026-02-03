@@ -21,7 +21,8 @@ export function str(pattern: string | RegExp, not?: string): Parser<string, Cont
         const m = source.match(pattern);
         count && m && consume(m[0].length, context);
         if (m && not && source.slice(m[0].length, m[0].length + not.length) === not) return;
-        return m && m[0].length > 0
+        //assert(!m || m[0]);
+        return m
           ? [[m[0]], source.slice(m[0].length)]
           : undefined;
       };

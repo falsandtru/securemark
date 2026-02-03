@@ -5,10 +5,10 @@ describe('Unit: util/quote', () => {
   describe('quote', () => {
     it('basic', () => {
       const range = document.createRange();
-      const el = parse('>>1\n>2\n> a\n>>4 `b` ${c}$\n [e](f) ').firstElementChild!;
+      const el = parse('>>1\n> a\n>>?\n> 2\n>>4 `b` ${c}$\n [e](f) ').firstElementChild!;
       range.setStart(el.firstChild!.firstChild!, 0);
       range.setEnd(el.lastChild!.lastChild!.lastChild!, 1);
-      assert(quote('3', range) === `>>>1\n> >2\n>> a\n>>3\n> >>4 \`b\` \${c}$\n>  e`);
+      assert.deepStrictEqual(quote('3', range), `>>>1\n>> a\n>>>?\n>> 2\n>>3\n> >>4 \`b\` \${c}$\n>  e`);
     });
 
     it('adjustment', () => {
