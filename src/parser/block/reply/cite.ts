@@ -14,7 +14,7 @@ export const cite: ReplyParser.CiteParser = line(fmap(validate(
       // リンクの実装は後で検討
       focus(/^>>\.(?=\s*$)/, () => [[html('a', { class: 'anchor' }, '>>.')], ''], false),
       focus(/^>>#\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], ''], false),
-      focus(/^>>https?:\/\/(?:[[]|[^\p{C}\p{S}\p{P}\s])\S*(?=\s*$)/u, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], ''], false),
+      focus(/^>>https?:\/\/\S+(?=\s*$)/u, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], ''], false),
     ]),
   ]))),
   ([el, quotes = '']: [HTMLElement, string?]) => [
