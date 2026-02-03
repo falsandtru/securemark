@@ -169,6 +169,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('_http://host_')), [['_', '<a class="url" href="http://host" target="_blank">http://host</a>', '_'], '']);
       assert.deepStrictEqual(inspect(parser('*http://host*')), [['<em><a class="url" href="http://host" target="_blank">http://host</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('(http://host)')), [['<span class="paren">(<a class="url" href="http://host" target="_blank">http://host</a>)</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('"http://host"')), [['"', '<a class="url" href="http://host" target="_blank">http://host</a>', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"http://host""')), [['"', '<a class="url" href="http://host" target="_blank">http://host</a>', '"', '"'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('あhttp://hostい')), [['あ', '<a class="url" href="http://host" target="_blank">http://host</a>', 'い'], '']);
     });
