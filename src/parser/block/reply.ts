@@ -6,7 +6,6 @@ import { inline } from '../inline';
 import { anyline } from '../source';
 import { lineable } from '../util';
 import { visualize, trimBlankNodeEnd } from '../visibility';
-import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 /*
@@ -22,10 +21,9 @@ export const reply: ReplyParser = block(validate('>', fmap(
     ])),
     some(subsequence([
       some(quote),
-      fmap(rewrite(
+      rewrite(
         some(anyline, delimiter),
-        visualize(lineable(some(inline)))),
-        ns => push(ns, [html('br')])),
+        visualize(lineable(some(inline), true))),
     ])),
   ]),
   ns => [html('p', trimBlankNodeEnd(defrag(ns)))])));

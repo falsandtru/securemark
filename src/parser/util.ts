@@ -4,9 +4,12 @@ import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../combinator/da
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
-export function lineable<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function lineable<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return convert(source => `\r${source}`, parser, true);
+export function lineable<P extends Parser<HTMLElement | string>>(parser: P, fillTrailingLinebreak?: boolean): P;
+export function lineable<T extends HTMLElement | string>(parser: Parser<T>, fillTrailingLinebreak = false): Parser<T> {
+  return convert(
+    source => `\r${source}${fillTrailingLinebreak && source.at(-1) !== '\n' ? '\n' : ''}`,
+    parser,
+    !fillTrailingLinebreak);
 }
 
 export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Tree<P>[], context: Context<P>) => Tree<P>[], termination?: (acc: Tree<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Tree<P>>): P;
