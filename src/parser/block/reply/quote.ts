@@ -39,4 +39,5 @@ const qblock: ReplyParser.QuoteParser.BlockParser = convert(
     autolink,
     linebreak,
     unescsource,
-  ])));
+  ])),
+  false);

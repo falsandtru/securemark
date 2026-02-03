@@ -24,7 +24,8 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
             ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
             : `?at=${source.slice(2)}`
           } }`,
-        unsafelink),
+        unsafelink,
+        false),
         ([el]) => [define(el, { class: 'anchor' })]))),
       ({ source }) => [[source], ''],
     ]))));

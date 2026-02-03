@@ -9,7 +9,8 @@ export const shortmedia: ShortMediaParser = constraint(State.media, false, rewri
   open('!', url),
   convert(
     source => `!{ ${source.slice(1)} }`,
-    union([media]))));
+    union([media]),
+    false)));
 
 export const lineshortmedia: ShortMediaParser.LineShortMediaParser = open(
   linebreak,
@@ -17,4 +18,5 @@ export const lineshortmedia: ShortMediaParser.LineShortMediaParser = open(
     /^!https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,
     convert(
       source => `!{ ${source.slice(1)} }`,
-      union([media]))));
+      union([media]),
+      false)));

@@ -11,4 +11,5 @@ export const autolink: AutolinkParser = lazy(() =>
     autolink_,
     linebreak,
     unescsource,
-  ]))));
+  ])),
+  false));

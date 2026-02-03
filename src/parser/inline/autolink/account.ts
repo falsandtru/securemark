@@ -21,7 +21,8 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
           ? `https://${source.slice(1).replace('/', '/@')}`
           : `/${source}`
         } }`,
-      unsafelink),
+      unsafelink,
+      false),
       ([el]) => [define(el, { class: 'account' })]))),
     ({ source }) => [[source], ''],
   ])));

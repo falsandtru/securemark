@@ -11,7 +11,8 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
   union([
     constraint(State.autolink, false, state(State.autolink, fmap(convert(
       source => `[${source}]{ ${source.slice(1)} }`,
-      unsafelink),
+      unsafelink,
+      false),
       ([el]) => [define(el, { class: 'hashnum', href: null })]))),
     ({ source }) => [[source], ''],
   ])));

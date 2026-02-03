@@ -23,7 +23,8 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Pa
   return union([
     convert(
       source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${Command.Escape}$&`)),
-      verify(parser, (ns, rest) => !rest && hasVisible(ns))),
+      verify(parser, (ns, rest) => !rest && hasVisible(ns)),
+      false),
     some(union([linebreak, unescsource])),
   ]);
 }
@@ -162,7 +163,8 @@ export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
 export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
   return convert(
     source => source.replace(blank.start, ''),
-    parser);
+    parser,
+    true);
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {

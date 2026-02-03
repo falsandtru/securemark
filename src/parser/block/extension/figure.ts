@@ -65,7 +65,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       emptyline,
       block(visualize(trimBlank(some(inline)))),
     ]),
-  ])),
+  ]), false),
   ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [
     html('figure',
       attributes(label.getAttribute('data-label')!, param, content, caption),
