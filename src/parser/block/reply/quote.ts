@@ -12,9 +12,10 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(validate(
   rewrite(
     some(validate(syntax, anyline)),
     convert(
-      source => source.replace(/\n$/, '').replace(/(?<=^>+[^\S\n])/mg, '\r'),
+      source => source.replace(/(?<=^>+[^\S\n])/mg, '\r').replace(/\n$/, ''),
       some(union([
-        math, // quote補助関数が残した数式をパースする。他の構文で数式を残す場合はソーステキストを直接使用する。
+        // quote補助関数が残した数式をパースする。
+        math,
         autolink,
         linebreak,
         unescsource,
