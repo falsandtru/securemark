@@ -3,6 +3,7 @@ import { Recursion } from '../../context';
 import { eval } from '../../../combinator/data/parser';
 import { recursion, block, validate, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
+import { invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
@@ -15,12 +16,12 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
-      'data-invalid-syntax': 'example',
-      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
-      'data-invalid-message':
+      ...invalid(
+        'example',
+        !closer || overflow ? 'fence' : 'argument',
         !closer ? `Missing the closing delimiter "${delim}"` :
-        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
-        'Invalid argument',
+          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+            'Invalid argument'),
     }, `${opener}${body}${overflow || closer}`)];
     switch (type) {
       case 'markdown': {
@@ -53,9 +54,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
           html('pre', {
             class: 'invalid',
             translate: 'no',
-            'data-invalid-syntax': 'example',
-            'data-invalid-type': 'type',
-            'data-invalid-message': 'Invalid example type',
+            ...invalid('example', 'type', 'Invalid example type'),
           }, `${opener}${body}${closer}`),
         ];
     }

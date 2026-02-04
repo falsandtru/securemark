@@ -5,6 +5,7 @@ import { sequence, surround, dup, lazy, fmap } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
 import { isTightNodeStart } from '../visibility';
+import { invalid } from '../util';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -104,9 +105,7 @@ function attributes(texts: string[], rubies: string[]): Record<string, string> {
       ss[i] = ss[i].replace(CmdRegExp.Escape, '');
       attrs ??= {
         class: 'invalid',
-        'data-invalid-syntax': 'ruby',
-        'data-invalid-type': ss === texts ? 'content' : 'argument',
-        'data-invalid-message': 'Invalid HTML entity',
+        ...invalid('ruby', ss === texts ? 'content' : 'argument', 'Invalid HTML entity'),
       };
     }
   }

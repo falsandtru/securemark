@@ -2,6 +2,7 @@ import { MarkdownParser } from '../../markdown';
 import { union, inits, some, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
 import { segment } from './segment';
 import { str } from './source';
+import { invalid } from './util';
 import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -31,9 +32,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
             html('pre', {
               class: 'invalid',
               translate: 'no',
-              'data-invalid-syntax': 'header',
-              'data-invalid-type': 'syntax',
-              'data-invalid-message': 'Invalid syntax',
+              ...invalid('header', 'syntax', 'Invalid syntax'),
             }, normalize(source)),
           ], ''],
         ]))),

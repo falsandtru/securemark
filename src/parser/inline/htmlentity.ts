@@ -1,6 +1,7 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { Command } from '../context';
 import { union, validate, focus, fmap } from '../../combinator';
+import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 import { reduce } from 'spica/memoize';
 
@@ -14,9 +15,7 @@ export const htmlentity: HTMLEntityParser = fmap(
     text[0] === Command.Escape
       ? html('span', {
           class: 'invalid',
-          'data-invalid-syntax': 'htmlentity',
-          'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Invalid HTML entity',
+          ...invalid('htmlentity', 'syntax', 'Invalid HTML entity'),
         }, text.slice(1))
       : text,
   ]);

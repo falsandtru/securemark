@@ -2,6 +2,7 @@ import { CodeBlockParser } from '../block';
 import { eval } from '../../combinator/data/parser';
 import { block, validate, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
+import { invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const opener = /^(`{3,})(?!`)([^\n]*)(?:$|\n)/;
@@ -51,12 +52,14 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     if (!closer || overflow || params.invalid) return [html('pre', {
       class: 'invalid',
       translate: 'no',
-      'data-invalid-syntax': 'codeblock',
-      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
-      'data-invalid-message':
-        !closer ? `Missing the closing delimiter "${delim}"` :
-        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
-        params.invalid,
+      ...invalid(
+        'codeblock',
+        !closer || overflow ? 'fence' : 'argument',
+        !closer
+          ? `Missing the closing delimiter "${delim}"`
+          : overflow
+            ? `Invalid trailing line after the closing delimiter "${delim}"`
+            : params.invalid!),
     }, `${opener}${body}${overflow || closer}`)];
     const el = html('pre',
       {

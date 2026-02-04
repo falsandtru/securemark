@@ -3,6 +3,7 @@ import { union, sequence, some, block, line, validate, focus, rewrite, surround,
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
 import { trimBlank } from '../visibility';
+import { invalid } from '../util';
 import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -31,9 +32,7 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
   rewrite(contentline, ({ source }) => [[
     html('tr', {
       class: 'invalid',
-      'data-invalid-syntax': 'table-row',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Missing the start symbol of the table row',
+      ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
     }, [html('td', source.replace('\n', ''))])
   ], '']));
 

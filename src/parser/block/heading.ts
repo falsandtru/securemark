@@ -4,6 +4,7 @@ import { union, some, state, block, line, validate, focus, rewrite, open, fmap }
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
 import { visualize, trimBlank } from '../visibility';
+import { invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
@@ -27,8 +28,6 @@ export const heading: HeadingParser = block(rewrite(segment,
       ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, defrag(ns))
       : html(`h6`, {
           class: 'invalid',
-          'data-invalid-syntax': 'heading',
-          'data-invalid-type': 'syntax',
-          'data-invalid-message': 'Heading level must be up to 6',
+          ...invalid('heading', 'syntax', 'Heading level must be up to 6'),
         }, defrag(ns))
   ]))))));

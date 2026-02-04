@@ -75,6 +75,18 @@ export function repeat<T extends HTMLElement | string>(symbol: string, parser: P
   };
 }
 
+export function invalid(
+  syntax: string,
+  type: string,
+  message: string,
+): Record<string, string> {
+  return {
+    'data-invalid-syntax': syntax,
+    'data-invalid-type': type,
+    'data-invalid-message': message,
+  };
+}
+
 export function markInvalid<T extends Element>(
   el: T,
   syntax: string,

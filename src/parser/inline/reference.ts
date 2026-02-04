@@ -6,6 +6,7 @@ import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift } from 'spica/array';
+import { invalid } from '../util';
 
 export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, surround(
   '[[',
@@ -38,12 +39,7 @@ const abbr: ReferenceParser.AbbrParser = surround(
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   switch (ns[0]) {
     case '':
-      return {
-        class: 'invalid',
-        'data-invalid-syntax': 'reference',
-        'data-invalid-type': 'syntax',
-        'data-invalid-message': 'Invalid abbreviation',
-      };
+      return { class: 'invalid', ...invalid('reference', 'syntax', 'Invalid abbreviation') };
     case '\n':
       const abbr = ns[1] as string;
       ns[0] = ns[1] = '';

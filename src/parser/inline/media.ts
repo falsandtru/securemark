@@ -5,7 +5,7 @@ import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
-import { markInvalid } from '../util';
+import { invalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { push } from 'spica/array';
 import { html, define } from 'typed-dom/dom';
@@ -98,19 +98,25 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
     case 'https:':
       assert(uri.host);
       if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-        markInvalid(target, 'media', 'argument',
-          'Dot-segments cannot be used in media paths; use subresource paths instead');
+        define(target, {
+          class: 'invalid',
+          ...invalid('media', 'argument',
+            'Dot-segments cannot be used in media paths; use subresource paths instead')
+        });
         return false;
       }
       break;
     default:
-      markInvalid(target, 'media', 'argument', 'Invalid protocol');
+      define(target, { class: 'invalid', ...invalid('media', 'argument', 'Invalid protocol') });
       return false;
   }
   if (alt.includes(Command.Escape)) {
-    define(target, { alt: target.getAttribute('alt')?.replace(CmdRegExp.Escape, '') });
-    markInvalid(target, 'media', 'content',
-      `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`);
+    define(target, {
+      class: 'invalid',
+      alt: target.getAttribute('alt')?.replace(CmdRegExp.Escape, ''),
+      ...invalid('media', 'argument',
+      `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`)
+    });
     return false;
   }
   return true;

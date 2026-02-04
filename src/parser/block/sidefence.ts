@@ -3,6 +3,7 @@ import { Recursion } from '../context';
 import { union, some, recursion, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
+import { invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
@@ -11,9 +12,7 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
   ([el]) => [
     define(el, {
       class: 'invalid',
-      'data-invalid-syntax': 'sidefence',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Reserved syntax',
+      ...invalid('sidefence', 'syntax', 'Reserved syntax'),
     }),
   ])));
 

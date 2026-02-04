@@ -1,5 +1,6 @@
 import { MathBlockParser } from '../block';
 import { block, validate, fence, clear, fmap } from '../../combinator';
+import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 const opener = /^(\${2,})(?!\$)([^\n]*)(?:$|\n)/;
@@ -20,11 +21,12 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
       : html('pre', {
           class: 'invalid',
           translate: 'no',
-          'data-invalid-syntax': 'mathblock',
-          'data-invalid-type': delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
-          'data-invalid-message': delim.length > 2 ? 'Invalid syntax' :
-             !closer ? `Missing the closing delimiter "${delim}"` :
-             overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
-             'Invalid argument',
+          ...invalid(
+            'mathblock',
+            delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
+            delim.length > 2 ? 'Invalid syntax' :
+              !closer ? `Missing the closing delimiter "${delim}"` :
+                overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+                  'Invalid argument'),
         }, `${opener}${body}${overflow || closer}`),
   ])));

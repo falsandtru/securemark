@@ -4,7 +4,7 @@ import { Tree, eval } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { lineable } from '../../util';
+import { lineable, invalid } from '../../util';
 import { visualize, trimBlank, trimBlankEnd } from '../../visibility';
 import { unshift, splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -29,12 +29,12 @@ export const table: TableParser = block(validate('~~~', fmap(
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
-      'data-invalid-syntax': 'table',
-      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
-      'data-invalid-message':
+      ...invalid(
+        'table',
+        !closer || overflow ? 'fence' : 'argument',
         !closer ? `Missing the closing delimiter "${delim}"` :
-        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
-        'Invalid argument',
+          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+            'Invalid argument'),
     }, `${opener}${body}${overflow || closer}`)];
     switch (type) {
       case 'grid':
@@ -45,9 +45,7 @@ export const table: TableParser = block(validate('~~~', fmap(
         return [html('pre', {
           class: 'invalid',
           translate: 'no',
-          'data-invalid-syntax': 'table',
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Invalid table type',
+          ...invalid('table', 'argument', 'Invalid table type'),
         }, `${opener}${body}${closer}`)];
     }
   })));
@@ -140,21 +138,12 @@ function attributes(source: string): Record<string, string | undefined> {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
-    ...
-    !validH && {
-      'data-invalid-syntax': 'table',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Too much highlight level',
-    } ||
-    !validE && {
-      'data-invalid-syntax': 'table',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Extensible cells are only head cells',
-    } ||
-    {
-      'data-highlight-level': level > 1 ? `${level}` : undefined,
-      'data-highlight-extension': extension,
-    },
+    ...!validH && invalid('table', 'syntax', 'Too much highlight level')
+    || !validE && invalid('table', 'syntax', 'Extensible cells are only head cells')
+    || {
+        'data-highlight-level': level > 1 ? `${level}` : undefined,
+        'data-highlight-extension': extension,
+      },
   };
 }
 

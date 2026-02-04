@@ -1,10 +1,10 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
 import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
-import { ulist_, checkbox, invalid, fillFirstLine } from './ulist';
-import { ilist_ } from './ilist';
+import { ulist_, checkbox, fillFirstLine } from './ulist';
+import { ilist_, ilistitem } from './ilist';
 import { inline, indexee, indexer, dataindex } from '../inline';
-import { lineable } from '../util';
+import { invalid, lineable } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -39,7 +39,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
           trim(visualize(lineable(trimBlank(some(union([indexer, inline]))))))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
-      invalid),
+      ilistitem),
       ns => [html('li', { 'data-index': dataindex(ns), 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))])),
   ]))),
   es => [format(html('ol', es), type, form)]);
@@ -138,9 +138,7 @@ function format(list: HTMLOListElement, type: string, form: string): HTMLOListEl
         if (i === 0 || item.classList.contains('invalid')) continue;
         define(item, {
           class: 'invalid',
-          'data-invalid-syntax': 'list',
-          'data-invalid-type': 'index',
-          'data-invalid-message': 'Fix the duplicate index',
+          ...invalid('list', 'index', 'Fix the duplicate index'),
         });
     }
     break;

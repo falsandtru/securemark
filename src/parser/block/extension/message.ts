@@ -13,6 +13,7 @@ import { sidefence } from '../sidefence';
 import { blockquote } from '../blockquote';
 import { mediablock } from '../mediablock';
 import { paragraph } from '../paragraph';
+import { invalid } from '../../util';
 import { unshift, push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
@@ -25,12 +26,12 @@ export const message: MessageParser = block(validate('~~~', fmap(
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
-      'data-invalid-syntax': 'message',
-      'data-invalid-type': !closer || overflow ? 'fence' : 'argument',
-      'data-invalid-message':
+      ...invalid(
+        'message',
+        !closer || overflow ? 'fence' : 'argument',
         !closer ? `Missing the closing delimiter "${delim}"` :
-        overflow ?  `Invalid trailing line after the closing delimiter "${delim}"` :
-        'Invalid argument',
+          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+            'Invalid argument'),
     }, `${opener}${body}${overflow || closer}`)];
     switch (type) {
       case 'note':
@@ -41,9 +42,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
         return [html('pre', {
           class: 'invalid',
           translate: 'no',
-          'data-invalid-syntax': 'message',
-          'data-invalid-type': 'type',
-          'data-invalid-message': 'Invalid message type',
+          ...invalid('message', 'type', 'Invalid message type'),
         }, `${opener}${body}${closer}`)];
     }
     return [

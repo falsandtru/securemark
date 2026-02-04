@@ -13,6 +13,7 @@ import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
 import { visualize, trimBlank } from '../../visibility';
+import { invalid } from '../../util';
 import { memoize } from 'spica/memoize';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -79,34 +80,36 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   ])),
   fmap(
     fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
-    ([body, overflow, closer, opener, delim]: string[], _, context) => [
-      html('pre', {
-        class: 'invalid',
-        translate: 'no',
-        'data-invalid-syntax': 'figure',
-        ...
-        !closer && {
-          'data-invalid-type': 'fence',
-          'data-invalid-message': `Missing the closing delimiter "${delim}"`,
-        } ||
-        overflow && {
-          'data-invalid-type': 'fence',
-          'data-invalid-message': `Invalid trailing line after the closing delimiter "${delim}"`,
-        } ||
-        !seg_label({ source: opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context }) && {
-          'data-invalid-type': 'label',
-          'data-invalid-message': 'Invalid label',
-        } ||
-        /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(opener) && {
-          'data-invalid-type': 'argument',
-          'data-invalid-message': 'Invalid argument',
-        } ||
-        {
-          'data-invalid-type': 'content',
-          'data-invalid-message': 'Invalid content',
-        },
-      }, `${opener}${body}${overflow || closer}`),
-    ])));
+    ([body, overflow, closer, opener, delim]: string[], _, context) => {
+      const violation =
+        !closer && [
+          'fence',
+          `Missing the closing delimiter "${delim}"`,
+        ] ||
+        overflow && [
+          'fence',
+          `Invalid trailing line after the closing delimiter "${delim}"`,
+        ] ||
+        !seg_label({ source: opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context }) && [
+          'label',
+          'Invalid label',
+        ] ||
+        /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(opener) && [
+          'argument',
+          'Invalid argument',
+        ] ||
+        [
+          'content',
+          'Invalid content',
+        ];
+      return [
+        html('pre', {
+          class: 'invalid',
+          translate: 'no',
+          ...invalid('figure', violation[0], violation[1]),
+        }, `${opener}${body}${overflow || closer}`),
+      ];
+    })));
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
@@ -135,57 +138,57 @@ function attributes(label: string, param: string, content: HTMLElement, caption:
     default:
       assert(false);
   }
-  const invalid =
-    param.trimStart() !== '' && {
-      'data-invalid-type': 'argument',
-      'data-invalid-message': 'Invalid argument',
-    } ||
-    /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
-    } ||
-    group === '$' && (type !== 'math' || caption.length > 0) && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"$" label group must be used to math formulas with no caption',
-    } ||
-    type === 'media' && {} ||
-    ['fig', 'figure'].includes(group) && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"fig" and "figure" label groups must be used to media',
-    } ||
-    group === 'table' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"table" label group must be used to tables',
-    } ||
-    group === 'list' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"list" label group must be used to lists',
-    } ||
-    group === 'quote' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"quote" label group must be used to blockquotes',
-    } ||
-    group === 'text' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"text" label group must be used to codeblocks with no language',
-    } ||
-    group === 'code' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"code" label group must be used to codeblocks with any language',
-    } ||
-    group === 'example' && type !== group && {
-      'data-invalid-type': 'label',
-      'data-invalid-message': '"example" label group must be used to examples',
-    } ||
+  const violation =
+    param.trimStart() !== '' && [
+      'argument',
+      'Invalid argument',
+    ] ||
+    /^[^-]+-(?:[0-9]+\.)*0$/.test(label) && [
+      'label',
+      'The last part of the fixed label numbers must not be 0',
+    ] ||
+    group === '$' && (type !== 'math' || caption.length > 0) && [
+      'label',
+      '"$" label group must be used to math formulas with no caption',
+    ] ||
+    type === 'media' && [
+    ] ||
+    ['fig', 'figure'].includes(group) && [
+      'label',
+      '"fig" and "figure" label groups must be used to media',
+    ] ||
+    group === 'table' && type !== group && [
+      'label',
+      '"table" label group must be used to tables',
+    ] ||
+    group === 'list' && type !== group && [
+      'label',
+      '"list" label group must be used to lists',
+    ] ||
+    group === 'quote' && type !== group && [
+      'label',
+      '"quote" label group must be used to blockquotes',
+    ] ||
+    group === 'text' && type !== group && [
+      'label',
+      '"text" label group must be used to codeblocks with no language',
+    ] ||
+    group === 'code' && type !== group && [
+      'label',
+      '"code" label group must be used to codeblocks with any language',
+    ] ||
+    group === 'example' && type !== group && [
+      'label',
+      '"example" label group must be used to examples',
+    ] ||
     undefined;
   return {
     'data-type': type,
     'data-label': label,
     'data-group': group,
-    ...invalid?.['data-invalid-type'] && {
+    ...violation?.[0] && {
       class: 'invalid',
-      'data-invalid-syntax': 'figure',
-      ...invalid,
+      ...invalid('figure', violation[0], violation[1]),
     },
   };
 }

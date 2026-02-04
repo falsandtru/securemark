@@ -1,11 +1,13 @@
 import { IListParser } from '../block';
+import { Parser } from '../../combinator/data/parser';
 import { Recursion } from '../context';
-import { union, inits, some, recursion, block, line, validate, indent, open, trim, fallback, lazy, fmap } from '../../combinator';
-import { ulist_, invalid, fillFirstLine } from './ulist';
+import { union, inits, some, recursion, block, line, validate, indent, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
+import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
-import { lineable } from '../util';
+import { contentline } from '../source';
 import { visualize, trimBlank } from '../visibility';
+import { lineable, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
@@ -20,14 +22,22 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
         line(open(/^[-+*](?:$|\s)/, trim(visualize(trimBlank(lineable(some(inline))))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
-      invalid),
+      ilistitem),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ])))),
   es => [
     html('ul', {
       class: 'invalid',
-      'data-invalid-syntax': 'list',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': 'Use "-" instead of "+" or "*"',
+      ...invalid('list', 'syntax', 'Use "-" instead of "+" or "*"'),
     }, es),
   ])));
+
+export const ilistitem = rewrite(
+  inits([contentline, indent<Parser<string>>(({ source }) => [[source], ''])]),
+  ({ source }) => [[
+    '',
+    html('span', {
+      class: 'invalid',
+      ...invalid('list', 'syntax', 'Fix the indent or the head of the list item'),
+    }, source.replace('\n', ''))
+  ], '']);

@@ -4,6 +4,7 @@ import { union, some, recursion, precedence, surround, lazy } from '../../../com
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { tightStart } from '../../visibility';
+import { invalid } from '../../util';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -19,9 +20,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   ([, bs], rest) => [[
     html('span', {
       class: 'invalid',
-      'data-invalid-syntax': 'extension',
-      'data-invalid-type': 'syntax',
-      'data-invalid-message': `Invalid start symbol or linebreak`,
+      ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
     }, defrag(bs)),
   ], rest],
   ([as, bs], rest) => [unshift(as, bs), rest], [3 | Backtrack.bracket]));

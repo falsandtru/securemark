@@ -2,6 +2,7 @@ import { MathParser } from '../inline';
 import { Recursion } from '../context';
 import { union, some, recursion, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource, str } from '../source';
+import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
@@ -25,9 +26,8 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
         : {
             class: 'invalid',
             translate: 'no',
-            'data-invalid-syntax': 'math',
-            'data-invalid-type': 'content',
-            'data-invalid-message': `"${source.match(forbiddenCommand)![0]}" command is forbidden`,
+          ...invalid('math', 'content',
+            `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
       source)
   ], ''])));

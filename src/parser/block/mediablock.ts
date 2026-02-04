@@ -1,6 +1,7 @@
 import { MediaBlockParser } from '../block';
 import { union, inits, some, block, line, validate, fallback, fmap } from '../../combinator';
 import { medialink, media, shortmedia } from '../inline';
+import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const mediablock: MediaBlockParser = block(validate(['[!', '!'], fmap(
@@ -14,13 +15,9 @@ export const mediablock: MediaBlockParser = block(validate(['[!', '!'], fmap(
       medialink,
       media,
       shortmedia,
-    ]), ({ source }) => [[html('div', [html('span', attrs, source.replace('\n', ''))])], '']))),
+    ]), ({ source }) => [[html('div', [html('span', {
+      class: 'invalid',
+      ...invalid('mediablock', 'syntax', 'Not media syntax'),
+    }, source.replace('\n', ''))])], '']))),
   ]),
   ns => [html('div', ns)])));
-
-const attrs = {
-  class: 'invalid',
-  'data-invalid-syntax': 'mediablock',
-  'data-invalid-type': 'syntax',
-  'data-invalid-message': 'Not media syntax',
-} as const;

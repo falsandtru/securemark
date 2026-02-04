@@ -2,6 +2,7 @@ import { ReplyParser } from '../../block';
 import { union, line, validate, focus, open, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
+import { invalid } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const syntax = /^>*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/;
@@ -23,12 +24,7 @@ export const cite: ReplyParser.CiteParser = line(fmap(validate(
     html('span',
       typeof node === 'object'
         ? { class: 'cite' }
-        : {
-            class: 'cite invalid',
-            'data-invalid-syntax': 'cite',
-            'data-invalid-type': 'syntax',
-            'data-invalid-message': 'Invalid syntax',
-          },
+        : { class: 'cite invalid', ...invalid('cite', 'syntax', 'Invalid syntax') },
       defrag([
         `${quotes}>`,
         typeof node === 'object'

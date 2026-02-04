@@ -6,7 +6,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
-import { stringify } from '../util';
+import { invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -166,9 +166,7 @@ function elem(
   return html('a',
     {
       class: 'invalid',
-      'data-invalid-syntax': 'link',
-      'data-invalid-type': type ??= 'argument',
-      'data-invalid-message': message ??= 'Invalid protocol',
+      ...invalid('link', type ??= 'argument', message ??= 'Invalid protocol'),
     },
     content.length === 0
       ? INSECURE_URI
