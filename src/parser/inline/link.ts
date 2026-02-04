@@ -94,7 +94,7 @@ function parse(
     content,
     uri,
     context.host?.origin || location.origin);
-  return el.className === 'invalid'
+  return el.classList.contains('invalid')
     ? el
     : define(el, attributes('link', [], optspec, params));
 }

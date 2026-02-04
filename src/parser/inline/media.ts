@@ -51,7 +51,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
       || (cache = context.caches?.media?.get(url.href)?.cloneNode(true))
       || html('img', { class: 'media', 'data-src': url.source, alt: text });
     assert(!el.matches('.invalid'));
-    cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
+    cache?.hasAttribute('alt') && cache.setAttribute('alt', text);
     if (!sanitize(el, url, text)) return [[el], rest];
     assert(!el.matches('.invalid'));
     define(el, attributes('media', push([], el.classList), optspec, params));

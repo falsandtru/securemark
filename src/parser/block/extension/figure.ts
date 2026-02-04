@@ -110,7 +110,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
-  let type: string = content.className.split(/\s/)[0];
+  let type = content.className.split(/\s/)[0];
   switch (type || content.tagName) {
     case 'UL':
     case 'OL':
