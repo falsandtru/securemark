@@ -64,6 +64,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{  }')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{   }')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{{}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{}}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{{}}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{{b}}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{b\nb}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{b\\\nb}')), undefined);
@@ -107,6 +109,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{  b }')), [['<a class="url" href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{  b  }')), [['<a class="url" href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{  b   }')), [['<a class="url" href="b">b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{"}')), [[`<a class="url" href="&quot;">"</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{"}"}')), [[`<a class="url" href="&quot;">"</a>`], '"}']);
       assert.deepStrictEqual(inspect(parser('[]{\\}')), [[`<a class="url" href="\\">\\</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{\\ }')), [[`<a class="url" href="\\">\\</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{\\b}')), [[`<a class="url" href="\\b">\\b</a>`], '']);
