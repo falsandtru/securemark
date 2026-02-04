@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.288.1
+
+- Refactoring.
+
 ## 0.288.0
 
 - Improve reply parser.
