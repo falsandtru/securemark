@@ -1,7 +1,6 @@
 import { MarkdownParser } from '../../../../markdown';
 import { Parser } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
-import { reduce } from 'spica/memoize';
 import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
@@ -142,7 +141,7 @@ export function signature(source: Element | DocumentFragment): string {
   return target.textContent!.trim();
 }
 
-export const text = reduce((source: Element | DocumentFragment): string => {
+export function text(source: Element | DocumentFragment): string {
   assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
   const target = source.cloneNode(true) as typeof source;
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
@@ -173,4 +172,4 @@ export const text = reduce((source: Element | DocumentFragment): string => {
     }
   }
   return target.textContent!;
-});
+}

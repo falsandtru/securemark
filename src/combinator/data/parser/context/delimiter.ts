@@ -1,4 +1,4 @@
-import { memoize, reduce } from 'spica/memoize';
+import { memoize } from 'spica/memoize';
 
 interface Delimiter {
   readonly index: number;
@@ -27,7 +27,7 @@ export class Delimiters {
         case 'string':
           return source => source.slice(0, pattern.length) === pattern || undefined;
         case 'object':
-          return reduce(source => pattern.test(source) || undefined);
+          return source => pattern.test(source) || undefined;
       }
     },
     this.signature);

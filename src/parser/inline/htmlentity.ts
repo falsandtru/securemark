@@ -3,7 +3,6 @@ import { Command } from '../context';
 import { union, validate, focus, fmap } from '../../combinator';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
-import { reduce } from 'spica/memoize';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
   /^&[0-9A-Za-z]{1,99};/,
@@ -20,11 +19,11 @@ export const htmlentity: HTMLEntityParser = fmap(
       : text,
   ]);
 
-const parse = reduce((el => (entity: string): string | undefined => {
+const parse = (el => (entity: string): string | undefined => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
   const text = el.textContent!;
   return entity === text
     ? undefined
     : text;
-})(html('span')));
+})(html('span'));

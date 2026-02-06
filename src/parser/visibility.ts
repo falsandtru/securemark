@@ -5,7 +5,6 @@ import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
-import { reduce } from 'spica/memoize';
 import { push } from 'spica/array';
 
 export namespace blank {
@@ -78,7 +77,7 @@ export function tightStart<T>(parser: Parser<T>, except?: string): Parser<T> {
       ? parser(input)
       : undefined;
 }
-const isTightStart = reduce((input: Input<MarkdownParser.Context>, except?: string): boolean => {
+function isTightStart(input: Input<MarkdownParser.Context>, except?: string): boolean {
   const { source } = input;
   if (source === '') return true;
   if (except && source.slice(0, except.length) === except) return false;
@@ -109,7 +108,7 @@ const isTightStart = reduce((input: Input<MarkdownParser.Context>, except?: stri
     default:
       return source[0].trimStart() !== '';
   }
-}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
+}
 
 export function isLooseNodeStart(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
