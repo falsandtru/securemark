@@ -20,6 +20,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
           consume(-1, context);
           return [[], source.slice(1)];
         case Command.Escape:
+          assert(false);
           consume(1, context);
           return [[source.slice(1, 2)], source.slice(2)];
         case '\\':

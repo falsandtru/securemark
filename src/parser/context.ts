@@ -51,5 +51,5 @@ export const enum Command {
 }
 
 export const CmdRegExp = {
-  Escape: /\x1B/g,
+  Error: /\x07/g,
 } as const;

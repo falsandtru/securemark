@@ -6,12 +6,12 @@ import { html } from 'typed-dom/dom';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
   /^&[0-9A-Za-z]{1,99};/,
-  ({ source }) => [[parse(source) ?? `${Command.Escape}${source}`], '']));
+  ({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([text]) => [
-    text[0] === Command.Escape
+    text[0] === Command.Error
       ? html('span', {
           class: 'invalid',
           ...invalid('htmlentity', 'syntax', 'Invalid HTML entity'),
@@ -19,7 +19,7 @@ export const htmlentity: HTMLEntityParser = fmap(
       : text,
   ]);
 
-const parse = (el => (entity: string): string | undefined => {
+const parser = (el => (entity: string): string | undefined => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
   const text = el.textContent!;

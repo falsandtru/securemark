@@ -110,10 +110,10 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
       define(target, { class: 'invalid', ...invalid('media', 'argument', 'Invalid protocol') });
       return false;
   }
-  if (alt.includes(Command.Escape)) {
+  if (alt.includes(Command.Error)) {
     define(target, {
       class: 'invalid',
-      alt: target.getAttribute('alt')?.replace(CmdRegExp.Escape, ''),
+      alt: target.getAttribute('alt')?.replace(CmdRegExp.Error, ''),
       ...invalid('media', 'argument',
       `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`)
     });

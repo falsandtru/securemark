@@ -101,8 +101,8 @@ function attributes(texts: string[], rubies: string[]): Record<string, string> {
   let attrs: Record<string, string> | undefined;
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
-      if (!ss[i].includes(Command.Escape)) continue;
-      ss[i] = ss[i].replace(CmdRegExp.Escape, '');
+      if (!ss[i].includes(Command.Error)) continue;
+      ss[i] = ss[i].replace(CmdRegExp.Error, '');
       attrs ??= {
         class: 'invalid',
         ...invalid('ruby', ss === texts ? 'content' : 'argument', 'Invalid HTML entity'),
