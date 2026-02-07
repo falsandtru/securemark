@@ -27,6 +27,7 @@ export const text: TextParser = ({ source, context }) => {
         case '\\':
           switch (source[1]) {
             case undefined:
+              return [[], ''];
             case '\n':
               assert(source[0] !== Command.Escape);
               return [[], source.slice(1)];

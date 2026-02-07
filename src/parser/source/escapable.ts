@@ -26,6 +26,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
         case '\\':
           switch (source[1]) {
             case undefined:
+              return [[source[0]], ''];
             case '\n':
               return [[source[0]], source.slice(1)];
             default:
@@ -33,6 +34,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
               return [[source.slice(0, 2)], source.slice(2)];
           }
         case '\n':
+          assert(false);
           return [[source[0]], source.slice(1)];
         default:
           assert(source[0] !== '\n');
