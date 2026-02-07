@@ -72,6 +72,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('***a*b*c***')), [['<strong><em>a</em>b<em>c</em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em><span class="paren">(<em>a</em>)</span></em>'], '']);
       assert.deepStrictEqual(inspect(parser('**(**a**)**')), [['<strong><span class="paren">(<strong>a</strong>)</span></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[', '*', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('*<*>')), [['<em>&lt;</em>', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation"><span>b</span></sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*++ ++*')), [['<em><ins> </ins></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*++ a ++*')), [['<em><ins> a </ins></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*++  a  ++*')), [['<em><ins>  a  </ins></em>'], '']);
@@ -81,9 +84,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<bdi>[[<bdi>[[a]]</bdi>]]</bdi>')), [['<bdi><sup class="reference"><span><bdi>[[a]]</bdi></span></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>[#</bdi>]')), [['<bdi>[#</bdi>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('"<bdi>("")</bdi>')), [['"', '<bdi><span class="paren">("")</span></bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[', '*', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('*<*>')), [['<em>&lt;</em>', '>'], '']);
-      assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation"><span>b</span></sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('++\na\n++\n~~\nb\n~~\nc')), [['<ins><br>a</ins>', '<br>', '<del><br>b</del>', '<br>', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['``', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]')), [['[', '<a class="account" href="/@a">@a</a>', ']'], '']);
