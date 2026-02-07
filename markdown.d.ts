@@ -1245,7 +1245,7 @@ export namespace MarkdownParser {
     export interface TextParser extends
       // abc
       Source<'text'>,
-      Parser<string | HTMLBRElement | HTMLSpanElement, Context, []> {
+      Parser<string | HTMLBRElement, Context, []> {
     }
     export interface TxtParser extends
       // abc
