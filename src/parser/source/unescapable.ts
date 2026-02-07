@@ -21,14 +21,15 @@ export const unescsource: UnescapableSourceParser = ({ source, context }) => {
           assert(false);
           consume(1, context);
           return [[source.slice(1, 2)], source.slice(2)];
+        default:
+          const b = source[0] !== '\n' && source[0].trimStart() === '';
+          const i = b || isAlphanumeric(source[0])
+            ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
+            : 1;
+          assert(i > 0);
+          consume(i - 1, context);
+          return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
-      const b = source[0] !== '\n' && source[0].trimStart() === '';
-      const i = b || isAlphanumeric(source[0])
-        ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
-        : 1;
-      assert(i > 0);
-      consume(i - 1, context);
-      return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
     }
     default:
       consume(i, context);
