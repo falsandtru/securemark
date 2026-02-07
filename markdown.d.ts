@@ -1112,9 +1112,7 @@ export namespace MarkdownParser {
       // ""
       Inline<'bracket'>,
       Parser<HTMLElement | string, Context, [
-        SourceParser.StrParser,
         InlineParser,
-        SourceParser.StrParser,
         InlineParser,
         InlineParser,
         InlineParser,
