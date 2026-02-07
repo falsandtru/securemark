@@ -32,8 +32,11 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
               consume(1, context);
               return [[source.slice(0, 2)], source.slice(2)];
           }
+        case '\n':
+          return [[source[0]], source.slice(1)];
         default:
-          const b = source[0] !== '\n' && source[0].trimStart() === '';
+          assert(source[0] !== '\n');
+          const b = source[0].trimStart() === '';
           const i = b
             ? source.search(nonWhitespace)
             : 1;
