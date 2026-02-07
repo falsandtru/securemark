@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.288.2
+
+- Fix signature syntax.
+
 ## 0.288.1
 
 - Refactoring.

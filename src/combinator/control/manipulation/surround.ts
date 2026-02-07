@@ -94,6 +94,11 @@ export function surround<T>(
         backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
       }
     }
+    context.recent = [
+      lmr_.slice(0, lmr_.length - mr_.length),
+      mr_.slice(0, mr_.length - r_.length),
+      r_.slice(0, r_.length - rest.length),
+    ];
     return rr
       ? f
         ? f([rl, rm!, rr], rest, context)
