@@ -42,5 +42,5 @@ export const bracket: BracketParser = lazy(() => union([
   // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
   surround(str('"'), recursion(Recursion.bracket, precedence(2, some(inline, '"', [['\n', 9], ['"', 2]]))), str('"'), true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    ([as, bs = []], rest) => [unshift(as, bs), rest], [3 | Backtrack.bracket]),
 ]));
