@@ -40,7 +40,10 @@ export const bracket: BracketParser = lazy(() => union([
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
-  surround(str('"'), recursion(Recursion.bracket, precedence(2, some(inline, '"', [['\n', 9], ['"', 2]]))), str('"'), true,
-    undefined,
+  surround(str('"'), recursion(Recursion.bracket, precedence(2, some(inline, '"', [['"', 2, false]]))), str('"'), true,
+    ([as, bs = [], cs], rest, { linebreak = 0 }) =>
+      linebreak > rest.length
+        ? [unshift(as, bs), cs[0] + rest]
+        : [push(unshift(as, bs), cs), rest],
     ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
 ]));

@@ -35,6 +35,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
           }
         case '\n':
           assert(false);
+          context.linebreak ??= source.length;
           return [[source[0]], source.slice(1)];
         default:
           assert(source[0] !== '\n');

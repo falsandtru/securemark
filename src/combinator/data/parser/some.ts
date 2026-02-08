@@ -2,7 +2,7 @@ import { Parser, eval, exec, check } from '../parser';
 import { Delimiters } from './context/delimiter';
 import { unshift, push } from 'spica/array';
 
-type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
+type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number, linebreak?: boolean];
 
 export function some<P extends Parser<unknown>>(parser: P, limit?: number): P;
 export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp, delimiters?: readonly DelimiterOption[], limit?: number): P;
@@ -11,10 +11,11 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
   assert(parser);
   assert([end].concat(delimiters.map(o => o[0])).every(d => d instanceof RegExp ? !d.flags.match(/[gmy]/) && d.source.startsWith('^') : true));
   const match = Delimiters.matcher(end);
-  const delims = delimiters.map(([delimiter, precedence]) => ({
+  const delims = delimiters.map(([delimiter, precedence, linebreakable = true]) => ({
     signature: Delimiters.signature(delimiter),
     matcher: Delimiters.matcher(delimiter),
     precedence,
+    linebreakable,
   }));
   return ({ source, context }) => {
     if (source === '') return;
@@ -28,7 +29,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context.delimiters?.match(rest, context.precedence)) break;
+      if (context.delimiters?.match(rest, context)) break;
       const result = parser({ source: rest, context });
       assert.doesNotThrow(() => limit < 0 && check(rest, result));
       if (result === undefined) break;

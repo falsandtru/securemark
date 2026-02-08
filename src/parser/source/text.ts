@@ -36,6 +36,7 @@ export const text: TextParser = ({ source, context }) => {
               return [[source.slice(1, 2)], source.slice(2)];
           }
         case '\n':
+          context.linebreak ??= source.length;
           return [[html('br')], source.slice(1)];
         case '*':
         case '`':

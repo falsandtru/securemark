@@ -1,3 +1,4 @@
+import { Ctx } from '../../parser';
 import { memoize } from 'spica/memoize';
 
 interface Delimiter {
@@ -5,6 +6,7 @@ interface Delimiter {
   readonly signature: string;
   readonly matcher: (source: string) => boolean | undefined;
   readonly precedence: number;
+  readonly linebreakable: boolean;
   state: boolean;
 }
 
@@ -40,13 +42,14 @@ export class Delimiters {
       readonly signature: string;
       readonly matcher: (source: string) => boolean | undefined;
       readonly precedence: number;
+      readonly linebreakable: boolean;
     }[]
   ): void {
     const { registry, delimiters, stack } = this;
     // シグネチャ数以下
     assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
-      const { signature, matcher, precedence } = delims[i];
+      const { signature, matcher, precedence, linebreakable } = delims[i];
       const memory = registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
       if (memory.length === 0 || precedence > delimiters[index].precedence) {
@@ -55,6 +58,7 @@ export class Delimiters {
           signature,
           matcher,
           precedence,
+          linebreakable: linebreakable,
           state: true,
         };
         delimiters[index] = delimiter;
@@ -107,13 +111,14 @@ export class Delimiters {
       delimiters[indexes[i]].state = true;
     }
   }
-  public match(source: string, precedence = 0): boolean {
+  public match(source: string, { precedence = 0, linebreak = 0 }: Ctx): boolean {
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
       if (delimiter.precedence <= precedence || !delimiter.state) continue;
       switch (delimiter.matcher(source)) {
         case true:
+          if (!delimiter.linebreakable && linebreak > 0) return false;
           return true;
         case false:
           return false;

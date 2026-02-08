@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.289.0
+
+- Improve bracket parser.
+
 ## 0.288.2
 
 - Fix signature syntax.

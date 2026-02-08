@@ -55,9 +55,11 @@ export function surround<T>(
   return ({ source, context }) => {
     const lmr_ = source;
     if (lmr_ === '') return;
+    const { linebreak } = context;
+    context.linebreak = undefined;
     const res1 = opener({ source: lmr_, context });
     assert(check(lmr_, res1, false));
-    if (res1 === undefined) return;
+    if (res1 === undefined) return void revert(context, linebreak);
     const rl = eval(res1);
     const mr_ = exec(res1);
     for (const backtrack of backtracks) {
@@ -69,7 +71,7 @@ export function surround<T>(
           if (!(pos in backtracks)) continue;
           // bracket only
           const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;
+          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return void revert(context, linebreak);
         }
       }
     }
@@ -80,12 +82,12 @@ export function surround<T>(
     context.backtrack = state;
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
-    if (!rm && !optional) return;
+    if (!rm && !optional) return void revert(context, linebreak);
     const res3 = closer({ source: r_, context });
     assert(check(r_, res3, false));
     const rr = eval(res3);
     const rest = exec(res3, r_);
-    if (rest.length === lmr_.length) return;
+    if (rest.length === lmr_.length) return void revert(context, linebreak);
     for (const backtrack of backtracks) {
       if (backtrack & 2 && rr === undefined) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
@@ -99,13 +101,20 @@ export function surround<T>(
       mr_.slice(0, mr_.length - r_.length),
       r_.slice(0, r_.length - rest.length),
     ];
-    return rr
+    const result = rr
       ? f
         ? f([rl, rm!, rr], rest, context)
-        : [push(unshift(rl, rm ?? []), rr), rest]
+        : [push(unshift(rl, rm ?? []), rr), rest] satisfies [T[], string]
       : g
         ? g([rl, rm!, mr_], rest, context)
         : undefined;
+    if (result) {
+      context.linebreak ??= linebreak;
+    }
+    else {
+      revert(context, linebreak);
+    }
+    return result;
   };
 }
 
@@ -121,6 +130,10 @@ function match(pattern: string | RegExp): (input: Input) => [never[], string] | 
           : undefined;
       };
   }
+}
+
+function revert(context: Ctx, linebreak: number | undefined): void {
+  context.linebreak = linebreak;
 }
 
 export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Tree<P>, Context<P>>, parser: P, optional?: boolean): P;

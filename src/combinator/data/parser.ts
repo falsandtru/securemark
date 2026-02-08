@@ -21,6 +21,7 @@ export interface Ctx {
   state?: number;
   backtracks?: Record<number, number>;
   backtrack?: number;
+  linebreak?: number;
   recent?: string[];
 }
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
