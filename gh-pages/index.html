@@ -451,33 +451,48 @@
     border: solid 1px;
     border-radius: 5px;
     padding: 1rem;
-    padding-block-end: 1.5rem;
-  }
-  .message[data-type="note"] {
-    background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
-    background-repeat: repeat-x;
-    border-color: #b2dba1;
-    color: #3c763d;
-  }
-  .message[data-type="caution"] {
-    background-image: linear-gradient(to bottom,#fcf8e3 0,#f8efc0 100%);
-    background-repeat: repeat-x;
-    border-color: #f5e79e;
-    color: #8a6d3b;
-  }
-  .message[data-type="warning"] {
-    background-image: linear-gradient(to bottom,#f2dede 0,#e7c3c3 100%);
-    background-repeat: repeat-x;
-    border-color: #dca7a7;
-    color: #a94442;
+    padding-block-end: 1.3rem;
   }
   .message > h1 {
     margin-block: 0 .5rem;
     font-size: 1rem;
     font-weight: bold;
   }
+  .message > h1::before {
+    margin-inline-end: .4em;
+  }
   .message > :last-child {
     margin-block-end: 0;
+  }
+  .message[data-type="note"] {
+    background-color: #eef;
+    border-color: blue;
+  }
+  .message[data-type="note"] h1 {
+    color: blue;
+  }
+  .message[data-type="note"] h1::before {
+    content: "ℹ️"
+  }
+  .message[data-type="caution"] {
+    background-color: #ffc;
+    border-color: darkorange;
+  }
+  .message[data-type="caution"] h1 {
+    color: #f41;
+  }
+  .message[data-type="caution"] h1::before {
+    content: "⚠️"
+  }
+  .message[data-type="warning"] {
+    background-color: #fee;
+    border-color: red;
+  }
+  .message[data-type="warning"] h1 {
+    color: red;
+  }
+  .message[data-type="warning"] h1::before {
+    content: "🚫"
   }
   hr {
     border-block-end: dashed 1px #ddd;
