@@ -3177,11 +3177,15 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
   }) => {
     const lmr_ = source;
     if (lmr_ === '') return;
+    const {
+      linebreak
+    } = context;
+    context.linebreak = undefined;
     const res1 = opener({
       source: lmr_,
       context
     });
-    if (res1 === undefined) return;
+    if (res1 === undefined) return void revert(context, linebreak);
     const rl = (0, parser_1.eval)(res1);
     const mr_ = (0, parser_1.exec)(res1);
     for (const backtrack of backtracks) {
@@ -3197,7 +3201,7 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
           if (!(pos in backtracks)) continue;
           // bracket only
           const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return;
+          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return void revert(context, linebreak);
         }
       }
     }
@@ -3212,14 +3216,14 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
     context.backtrack = state;
     const rm = (0, parser_1.eval)(res2);
     const r_ = (0, parser_1.exec)(res2, mr_);
-    if (!rm && !optional) return;
+    if (!rm && !optional) return void revert(context, linebreak);
     const res3 = closer({
       source: r_,
       context
     });
     const rr = (0, parser_1.eval)(res3);
     const rest = (0, parser_1.exec)(res3, r_);
-    if (rest.length === lmr_.length) return;
+    if (rest.length === lmr_.length) return void revert(context, linebreak);
     for (const backtrack of backtracks) {
       if (backtrack & 2 && rr === undefined) {
         const {
@@ -3233,7 +3237,13 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
       }
     }
     context.recent = [lmr_.slice(0, lmr_.length - mr_.length), mr_.slice(0, mr_.length - r_.length), r_.slice(0, r_.length - rest.length)];
-    return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
+    const result = rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
+    if (result) {
+      context.linebreak ??= linebreak;
+    } else {
+      revert(context, linebreak);
+    }
+    return result;
   };
 }
 exports.surround = surround;
@@ -3251,6 +3261,9 @@ function match(pattern) {
         return m ? [[], source.slice(m[0].length)] : undefined;
       };
   }
+}
+function revert(context, linebreak) {
+  context.linebreak = linebreak;
 }
 function open(opener, parser, optional = false) {
   return surround(opener, parser, '', optional);
@@ -3570,7 +3583,8 @@ class Delimiters {
       const {
         signature,
         matcher,
-        precedence
+        precedence,
+        linebreakable
       } = delims[i];
       const memory = registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
@@ -3580,6 +3594,7 @@ class Delimiters {
           signature,
           matcher,
           precedence,
+          linebreakable: linebreakable,
           state: true
         };
         delimiters[index] = delimiter;
@@ -3632,7 +3647,10 @@ class Delimiters {
       delimiters[indexes[i]].state = true;
     }
   }
-  match(source, precedence = 0) {
+  match(source, {
+    precedence = 0,
+    linebreak = 0
+  }) {
     const {
       delimiters
     } = this;
@@ -3641,6 +3659,7 @@ class Delimiters {
       if (delimiter.precedence <= precedence || !delimiter.state) continue;
       switch (delimiter.matcher(source)) {
         case true:
+          if (!delimiter.linebreakable && linebreak > 0) return false;
           return true;
         case false:
           return false;
@@ -3688,7 +3707,7 @@ function inits(parsers, resume) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') break;
-      if (context.delimiters?.match(rest, context.precedence)) break;
+      if (context.delimiters?.match(rest, context)) break;
       const result = parsers[i]({
         source: rest,
         context
@@ -3727,7 +3746,7 @@ function sequence(parsers, resume) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (rest === '') return;
-      if (context.delimiters?.match(rest, context.precedence)) return;
+      if (context.delimiters?.match(rest, context)) return;
       const result = parsers[i]({
         source: rest,
         context
@@ -3760,10 +3779,11 @@ const array_1 = __webpack_require__(6876);
 function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
-  const delims = delimiters.map(([delimiter, precedence]) => ({
+  const delims = delimiters.map(([delimiter, precedence, linebreakable = true]) => ({
     signature: delimiter_1.Delimiters.signature(delimiter),
     matcher: delimiter_1.Delimiters.matcher(delimiter),
-    precedence
+    precedence,
+    linebreakable
   }));
   return ({
     source,
@@ -3779,7 +3799,7 @@ function some(parser, end, delimiters = [], limit = -1) {
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      if (context.delimiters?.match(rest, context.precedence)) break;
+      if (context.delimiters?.match(rest, context)) break;
       const result = parser({
         source: rest,
         context
@@ -6111,7 +6131,9 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, comb
   class: 'paren'
 }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
 // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '"', [['\n', 9], ['"', 2]]))), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */])]));
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], rest, {
+  linebreak = 0
+}) => linebreak > rest.length ? [(0, array_1.unshift)(as, bs), cs[0] + rest] : [(0, array_1.push)((0, array_1.unshift)(as, bs), cs), rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */])]));
 
 /***/ },
 
@@ -7650,6 +7672,7 @@ const escsource = ({
               return [[source.slice(0, 2)], source.slice(2)];
           }
         case '\n':
+          context.linebreak ??= source.length;
           return [[source[0]], source.slice(1)];
         default:
           const b = source[0].trimStart() === '';
@@ -7763,6 +7786,7 @@ const text = ({
               return [[source.slice(1, 2)], source.slice(2)];
           }
         case '\n':
+          context.linebreak ??= source.length;
           return [[(0, dom_1.html)('br')], source.slice(1)];
         case '*':
         case '`':
@@ -7825,6 +7849,7 @@ const unescsource = ({
             (0, combinator_1.consume)(1, context);
             return [[source.slice(1, 2)], source.slice(2)];
           case '\n':
+            context.linebreak ??= source.length;
             return [[source[0]], source.slice(1)];
           default:
             const b = source[0].trimStart() === '';
