@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 import { invalid } from '../util';
 
 export const reference: ReferenceParser = lazy(() => constraint(State.reference, false, surround(
-  '[[',
+  str('[['),
   precedence(1, state(State.annotation | State.reference | State.media,
   subsequence([
     abbr,
