@@ -3232,6 +3232,7 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
         backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
       }
     }
+    context.recent = [lmr_.slice(0, lmr_.length - mr_.length), mr_.slice(0, mr_.length - r_.length), r_.slice(0, r_.length - rest.length)];
     return rr ? f ? f([rl, rm, rr], rest, context) : [(0, array_1.push)((0, array_1.unshift)(rl, rm ?? []), rr), rest] : g ? g([rl, rm, mr_], rest, context) : undefined;
   };
 }
@@ -3659,7 +3660,7 @@ Delimiters.matcher = (0, memoize_1.memoize)(pattern => {
     case 'string':
       return source => source.slice(0, pattern.length) === pattern || undefined;
     case 'object':
-      return (0, memoize_1.reduce)(source => pattern.test(source) || undefined);
+      return source => pattern.test(source) || undefined;
   }
 }, _a.signature);
 
@@ -5672,7 +5673,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.CmdRegExp = void 0;
 exports.CmdRegExp = {
-  Escape: /\x1B/g
+  Error: /\x07/g
 };
 
 /***/ },
@@ -6098,15 +6099,19 @@ const inline_1 = __webpack_require__(7973);
 const source_1 = __webpack_require__(8745);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*(?=\))/;
-const indexF = new RegExp(indexA.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)|\)(?=\)$)/g, c => String.fromCodePoint(c.codePointAt(0) + 0xFEE0)));
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexA))), (0, source_1.str)(')'), false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
+const indexF = new RegExp(indexA.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0) + 0xFEE0)));
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest, {
+  recent = []
+}) => [indexA.test(recent[1]) ? recent : [(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, source_1.str)(indexF))), (0, source_1.str)('）'), false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest) => [[(0, dom_1.html)('span', {
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], rest, {
+  recent = []
+}) => [indexF.test(recent[1]) ? recent : [(0, dom_1.html)('span', {
   class: 'paren'
-}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
+}, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))], rest], ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]),
 // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '"', [['\n', 9], ['"', 2]]))), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('“'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '”', [['\n', 9], ['”', 2]]))), (0, source_1.str)('”'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('‘'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '’', [['\n', 9], ['’', 2]]))), (0, source_1.str)('’'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('「'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '」', [['\n', 9], ['」', 2]]))), (0, source_1.str)('」'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest]), (0, combinator_1.surround)((0, source_1.str)('『'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '』', [['\n', 9], ['』', 2]]))), (0, source_1.str)('』'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest])]));
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.precedence)(2, (0, combinator_1.some)(inline_1.inline, '"', [['\n', 9], ['"', 2]]))), (0, source_1.str)('"'), true, undefined, ([as, bs = []], rest) => [(0, array_1.unshift)(as, bs), rest], [2 | 8 /* Backtrack.bracket */])]));
 
 /***/ },
 
@@ -6275,9 +6280,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dataindex = exports.signature = exports.index = void 0;
+const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const indexee_1 = __webpack_require__(7610);
+const htmlentity_1 = __webpack_require__(470);
 const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const array_1 = __webpack_require__(6876);
@@ -6289,8 +6296,14 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* 
   class: 'index',
   href: el.id ? `#${el.id}` : undefined
 })])));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/^\|(?!\\?\s)/), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']'), /^(?=])/, false, ([as, bs], rest) => {
-  const index = (0, indexee_1.identity)('index', undefined, (0, indexee_1.text)((0, dom_1.frag)(bs)))?.slice(7);
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/^\|(?!\\?\s)/), (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']')), /^(?=])/, false, ([as, bs], rest, {
+  recent = []
+}) => {
+  const sig = (0, parser_1.eval)(parser({
+    source: recent[1],
+    context: {}
+  }), []).join('');
+  const index = sig.includes("\u0007" /* Command.Error */) ? undefined : (0, indexee_1.identity)('index', undefined, sig)?.slice(7);
   return index ? [[(0, dom_1.html)('span', {
     class: 'indexer',
     'data-index': index
@@ -6307,6 +6320,7 @@ function dataindex(ns) {
   }
 }
 exports.dataindex = dataindex;
+const parser = (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.text]));
 
 /***/ },
 
@@ -6321,7 +6335,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.text = exports.signature = exports.identity = exports.indexee = void 0;
 const combinator_1 = __webpack_require__(3484);
-const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
 function indexee(parser) {
   return (0, combinator_1.fmap)(parser, ([el], _, {
@@ -6414,7 +6427,7 @@ function signature(source) {
   return target.textContent.trim();
 }
 exports.signature = signature;
-exports.text = (0, memoize_1.reduce)(source => {
+function text(source) {
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
@@ -6443,7 +6456,8 @@ exports.text = (0, memoize_1.reduce)(source => {
     }
   }
   return target.textContent;
-});
+}
+exports.text = text;
 
 /***/ },
 
@@ -6617,20 +6631,19 @@ exports.htmlentity = exports.unsafehtmlentity = void 0;
 const combinator_1 = __webpack_require__(3484);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-const memoize_1 = __webpack_require__(6925);
 exports.unsafehtmlentity = (0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]{1,99};/, ({
   source
-}) => [[parse(source) ?? `${"\u001B" /* Command.Escape */}${source}`], '']));
-exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([text]) => [text[0] === "\u001B" /* Command.Escape */ ? (0, dom_1.html)('span', {
+}) => [[parser(source) ?? `${"\u0007" /* Command.Error */}${source}`], '']));
+exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([text]) => [text[0] === "\u0007" /* Command.Error */ ? (0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('htmlentity', 'syntax', 'Invalid HTML entity')
 }, text.slice(1)) : text]);
-const parse = (0, memoize_1.reduce)((el => entity => {
+const parser = (el => entity => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
   const text = el.textContent;
   return entity === text ? undefined : text;
-})((0, dom_1.html)('span')));
+})((0, dom_1.html)('span'));
 
 /***/ },
 
@@ -6930,10 +6943,10 @@ function sanitize(target, uri, alt) {
       });
       return false;
   }
-  if (alt.includes("\u001B" /* Command.Escape */)) {
+  if (alt.includes("\u0007" /* Command.Error */)) {
     (0, dom_1.define)(target, {
       class: 'invalid',
-      alt: target.getAttribute('alt')?.replace(context_1.CmdRegExp.Escape, ''),
+      alt: target.getAttribute('alt')?.replace(context_1.CmdRegExp.Error, ''),
       ...(0, util_1.invalid)('media', 'argument', `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)[0]}"`)
     });
     return false;
@@ -6960,7 +6973,7 @@ const visibility_1 = __webpack_require__(6364);
 const dom_1 = __webpack_require__(394);
 const array_1 = __webpack_require__(6876);
 const util_1 = __webpack_require__(4992);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, false, (0, combinator_1.surround)('[[', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 4 /* State.media */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [['\n', 9], [']', 1]]))]))), ']]', false, ([, ns], rest) => (0, visibility_1.trimBlankNodeEnd)(ns).length > 0 ? [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])], rest] : undefined, ([as, bs], rest, {
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, false, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 4 /* State.media */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [['\n', 9], [']', 1]]))]))), ']]', false, ([, ns], rest) => (0, visibility_1.trimBlankNodeEnd)(ns).length > 0 ? [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)(ns))])], rest] : undefined, ([as, bs], rest, {
   state = 0
 }) => state & 128 /* State.annotation */ ? [(0, array_1.unshift)(as, bs), rest] : undefined, [3 | 16 /* Backtrack.linedoublebracket */, 1 | 12 /* Backtrack.linebracket */], 8 /* Backtrack.bracket */ | 1 /* BacktrackState.nobreak */)));
 // Chicago-Style
@@ -7098,8 +7111,8 @@ function attributes(texts, rubies) {
   let attrs;
   for (const ss of [texts, rubies]) {
     for (let i = 0; i < ss.length; ++i) {
-      if (!ss[i].includes("\u001B" /* Command.Escape */)) continue;
-      ss[i] = ss[i].replace(context_1.CmdRegExp.Escape, '');
+      if (!ss[i].includes("\u0007" /* Command.Error */)) continue;
+      ss[i] = ss[i].replace(context_1.CmdRegExp.Error, '');
       attrs ??= {
         class: 'invalid',
         ...(0, util_1.invalid)('ruby', ss === texts ? 'content' : 'argument', 'Invalid HTML entity')
@@ -7629,14 +7642,17 @@ const escsource = ({
         case '\\':
           switch (source[1]) {
             case undefined:
+              return [[source[0]], ''];
             case '\n':
               return [[source[0]], source.slice(1)];
             default:
               (0, combinator_1.consume)(1, context);
               return [[source.slice(0, 2)], source.slice(2)];
           }
+        case '\n':
+          return [[source[0]], source.slice(1)];
         default:
-          const b = source[0] !== '\n' && source[0].trimStart() === '';
+          const b = source[0].trimStart() === '';
           const i = b ? source.search(text_1.nonWhitespace) : 1;
           (0, combinator_1.consume)(i - 1, context);
           return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
@@ -7692,10 +7708,10 @@ function str(pattern, not) {
   }) => {
     if (source === '') return;
     const m = source.match(pattern);
-    count && m && (0, combinator_1.consume)(m[0].length, context);
-    if (m && not && source.slice(m[0].length, m[0].length + not.length) === not) return;
-    //assert(!m || m[0]);
-    return m ? [[m[0]], source.slice(m[0].length)] : undefined;
+    if (m === null) return;
+    count && (0, combinator_1.consume)(m[0].length, context);
+    if (not && source.slice(m[0].length, m[0].length + not.length) === not) return;
+    return [[m[0]], source.slice(m[0].length)];
   };
 }
 exports.str = str;
@@ -7739,6 +7755,7 @@ const text = ({
         case '\\':
           switch (source[1]) {
             case undefined:
+              return [[], ''];
             case '\n':
               return [[], source.slice(1)];
             default:
@@ -7807,11 +7824,14 @@ const unescsource = ({
           case "\u001B" /* Command.Escape */:
             (0, combinator_1.consume)(1, context);
             return [[source.slice(1, 2)], source.slice(2)];
+          case '\n':
+            return [[source[0]], source.slice(1)];
+          default:
+            const b = source[0].trimStart() === '';
+            const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) || 1 : 1;
+            (0, combinator_1.consume)(i - 1, context);
+            return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
         }
-        const b = source[0] !== '\n' && source[0].trimStart() === '';
-        const i = b || (0, text_1.isAlphanumeric)(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) || 1 : 1;
-        (0, combinator_1.consume)(i - 1, context);
-        return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
       }
     default:
       (0, combinator_1.consume)(i, context);
@@ -7963,7 +7983,6 @@ const combinator_1 = __webpack_require__(3484);
 const htmlentity_1 = __webpack_require__(470);
 const source_1 = __webpack_require__(8745);
 const normalize_1 = __webpack_require__(4490);
-const memoize_1 = __webpack_require__(6925);
 const array_1 = __webpack_require__(6876);
 var blank;
 (function (blank) {
@@ -7998,7 +8017,7 @@ function tightStart(parser, except) {
   return input => isTightStart(input, except) ? parser(input) : undefined;
 }
 exports.tightStart = tightStart;
-const isTightStart = (0, memoize_1.reduce)((input, except) => {
+function isTightStart(input, except) {
   const {
     source
   } = input;
@@ -8027,9 +8046,7 @@ const isTightStart = (0, memoize_1.reduce)((input, except) => {
     default:
       return source[0].trimStart() !== '';
   }
-}, ({
-  source
-}, except = '') => `${source}${"\u001F" /* Command.Separator */}${except}`);
+}
 function isLooseNodeStart(nodes) {
   if (nodes.length === 0) return true;
   for (let i = 0; i < nodes.length; ++i) {
