@@ -12,7 +12,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
   assert([end].concat(delimiters.map(o => o[0])).every(d => d instanceof RegExp ? !d.flags.match(/[gmy]/) && d.source.startsWith('^') : true));
   const match = Delimiters.matcher(end);
   const delims = delimiters.map(([delimiter, precedence, linebreakable = true]) => ({
-    signature: Delimiters.signature(delimiter),
+    signature: Delimiters.signature(delimiter, linebreakable),
     matcher: Delimiters.matcher(delimiter),
     precedence,
     linebreakable,

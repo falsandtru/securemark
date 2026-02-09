@@ -12,14 +12,14 @@ interface Delimiter {
 }
 
 export class Delimiters {
-  public static signature(pattern: string | RegExp | undefined): string {
+  public static signature(pattern: string | RegExp | undefined, linebreakable: boolean): string {
     switch (typeof pattern) {
       case 'undefined':
         return `undefined`;
       case 'string':
-        return `s:${pattern}`;
+        return `s:${pattern}:${+linebreakable}`;
       case 'object':
-        return `r/${pattern.source}/${pattern.flags}`;
+        return `r/${pattern.source}/${+linebreakable}`;
     }
   }
   public static matcher(pattern: string | RegExp | undefined): (source: string) => true | undefined {
@@ -51,7 +51,8 @@ export class Delimiters {
       const { signature, matcher, precedence, linebreakable } = delims[i];
       const memory = registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
-      if (memory.length === 0 || precedence > delimiters[index].precedence) {
+      assert(memory.length === 0 || precedence === delimiters[index].precedence);
+      if (memory.length === 0) {
         const delimiter: Delimiter = {
           memory,
           index,
@@ -88,6 +89,7 @@ export class Delimiters {
         delimiters.pop();
       }
       else {
+        assert(false);
         memory.pop();
         delimiters[index] = memory.at(-1)!;
       }
