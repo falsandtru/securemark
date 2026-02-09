@@ -2,6 +2,7 @@ import { Ctx } from '../../parser';
 import { memoize } from 'spica/memoize';
 
 interface Delimiter {
+  readonly memory: Delimiter[];
   readonly index: number;
   readonly signature: string;
   readonly matcher: (source: string) => boolean | undefined;
@@ -54,6 +55,7 @@ export class Delimiters {
       const index = memory[0]?.index ?? delimiters.length;
       if (memory.length === 0 || precedence > delimiters[index].precedence) {
         const delimiter: Delimiter = {
+          memory,
           index,
           signature,
           matcher,
@@ -74,12 +76,12 @@ export class Delimiters {
   }
   public pop(count: number): void {
     assert(count > 0);
-    const { registry, delimiters, stack } = this;
+    const { delimiters, stack } = this;
     for (let i = 0; i < count; ++i) {
       assert(this.stack.length > 0);
       const index = stack.pop()!;
       if (index === -1) continue;
-      const memory = registry(delimiters[index].signature);
+      const { memory } = delimiters[index];
       assert(memory.length > 0);
       if (memory.length === 1) {
         assert(index === delimiters.length - 1);
