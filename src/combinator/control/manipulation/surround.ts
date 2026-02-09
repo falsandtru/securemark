@@ -119,6 +119,18 @@ export function surround<N>(
     return result;
   };
 }
+export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Node<P>, Context<P>>, parser: P, optional?: boolean): P;
+export function open<N>(opener: string | RegExp | Parser<N>, parser: Parser<N>, optional = false): Parser<N> {
+  return surround(opener, parser, '', optional);
+}
+export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Node<P>, Context<P>>, optional?: boolean): P;
+export function close<N>(parser: Parser<N>, closer: string | RegExp | Parser<N>, optional: boolean = false): Parser<N> {
+  return surround('', parser, closer, optional);
+}
+
+export function clear<D extends Parser<unknown, C>[], C extends Ctx>(parser: Parser<unknown, C, D>): Parser<never, C, D> {
+  return fmap<never, Parser<unknown, C, D>>(parser, () => []);
+}
 
 function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {
   switch (typeof pattern) {
@@ -132,6 +144,9 @@ function match(pattern: string | RegExp): (input: Input) => [never[], string] | 
           : undefined;
       };
   }
+}
+function revert(context: Ctx, linebreak: number | undefined): void {
+  context.linebreak = linebreak;
 }
 function size(bits: number): number {
   if (bits === 0) return 0;
@@ -148,19 +163,3 @@ assert(size(1 << 0) === 1);
 assert(size(1 << 1) === 2);
 assert(size(1 << 30) === 31);
 assert(size(1 << 31) === 32);
-function revert(context: Ctx, linebreak: number | undefined): void {
-  context.linebreak = linebreak;
-}
-
-export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Node<P>, Context<P>>, parser: P, optional?: boolean): P;
-export function open<N>(opener: string | RegExp | Parser<N>, parser: Parser<N>, optional = false): Parser<N> {
-  return surround(opener, parser, '', optional);
-}
-export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Node<P>, Context<P>>, optional?: boolean): P;
-export function close<N>(parser: Parser<N>, closer: string | RegExp | Parser<N>, optional: boolean = false): Parser<N> {
-  return surround('', parser, closer, optional);
-}
-
-export function clear<D extends Parser<unknown, C>[], C extends Ctx>(parser: Parser<unknown, C, D>): Parser<never, C, D> {
-  return fmap<never, Parser<unknown, C, D>>(parser, () => []);
-}
