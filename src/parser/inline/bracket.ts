@@ -39,7 +39,7 @@ export const bracket: BracketParser = lazy(() => union([
   surround(str('｛'), recursion(Recursion.bracket, precedence(1, some(inline, '｝', [['｝', 1]]))), str('｝'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  // 改行禁止はバックトラックなしでは内側の構文を破壊するため安易に行えない。
+  // 同一行内でしか閉じない以外括弧と同じ挙動
   surround(str('"'), recursion(Recursion.bracket, precedence(2, some(inline, '"', [['"', 2, false]]))), str('"'), true,
     ([as, bs = [], cs], rest, { linebreak = 0 }) =>
       linebreak > rest.length
