@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.289.1
+
+- Refactoring.
+
 ## 0.289.0
 
 - Improve bracket parser.
