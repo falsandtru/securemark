@@ -11,6 +11,7 @@ export * from './combinator/control/constraint/contract';
 export * from './combinator/control/manipulation/fence';
 export * from './combinator/control/manipulation/indent';
 export * from './combinator/control/manipulation/scope';
+export * from './combinator/control/manipulation/clear';
 export * from './combinator/control/manipulation/surround';
 export * from './combinator/control/manipulation/match';
 export * from './combinator/control/manipulation/convert';

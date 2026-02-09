@@ -1,5 +1,4 @@
 import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, exec, check } from '../../data/parser';
-import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
@@ -126,10 +125,6 @@ export function open<N>(opener: string | RegExp | Parser<N>, parser: Parser<N>, 
 export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Node<P>, Context<P>>, optional?: boolean): P;
 export function close<N>(parser: Parser<N>, closer: string | RegExp | Parser<N>, optional: boolean = false): Parser<N> {
   return surround('', parser, closer, optional);
-}
-
-export function clear<D extends Parser<unknown, C>[], C extends Ctx>(parser: Parser<unknown, C, D>): Parser<never, C, D> {
-  return fmap<never, Parser<unknown, C, D>>(parser, () => []);
 }
 
 function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {

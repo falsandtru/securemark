@@ -1,7 +1,7 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Node, eval } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { lineable, invalid } from '../../util';
