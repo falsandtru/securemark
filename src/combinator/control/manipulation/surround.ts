@@ -8,7 +8,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubTree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  bstate?: number,
+  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
@@ -16,7 +16,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubTree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubTree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  bstate?: number,
+  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -24,7 +24,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Tree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[], string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  bstate?: number,
+  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -32,7 +32,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Tree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Tree<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  bstate?: number,
+  backtrackstate?: number,
 ): P;
 export function surround<T>(
   opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>,
@@ -40,7 +40,7 @@ export function surround<T>(
   f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T>,
   g?: (rss: [T[], T[], string], rest: string, context: Ctx) => Result<T>,
   backtracks: readonly number[] = [],
-  bstate: number = 0,
+  backtrackstate: number = 0,
 ): Parser<T> {
   switch (typeof opener) {
     case 'string':
@@ -75,11 +75,11 @@ export function surround<T>(
         }
       }
     }
-    const { backtrack: state = 0 } = context;
-    context.backtrack = state | bstate;
+    const { backtrack = 0 } = context;
+    context.backtrack = backtrack | backtrackstate;
     const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
     assert(check(mr_, res2));
-    context.backtrack = state;
+    context.backtrack = backtrack;
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
     if (!rm && !optional) return void revert(context, linebreak);
