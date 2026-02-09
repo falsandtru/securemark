@@ -58,7 +58,7 @@ export class Delimiters {
           signature,
           matcher,
           precedence,
-          linebreakable: linebreakable,
+          linebreakable,
           state: true,
         };
         delimiters[index] = delimiter;
