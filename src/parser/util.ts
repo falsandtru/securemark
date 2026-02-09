@@ -87,7 +87,7 @@ export function invalid(
   };
 }
 
-export function markInvalid<N extends Element>(
+export function markInvalid<N extends HTMLElement>(
   el: N,
   syntax: string,
   type: string,
@@ -102,7 +102,7 @@ export function markInvalid<N extends Element>(
   });
 }
 
-export function unmarkInvalid<N extends Element>(el: N): N {
+export function unmarkInvalid<N extends HTMLElement>(el: N): N {
   return define(el, {
     class: void el.classList.remove('invalid'),
     'data-invalid-syntax': null,
