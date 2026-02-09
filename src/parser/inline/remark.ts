@@ -23,4 +23,4 @@ export const remark: RemarkParser = lazy(() => match(
         ]),
       ], rest],
       ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ([, fence]) => fence.length, {}), false));
+  ([, fence]) => fence.length, {})));

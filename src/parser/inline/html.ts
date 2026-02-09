@@ -48,8 +48,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
           ([as, bs = []], rest) =>
             [[elem(tag, as, bs, [])], rest]),
       ([, tag]) => tag,
-      new Map()),
-      false),
+      new Map())),
     match(
       /^<([a-z]+)(?=[^\S\n]|>)/i,
       memoize(
@@ -67,8 +66,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
           ([as, bs = []], rest) =>
             [[elem(tag, as, bs, [])], rest]),
       ([, tag]) => tag,
-      new Clock(10000)),
-      false),
+      new Clock(10000))),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([

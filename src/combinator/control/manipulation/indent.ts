@@ -17,7 +17,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser?: Parser<N> | boole
     memoize(
     ([indent]) =>
       some(line(open(indent, ({ source }) => [[source], '']))),
-    ([indent]) => indent.length * 2 + +(indent[0] === ' '), {}), false), separation),
+    ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation),
     (lines, rest, context) => {
       assert(parser = parser as Parser<N>);
       // 影響する使用はないはず

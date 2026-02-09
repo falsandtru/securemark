@@ -24,10 +24,10 @@ export const olist: OListParser = lazy(() => block(validate(
 export const olist_: OListParser = lazy(() => block(union([
   match(
     openers['.'],
-    memoize(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), []), false),
+    memoize(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])),
   match(
     openers['('],
-    memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []), false),
+    memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), [])),
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
