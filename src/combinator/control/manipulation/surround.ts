@@ -137,8 +137,9 @@ function size(bits: number): number {
   if (bits === 0) return 0;
   let p = 0;
   for (let s = 32 / 2; s > 0; s >>>= 1) {
-    if (bits >>> p + s === 0) continue;
-    p += s;
+    const q = p + s;
+    if (bits >>> q === 0) continue;
+    p = q;
   }
   return p + 1;
 }
