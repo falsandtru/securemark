@@ -68,7 +68,8 @@ export function surround<T>(
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
         for (let i = 0; i < source.length - mr_.length; ++i) {
           if (source[i] !== source[0]) break;
-          const pos = source.length + offset - i - 1;
+          const pos = source.length - i + offset - 1;
+          assert(pos >= 0);
           if (!(pos in backtracks)) continue;
           const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
           if (backtracks[pos] & 1 << size(backtrack >>> statesize) + shift) return void revert(context, linebreak);
@@ -91,8 +92,10 @@ export function surround<T>(
     for (const backtrack of backtracks) {
       if (backtrack & 2 && rr === undefined) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
+        const pos = source.length + offset - 1;
+        assert(pos >= 0);
         const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
-        backtracks[source.length + offset - 1] |= 1 << size(backtrack >>> statesize) + shift;
+        backtracks[pos] |= 1 << size(backtrack >>> statesize) + shift;
       }
     }
     context.recent = [
