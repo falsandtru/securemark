@@ -22,7 +22,8 @@ export const bracket: BracketParser = lazy(() => union([
         : [html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))],
       rest
     ],
-    ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
+    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    [2 | Backtrack.bracket]),
   surround(
     str('（'),
     precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
@@ -41,7 +42,8 @@ export const bracket: BracketParser = lazy(() => union([
     str(']'),
     true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
+    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    [2 | Backtrack.bracket]),
   surround(
     str('［'),
     precedence(1, recursion(Recursion.bracket, some(inline, '］', [['］', 1]]))),
@@ -55,7 +57,8 @@ export const bracket: BracketParser = lazy(() => union([
     str('}'),
     true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
+    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    [2 | Backtrack.bracket]),
   surround(
     str('｛'),
     precedence(1, recursion(Recursion.bracket, some(inline, '｝', [['｝', 1]]))),
@@ -73,5 +76,6 @@ export const bracket: BracketParser = lazy(() => union([
       linebreak > rest.length
         ? [unshift(as, bs), cs[0] + rest]
         : [push(unshift(as, bs), cs), rest],
-    ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
+    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    [2 | Backtrack.bracket]),
 ]));

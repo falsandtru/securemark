@@ -22,12 +22,15 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       '[',
       trimBlankStart(some(union([inline]), ']', [['\n', 9], [']', 1]])),
       ']',
-      true, undefined, undefined, [1 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)),
+      true, undefined, undefined,
+      [1 | Backtrack.linebracket],
+      Backtrack.bracket | BacktrackState.nobreak)),
     dup(surround(
       /^{(?![{}])/,
       inits([uri, some(option)]),
       /^[^\S\n]*}/,
-      false, undefined, undefined, [3 | Backtrack.link])),
+      false, undefined, undefined,
+      [3 | Backtrack.link])),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));

@@ -23,4 +23,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
       ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
     }, defrag(bs)),
   ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest], [3 | Backtrack.bracket]));
+  ([as, bs], rest) => [unshift(as, bs), rest],
+  [3 | Backtrack.bracket]));

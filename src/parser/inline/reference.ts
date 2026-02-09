@@ -25,7 +25,8 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     state & State.annotation
       ? [unshift(as, bs), rest]
       : undefined,
-  [3 | Backtrack.linedoublebracket, 1 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)));
+  [3 | Backtrack.linedoublebracket, 1 | Backtrack.linebracket],
+  Backtrack.bracket | BacktrackState.nobreak)));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = surround(

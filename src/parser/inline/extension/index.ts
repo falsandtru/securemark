@@ -26,7 +26,9 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, fmap
     trimBlankNodeEnd(ns).length > 0
       ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
       : undefined,
-  undefined, [3 | Backtrack.linebracket], Backtrack.bracket | BacktrackState.nobreak)),
+  undefined,
+  [3 | Backtrack.linebracket],
+  Backtrack.bracket | BacktrackState.nobreak)),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
