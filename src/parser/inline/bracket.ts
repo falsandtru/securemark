@@ -11,7 +11,11 @@ const indexF = new RegExp(indexA.source.replace(', ', '[，、]')
   .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)));
 
 export const bracket: BracketParser = lazy(() => union([
-  surround(str('('), recursion(Recursion.bracket, precedence(1, some(inline, ')', [[')', 1]]))), str(')'), true,
+  surround(
+    str('('),
+    precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
+    str(')'),
+    true,
     ([as, bs = [], cs], rest, { recent = [] }) => [
       indexA.test(recent[1])
         ? recent
@@ -19,7 +23,11 @@ export const bracket: BracketParser = lazy(() => union([
       rest
     ],
     ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
-  surround(str('（'), recursion(Recursion.bracket, precedence(1, some(inline, '）', [['）', 1]]))), str('）'), true,
+  surround(
+    str('（'),
+    precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
+    str('）'),
+    true,
     ([as, bs = [], cs], rest, { recent = [] }) => [
       indexF.test(recent[1])
         ? recent
@@ -27,20 +35,40 @@ export const bracket: BracketParser = lazy(() => union([
       rest
     ],
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), recursion(Recursion.bracket, precedence(1, some(inline, ']', [[']', 1]]))), str(']'), true,
+  surround(
+    str('['),
+    precedence(1, recursion(Recursion.bracket, some(inline, ']', [[']', 1]]))),
+    str(']'),
+    true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
-  surround(str('［'), recursion(Recursion.bracket, precedence(1, some(inline, '］', [['］', 1]]))), str('］'), true,
+  surround(
+    str('［'),
+    precedence(1, recursion(Recursion.bracket, some(inline, '］', [['］', 1]]))),
+    str('］'),
+    true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), recursion(Recursion.bracket, precedence(1, some(inline, '}', [['}', 1]]))), str('}'), true,
+  surround(
+    str('{'),
+    precedence(1, recursion(Recursion.bracket, some(inline, '}', [['}', 1]]))),
+    str('}'),
+    true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest], [2 | Backtrack.bracket]),
-  surround(str('｛'), recursion(Recursion.bracket, precedence(1, some(inline, '｝', [['｝', 1]]))), str('｝'), true,
+  surround(
+    str('｛'),
+    precedence(1, recursion(Recursion.bracket, some(inline, '｝', [['｝', 1]]))),
+    str('｝'),
+    true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // 同一行内でしか閉じない以外括弧と同じ挙動
-  surround(str('"'), recursion(Recursion.bracket, precedence(2, some(inline, '"', [['"', 2, false]]))), str('"'), true,
+  surround(
+    str('"'),
+    precedence(2, recursion(Recursion.bracket, some(inline, '"', [['"', 2, false]]))),
+    str('"'),
+    true,
     ([as, bs = [], cs], rest, { linebreak = 0 }) =>
       linebreak > rest.length
         ? [unshift(as, bs), cs[0] + rest]
