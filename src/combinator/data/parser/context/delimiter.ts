@@ -22,18 +22,16 @@ export class Delimiters {
         return `r/${pattern.source}/${pattern.flags}`;
     }
   }
-  public static matcher = memoize(
-    (pattern: string | RegExp | undefined): (source: string) => true | undefined => {
-      switch (typeof pattern) {
-        case 'undefined':
-          return () => undefined;
-        case 'string':
-          return source => source.slice(0, pattern.length) === pattern || undefined;
-        case 'object':
-          return source => pattern.test(source) || undefined;
-      }
-    },
-    this.signature);
+  public static matcher(pattern: string | RegExp | undefined): (source: string) => true | undefined {
+    switch (typeof pattern) {
+      case 'undefined':
+        return () => undefined;
+      case 'string':
+        return source => source.slice(0, pattern.length) === pattern || undefined;
+      case 'object':
+        return source => pattern.test(source) || undefined;
+    }
+  }
   private readonly registry = memoize<(signature: string) => Delimiter[]>(() => []);
   private readonly delimiters: Delimiter[] = [];
   private readonly stack: number[] = [];
