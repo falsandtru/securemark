@@ -28,11 +28,11 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  link = 6 << 2,
-  ruby = 5 << 2,
-  linedoublebracket = 4 << 2,
-  linebracket = 3 << 2,
-  bracket = 2 << 2,
+  link = 1 << 7,
+  ruby = 1 << 6,
+  linedoublebracket = 1 << 5,
+  linebracket = 1 << 4,
+  bracket = 1 << 3,
   lineescbracket = 1 << 2,
   lineunescbracket = 0 << 2,
 }
@@ -41,7 +41,6 @@ export const enum Backtrack {
 export const enum BacktrackState {
   nobreak = 1,
 }
-assert(Backtrack.linebracket === Backtrack.bracket + (BacktrackState.nobreak << 2));
 
 export const enum Command {
   Error = '\x07',

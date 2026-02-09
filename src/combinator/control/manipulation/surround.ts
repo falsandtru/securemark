@@ -52,6 +52,7 @@ export function surround<T>(
     case 'object':
       closer = match(closer);
   }
+  const statesize = 2;
   return ({ source, context }) => {
     const lmr_ = source;
     if (lmr_ === '') return;
@@ -69,9 +70,8 @@ export function surround<T>(
           if (source[i] !== source[0]) break;
           const pos = source.length + offset - i - 1;
           if (!(pos in backtracks)) continue;
-          // bracket only
-          const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-          if (backtracks[pos] & 1 << (backtrack >>> 2) + shift) return void revert(context, linebreak);
+          const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
+          if (backtracks[pos] & 1 << size(backtrack >>> statesize) + shift) return void revert(context, linebreak);
         }
       }
     }
@@ -91,9 +91,8 @@ export function surround<T>(
     for (const backtrack of backtracks) {
       if (backtrack & 2 && rr === undefined) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
-        // bracket only
-        const shift = backtrack >>> 2 === state >>> 2 ? state & 3 : 0;
-        backtracks[source.length + offset - 1] |= 1 << (backtrack >>> 2) + shift;
+        const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
+        backtracks[source.length + offset - 1] |= 1 << size(backtrack >>> statesize) + shift;
       }
     }
     context.recent = [
@@ -131,7 +130,20 @@ function match(pattern: string | RegExp): (input: Input) => [never[], string] | 
       };
   }
 }
-
+function size(bits: number): number {
+  if (bits === 0) return 0;
+  let p = 0;
+  for (let s = 32 / 2; s > 0; s >>>= 1) {
+    if (bits >>> p + s === 0) continue;
+    p += s;
+  }
+  return p + 1;
+}
+assert(size(0 << 0) === 0);
+assert(size(1 << 0) === 1);
+assert(size(1 << 1) === 2);
+assert(size(1 << 30) === 31);
+assert(size(1 << 31) === 32);
 function revert(context: Ctx, linebreak: number | undefined): void {
   context.linebreak = linebreak;
 }
