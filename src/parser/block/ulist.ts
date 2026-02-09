@@ -33,7 +33,7 @@ export const checkbox = focus(
   /^\[[xX ]\](?=$|\s)/,
   ({ source }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
-  ], ''], false);
+  ], '']);
 
 export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | string)[] {
   return ns.length === 1

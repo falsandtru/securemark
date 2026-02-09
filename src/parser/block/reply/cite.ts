@@ -15,9 +15,9 @@ export const cite: ReplyParser.CiteParser = line(fmap(validate(
       anchor,
       // Subject page representation.
       // リンクの実装は後で検討
-      focus(/^>>#\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], ''], false),
-      focus(/^>>https?:\/\/\S+(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], ''], false),
-      focus(/^>>.+(?=\s*$)/, ({ source }) => [[source], ''], false),
+      focus(/^>>#\S*(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor' }, source)], '']),
+      focus(/^>>https?:\/\/\S+(?=\s*$)/, ({ source }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)], '']),
+      focus(/^>>.+(?=\s*$)/, ({ source }) => [[source], '']),
     ]),
   )),
   ([quotes, node]: [string, HTMLElement | string]) => [
