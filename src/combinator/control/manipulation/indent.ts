@@ -9,7 +9,7 @@ import { memoize } from 'spica/memoize';
 
 export function indent<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
 export function indent<P extends Parser<unknown>>(opener: RegExp, parser: P, separation?: boolean): P;
-export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boolean, separation = false): Parser<T> {
+export function indent<N>(opener: RegExp | Parser<N>, parser?: Parser<N> | boolean, separation = false): Parser<N> {
   if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser as boolean);
   assert(parser);
   return bind(block(match(
@@ -19,7 +19,7 @@ export function indent<T>(opener: RegExp | Parser<T>, parser?: Parser<T> | boole
       some(line(open(indent, ({ source }) => [[source], '']))),
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), {}), false), separation),
     (lines, rest, context) => {
-      assert(parser = parser as Parser<T>);
+      assert(parser = parser as Parser<N>);
       // 影響する使用はないはず
       //const { backtracks } = context;
       //context.backtracks = {};

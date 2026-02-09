@@ -82,7 +82,7 @@ function fit(range: Range): void {
   }
 }
 
-function trim<T extends Node>(node: T): T {
+function trim<N extends Node>(node: N): N {
   for (let child: ChildNode & Node | null; child = node.firstChild;) {
     if (child.textContent) break;
     child.remove();

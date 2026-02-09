@@ -1,16 +1,16 @@
 import { isArray } from 'spica/alias';
-import { Parser, Input, Ctx, Tree, Context, eval, exec, check } from '../../data/parser';
+import { Parser, Input, Ctx, Node, Context, eval, exec, check } from '../../data/parser';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
-//export function contract<T>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T>, cond: (nodes: readonly T[], rest: string) => boolean): Parser<T> {
+//export function contract<N>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<N>, cond: (nodes: readonly N[], rest: string) => boolean): Parser<N> {
 //  return verify(validate(patterns, parser), cond);
 //}
 
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, parser: P): P;
 export function validate<P extends Parser<unknown>>(cond: ((input: Input<Context<P>>) => boolean), parser: P): P;
-export function validate<T>(patterns: string | RegExp | (string | RegExp)[] | ((input: Input<Ctx>) => boolean), has: string | Parser<T>, parser?: Parser<T>): Parser<T> {
-  if (typeof patterns === 'function') return guard(patterns, has as Parser<T>);
+export function validate<N>(patterns: string | RegExp | (string | RegExp)[] | ((input: Input<Ctx>) => boolean), has: string | Parser<N>, parser?: Parser<N>): Parser<N> {
+  if (typeof patterns === 'function') return guard(patterns, has as Parser<N>);
   if (typeof has === 'function') return validate(patterns, '', has);
   if (!isArray(patterns)) return validate([patterns], has, parser!);
   assert(patterns.length > 0);
@@ -38,15 +38,15 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[] | ((
 }
 
 function guard<P extends Parser<unknown>>(f: (input: Input<Context<P>>) => boolean, parser: P): P;
-function guard<T>(f: (input: Input<Ctx>) => boolean, parser: Parser<T>): Parser<T> {
+function guard<N>(f: (input: Input<Ctx>) => boolean, parser: Parser<N>): Parser<N> {
   return input =>
     f(input)
       ? parser(input)
       : undefined;
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Tree<P>[], rest: string, context: Context<P>) => boolean): P;
-export function verify<T>(parser: Parser<T>, cond: (nodes: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
+export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Node<P>[], rest: string, context: Context<P>) => boolean): P;
+export function verify<N>(parser: Parser<N>, cond: (nodes: readonly N[], rest: string, context: Ctx) => boolean): Parser<N> {
   assert(parser);
   return input => {
     const { source, context } = input;

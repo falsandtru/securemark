@@ -6,7 +6,7 @@ type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number,
 
 export function some<P extends Parser<unknown>>(parser: P, limit?: number): P;
 export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp, delimiters?: readonly DelimiterOption[], limit?: number): P;
-export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = -1): Parser<T> {
+export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = -1): Parser<N> {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   assert(parser);
   assert([end].concat(delimiters.map(o => o[0])).every(d => d instanceof RegExp ? !d.flags.match(/[gmy]/) && d.source.startsWith('^') : true));
@@ -21,7 +21,7 @@ export function some<T>(parser: Parser<T>, end?: string | RegExp | number, delim
     if (source === '') return;
     assert(context.backtracks ??= {});
     let rest = source;
-    let nodes: T[] | undefined;
+    let nodes: N[] | undefined;
     if (delims.length > 0) {
       context.delimiters ??= new Delimiters();
       context.delimiters.push(delims);

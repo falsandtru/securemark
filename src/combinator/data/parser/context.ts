@@ -1,9 +1,9 @@
 import { ObjectCreate, min } from 'spica/alias';
-import { Parser, Result, Ctx, Tree, Context } from '../../data/parser';
+import { Parser, Result, Ctx, Node, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
 export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
-export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
+export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
@@ -13,7 +13,7 @@ export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
 }
 
 export function context<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
-export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
+export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
@@ -22,8 +22,8 @@ export function context<T>(base: Ctx, parser: Parser<T>): Parser<T> {
     apply(parser, source, context, changes, values);
 }
 
-function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Tree<P>>;
-function apply<T>(parser: Parser<T>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<T> {
+function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
+function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
   if (reset) {
     context.backtracks = {};
   }
@@ -97,7 +97,7 @@ export function recursion(recursion: number, parser: Parser<unknown>): Parser<un
 }
 
 export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
-export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> {
+export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> {
   assert(precedence >= 0);
   return input => {
     const { context } = input;
@@ -115,7 +115,7 @@ export function precedence<T>(precedence: number, parser: Parser<T>): Parser<T> 
 
 export function state<P extends Parser<unknown>>(state: number, parser: P): P;
 export function state<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
-export function state<T>(state: number, positive: boolean | Parser<T>, parser?: Parser<T>): Parser<T> {
+export function state<N>(state: number, positive: boolean | Parser<N>, parser?: Parser<N>): Parser<N> {
   if (typeof positive === 'function') {
     parser = positive;
     positive = true;
@@ -136,7 +136,7 @@ export function state<T>(state: number, positive: boolean | Parser<T>, parser?: 
 
 export function constraint<P extends Parser<unknown>>(state: number, parser: P): P;
 export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
-export function constraint<T>(state: number, positive: boolean | Parser<T>, parser?: Parser<T>): Parser<T> {
+export function constraint<N>(state: number, positive: boolean | Parser<N>, parser?: Parser<N>): Parser<N> {
   if (typeof positive === 'function') {
     parser = positive;
     positive = true;

@@ -2,7 +2,7 @@ import { Parser, Context, eval, exec, check } from '../../data/parser';
 import { consume } from '../../../combinator';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
-export function focus<T>(scope: string | RegExp, parser: Parser<T>, cost = true): Parser<T> {
+export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true): Parser<N> {
   assert(scope instanceof RegExp ? !scope.flags.match(/[gmy]/) && scope.source.startsWith('^') : scope);
   assert(parser);
   const match: (source: string) => string = typeof scope === 'string'
@@ -29,9 +29,9 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>, cost = true)
   };
 }
 
-//export function rewrite<T, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<T, C, never>): Parser<T, C, D>;
+//export function rewrite<N, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<N, C, never>): Parser<N, C, D>;
 export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Context<P>>, parser: P): P;
-export function rewrite<T>(scope: Parser<unknown>, parser: Parser<T>): Parser<T> {
+export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N> {
   assert(scope);
   assert(parser);
   return input => {

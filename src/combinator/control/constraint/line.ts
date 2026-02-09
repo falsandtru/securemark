@@ -1,7 +1,7 @@
 import { Parser, eval, exec, check } from '../../data/parser';
 
 export function line<P extends Parser<unknown>>(parser: P): P;
-export function line<T>(parser: Parser<T>): Parser<T> {
+export function line<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
   return ({ source, context }) => {
     if (source === '') return;

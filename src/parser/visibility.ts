@@ -18,7 +18,7 @@ export namespace blank {
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return union([
     convert(
       source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${Command.Escape}$&`)),
@@ -60,7 +60,7 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
 }
 
 //export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
-//export function looseStart<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
+//export function looseStart<N extends HTMLElement | string>(parser: Parser<N>, except?: string): Parser<N> {
 //  return input =>
 //    isLooseStart(input, except)
 //      ? parser(input)
@@ -71,7 +71,7 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
 //}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
 export function tightStart<P extends Parser<unknown>>(parser: P, except?: string): P;
-export function tightStart<T>(parser: Parser<T>, except?: string): Parser<T> {
+export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
   return input =>
     isTightStart(input, except)
       ? parser(input)
@@ -155,31 +155,31 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
 
 // デフラグ前の非効率な後方トリムを避けるため必要のない限りtrimBlankStart+trimNodeEndで処理する。
 export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function trimBlank<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return trimBlankStart(trimBlankEnd(parser));
 }
 export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
-export function trimBlankStart<T>(parser: Parser<T>): Parser<T> {
+export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
   return convert(
     source => source.replace(blank.start, ''),
     parser,
     true);
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function trimBlankEnd<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return fmap(
     parser,
     trimBlankNodeEnd);
 }
-//export function trimBlankNode<T extends HTMLElement | string>(nodes: T[]): T[] {
+//export function trimBlankNode<N extends HTMLElement | string>(nodes: N[]): N[] {
 //  return trimBlankNodeStart(trimBlankNodeEnd(nodes));
 //}
-//function trimBlankNodeStart<T extends HTMLElement | string>(nodes: T[]): T[] {
+//function trimBlankNodeStart<N extends HTMLElement | string>(nodes: N[]): N[] {
 //  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
 //    if (typeof node === 'string') {
 //      const pos = node.trimStart().length;
 //      if (pos > 0) {
-//        nodes[0] = node.slice(-pos) as T;
+//        nodes[0] = node.slice(-pos) as N;
 //        break;
 //      }
 //    }
@@ -190,7 +190,7 @@ export function trimBlankEnd<T extends HTMLElement | string>(parser: Parser<T>):
 //  }
 //  return nodes;
 //}
-export function trimBlankNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[] {
+export function trimBlankNodeEnd<N extends HTMLElement | string>(nodes: N[]): N[] {
   const skip = nodes.length > 0 &&
     typeof nodes.at(-1) === 'object' &&
     nodes.at(-1)!['className'] === 'indexer'
@@ -200,7 +200,7 @@ export function trimBlankNodeEnd<T extends HTMLElement | string>(nodes: T[]): T[
     if (typeof node === 'string') {
       const len = node.trimEnd().length;
       if (len > 0) {
-        nodes[nodes.length - 1] = node.slice(0, len) as T;
+        nodes[nodes.length - 1] = node.slice(0, len) as N;
         break;
       }
     }

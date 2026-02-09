@@ -1,7 +1,7 @@
 import { Parser, Ctx, Context, check } from '../../data/parser';
 
 export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, continuous: boolean, empty?: boolean): P;
-export function convert<T>(conv: (source: string, context: Ctx) => string, parser: Parser<T>, continuous: boolean, empty = false): Parser<T> {
+export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, continuous: boolean, empty = false): Parser<N> {
   assert(parser);
   return ({ source, context }) => {
     if (source === '') return;

@@ -1,6 +1,6 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { Tree, eval } from '../../../combinator/data/parser';
+import { Node, eval } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, surround, open, clear, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
@@ -147,7 +147,7 @@ function attributes(source: string): Record<string, string | undefined> {
   };
 }
 
-function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
+function format(rows: Node<RowParser>[]): HTMLTableSectionElement[] {
   const thead = html('thead');
   const tbody = html('tbody');
   const tfoot = html('tfoot');

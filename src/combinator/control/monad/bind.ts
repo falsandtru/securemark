@@ -1,10 +1,10 @@
-import { Parser, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { Parser, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, exec, check } from '../../data/parser';
 
-export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: SubTree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
-export function bind<P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
-export function bind<T, P extends Parser<unknown>>(parser: Parser<T, Context<P>, SubParsers<P>>, f: (nodes: T[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
-export function bind<U, P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<U, Context<P>, SubParsers<P>>): Parser<U, Context<P>, SubParsers<P>>;
-export function bind<T, U>(parser: Parser<T>, f: (nodes: T[], rest: string, context: Ctx) => Result<U>): Parser<U> {
+export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: SubNode<P>[], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>): P;
+export function bind<P extends Parser<unknown>>(parser: P, f: (nodes: Node<P>[], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>): P;
+export function bind<N, P extends Parser<unknown>>(parser: Parser<N, Context<P>, SubParsers<P>>, f: (nodes: N[], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>): P;
+export function bind<U, P extends Parser<unknown>>(parser: P, f: (nodes: Node<P>[], rest: string, context: Context<P>) => Result<U, Context<P>, SubParsers<P>>): Parser<U, Context<P>, SubParsers<P>>;
+export function bind<N, U>(parser: Parser<N>, f: (nodes: N[], rest: string, context: Ctx) => Result<U>): Parser<U> {
   assert(parser);
   return input => {
     const { source, context } = input;

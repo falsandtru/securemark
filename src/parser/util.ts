@@ -1,19 +1,19 @@
 import { min } from 'spica/alias';
 import { Command } from './context';
-import { Parser, Result, Ctx, Tree, Context, eval, exec } from '../combinator/data/parser';
+import { Parser, Result, Ctx, Node, Context, eval, exec } from '../combinator/data/parser';
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
 export function lineable<P extends Parser<HTMLElement | string>>(parser: P, fillTrailingLinebreak?: boolean): P;
-export function lineable<T extends HTMLElement | string>(parser: Parser<T>, fillTrailingLinebreak = false): Parser<T> {
+export function lineable<N extends HTMLElement | string>(parser: Parser<N>, fillTrailingLinebreak = false): Parser<N> {
   return convert(
     source => `\r${source}${fillTrailingLinebreak && source.at(-1) !== '\n' ? '\n' : ''}`,
     parser,
     !fillTrailingLinebreak);
 }
 
-export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Tree<P>[], context: Context<P>) => Tree<P>[], termination?: (acc: Tree<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Tree<P>>): P;
-export function repeat<T extends HTMLElement | string>(symbol: string, parser: Parser<T>, cons: (nodes: T[], context: Ctx) => T[], termination: (acc: T[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | T> = (acc, rest, prefix, postfix) => {
+export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
+export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: Ctx) => N[], termination: (acc: N[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | N> = (acc, rest, prefix, postfix) => {
   const nodes = [];
   if (prefix > 0) {
     nodes.push(symbol[0].repeat(prefix));
@@ -26,11 +26,11 @@ export function repeat<T extends HTMLElement | string>(symbol: string, parser: P
     rest = rest.slice(postfix);
   }
   return [nodes, rest];
-}): Parser<string | T> {
+}): Parser<string | N> {
   return input => {
     const { source, context } = input;
     assert(source.startsWith(symbol));
-    let acc: T[][] = [];
+    let acc: N[][] = [];
     let i = symbol.length;
     while (source[i] === source[0]) ++i;
     let rest = source.slice(i);
@@ -87,12 +87,12 @@ export function invalid(
   };
 }
 
-export function markInvalid<T extends Element>(
-  el: T,
+export function markInvalid<N extends Element>(
+  el: N,
   syntax: string,
   type: string,
   message: string,
-): T {
+): N {
   assert(!message.endsWith('.'));
   return define(el, {
     class: void el.classList.add('invalid'),
@@ -102,7 +102,7 @@ export function markInvalid<T extends Element>(
   });
 }
 
-export function unmarkInvalid<T extends Element>(el: T): T {
+export function unmarkInvalid<N extends Element>(el: N): N {
   return define(el, {
     class: void el.classList.remove('invalid'),
     'data-invalid-syntax': null,

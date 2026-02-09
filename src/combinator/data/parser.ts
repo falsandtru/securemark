@@ -1,14 +1,14 @@
 import { Delimiters } from './parser/context/delimiter';
 
-export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
-  = (input: Input<C>) => Result<T, C, D>;
+export type Parser<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+  = (input: Input<C>) => Result<N, C, D>;
 export interface Input<C extends Ctx = Ctx> {
   readonly source: string;
   readonly context: C;
 }
-export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
-  = readonly [T[], string, C, D]
-  | readonly [T[], string]
+export type Result<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+  = readonly [N[], string, C, D]
+  | readonly [N[], string]
   | undefined;
 export interface Ctx {
   readonly resources?: {
@@ -24,19 +24,19 @@ export interface Ctx {
   linebreak?: number;
   recent?: string[];
 }
-export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
+export type Node<P extends Parser<unknown>> = P extends Parser<infer N> ? N : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
 export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C : never;
-export type SubTree<P extends Parser<unknown>> = ExtractSubTree<SubParsers<P>>;
-export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, Context<P>, SubParsers<P>>;
-type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer T ? T extends Parser<infer U> ? U : never : never;
+export type SubNode<P extends Parser<unknown>> = ExtractSubNode<SubParsers<P>>;
+export type IntermediateParser<P extends Parser<unknown>> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+type ExtractSubNode<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export { eval_ as eval };
-function eval_<T>(result: NonNullable<Result<T>>, default_?: T[]): T[];
-function eval_<T>(result: Result<T>, default_: T[]): T[];
-function eval_<T>(result: Result<T>, default_?: undefined): T[] | undefined;
-function eval_<T>(result: Result<T>, default_?: T[]): T[] | undefined {
+function eval_<N>(result: NonNullable<Result<N>>, default_?: N[]): N[];
+function eval_<N>(result: Result<N>, default_: N[]): N[];
+function eval_<N>(result: Result<N>, default_?: undefined): N[] | undefined;
+function eval_<N>(result: Result<N>, default_?: N[]): N[] | undefined {
   return result
     ? result[0]
     : default_;
