@@ -84,7 +84,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"*a\nb*')), [['"', '<em>a<br>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('"*a\n""b*')), [['"', '<em>a<br>""b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('"a\n"*b"c*')), [['"', 'a', '<br>', '"', '*', 'b', '"', 'c', '*'], '']);
-      assert.deepStrictEqual(inspect(parser('"*a\n**b**"("c*')), [['"', '<em>a<br><strong>b</strong>"("c</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('"*a**b\nc**"("*')), [['"', '<em>a<strong>b<br>c</strong>"("</em>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>a"\nb</bdi>')), [['<bdi>a"<br>b</bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('"<bdi>"a\n""b</bdi>"')), [['"', '<bdi>"a<br>""b</bdi>', '"'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>*<bdi>a</bdi>*</bdi>')), [['<bdi><em><bdi>a</bdi></em></bdi>'], '']);
