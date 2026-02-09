@@ -54,19 +54,19 @@ export function surround<T>(
   }
   const statesize = 2;
   return ({ source, context }) => {
-    const lmr_ = source;
-    if (lmr_ === '') return;
+    const sme_ = source;
+    if (sme_ === '') return;
     const { linebreak } = context;
     context.linebreak = undefined;
-    const res1 = opener({ source: lmr_, context });
-    assert(check(lmr_, res1, false));
-    if (res1 === undefined) return void revert(context, linebreak);
-    const rl = eval(res1);
-    const mr_ = exec(res1);
+    const resultS = opener({ source: sme_, context });
+    assert(check(sme_, resultS, false));
+    if (resultS === undefined) return void revert(context, linebreak);
+    const nodesS = eval(resultS);
+    const me_ = exec(resultS);
     for (const backtrack of backtracks) {
       if (backtrack & 1) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
-        for (let i = 0; i < source.length - mr_.length; ++i) {
+        for (let i = 0; i < source.length - me_.length; ++i) {
           if (source[i] !== source[0]) break;
           const pos = source.length - i + offset - 1;
           assert(pos >= 0);
@@ -78,19 +78,19 @@ export function surround<T>(
     }
     const { backtrack = 0 } = context;
     context.backtrack = backtrack | backtrackstate;
-    const res2 = mr_ !== '' ? parser({ source: mr_, context }) : undefined;
-    assert(check(mr_, res2));
+    const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
+    assert(check(me_, resultM));
     context.backtrack = backtrack;
-    const rm = eval(res2);
-    const r_ = exec(res2, mr_);
-    if (!rm && !optional) return void revert(context, linebreak);
-    const res3 = closer({ source: r_, context });
-    assert(check(r_, res3, false));
-    const rr = eval(res3);
-    const rest = exec(res3, r_);
-    if (rest.length === lmr_.length) return void revert(context, linebreak);
+    const nodesM = eval(resultM);
+    const e_ = exec(resultM, me_);
+    if (!nodesM && !optional) return void revert(context, linebreak);
+    const resultE = closer({ source: e_, context });
+    assert(check(e_, resultE, false));
+    const nodesE = eval(resultE);
+    const rest = exec(resultE, e_);
+    if (rest.length === sme_.length) return void revert(context, linebreak);
     for (const backtrack of backtracks) {
-      if (backtrack & 2 && rr === undefined) {
+      if (backtrack & 2 && nodesE === undefined) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
         const pos = source.length + offset - 1;
         assert(pos >= 0);
@@ -99,16 +99,16 @@ export function surround<T>(
       }
     }
     context.recent = [
-      lmr_.slice(0, lmr_.length - mr_.length),
-      mr_.slice(0, mr_.length - r_.length),
-      r_.slice(0, r_.length - rest.length),
+      sme_.slice(0, sme_.length - me_.length),
+      me_.slice(0, me_.length - e_.length),
+      e_.slice(0, e_.length - rest.length),
     ];
-    const result = rr
+    const result = nodesE
       ? f
-        ? f([rl, rm!, rr], rest, context)
-        : [push(unshift(rl, rm ?? []), rr), rest] satisfies [T[], string]
+        ? f([nodesS, nodesM!, nodesE], rest, context)
+        : [push(unshift(nodesS, nodesM ?? []), nodesE), rest] satisfies [T[], string]
       : g
-        ? g([rl, rm!, mr_], rest, context)
+        ? g([nodesS, nodesM!, me_], rest, context)
         : undefined;
     if (result) {
       context.linebreak ??= linebreak;
@@ -151,12 +151,12 @@ function revert(context: Ctx, linebreak: number | undefined): void {
   context.linebreak = linebreak;
 }
 
-export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Tree<P>, Context<P>>, parser: P, optional?: boolean): P;
-export function open<T>(opener: string | RegExp | Parser<T>, parser: Parser<T>, optional = false): Parser<T> {
+export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Node<P>, Context<P>>, parser: P, optional?: boolean): P;
+export function open<N>(opener: string | RegExp | Parser<N>, parser: Parser<N>, optional = false): Parser<N> {
   return surround(opener, parser, '', optional);
 }
-export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Tree<P>, Context<P>>, optional?: boolean): P;
-export function close<T>(parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false): Parser<T> {
+export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Node<P>, Context<P>>, optional?: boolean): P;
+export function close<N>(parser: Parser<N>, closer: string | RegExp | Parser<N>, optional: boolean = false): Parser<N> {
   return surround('', parser, closer, optional);
 }
 
