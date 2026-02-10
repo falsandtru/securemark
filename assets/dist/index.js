@@ -3567,7 +3567,7 @@ exports.constraint = constraint;
 /***/ },
 
 /***/ 5691
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 "use strict";
 
@@ -3576,19 +3576,25 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.Delimiters = void 0;
-const memoize_1 = __webpack_require__(6925);
 class Delimiters {
   constructor() {
-    this.registry = (0, memoize_1.memoize)(() => []);
+    this.heap = {};
+    this.map = new Map();
     this.delimiters = [];
     this.stack = [];
     this.states = [];
   }
+  // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
   static signature(pattern, linebreakable) {
     switch (typeof pattern) {
       case 'undefined':
-        return `undefined`;
+        return +linebreakable;
       case 'string':
+        if (pattern.length === 1) {
+          const code = pattern.charCodeAt(0);
+          // 使用中のパターンの8ビット目が空いてるのでひとまずこうしとく
+          if ((code & 1 << 7) === 0) return code | +linebreakable << 7;
+        }
         return `s:${pattern}:${+linebreakable}`;
       case 'object':
         return `r/${pattern.source}/${+linebreakable}`;
@@ -3604,9 +3610,19 @@ class Delimiters {
         return source => pattern.test(source) || undefined;
     }
   }
+  registry(signature) {
+    if (typeof signature === 'number') {
+      return this.heap[signature] ??= [];
+    } else {
+      const ds = this.map.get(signature);
+      if (ds) return ds;
+      const blank = [];
+      this.map.set(signature, blank);
+      return blank;
+    }
+  }
   push(delims) {
     const {
-      registry,
       delimiters,
       stack
     } = this;
@@ -3619,7 +3635,7 @@ class Delimiters {
         precedence,
         linebreakable
       } = delims[i];
-      const memory = registry(signature);
+      const memory = this.registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
       if (memory.length === 0) {
         const delimiter = {
@@ -5804,11 +5820,14 @@ const htmlentity_1 = __webpack_require__(470);
 const bracket_1 = __webpack_require__(4526);
 const autolink_1 = __webpack_require__(8072);
 const source_1 = __webpack_require__(8745);
-exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input => {
+exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.verify)((0, combinator_1.union)([input => {
   const {
-    source
+    source,
+    context
   } = input;
   if (source === '') return;
+  context.depth ??= 0;
+  ++context.depth;
   switch (source.slice(0, 2)) {
     case '((':
       return (0, annotation_1.annotation)(input);
@@ -5851,7 +5870,19 @@ exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input => 
     case '&':
       return (0, htmlentity_1.htmlentity)(input);
   }
-}, bracket_1.bracket, autolink_1.autolink, source_1.text]));
+}, bracket_1.bracket, autolink_1.autolink, source_1.text]), (_, rest, context) => {
+  --context.depth;
+  // ヒープを効率的に削除可能な場合は削除する。
+  // ヒープサイズは括弧類など特定の構文が完成しなかった場合にしか増加しないため
+  // ブロックごとに平均数ノード以下となることから削除せずとも平均的にはあまり影響はない。
+  //if (context.depth === 0) {
+  //  const { backtracks } = context;
+  //  while (backtracks.peek()?.key! > rest.length) {
+  //    backtracks.extract();
+  //  }
+  //}
+  return true;
+}));
 var indexee_1 = __webpack_require__(7610);
 Object.defineProperty(exports, "indexee", ({
   enumerable: true,
@@ -6247,7 +6278,8 @@ const dom_1 = __webpack_require__(394);
 const array_1 = __webpack_require__(6876);
 const substrong = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('**')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong]))])));
 const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), (0, combinator_1.union)([exports.emstrong, strong_1.strong, emphasis_1.emphasis]))])));
-// 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず早く閉じるよう解析しなければならない。
+// 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
+// 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
 exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('***', (0, combinator_1.precedence)(0, (0, util_1.repeat)('***', (0, combinator_1.surround)('', (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])))), (0, source_1.str)(/^\*{1,3}/), false, ([, bs, cs], rest, context) => {
   switch (cs[0]) {
@@ -6520,6 +6552,11 @@ exports.indexer = void 0;
 const combinator_1 = __webpack_require__(3484);
 const index_1 = __webpack_require__(4688);
 const dom_1 = __webpack_require__(394);
+// インデクスの重複解消は不要な重複を削除するのが最もよい。
+// 複合生成インデクスは参照と同期させることが困難であり
+// 複合生成インデクスを手動で同期させるより最初から重複のない
+// テキストまたはインデクスを付けて同期が必要な機会を減らすのが
+// 継続的編集において最も簡便となる。
 exports.indexer = (0, combinator_1.surround)(/^\s+\[(?=\|\S)/, (0, combinator_1.union)([index_1.signature, (0, combinator_1.focus)(/^\|(?=\])/, () => [[(0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': ''
