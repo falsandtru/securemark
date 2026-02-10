@@ -19,6 +19,7 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
+  depth?: number;
   backtracks?: Record<number, number>;
   backtrack?: number;
   linebreak?: number;

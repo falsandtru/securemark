@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { union, lazy } from '../combinator';
+import { union, verify, lazy } from '../combinator';
 import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
 import { template } from './inline/template';
@@ -47,10 +47,12 @@ export import ShortMediaParser = InlineParser.ShortMediaParser;
 export import BracketParser = InlineParser.BracketParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
-export const inline: InlineParser = lazy(() => union([
+export const inline: InlineParser = lazy(() => verify(union([
   input => {
-    const { source } = input;
+    const { source, context } = input;
     if (source === '') return;
+    context.depth ??= 0;
+    ++context.depth;
     switch (source.slice(0, 2)) {
       case '((':
         return annotation(input);
@@ -104,7 +106,20 @@ export const inline: InlineParser = lazy(() => union([
   bracket,
   autolink,
   text
-])) as any;
+]), (_, rest, context) => {
+  --context.depth!;
+  assert([rest]);
+  // ヒープを効率的に削除可能な場合は削除する。
+  // ヒープサイズは括弧類など特定の構文が完成しなかった場合にしか増加しないため
+  // ブロックごとに平均数ノード以下となることから削除せずとも平均的にはあまり影響はない。
+  //if (context.depth === 0) {
+  //  const { backtracks } = context;
+  //  while (backtracks.peek()?.key! > rest.length) {
+  //    backtracks.extract();
+  //  }
+  //}
+  return true;
+})) as any;
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';
