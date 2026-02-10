@@ -1,10 +1,9 @@
 import { Ctx } from '../../parser';
-import { memoize } from 'spica/memoize';
 
 interface Delimiter {
   readonly memory: Delimiter[];
   readonly index: number;
-  readonly signature: string;
+  readonly signature: number | string;
   readonly matcher: (source: string) => boolean | undefined;
   readonly precedence: number;
   readonly linebreakable: boolean;
@@ -12,11 +11,18 @@ interface Delimiter {
 }
 
 export class Delimiters {
-  public static signature(pattern: string | RegExp | undefined, linebreakable: boolean): string {
+  // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
+  public static signature(pattern: string | RegExp | undefined, linebreakable: boolean): number | string {
     switch (typeof pattern) {
       case 'undefined':
-        return `undefined`;
+        return +linebreakable;
       case 'string':
+        assert(pattern !== '\x00');
+        if (pattern.length === 1) {
+          const code = pattern.charCodeAt(0);
+          // 使用中のパターンの8ビット目が空いてるのでひとまずこうしとく
+          if ((code & 1 << 7) === 0) return code | +linebreakable << 7;
+        }
         return `s:${pattern}:${+linebreakable}`;
       case 'object':
         return `r/${pattern.source}/${+linebreakable}`;
@@ -32,24 +38,37 @@ export class Delimiters {
         return source => pattern.test(source) || undefined;
     }
   }
-  private readonly registry = memoize<(signature: string) => Delimiter[]>(() => []);
+  private readonly heap: Record<number, Delimiter[]> = {};
+  private readonly map: Map<string, Delimiter[]> = new Map();
+  private registry(signature: number | string): Delimiter[] {
+    if (typeof signature === 'number') {
+      return this.heap[signature] ??= [];
+    }
+    else {
+      const ds = this.map.get(signature);
+      if (ds) return ds;
+      const blank: Delimiter[] = [];
+      this.map.set(signature, blank);
+      return blank;
+    }
+  }
   private readonly delimiters: Delimiter[] = [];
   private readonly stack: number[] = [];
   private readonly states: (readonly number[])[] = [];
   public push(
     delims: readonly {
-      readonly signature: string;
+      readonly signature: number | string;
       readonly matcher: (source: string) => boolean | undefined;
       readonly precedence: number;
       readonly linebreakable: boolean;
     }[]
   ): void {
-    const { registry, delimiters, stack } = this;
+    const { delimiters, stack } = this;
     // シグネチャ数以下
     assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
       const { signature, matcher, precedence, linebreakable } = delims[i];
-      const memory = registry(signature);
+      const memory = this.registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
       assert(memory.length === 0 || precedence === delimiters[index].precedence);
       if (memory.length === 0) {
