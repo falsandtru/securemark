@@ -28,7 +28,8 @@ const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   ])),
 ])));
 
-// 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず早く閉じるよう解析しなければならない。
+// 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
+// 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
 export const emstrong: EmStrongParser = lazy(() => validate('***',
   precedence(0, repeat('***', surround(
