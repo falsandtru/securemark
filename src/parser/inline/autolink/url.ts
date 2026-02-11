@@ -12,7 +12,9 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     focus(/^[\x21-\x7E]+/, precedence(1, some(union([
       verify(bracket, ns => ns.length > 0),
       some(unescsource, closer),
-    ]))))),
+    ])))),
+    false,
+    [3 | Backtrack.linebracket]),
   union([
     constraint(State.autolink, false, state(State.autolink, convert(
       url => `{ ${url} }`,
@@ -34,7 +36,9 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
           false))),
         ({ source }) => [[source], ''],
       ]),
-    ]))));
+    ])),
+  false,
+  [3 | Backtrack.linebracket]));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,

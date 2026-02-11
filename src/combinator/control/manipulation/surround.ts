@@ -65,7 +65,7 @@ export function surround<N>(
     for (const backtrack of backtracks) {
       if (backtrack & 1) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
-        for (let i = 0; i < source.length - me_.length; ++i) {
+        for (let i = 0, len = source.length - me_.length || 1; i < len; ++i) {
           if (source[i] !== source[0]) break;
           const pos = source.length - i + offset - 1;
           assert(pos >= 0);
@@ -82,12 +82,10 @@ export function surround<N>(
     context.backtrack = backtrack;
     const nodesM = eval(resultM);
     const e_ = exec(resultM, me_);
-    if (!nodesM && !optional) return void revert(context, linebreak);
-    const resultE = closer({ source: e_, context });
+    const resultE = nodesM || optional ? closer({ source: e_, context }) : undefined;
     assert(check(e_, resultE, false));
     const nodesE = eval(resultE);
     const rest = exec(resultE, e_);
-    if (rest.length === sme_.length) return void revert(context, linebreak);
     for (const backtrack of backtracks) {
       if (backtrack & 2 && nodesE === undefined) {
         const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
@@ -97,6 +95,8 @@ export function surround<N>(
         backtracks[pos] |= 1 << size(backtrack >>> statesize) + shift;
       }
     }
+    if (!nodesM && !optional) return void revert(context, linebreak);
+    if (rest.length === sme_.length) return void revert(context, linebreak);
     context.recent = [
       sme_.slice(0, sme_.length - me_.length),
       me_.slice(0, me_.length - e_.length),
@@ -118,13 +118,37 @@ export function surround<N>(
     return result;
   };
 }
-export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Node<P>, Context<P>>, parser: P, optional?: boolean): P;
-export function open<N>(opener: string | RegExp | Parser<N>, parser: Parser<N>, optional = false): Parser<N> {
-  return surround(opener, parser, '', optional);
+export function open<P extends Parser<unknown>>(
+  opener: string | RegExp | Parser<Node<P>, Context<P>>,
+  parser: P,
+  optional?: boolean,
+  backtracks?: readonly number[],
+  backtrackstate?: number,
+): P;
+export function open<N>(
+  opener: string | RegExp | Parser<N>,
+  parser: Parser<N>,
+  optional?: boolean,
+  backtracks?: readonly number[],
+  backtrackstate?: number,
+): Parser<N> {
+  return surround(opener, parser, '', optional, undefined, undefined, backtracks, backtrackstate);
 }
-export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Node<P>, Context<P>>, optional?: boolean): P;
-export function close<N>(parser: Parser<N>, closer: string | RegExp | Parser<N>, optional: boolean = false): Parser<N> {
-  return surround('', parser, closer, optional);
+export function close<P extends Parser<unknown>>(
+  parser: P,
+  closer: string | RegExp | Parser<Node<P>, Context<P>>,
+  optional?: boolean,
+  backtracks?: readonly number[],
+  backtrackstate?: number,
+): P;
+export function close<N>(
+  parser: Parser<N>,
+  closer: string | RegExp | Parser<N>,
+  optional?: boolean,
+  backtracks?: readonly number[],
+  backtrackstate?: number,
+): Parser<N> {
+  return surround('', parser, closer, optional, undefined, undefined, backtracks, backtrackstate);
 }
 
 function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {

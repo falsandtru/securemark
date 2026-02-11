@@ -350,7 +350,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack', function () {
       this.timeout(5000);
-      const str = `${'.'.repeat(5 + 0)}{{(([[[http://[${'.'.repeat(8328)}`;
+      const str = `${'.'.repeat(8 + 0)}{{(([[[http://[${'.'.repeat(11104)}`;
       assert.deepStrictEqual(
         [...parse(str).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [`<p>${str}</p>`]);
@@ -358,7 +358,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const str = `${'.'.repeat(5 + 1)}{{(([[[http://[${'.'.repeat(8328)}`;
+      const str = `${'.'.repeat(8 + 1)}{{(([[[http://[${'.'.repeat(11104)}`;
       assert.deepStrictEqual(
         [...parse(str).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
