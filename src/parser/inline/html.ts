@@ -1,5 +1,5 @@
 import { HTMLParser } from '../inline';
-import { Recursion } from '../context';
+import { Recursion, Backtrack } from '../context';
 import { union, subsequence, some, recursion, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -30,13 +30,17 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       some(union([attribute])),
       str(/^[^\S\n]*>/), true,
       ([as, bs = [], cs], rest) =>
-        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest]),
+        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
+      undefined,
+      [3 | Backtrack.linebracket]),
     match(
       new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
       memoize(
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
-          surround(str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
+          surround(
+            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
+            undefined, undefined, [3 | Backtrack.linebracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
@@ -54,7 +58,9 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       memoize(
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
-          surround(str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true),
+          surround(
+            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
+            undefined, undefined, [3 | Backtrack.linebracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
