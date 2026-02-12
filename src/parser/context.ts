@@ -34,7 +34,7 @@ export const enum Backtrack {
   linebracket = 1 << 4,
   bracket = 1 << 3,
   lineescbracket = 1 << 2,
-  lineunescbracket = 0 << 2,
+  url = 0 << 2,
 }
 // バックトラックを削減するため括弧派生構文を改行禁止し
 // 括弧派生構文内のバックトラック状態を統一する。
