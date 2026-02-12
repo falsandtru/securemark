@@ -12,7 +12,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const ruby: RubyParser = lazy(() => fmap(
   sequence([
     dup(surround(
-      '[', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ']',
+      '[', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ']',
       false,
       ([, [source]], rest, context) => {
         const ns = eval(text({ source, context }), [undefined])[0];
@@ -22,7 +22,7 @@ export const ruby: RubyParser = lazy(() => fmap(
       undefined,
       [3 | Backtrack.ruby])),
     dup(surround(
-      '(', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/u), ')',
+      '(', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ')',
       false,
       ([, [source]], rest, context) => {
         const ns = eval(text({ source, context }), [undefined])[0];
