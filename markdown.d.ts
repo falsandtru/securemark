@@ -961,7 +961,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         HTMLParser.VoidTagParser,
         HTMLParser.TagParser,
-        HTMLParser.TagParser,
+        HTMLParser.VoidTagParser,
       ]> {
     }
     export namespace HTMLParser {

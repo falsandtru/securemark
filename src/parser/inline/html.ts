@@ -6,7 +6,6 @@ import { str } from '../source';
 import { isLooseNodeStart, blankWith } from '../visibility';
 import { invalid } from '../util';
 import { memoize } from 'spica/memoize';
-import { Clock } from 'spica/clock';
 import { unshift, push, splice } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
@@ -52,26 +51,15 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
             [[elem(tag, as, bs, [])], rest]),
       ([, tag]) => tag,
       new Map())),
-    match(
-      /^<([a-z]+)(?=[^\S\n]|>)/i,
-      memoize(
-      ([, tag]) =>
-        surround<HTMLParser.TagParser, string>(
-          surround(
-            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
-            undefined, undefined, [3 | Backtrack.bracket]),
-          precedence(3, recursion(Recursion.inline,
-          subsequence([
-            focus(/^[^\S\n]*\n/, some(inline)),
-            some(inline, `</${tag}>`, [[`</${tag}>`, 3]]),
-          ]))),
-          str(`</${tag}>`), true,
-          ([as, bs = [], cs], rest) =>
-            [[elem(tag, as, bs, cs)], rest],
-          ([as, bs = []], rest) =>
-            [[elem(tag, as, bs, [])], rest]),
-      ([, tag]) => tag,
-      new Clock(10000))),
+    surround(
+      // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+      str(/^<[a-z]+(?=[^\S\n]|>)/i),
+      some(union([attribute])),
+      str(/^[^\S\n]*>/), true,
+      ([as, bs = [], cs], rest) =>
+        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
+      undefined,
+      [3 | Backtrack.bracket]),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
