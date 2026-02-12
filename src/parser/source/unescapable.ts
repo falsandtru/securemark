@@ -22,7 +22,6 @@ export const unescsource: UnescapableSourceParser = ({ source, context }) => {
           consume(1, context);
           return [[source.slice(1, 2)], source.slice(2)];
         case '\n':
-          assert(false);
           context.linebreak ??= source.length;
           return [[source[0]], source.slice(1)];
         default:

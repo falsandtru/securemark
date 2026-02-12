@@ -13,7 +13,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
 
 export const label: ExtensionParser.LabelParser = constraint(State.label, false, fmap(
   union([
-    surround('[', body, ']', false, undefined, undefined, [1 | Backtrack.linebracket, 1]),
+    surround('[', body, ']', false, undefined, undefined, [1 | Backtrack.bracket, 1]),
     body,
   ]),
   ([text]) => [

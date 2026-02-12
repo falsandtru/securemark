@@ -32,7 +32,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       ([as, bs = [], cs], rest) =>
         [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
       undefined,
-      [3 | Backtrack.linebracket]),
+      [3 | Backtrack.bracket]),
     match(
       new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
       memoize(
@@ -40,7 +40,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
         surround<HTMLParser.TagParser, string>(
           surround(
             str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
-            undefined, undefined, [3 | Backtrack.linebracket]),
+            undefined, undefined, [3 | Backtrack.bracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
@@ -60,7 +60,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
         surround<HTMLParser.TagParser, string>(
           surround(
             str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
-            undefined, undefined, [3 | Backtrack.linebracket]),
+            undefined, undefined, [3 | Backtrack.bracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),

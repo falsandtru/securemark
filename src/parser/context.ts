@@ -28,18 +28,12 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  link = 1 << 7,
-  ruby = 1 << 6,
-  linedoublebracket = 1 << 5,
-  linebracket = 1 << 4,
+  link = 1 << 6,
+  ruby = 1 << 5,
+  doublebracket = 1 << 4,
   bracket = 1 << 3,
-  lineescbracket = 1 << 2,
-  url = 0 << 2,
-}
-// バックトラックを削減するため括弧派生構文を改行禁止し
-// 括弧派生構文内のバックトラック状態を統一する。
-export const enum BacktrackState {
-  nobreak = 1,
+  escbracket = 1 << 2,
+  autolink = 0 << 2,
 }
 
 export const enum Command {

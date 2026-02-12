@@ -6,13 +6,13 @@ import { html } from 'typed-dom/dom';
 export const code: CodeParser = validate(
   ({ source, context }) =>
     source[0] === '`' &&
-    !getBacktrack(context, [1 | Backtrack.linebracket], source, source.slice(1)),
+    !getBacktrack(context, [1 | Backtrack.bracket], source, source.slice(1)),
   match(
     /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
     ([whole, , body, closer]) => ({ source, context }) =>
       closer
         ? [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)]
-        : void setBacktrack(context, [2 | Backtrack.linebracket], source),
+        : void setBacktrack(context, [2 | Backtrack.bracket], source),
     true));
 
 function format(text: string): string {

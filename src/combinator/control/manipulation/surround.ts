@@ -7,7 +7,6 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubNode<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubNode<P>[], string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
@@ -15,7 +14,6 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], SubNode<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], SubNode<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -23,7 +21,6 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Node<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Node<P>[], string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
@@ -31,7 +28,6 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Node<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [S[], Node<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: Parser<N>, closer: string | RegExp | Parser<N>,
@@ -39,7 +35,6 @@ export function surround<N>(
   f?: (rss: [N[], N[], N[]], rest: string, context: Ctx) => Result<N>,
   g?: (rss: [N[], N[], string], rest: string, context: Ctx) => Result<N>,
   backtracks: readonly number[] = [],
-  backtrackstate: number = 0,
 ): Parser<N> {
   switch (typeof opener) {
     case 'string':
@@ -62,11 +57,8 @@ export function surround<N>(
     const nodesS = eval(resultS);
     const me_ = exec(resultS);
     if (getBacktrack(context, backtracks, sme_, me_)) return void revert(context, linebreak);
-    const { backtrack = 0 } = context;
-    context.backtrack = backtrack | backtrackstate;
     const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
     assert(check(me_, resultM));
-    context.backtrack = backtrack;
     const nodesM = eval(resultM);
     const e_ = exec(resultM, me_);
     const resultE = nodesM || optional ? closer({ source: e_, context }) : undefined;
@@ -102,32 +94,28 @@ export function open<P extends Parser<unknown>>(
   parser: P,
   optional?: boolean,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function open<N>(
   opener: string | RegExp | Parser<N>,
   parser: Parser<N>,
   optional?: boolean,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): Parser<N> {
-  return surround(opener, parser, '', optional, undefined, undefined, backtracks, backtrackstate);
+  return surround(opener, parser, '', optional, undefined, undefined, backtracks);
 }
 export function close<P extends Parser<unknown>>(
   parser: P,
   closer: string | RegExp | Parser<Node<P>, Context<P>>,
   optional?: boolean,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): P;
 export function close<N>(
   parser: Parser<N>,
   closer: string | RegExp | Parser<N>,
   optional?: boolean,
   backtracks?: readonly number[],
-  backtrackstate?: number,
 ): Parser<N> {
-  return surround('', parser, closer, optional, undefined, undefined, backtracks, backtrackstate);
+  return surround('', parser, closer, optional, undefined, undefined, backtracks);
 }
 
 const statesize = 2;
@@ -139,14 +127,13 @@ export function getBacktrack(
 ): boolean {
   for (const backtrack of backtracks) {
     if (backtrack & 1) {
-      const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
-      for (let i = 0, len = sme_.length - me_.length || 1; i < len; ++i) {
+      const { backtracks = {}, offset = 0 } = context;
+      for (let i = 0; i < sme_.length - me_.length; ++i) {
         if (sme_[i] !== sme_[0]) break;
         const pos = sme_.length - i + offset - 1;
         assert(pos >= 0);
         if (!(pos in backtracks)) continue;
-        const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
-        if (backtracks[pos] & 1 << size(backtrack >>> statesize) + shift) return true;
+        if (backtracks[pos] & 1 << size(backtrack >>> statesize)) return true;
       }
     }
   }
@@ -159,11 +146,10 @@ export function setBacktrack(
 ): void {
   for (const backtrack of backtracks) {
     if (backtrack & 2) {
-      const { backtracks = {}, backtrack: state = 0, offset = 0 } = context;
+      const { backtracks = {}, offset = 0 } = context;
       const pos = sme_.length + offset - 1;
       assert(pos >= 0);
-      const shift = backtrack >>> statesize & state >>> statesize ? state & (1 << statesize) - 1 : 0;
-      backtracks[pos] |= 1 << size(backtrack >>> statesize) + shift;
+      backtracks[pos] |= 1 << size(backtrack >>> statesize);
     }
   }
 }

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { State, Backtrack, BacktrackState, Command } from '../../context';
+import { State, Backtrack, Command } from '../../context';
 import { eval } from '../../../combinator/data/parser';
 import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
@@ -19,16 +19,16 @@ export const index: IndexParser = lazy(() => constraint(State.index, false, fmap
   some(inits([
     inline,
     signature,
-  ]), ']', [['\n', 9], [']', 1]])))),
+  ]), ']', [[']', 1]])))),
   ']',
   false,
-  ([, ns], rest) =>
+  ([, ns], rest, context) =>
+    context.linebreak === undefined &&
     trimBlankNodeEnd(ns).length > 0
       ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
       : undefined,
   undefined,
-  [3 | Backtrack.linebracket],
-  Backtrack.bracket | BacktrackState.nobreak)),
+  [3 | Backtrack.bracket])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {

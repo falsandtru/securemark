@@ -7,20 +7,23 @@ import { html } from 'typed-dom/dom';
 export const template: TemplateParser = lazy(() => surround(
   '{{',
   precedence(1,
-  some(union([bracket, escsource]), '}', [['\n', 9]])),
+  some(union([bracket, escsource]), '}')),
   '}}',
   true,
-  ([, ns = []], rest) => [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest],
+  ([, ns = []], rest, context) =>
+    context.linebreak === undefined
+      ? [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest]
+      : undefined,
   undefined,
-  [3 | Backtrack.linedoublebracket, 1 | Backtrack.lineescbracket]));
+  [3 | Backtrack.doublebracket, 1 | Backtrack.bracket]));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => [[], ''], [3 | Backtrack.lineescbracket]),
+    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => [[], ''], [3 | Backtrack.lineescbracket]),
+    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => [[], ''], [3 | Backtrack.lineescbracket]),
+    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(escsource, '"'))), str('"'), true,
-    undefined, () => [[], ''], [3 | Backtrack.lineescbracket]),
+    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
 ]));

@@ -21,7 +21,6 @@ export interface Ctx {
   state?: number;
   depth?: number;
   backtracks?: Record<number, number>;
-  backtrack?: number;
   linebreak?: number;
   recent?: string[];
 }
