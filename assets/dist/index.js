@@ -6129,10 +6129,10 @@ exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|',
   }), []).join('');
   //context.offset -= rest.length;
   const index = (0, indexee_1.identity)('index', undefined, sig)?.slice(7);
-  return [[(0, dom_1.html)('span', {
+  return index ? [[(0, dom_1.html)('span', {
     class: 'indexer',
     'data-index': index
-  })], rest];
+  })], rest] : undefined;
 }, ([as, bs], rest) => [(0, array_1.unshift)(as, bs), rest])));
 function dataindex(ns) {
   if (ns.length === 0) return;
@@ -6532,7 +6532,7 @@ exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('///', 
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.linemedialink = exports.medialink = exports.textlink = void 0;
+exports.decode = exports.resolve = exports.option = exports.uri = exports.unsafelink = exports.linemedialink = exports.medialink = exports.textlink = void 0;
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const html_1 = __webpack_require__(5013);
@@ -6640,7 +6640,6 @@ function resolve(uri, host, source) {
 }
 exports.resolve = resolve;
 function decode(uri) {
-  if (!uri.includes('%')) return uri;
   const origin = uri.match(/^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
@@ -6652,6 +6651,7 @@ function decode(uri) {
     return uri.replace(/\s+/g, encodeURI);
   }
 }
+exports.decode = decode;
 
 /***/ },
 
@@ -6750,7 +6750,7 @@ Object.setPrototypeOf(optspec, null);
 exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, false, (0, combinator_1.validate)(['![', '!{'], (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, ([, ns = []], rest, context) => context.linebreak === undefined ? [ns, rest] : undefined, undefined, [3 | 4 /* Backtrack.escbracket */])), (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /^[^\S\n]*}/, false, undefined, undefined, [3 | 64 /* Backtrack.link */]))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
   const INSECURE_URI = params.shift();
   // altが空だとエラーが見えないため埋める。
-  text ||= INSECURE_URI;
+  text ||= (0, link_1.decode)(INSECURE_URI);
   let uri;
   try {
     uri = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
