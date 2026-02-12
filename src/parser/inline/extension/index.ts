@@ -43,8 +43,11 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   tightStart(some(union([inline]), ']')),
   /^(?=])/,
   false,
-  ([as, bs], rest, { recent = [] }) => {
-    const sig = eval(parser({ source: recent[1], context: {} }), []).join('');
+  ([as, bs], rest, context) => {
+    //context.offset ??= 0;
+    //context.offset += rest.length;
+    const sig = eval(parser({ source: context.recent![1], context }), []).join('');
+    //context.offset -= rest.length;
     const index = sig.includes(Command.Error)
       ? undefined
       : identity('index', undefined, sig)?.slice(7);
