@@ -21,16 +21,15 @@ Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
   union([
-    focus(
-      /^<wbr[^\S\n]*>/i,
-      () => [[h('wbr')], '']),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
       str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i),
       some(union([attribute])),
       str(/^[^\S\n]*>/), true,
       ([as, bs = [], cs], rest) =>
-        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
+        as[0].slice(1) === 'wbr' && bs.length === 0
+          ? [[h(as[0].slice(1) as 'wbr')], rest]
+          : [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
       undefined,
       [3 | Backtrack.bracket]),
     match(

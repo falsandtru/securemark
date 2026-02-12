@@ -960,7 +960,6 @@ export namespace MarkdownParser {
       Inline<'html'>,
       Parser<HTMLElement | string, Context, [
         HTMLParser.VoidTagParser,
-        HTMLParser.VoidTagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
       ]> {
