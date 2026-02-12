@@ -20,13 +20,13 @@ describe('Unit: parser/source/unescapable', () => {
       assert.deepStrictEqual(inspect(parser(' ')), [[' '], '']);
       assert.deepStrictEqual(inspect(parser('  ')), [[' ', ' '], '']);
       assert.deepStrictEqual(inspect(parser('   ')), [['  ', ' '], '']);
-      //assert.deepStrictEqual(inspect(parser(' \n')), [[' ', '\n'], '']);
-      //assert.deepStrictEqual(inspect(parser('  \n')), [[' ', ' ', '\n'], '']);
-      //assert.deepStrictEqual(inspect(parser('   \n')), [['  ', ' ', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser(' \n')), [[' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('  \n')), [[' ', ' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('   \n')), [['  ', ' ', '<br>'], '']);
     });
 
     it('linebreak', () => {
-      //assert.deepStrictEqual(inspect(parser('\n\n')), [['\n', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser('\n\n')), [['<br>', '<br>'], '']);
     });
 
     it('\\', () => {
@@ -39,7 +39,7 @@ describe('Unit: parser/source/unescapable', () => {
       assert.deepStrictEqual(inspect(parser('\\a')), [['\\', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('\\`')), [['\\', '`'], '']);
       assert.deepStrictEqual(inspect(parser('\\　')), [['\\', '　'], '']);
-      //assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '<br>'], '']);
     });
 
   });

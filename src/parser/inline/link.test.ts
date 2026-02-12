@@ -42,16 +42,16 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[-1234567890]{tel:1234567890}')), [['<a class="invalid">-1234567890</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[123456789a]{tel:1234567890}')), [['<a class="invalid">123456789a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[1234567890]{tel:ttel:1234567890}')), [['<a class="invalid">1234567890</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[#a]{b}')), [['<a class="link" href="b">#a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[\\#a]{b}')), [['<a class="link" href="b">#a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[c #a]{b}')), [['<a class="link" href="b">c #a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[c \\#a]{b}')), [['<a class="link" href="b">c #a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[]{#a}')), [['<a class="url" href="#a">#a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[\\@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[c @a]{b}')), [['<a class="link" href="b">c @a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[c \\@a]{b}')), [['<a class="link" href="b">c @a</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[]{@a}')), [['<a class="url" href="@a">@a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a]{b}')), [['<a class="link" href="b">#a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[\\#a]{b}')), [['<a class="link" href="b">#a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[c #a]{b}')), [['<a class="link" href="b">c #a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[c \\#a]{b}')), [['<a class="link" href="b">c #a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{#a}')), [['<a class="url" href="#a">#a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[\\@a]{b}')), [['<a class="link" href="b">@a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[c @a]{b}')), [['<a class="link" href="b">c @a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[c \\@a]{b}')), [['<a class="link" href="b">c @a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{@a}')), [['<a class="url" href="@a">@a</a>'], '']);
     });
 
     it('invalid', () => {
@@ -88,8 +88,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[*a\nb*]{/}')), undefined);
       assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), [['<a class="invalid">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{ttp://host}')), [['<a class="invalid">ttp://host</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0%1]}')), [['<a class="invalid">http://[::ffff:0:0%1]</a>'], '']);
-      //assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0/96]}')), [['<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0%1]}')), [['<a class="invalid">http://[::ffff:0:0%1]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0/96]}')), [['<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{^/.}')), [[`<a class="invalid">^/.</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{^/..}')), [[`<a class="invalid">^/..</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{^/../}')), [[`<a class="invalid">^/../</a>`], '']);
