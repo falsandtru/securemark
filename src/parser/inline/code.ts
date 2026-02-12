@@ -6,7 +6,7 @@ import { html } from 'typed-dom/dom';
 export const code: CodeParser = validate(
   ({ source, context }) =>
     source[0] === '`' &&
-    !getBacktrack(context, [1 | Backtrack.bracket], source, source.length - 1),
+    !getBacktrack(context, [1 | Backtrack.bracket], source),
   match(
     /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
     ([whole, , body, closer]) => ({ source, context }) =>
