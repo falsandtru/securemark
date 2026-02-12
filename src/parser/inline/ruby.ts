@@ -20,7 +20,7 @@ export const ruby: RubyParser = lazy(() => fmap(
         return ns && isTightNodeStart(ns) ? [ns, rest] : undefined;
       },
       undefined,
-      [3 | Backtrack.ruby])),
+      [3 | Backtrack.ruby | 1, Backtrack.link, 1 | Backtrack.bracket])),
     dup(surround(
       '(', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ')',
       false,
@@ -29,7 +29,7 @@ export const ruby: RubyParser = lazy(() => fmap(
         return ns && [ns, rest];
       },
       undefined,
-      [3 | Backtrack.ruby])),
+      [3 | Backtrack.ruby | 1, Backtrack.link, 1 | Backtrack.bracket])),
   ]),
   ([texts, rubies]) => {
     switch (true) {
