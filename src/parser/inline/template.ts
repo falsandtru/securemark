@@ -2,18 +2,17 @@ import { TemplateParser } from '../inline';
 import { Recursion, Backtrack } from '../context';
 import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { html } from 'typed-dom/dom';
+import { unshift, push } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => surround(
-  '{{',
+  str('{{'),
   precedence(1,
   some(union([bracket, escsource]), '}')),
-  '}}',
+  str('}}'),
   true,
-  ([, ns = []], rest, context) =>
-    context.linebreak === undefined
-      ? [[html('span', { class: 'template' }, `{{${ns.join('')}}}`)], rest]
-      : undefined,
+  ([as, bs = [], cs], rest) =>
+    [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))], rest],
   undefined,
   [3 | Backtrack.doublebracket, 1 | Backtrack.bracket]));
 

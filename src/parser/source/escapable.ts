@@ -2,6 +2,7 @@ import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
 import { nonWhitespace } from './text';
+import { html } from 'typed-dom/dom';
 
 const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
@@ -20,7 +21,6 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
           consume(-1, context);
           return [[], source.slice(1)];
         case Command.Escape:
-          assert(false);
           consume(1, context);
           return [[source.slice(1, 2)], source.slice(2)];
         case '\\':
@@ -35,7 +35,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
           }
         case '\n':
           context.linebreak ??= source.length;
-          return [[source[0]], source.slice(1)];
+          return [[html('br')], source.slice(1)];
         default:
           assert(source[0] !== '\n');
           const b = source[0].trimStart() === '';

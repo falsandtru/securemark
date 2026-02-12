@@ -686,16 +686,16 @@ export namespace MarkdownParser {
     export namespace TemplateParser {
       export interface BracketParser extends
         Inline<'template/bracket'>,
-        Parser<string, Context, [
-          Parser<string, Context, [
+        Parser<string | HTMLBRElement, Context, [
+          Parser<string | HTMLBRElement, Context, [
             BracketParser,
             SourceParser.EscapableSourceParser,
           ]>,
-          Parser<string, Context, [
+          Parser<string | HTMLBRElement, Context, [
             BracketParser,
             SourceParser.EscapableSourceParser,
           ]>,
-          Parser<string, Context, [
+          Parser<string | HTMLBRElement, Context, [
             BracketParser,
             SourceParser.EscapableSourceParser,
           ]>,
@@ -1165,16 +1165,16 @@ export namespace MarkdownParser {
         }
         export interface BracketParser extends
           Inline<'url/bracket'>,
-          Parser<string, Context, [
-            Parser<string, Context, [
+          Parser<string | HTMLBRElement, Context, [
+            Parser<string | HTMLBRElement, Context, [
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ]>,
-            Parser<string, Context, [
+            Parser<string | HTMLBRElement, Context, [
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ]>,
-            Parser<string, Context, [
+            Parser<string | HTMLBRElement, Context, [
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ]>,
@@ -1264,12 +1264,12 @@ export namespace MarkdownParser {
     export interface EscapableSourceParser extends
       // abc
       Source<'escsource'>,
-      Parser<string, Context, []> {
+      Parser<string | HTMLBRElement, Context, []> {
     }
     export interface UnescapableSourceParser extends
       // abc
       Source<'unescsource'>,
-      Parser<string, Context, []> {
+      Parser<string | HTMLBRElement, Context, []> {
     }
     export interface StrParser extends
       Source<'str'>,

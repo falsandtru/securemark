@@ -50,6 +50,7 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('（Ａ、Ｂ）')), [['（', 'Ａ、Ｂ', '）'], '']);
       assert.deepStrictEqual(inspect(parser('(<bdi>a\\\nb</bdi>)')), [['<span class="paren">(<bdi>a<br>b</bdi>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('([% a\\\nb %])')), [['<span class="paren">(<span class="remark"><input type="checkbox"><span>[% a<br>b %]</span></span>)</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('({{\\\n}})')), [['<span class="paren">(<span class="template">{{\\<br>}}</span>)</span>'], '']);
     });
 
     it('[', () => {

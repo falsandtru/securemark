@@ -70,6 +70,10 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]\na')), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>'], '']);
     });
 
+    it('template', () => {
+      assert.deepStrictEqual(inspect(parser('{{\n\\\n}}')), [['<p><span class="template">{{<br>\\<br>}}</span></p>'], '']);
+    });
+
   });
 
 });

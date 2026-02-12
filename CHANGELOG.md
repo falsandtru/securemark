@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.290.0
+
+- Change template syntax to allow linebreaks.
+
 ## 0.289.6
 
 - Refactoring.
