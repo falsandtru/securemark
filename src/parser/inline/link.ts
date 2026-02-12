@@ -1,13 +1,14 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { State, Backtrack } from '../context';
-import { union, inits, tails, sequence, some, creation, precedence, state, constraint, validate, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { State, Backtrack, Command } from '../context';
+import { union, inits, tails, sequence, subsequence, some, creation, precedence, state, constraint, validate, surround, open, setBacktrack, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { linebreak, unescsource, str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
+import { push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const optspec = {
@@ -17,7 +18,7 @@ Object.setPrototypeOf(optspec, null);
 
 export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, false, creation(10,
   precedence(1, state(State.linkers | State.media,
-  bind(reverse(tails([
+  bind(subsequence([
     dup(surround(
       '[',
       trimBlankStart(some(union([inline]), ']', [[']', 1]])),
@@ -25,18 +26,28 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       true,
       ([, ns = []], rest, context) =>
         context.linebreak === undefined
-          ? [ns, rest]
+          ? [push(ns, [Command.Escape]), rest]
           : undefined,
       undefined,
-      [3 | Backtrack.bracket])),
+      [3 | Backtrack.link, 3 | Backtrack.bracket])),
     dup(surround(
       /^{(?![{}])/,
       inits([uri, some(option)]),
       /^[^\S\n]*}/,
       false, undefined, undefined,
       [3 | Backtrack.link])),
-  ])),
-  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
+  ]),
+  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
+    if (content.at(-1) === Command.Escape) {
+      content.pop();
+      if (params === undefined) {
+        return void setBacktrack(context, [2 | Backtrack.link], context.recent!.reduce((a, b) => a + b.length, 0));
+      }
+    }
+    else {
+      params = content as string[];
+      content = [];
+    }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     assert(content[0] !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;

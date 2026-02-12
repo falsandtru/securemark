@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
-import { union, subsequence, some, precedence, state, constraint, surround, lazy } from '../../combinator';
+import { union, subsequence, some, precedence, state, constraint, surround, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
@@ -22,10 +22,14 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,
-  ([as, bs], rest, { state = 0 }) =>
-    state & State.annotation
+  ([as, bs], rest, context) => {
+    if (rest[0] !== ']') {
+      setBacktrack(context, [2 | Backtrack.bracket], context.recent!.reduce((a, b) => a + b.length, 0), 2);
+    }
+    return context.state! & State.annotation
       ? [unshift(as, bs), rest]
-      : undefined,
+      : undefined;
+  },
   [3 | Backtrack.doublebracket, 1 | Backtrack.bracket])));
 
 // Chicago-Style

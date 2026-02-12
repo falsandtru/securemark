@@ -56,7 +56,7 @@ export function surround<N>(
     if (resultS === undefined) return void revert(context, linebreak);
     const nodesS = eval(resultS);
     const me_ = exec(resultS);
-    if (getBacktrack(context, backtracks, sme_, me_)) return void revert(context, linebreak);
+    if (getBacktrack(context, backtracks, sme_, sme_.length - me_.length)) return void revert(context, linebreak);
     const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
     assert(check(me_, resultM));
     const nodesM = eval(resultM);
@@ -65,7 +65,7 @@ export function surround<N>(
     assert(check(e_, resultE, false));
     const nodesE = eval(resultE);
     const rest = exec(resultE, e_);
-    nodesE || setBacktrack(context, backtracks, sme_);
+    nodesE || setBacktrack(context, backtracks, sme_.length);
     if (!nodesM && !optional) return void revert(context, linebreak);
     if (rest.length === sme_.length) return void revert(context, linebreak);
     context.recent = [
@@ -122,15 +122,15 @@ const statesize = 2;
 export function getBacktrack(
   context: Ctx,
   backtracks: readonly number[],
-  sme_: string,
-  me_: string,
+  source: string,
+  length: number,
 ): boolean {
   for (const backtrack of backtracks) {
     if (backtrack & 1) {
       const { backtracks = {}, offset = 0 } = context;
-      for (let i = 0; i < sme_.length - me_.length; ++i) {
-        if (sme_[i] !== sme_[0]) break;
-        const pos = sme_.length - i + offset - 1;
+      for (let i = 0; i < length; ++i) {
+        if (source[i] !== source[0]) break;
+        const pos = source.length - i + offset - 1;
         assert(pos >= 0);
         if (!(pos in backtracks)) continue;
         if (backtracks[pos] & 1 << size(backtrack >>> statesize)) return true;
@@ -142,17 +142,21 @@ export function getBacktrack(
 export function setBacktrack(
   context: Ctx,
   backtracks: readonly number[],
-  sme_: string,
+  position: number,
+  length: number = 1,
 ): void {
   for (const backtrack of backtracks) {
     if (backtrack & 2) {
       const { backtracks = {}, offset = 0 } = context;
-      const pos = sme_.length + offset - 1;
-      assert(pos >= 0);
-      backtracks[pos] |= 1 << size(backtrack >>> statesize);
+      for (let i = 0; i < length; ++i) {
+        const pos = position - i + offset - 1;
+        assert(pos >= 0);
+        backtracks[pos] |= 1 << size(backtrack >>> statesize);
+      }
     }
   }
 }
+
 function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {
   switch (typeof pattern) {
     case 'string':

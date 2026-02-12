@@ -1,7 +1,7 @@
 import { RubyParser } from '../inline';
 import { Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, surround, dup, lazy, fmap } from '../../combinator';
+import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { text as txt, str } from '../source';
 import { isTightNodeStart } from '../visibility';
@@ -9,8 +9,8 @@ import { invalid } from '../util';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => fmap(
-  sequence([
+export const ruby: RubyParser = lazy(() => bind(
+  inits([
     dup(surround(
       '[', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ']',
       false,
@@ -31,10 +31,13 @@ export const ruby: RubyParser = lazy(() => fmap(
       undefined,
       [3 | Backtrack.ruby | 1, Backtrack.link, 1 | Backtrack.bracket])),
   ]),
-  ([texts, rubies]) => {
+  ([texts, rubies], rest, context) => {
+    if (rubies === undefined) {
+      return void setBacktrack(context, [2 | Backtrack.ruby], context.recent!.reduce((a, b) => a + b.length, 0));
+    }
     switch (true) {
       case rubies.length <= texts.length:
-        return [
+        return [[
           html('ruby', attributes(texts, rubies), defrag(texts
             .reduce((acc, _, i) =>
               push(acc, unshift(
@@ -43,9 +46,9 @@ export const ruby: RubyParser = lazy(() => fmap(
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
             , []))),
-        ];
+        ], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
-        return [
+        return [[
           html('ruby', attributes(texts, rubies), defrag([...texts[0]]
             .reduce((acc, _, i, texts) =>
               push(acc, unshift(
@@ -54,14 +57,14 @@ export const ruby: RubyParser = lazy(() => fmap(
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
             , []))),
-        ];
+        ], rest];
       default:
         assert(rubies.length > 0);
-        return [
+        return [[
           html('ruby', attributes(texts, rubies), defrag(unshift(
             [texts.join(' ')],
             [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]))),
-        ];
+        ], rest];
     }
   }));
 

@@ -12,6 +12,7 @@ export function bind<N, U>(parser: Parser<N>, f: (nodes: N[], rest: string, cont
     const res1 = parser(input);
     assert(check(source, res1));
     if (res1 === undefined) return;
+    context.recent = [source.slice(0, source.length - exec(res1).length)];
     const res2 = f(eval(res1), exec(res1), context);
     assert(check(source, res2));
     assert(check(exec(res1), res2, false));
