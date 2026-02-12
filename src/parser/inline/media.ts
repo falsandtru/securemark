@@ -50,6 +50,8 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
+    // altが空だとエラーが見えないため埋める。
+    text ||= INSECURE_URI;
     let uri: ReadonlyURL | undefined;
     try {
       uri = new ReadonlyURL(

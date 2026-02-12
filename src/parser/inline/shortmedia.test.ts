@@ -16,8 +16,8 @@ describe('Unit: parser/inline/shortmedia', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" target="_blank"><img class="media" data-src="http://host" alt="http://host"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" target="_blank"><img class="media" data-src="https://host" alt="https://host"></a>'], '']);
     });
 
   });

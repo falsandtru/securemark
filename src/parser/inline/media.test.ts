@@ -7,12 +7,12 @@ describe('Unit: parser/inline/media', () => {
     const parser = (source: string) => some(media)({ source, context: {} });
 
     it('xss', () => {
-      assert.deepStrictEqual(inspect(parser('![]{javascript:alert}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{vbscript:alert}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{any:alert}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{javascript:alert}')), [['<img class="invalid" alt="javascript:alert">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{vbscript:alert}')), [['<img class="invalid" alt="vbscript:alert">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K}')), [['<img class="invalid" alt="data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{any:alert}')), [['<img class="invalid" alt="any:alert">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt="&quot;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt="\\"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![\\"]{/}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="&quot;"></a>'], '']);
     });
 
@@ -49,35 +49,35 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![a]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\nb]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\\\nb]{b}')), undefined);
-      assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{tel:1234567890}')), [['<img class="invalid" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), [['<img class="invalid" alt="ttp://host">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{tel:1234567890}')), [['<img class="invalid" alt="tel:1234567890">'], '']);
       //assert.deepStrictEqual(inspect(parser('![]{http://[::ffff:0:0%1]}')), [['<img class="invalid" alt="">'], '']);
       //assert.deepStrictEqual(inspect(parser('![]{http://[::ffff:0:0/96]}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{.}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{..}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{../}')), [['<img class="invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/../b}')), [['<img class="invalid" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{.}')), [['<img class="invalid" alt=".">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{..}')), [['<img class="invalid" alt="..">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{../}')), [['<img class="invalid" alt="../">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/../b}')), [['<img class="invalid" alt="/../b">'], '']);
       assert.deepStrictEqual(inspect(parser(' ![]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{/}')), undefined);
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('![]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{ b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{ b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b   }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{"}"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt=""></a>'], '"}']);
-      assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{\\ }')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{\\b}')), [['<a href="\\b" target="_blank"><img class="media" data-src="\\b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{?/../}')), [[`<a href="?/../" target="_blank"><img class="media" data-src="?/../" alt=""></a>`], '']);
-      assert.deepStrictEqual(inspect(parser('![]{#/../}')), [[`<a href="#/../" target="_blank"><img class="media" data-src="#/../" alt=""></a>`], '']);
-      assert.deepStrictEqual(inspect(parser('![]{^/b}')), [[`<a href="/b" target="_blank"><img class="media" data-src="/b" alt=""></a>`], '']);
+      assert.deepStrictEqual(inspect(parser('![]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{ b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{ b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b  }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  b   }')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt="&quot;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{"}"}')), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt="&quot;"></a>'], '"}']);
+      assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt="\\"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{\\ }')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt="\\"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{\\b}')), [['<a href="\\b" target="_blank"><img class="media" data-src="\\b" alt="\\b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{?/../}')), [[`<a href="?/../" target="_blank"><img class="media" data-src="?/../" alt="?/../"></a>`], '']);
+      assert.deepStrictEqual(inspect(parser('![]{#/../}')), [[`<a href="#/../" target="_blank"><img class="media" data-src="#/../" alt="#/../"></a>`], '']);
+      assert.deepStrictEqual(inspect(parser('![]{^/b}')), [[`<a href="/b" target="_blank"><img class="media" data-src="/b" alt="^/b"></a>`], '']);
       assert.deepStrictEqual(inspect(parser('![ a]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![ a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
@@ -85,9 +85,9 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![a b]{c}')), [['<a href="c" target="_blank"><img class="media" data-src="c" alt="a b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![&copy;]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="©"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![&amp;copy;]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="&amp;copy;"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!{ ][ }')), [['<a href="][" target="_blank"><img class="media" data-src="][" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!{ }{ }')), [['<a href="}{" target="_blank"><img class="media" data-src="}{" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{ ][ }')), [['<a href="][" target="_blank"><img class="media" data-src="][" alt="]["></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{ }{ }')), [['<a href="}{" target="_blank"><img class="media" data-src="}{" alt="}{"></a>'], '']);
     });
 
     it('nest', () => {
@@ -98,20 +98,20 @@ describe('Unit: parser/inline/media', () => {
     });
 
     it('external', () => {
-      assert.deepStrictEqual(inspect(parser('![]{//host}')), [['<a href="//host" target="_blank"><img class="media" data-src="//host" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{//[::]}')), [['<a href="//[::]" target="_blank"><img class="media" data-src="//[::]" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{//host}')), [['<a href="//host" target="_blank"><img class="media" data-src="//host" alt="//host"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{//[::]}')), [['<a href="//[::]" target="_blank"><img class="media" data-src="//[::]" alt="//[::]"></a>'], '']);
     });
 
     it('attribute', () => {
-      assert.deepStrictEqual(inspect(parser('![]{/ __proto__}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ constructor}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="nofollow" target="_blank"><img class="media" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ width="4" height="3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" width="4" height="3"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ 4x3}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" width="4" height="3"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3" nofollow}')), [['<a href="/" rel="nofollow" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ 4:3}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ __proto__}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt="/"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ constructor}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt="/"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt="/"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="nofollow" target="_blank"><img class="media" data-src="/" alt="/"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ width="4" height="3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="/" width="4" height="3"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ 4x3}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="/" width="4" height="3"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="/" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3" nofollow}')), [['<a href="/" rel="nofollow" target="_blank"><img class="media" data-src="/" alt="/" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ 4:3}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="/" aspect-ratio="4/3" style="aspect-ratio: 4 / 3;"></a>'], '']);
     });
 
   });

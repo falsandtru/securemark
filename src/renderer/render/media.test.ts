@@ -39,9 +39,9 @@ describe('Unit: renderer/render/media', () => {
     });
 
     it('image', () => {
-      assert(media(location.href, parse('!{/ 4x3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt=""][width="4"][height="3"]:not([aspect-ratio])`));
-      assert(media(location.href, parse('!{/ 4:3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt=""][aspect-ratio="4/3"]:not([width]):not([height])`));
-      assert(media(location.href, parse('!{/ 4x3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt=""][width="4"][height="3"]:not([aspect-ratio])`));
+      assert(media(location.href, parse('!{/ 4x3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt="/"][width="4"][height="3"]:not([aspect-ratio])`));
+      assert(media(location.href, parse('!{/ 4:3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt="/"][aspect-ratio="4/3"]:not([width]):not([height])`));
+      assert(media(location.href, parse('!{/ 4x3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt="/"][width="4"][height="3"]:not([aspect-ratio])`));
     });
 
   });
