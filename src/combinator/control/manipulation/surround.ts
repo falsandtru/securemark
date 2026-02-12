@@ -123,9 +123,9 @@ export function getBacktrack(
   context: Ctx,
   backtracks: readonly number[],
   source: string,
-  length: number,
+  length: number = 1,
 ): boolean {
-  for (const backtrack of backtracks) {
+  if (length > 0) for (const backtrack of backtracks) {
     if (backtrack & 1) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
@@ -145,7 +145,7 @@ export function setBacktrack(
   position: number,
   length: number = 1,
 ): void {
-  for (const backtrack of backtracks) {
+  if (length > 0) for (const backtrack of backtracks) {
     if (backtrack & 2) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
