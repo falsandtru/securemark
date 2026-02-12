@@ -951,7 +951,7 @@ export namespace MarkdownParser {
     export namespace RubyParser {
       export interface TextParser extends
         Inline<'ruby/text'>,
-        Parser<string[], Context, []> {
+        Parser<string, Context, []> {
       }
     }
     export interface HTMLParser extends

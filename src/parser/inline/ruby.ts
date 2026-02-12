@@ -3,7 +3,7 @@ import { Backtrack, Command, CmdRegExp } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
 import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
-import { text as txt, str } from '../source';
+import { text } from '../source';
 import { isTightNodeStart } from '../visibility';
 import { invalid } from '../util';
 import { unshift, push } from 'spica/array';
@@ -12,23 +12,17 @@ import { html, defrag } from 'typed-dom/dom';
 export const ruby: RubyParser = lazy(() => bind(
   inits([
     dup(surround(
-      '[', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ']',
+      '[', rtext, ']',
       false,
-      ([, [source]], rest, context) => {
-        const ns = eval(text({ source, context }), [undefined])[0];
+      ([, ns], rest) => {
         ns && ns.at(-1) === '' && ns.pop();
-        return ns && isTightNodeStart(ns) ? [ns, rest] : undefined;
+        return isTightNodeStart(ns) ? [ns, rest] : undefined;
       },
       undefined,
       [3 | Backtrack.ruby | 1, Backtrack.link, 1 | Backtrack.bracket])),
     dup(surround(
-      '(', str(/^(?:\\[^\n]|[^\\[\](){}<>"\n])+/), ')',
-      false,
-      ([, [source]], rest, context) => {
-        const ns = eval(text({ source, context }), [undefined])[0];
-        return ns && [ns, rest];
-      },
-      undefined,
+      '(', rtext, ')',
+      false, undefined, undefined,
       [3 | Backtrack.ruby | 1, Backtrack.link, 1 | Backtrack.bracket])),
   ]),
   ([texts, rubies], rest, context) => {
@@ -68,9 +62,11 @@ export const ruby: RubyParser = lazy(() => bind(
     }
   }));
 
-const text: RubyParser.TextParser = ({ source, context }) => {
+const rtext: RubyParser.TextParser = ({ source, context }) => {
   const acc = [''];
+  let state = false;
   while (source !== '') {
+    if (!/^(?:\\[^\n]|[^\\[\](){}<>"\n])/.test(source)) break;
     assert(source[0] !== '\n');
     switch (source[0]) {
       // @ts-expect-error
@@ -79,6 +75,7 @@ const text: RubyParser.TextParser = ({ source, context }) => {
         if (result) {
           acc[acc.length - 1] += eval(result)[0];
           source = exec(result, source.slice(1));
+          state ||= acc.at(-1)!.trimStart() !== '';
           continue;
         }
         // fallthrough
@@ -89,16 +86,17 @@ const text: RubyParser.TextParser = ({ source, context }) => {
           source = source.slice(1);
           continue;
         }
-        const result = txt({ source, context })!;
+        const result = text({ source, context })!;
         assert(result);
         acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
         source = exec(result);
+        state ||= acc.at(-1)!.trimStart() !== '';
         continue;
       }
     }
   }
-  return acc.join('').trimStart()
-    ? [[acc], '']
+  return state
+    ? [acc, source]
     : undefined;
 };
 
