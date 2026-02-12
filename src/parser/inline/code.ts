@@ -8,9 +8,9 @@ export const code: CodeParser = validate(
     source[0] === '`' &&
     !getBacktrack(context, [1 | Backtrack.linebracket], source, source.slice(1)),
   match(
-    /^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/,
-    ([whole, , body]) => ({ source, context }) =>
-      body
+    /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
+    ([whole, , body, closer]) => ({ source, context }) =>
+      closer
         ? [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)]
         : void setBacktrack(context, [2 | Backtrack.linebracket], source),
     true));

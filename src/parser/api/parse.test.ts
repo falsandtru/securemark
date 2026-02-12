@@ -350,21 +350,22 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack', function () {
       this.timeout(5000);
-      // 8n=template+link+annotation/reference+link+link+url+ruby+text
-      const str = `${'.'.repeat(1 + 0)}{{(([[[http://[${'.'.repeat(12493)}`;
+      // 9n = template + link + annotation/reference + link + link +
+      //      code + url + ruby + text
+      const source = `${'.'.repeat(2 + 0)}{{(([[[\`http://[${'.'.repeat(11103)}`;
       assert.deepStrictEqual(
-        [...parse(str).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [`<p>${str}</p>`]);
+        [...parse(source).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [`<p>${source}</p>`]);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const str = `${'.'.repeat(1 + 1)}{{(([[[http://[${'.'.repeat(12493)}`;
+      const source = `${'.'.repeat(2 + 1)}{{(([[[\`http://[${'.'.repeat(11103)}`;
       assert.deepStrictEqual(
-        [...parse(str).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(source).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
-          `<pre class="error" translate="no">${str.slice(0, 1000 - 3)}...</pre>`,
+          `<pre class="error" translate="no">${source.slice(0, 1000 - 3)}...</pre>`,
         ]);
     });
 
