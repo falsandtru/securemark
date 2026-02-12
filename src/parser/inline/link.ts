@@ -104,9 +104,14 @@ function parse(
   const INSECURE_URI = params.shift()!;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
-  const uri = new ReadonlyURL(
-    resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-    context.host?.href || location.href);
+  let uri: ReadonlyURL | undefined;
+  try{
+    uri = new ReadonlyURL(
+      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
+      context.host?.href || location.href);
+  }
+  catch {
+  }
   const el = elem(
     INSECURE_URI,
     content,
@@ -120,12 +125,16 @@ function parse(
 function elem(
   INSECURE_URI: string,
   content: readonly (string | HTMLElement)[],
-  uri: ReadonlyURL,
+  uri: ReadonlyURL | undefined,
   origin: string,
 ): HTMLAnchorElement {
   let type: string;
   let message: string;
-  switch (uri.protocol) {
+  switch (uri?.protocol) {
+    case undefined:
+      type = 'argument';
+      message = 'Invalid URI';
+      break;
     case 'http:':
     case 'https:':
       assert(uri.host);
@@ -180,11 +189,14 @@ function elem(
           message = 'Invalid content';
       }
       break;
+    default:
+      type = 'argument';
+      message = 'Invalid protocol';
   }
   return html('a',
     {
       class: 'invalid',
-      ...invalid('link', type ??= 'argument', message ??= 'Invalid protocol'),
+      ...invalid('link', type, message),
     },
     content.length === 0
       ? INSECURE_URI

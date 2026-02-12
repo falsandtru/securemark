@@ -50,16 +50,21 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const url = new ReadonlyURL(
-      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-      context.host?.href || location.href);
+    let uri: ReadonlyURL | undefined;
+    try {
+      uri = new ReadonlyURL(
+        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
+        context.host?.href || location.href);
+    }
+    catch {
+    }
     let cache: HTMLElement | undefined;
     const el = undefined
-      || (cache = context.caches?.media?.get(url.href)?.cloneNode(true))
-      || html('img', { class: 'media', 'data-src': url.source, alt: text });
+      || uri && (cache = context.caches?.media?.get(uri.href)?.cloneNode(true))
+      || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
-    cache?.hasAttribute('alt') && cache.setAttribute('alt', text);
-    if (!sanitize(el, url, text)) return [[el], rest];
+    el.setAttribute('alt', text);
+    if (!sanitize(el, uri, text)) return [[el], rest];
     assert(!el.matches('.invalid'));
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
@@ -97,34 +102,36 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
   linkoption,
 ]));
 
-function sanitize(target: HTMLElement, uri: ReadonlyURL, alt: string): boolean {
+function sanitize(target: HTMLElement, uri: ReadonlyURL | undefined, alt: string): boolean {
   assert(target.tagName === 'IMG');
   assert(!target.matches('.invalid'));
-  switch (uri.protocol) {
+  let type: string;
+  let message: string;
+  if (!alt.includes(Command.Error)) switch (uri?.protocol) {
+    case undefined:
+      type = 'argument';
+      message = 'Invalid URI';
+      break;
     case 'http:':
     case 'https:':
       assert(uri.host);
-      if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
-        define(target, {
-          class: 'invalid',
-          ...invalid('media', 'argument',
-            'Dot-segments cannot be used in media paths; use subresource paths instead')
-        });
-        return false;
-      }
+      if (!/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) return true;
+      type = 'argument';
+      message = 'Dot-segments cannot be used in media paths; use subresource paths instead';
       break;
     default:
-      define(target, { class: 'invalid', ...invalid('media', 'argument', 'Invalid protocol') });
-      return false;
+      type = 'argument';
+      message = 'Invalid protocol';
   }
-  if (alt.includes(Command.Error)) {
-    define(target, {
-      class: 'invalid',
-      alt: target.getAttribute('alt')?.replace(CmdRegExp.Error, ''),
-      ...invalid('media', 'argument',
-      `Cannot use invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`)
-    });
-    return false;
+  else {
+    target.setAttribute('alt', alt.replace(CmdRegExp.Error, ''));
+    type = 'argument';
+    message = `Invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`;
   }
-  return true;
+  define(target, {
+    'data-src': null,
+    class: 'invalid',
+    ...invalid('link', type, message),
+  });
+  return false;
 }
