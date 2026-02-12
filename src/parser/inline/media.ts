@@ -1,7 +1,7 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
 import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
-import { unsafelink, uri, option as linkoption, resolve } from './link';
+import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
@@ -51,7 +51,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     // altが空だとエラーが見えないため埋める。
-    text ||= INSECURE_URI;
+    text ||= decode(INSECURE_URI);
     let uri: ReadonlyURL | undefined;
     try {
       uri = new ReadonlyURL(
