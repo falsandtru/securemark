@@ -7,15 +7,12 @@ import { Parser, Input, Ctx, Node, Context, eval, exec, check } from '../../data
 //}
 
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
-export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, parser: P): P;
 export function validate<P extends Parser<unknown>>(cond: ((input: Input<Context<P>>) => boolean), parser: P): P;
-export function validate<N>(patterns: string | RegExp | (string | RegExp)[] | ((input: Input<Ctx>) => boolean), has: string | Parser<N>, parser?: Parser<N>): Parser<N> {
-  if (typeof patterns === 'function') return guard(patterns, has as Parser<N>);
-  if (typeof has === 'function') return validate(patterns, '', has);
-  if (!isArray(patterns)) return validate([patterns], has, parser!);
+export function validate<N>(patterns: string | RegExp | (string | RegExp)[] | ((input: Input<Ctx>) => boolean), parser: Parser<N>): Parser<N> {
+  if (typeof patterns === 'function') return guard(patterns, parser);
+  if (!isArray(patterns)) return validate([patterns], parser);
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^') : true));
-  assert(parser = parser!);
   const match: (source: string) => boolean = global.eval([
     'source =>',
     patterns.map(pattern =>
