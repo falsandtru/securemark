@@ -49,7 +49,9 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
     const sig = eval(parser({ source: context.recent![1], context }), []).join('');
     //context.offset -= rest.length;
     const index = identity('index', undefined, sig)?.slice(7);
-    return [[html('span', { class: 'indexer', 'data-index': index })], rest];
+    return index
+      ? [[html('span', { class: 'indexer', 'data-index': index })], rest]
+      : undefined;
   },
   ([as, bs], rest) => [unshift(as, bs), rest])));
 
