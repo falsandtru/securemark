@@ -15,8 +15,8 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[ a](b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[&Tab;a](b)')), undefined);
       assert.deepStrictEqual(inspect(parser('[&Tab; a](b)')), undefined);
-      assert.deepStrictEqual(inspect(parser('[&a;](b)')), [['<ruby class="invalid">&amp;a;<rp>(</rp><rt>b</rt><rp>)</rp></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('[a](&a;)')), [['<ruby class="invalid">a<rp>(</rp><rt>&amp;a;</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[&a;](b)')), [['<ruby>&amp;a;<rp>(</rp><rt>b</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a](&a;)')), [['<ruby>a<rp>(</rp><rt>&amp;a;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[<wbr>](a)')), undefined);
       assert.deepStrictEqual(inspect(parser('[a](<wbr>)')), undefined);
       assert.deepStrictEqual(inspect(parser('[a]()')), undefined);

@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { State, Recursion, Backtrack, Command, CmdRegExp } from '../context';
+import { State, Recursion, Backtrack } from '../context';
 import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
@@ -66,7 +66,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, false, vali
       || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
     el.setAttribute('alt', text);
-    if (!sanitize(el, uri, text)) return [[el], rest];
+    if (!sanitize(el, uri)) return [[el], rest];
     assert(!el.matches('.invalid'));
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
@@ -104,12 +104,12 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
   linkoption,
 ]));
 
-function sanitize(target: HTMLElement, uri: ReadonlyURL | undefined, alt: string): boolean {
+function sanitize(target: HTMLElement, uri: ReadonlyURL | undefined): boolean {
   assert(target.tagName === 'IMG');
   assert(!target.matches('.invalid'));
   let type: string;
   let message: string;
-  if (!alt.includes(Command.Error)) switch (uri?.protocol) {
+  switch (uri?.protocol) {
     case undefined:
       type = 'argument';
       message = 'Invalid URI';
@@ -125,11 +125,11 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL | undefined, alt: string
       type = 'argument';
       message = 'Invalid protocol';
   }
-  else {
-    target.setAttribute('alt', alt.replace(CmdRegExp.Error, ''));
-    type = 'argument';
-    message = `Invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`;
-  }
+  //else {
+  //  target.setAttribute('alt', alt.replace(CmdRegExp.Error, ''));
+  //  type = 'argument';
+  //  message = `Invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`;
+  //}
   define(target, {
     'data-src': null,
     class: 'invalid',

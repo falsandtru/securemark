@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { State, Backtrack, Command } from '../../context';
+import { State, Backtrack } from '../../context';
 import { eval } from '../../../combinator/data/parser';
 import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
@@ -43,17 +43,13 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   tightStart(some(union([inline]), ']')),
   /^(?=])/,
   false,
-  ([as, bs], rest, context) => {
+  (_, rest, context) => {
     //context.offset ??= 0;
     //context.offset += rest.length;
     const sig = eval(parser({ source: context.recent![1], context }), []).join('');
     //context.offset -= rest.length;
-    const index = sig.includes(Command.Error)
-      ? undefined
-      : identity('index', undefined, sig)?.slice(7);
-    return index
-      ? [[html('span', { class: 'indexer', 'data-index': index })], rest]
-      : [unshift(as, bs), rest];
+    const index = identity('index', undefined, sig)?.slice(7);
+    return [[html('span', { class: 'indexer', 'data-index': index })], rest];
   },
   ([as, bs], rest) => [unshift(as, bs), rest])));
 
