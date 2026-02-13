@@ -50,7 +50,8 @@ function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: read
     switch (prop) {
       case 'resources':
         assert(reset);
-        break;
+        // プロトタイプに戻ることで戻す
+        continue;
     }
     context[prop] = values[i];
     values[i] = undefined;
