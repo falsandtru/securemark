@@ -981,6 +981,7 @@ export namespace MarkdownParser {
         Inline<'html/attribute'>,
         Parser<string, Context, [
           SourceParser.StrParser,
+          SourceParser.StrParser,
         ]> {
       }
     }
