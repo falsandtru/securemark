@@ -1,5 +1,5 @@
 import { MathParser } from '../inline';
-import { Recursion } from '../context';
+import { Backtrack, Recursion } from '../context';
 import { union, some, recursion, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
 import { escsource, unescsource, str } from '../source';
 import { invalid } from '../util';
@@ -9,14 +9,19 @@ const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => validate('$', rewrite(
   union([
-    surround('$', precedence(5, bracket), '$'),
+    surround(
+      /^\$(?={)/,
+      precedence(5, bracket),
+      '$',
+      false, undefined, undefined, [3 | Backtrack.bracket]),
     surround(
       /^\$(?![\s{}])/,
       precedence(2, some(union([
         bracket,
         focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
       ]))),
-      /^\$(?![0-9A-Za-z])/),
+      /^\$(?![0-9A-Za-z])/,
+      false, undefined, undefined, [3 | Backtrack.bracket]),
   ]),
   ({ source, context: { caches: { math: cache } = {} } }) => [[
     cache?.get(source)?.cloneNode(true) ||
