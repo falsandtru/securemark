@@ -934,7 +934,6 @@ export namespace MarkdownParser {
           Inline<'media/parameter/option'>,
           Parser<string, Context, [
             SourceParser.StrParser,
-            SourceParser.StrParser,
             LinkParser.ParameterParser.OptionParser,
           ]> {
         }

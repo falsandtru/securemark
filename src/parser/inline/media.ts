@@ -99,8 +99,17 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recur
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
-  fmap(str(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),
-  fmap(str(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
+  surround(
+    open(/^[^\S\n]+/, str(/^[1-9][0-9]*/)),
+    str(/^[x:]/),
+    str(/^[1-9][0-9]*(?=[^\S\n]|})/),
+    false,
+    ([[a], [b], [c]], rest) => [
+      b === 'x'
+        ? [`width="${a}"`, `height="${c}"`]
+        : [`aspect-ratio="${a}/${c}"`],
+      rest
+    ]),
   linkoption,
 ]));
 
