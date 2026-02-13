@@ -130,8 +130,8 @@ export function signature(source: Element | DocumentFragment): string {
       case 'label':
         el.replaceWith(`[$${el.getAttribute('data-label')!.replace('$', '')}]`);
         continue;
-      case 'remark':
       case 'checkbox':
+      case 'remark':
       case 'annotation':
       case 'reference':
         el.remove();
@@ -163,8 +163,8 @@ export function text(source: Element | DocumentFragment): string {
       case 'math':
         el.replaceWith(el.getAttribute('data-src')!);
         continue;
-      case 'remark':
       case 'checkbox':
+      case 'remark':
       case 'annotation':
       case 'reference':
         el.remove();
