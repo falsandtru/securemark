@@ -37,8 +37,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(
-            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/), true,
-            undefined, undefined, [3 | Backtrack.bracket]),
+            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/),
+            true, undefined, undefined, [3 | Backtrack.bracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
