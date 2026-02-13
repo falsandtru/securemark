@@ -18,8 +18,8 @@ const parser: SegmentParser = union([
   codeblock,
   mathblock,
   extension,
-  some(contentline, MAX_SEGMENT_SIZE * 2),
-  some(emptyline, MAX_SEGMENT_SIZE * 2),
+  some(contentline, MAX_SEGMENT_SIZE + 1),
+  some(emptyline, MAX_SEGMENT_SIZE + 1),
 ]);
 
 export function* segment(source: string): Generator<string, undefined, undefined> {

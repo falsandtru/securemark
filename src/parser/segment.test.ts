@@ -1,15 +1,16 @@
 import { segment } from './segment';
+import { Command } from './context';
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('huge input', () => {
       const result = segment(`${'\n'.repeat(10 * 1000 ** 2)}`).next().value?.split('\n', 1)[0];
-      assert(result?.startsWith('\x07Too large input'));
+      assert(result?.startsWith(`${Command.Error}Too large input`));
     });
 
     it('huge segment', () => {
       const result = segment(`${'\n'.repeat(1000 ** 2 - 1)}`).next().value?.split('\n', 1)[0];
-      assert(result?.startsWith('\x07Too large segment'));
+      assert(result?.startsWith(`${Command.Error}Too large segment`));
     });
 
     it('basic', () => {
