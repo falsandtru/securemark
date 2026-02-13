@@ -74,9 +74,8 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
   if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
   const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
-  return /(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')
-    ? ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
-    : h(tag as 'span', attrs, defrag(bs));
+  if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
+  return h(tag as 'span', attrs, defrag(bs));
 }
 
 function ielem(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
