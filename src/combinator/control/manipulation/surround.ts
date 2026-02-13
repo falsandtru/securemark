@@ -1,4 +1,5 @@
 import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { consume } from '../../../combinator';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
@@ -162,11 +163,11 @@ function match(pattern: string | RegExp): (input: Input) => [never[], string] | 
     case 'string':
       return ({ source }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
     case 'object':
-      return ({ source }) => {
+      return ({ source, context }) => {
         const m = source.match(pattern);
-        return m
-          ? [[], source.slice(m[0].length)]
-          : undefined;
+        if (m === null) return;
+        consume(m[0].length, context);
+        return [[], source.slice(m[0].length)];
       };
   }
 }
