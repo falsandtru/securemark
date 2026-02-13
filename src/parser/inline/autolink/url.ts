@@ -16,7 +16,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
     false,
     [3 | Backtrack.autolink]),
   union([
-    constraint(State.autolink, false, state(State.autolink, convert(
+    constraint(State.autolink, state(State.autolink, convert(
       url => `{ ${url} }`,
       unsafelink,
       false))),
@@ -30,7 +30,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
     tails([
       str('!'),
       union([
-        constraint(State.autolink, false, state(State.autolink, convert(
+        constraint(State.autolink, state(State.autolink, convert(
           url => `{ ${url} }`,
           unsafelink,
           false))),

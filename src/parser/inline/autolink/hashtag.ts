@@ -20,7 +20,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
     false,
     [3 | Backtrack.autolink]),
   union([
-    constraint(State.autolink, false, state(State.autolink, fmap(convert(
+    constraint(State.autolink, state(State.autolink, fmap(convert(
       source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
       unsafelink,
       false),

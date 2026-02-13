@@ -12,7 +12,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => constraint(State.index, false, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(surround(
   '[#',
   precedence(1, state(State.linkers | State.media,
   tightStart(

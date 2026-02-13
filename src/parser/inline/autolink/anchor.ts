@@ -18,7 +18,7 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
   focus(
     /^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i,
     union([
-      constraint(State.autolink, false, state(State.autolink, fmap(convert(
+      constraint(State.autolink, state(State.autolink, fmap(convert(
         source =>
           `[${source}]{ ${source.includes('/')
             ? `/@${source.slice(2).replace('/', '/timeline?at=')}`

@@ -11,7 +11,7 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
   body,
 ]));
 
-export const label: ExtensionParser.LabelParser = constraint(State.label, false, fmap(
+export const label: ExtensionParser.LabelParser = constraint(State.label, fmap(
   union([
     surround('[', body, ']', false, undefined, undefined, [1 | Backtrack.bracket, 1]),
     body,

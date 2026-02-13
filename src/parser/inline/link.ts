@@ -16,7 +16,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, false, creation(10,
+export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, creation(10,
   precedence(1, state(State.linkers | State.media,
   bind(subsequence([
     dup(surround(
@@ -56,7 +56,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     return [[parse(defrag(content), params, context)], rest];
   }))))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, false, validate(['[', '{'], creation(10,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, validate(['[', '{'], creation(10,
   state(State.linkers,
   bind(reverse(sequence([
     dup(surround(

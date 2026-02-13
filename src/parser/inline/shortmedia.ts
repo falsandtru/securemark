@@ -5,7 +5,7 @@ import { url } from './autolink/url';
 import { media } from './media';
 import { linebreak } from '../source';
 
-export const shortmedia: ShortMediaParser = constraint(State.media, false, rewrite(
+export const shortmedia: ShortMediaParser = constraint(State.media, rewrite(
   open('!', url),
   convert(
     source => `!{ ${source.slice(1)} }`,

@@ -8,7 +8,7 @@ import { repeat } from '../util';
 import { push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, false, validate('==',
+export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, validate('==',
   precedence(0, state(State.mark, repeat('==', surround(
     '',
     recursion(Recursion.inline,

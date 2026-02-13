@@ -15,7 +15,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
       str(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i),
     ])),
   union([
-    constraint(State.autolink, false, state(State.autolink, fmap(convert(
+    constraint(State.autolink, state(State.autolink, fmap(convert(
       source =>
         `[${source}]{ ${source.includes('/')
           ? `https://${source.slice(1).replace('/', '/@')}`

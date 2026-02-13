@@ -5,7 +5,7 @@ import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, false, surround(
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
   '((',
   precedence(1, state(State.annotation | State.media,
   trimBlankStart(some(union([inline]), ')', [[')', 1]])))),

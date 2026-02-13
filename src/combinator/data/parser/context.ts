@@ -136,11 +136,11 @@ export function state<N>(state: number, positive: boolean | Parser<N>, parser?: 
 }
 
 export function constraint<P extends Parser<unknown>>(state: number, parser: P): P;
-export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
+//export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
 export function constraint<N>(state: number, positive: boolean | Parser<N>, parser?: Parser<N>): Parser<N> {
   if (typeof positive === 'function') {
     parser = positive;
-    positive = true;
+    positive = false;
   }
   assert(state);
   assert(parser = parser!);

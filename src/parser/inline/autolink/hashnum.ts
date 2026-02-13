@@ -13,7 +13,7 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
       /^[0-9]{1,9}(?![^\p{C}\p{S}\p{P}\s]|emoji)/u.source,
     ].join('').replace(/emoji/, emoji), 'u'))),
   union([
-    constraint(State.autolink, false, state(State.autolink, fmap(convert(
+    constraint(State.autolink, state(State.autolink, fmap(convert(
       source => `[${source}]{ ${source.slice(1)} }`,
       unsafelink,
       false),
