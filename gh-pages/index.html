@@ -770,8 +770,17 @@
   .invalid {
     background-image: linear-gradient(transparent 90%, lightpink 0%);
     white-space: pre-wrap;
+    color: gray;
   }
-  .invalid[data-invalid-syntax][data-invalid-message]::before {
+  .invalid[data-invalid-syntax][data-invalid-message]::after {
+    position: relative;
+    content: "❗" !important;
+    top: -0.5em;
+    font-style: oblique;
+    font-size: smaller;
+    color: red;
+  }
+  .invalid[data-invalid-syntax][data-invalid-message]:hover:before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": " !important;
     font-style: normal;
     font-weight: bold;
