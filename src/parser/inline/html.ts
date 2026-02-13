@@ -66,6 +66,65 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="[^"\n]*")?(?=[^\S\n]|>)/i),
 ]);
 
+function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
+  assert(as.length > 0);
+  assert(as[0][0] === '<' && as.at(-1)!.slice(-1) === '>');
+  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
+  if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
+  if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
+  if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
+  const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
+  return /(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')
+    ? ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
+    : h(tag as 'span', attrs, defrag(bs));
+}
+
+function ielem(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
+  return h('span',
+    { class: 'invalid', ...invalid('html', type, message) },
+    defrag(push(unshift(as, bs), cs)));
+}
+
+const requiredAttributes = memoize(
+  (spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>>) =>
+    Object.entries(spec).flatMap(([k, v]) => v && Object.isFrozen(v) ? [k] : []),
+  new WeakMap());
+
+export function attributes(
+  syntax: string,
+  classes: readonly string[],
+  spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
+  params: string[],
+): Record<string, string | undefined> {
+  assert(spec instanceof Object === false);
+  assert(!spec?.['__proto__']);
+  assert(!spec?.toString);
+  let invalidation = false;
+  const attrs: Record<string, string | undefined> = {};
+  for (let i = 0; i < params.length; ++i) {
+    const param = params[i].trimStart();
+    const name = param.split('=', 1)[0];
+    const value = param !== name
+      ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
+      : undefined;
+    invalidation ||= !spec || name in attrs;
+    if (spec && name in spec && !spec[name]) continue;
+    spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined
+      ? attrs[name] = value ?? ''
+      : invalidation ||= !!spec;
+    assert(!(name in {} && attrs.hasOwnProperty(name)));
+    splice(params, i--, 1);
+  }
+  invalidation ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
+  if (invalidation) {
+    attrs['class'] = classes.length === 0
+      ? 'invalid'
+      : `${classes.join(' ')}${classes.includes('invalid') ? '' : ' invalid'}`;
+    Object.assign(attrs, invalid(syntax, 'argument', 'Invalid argument'));
+  }
+  return attrs;
+}
+
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
 const TAGS = Object.freeze([
@@ -206,62 +265,3 @@ const TAGS = Object.freeze([
   "tt",
   "xmp",
 ]);
-
-function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
-  assert(as.length > 0);
-  assert(as[0][0] === '<' && as.at(-1)!.slice(-1) === '>');
-  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
-  if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
-  if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
-  if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
-  const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
-  return /(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')
-    ? ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
-    : h(tag as 'span', attrs, defrag(bs));
-}
-
-function ielem(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
-  return h('span',
-    { class: 'invalid', ...invalid('html', type, message) },
-    defrag(push(unshift(as, bs), cs)));
-}
-
-const requiredAttributes = memoize(
-  (spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>>) =>
-    Object.entries(spec).flatMap(([k, v]) => v && Object.isFrozen(v) ? [k] : []),
-  new WeakMap());
-
-export function attributes(
-  syntax: string,
-  classes: readonly string[],
-  spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
-  params: string[],
-): Record<string, string | undefined> {
-  assert(spec instanceof Object === false);
-  assert(!spec?.['__proto__']);
-  assert(!spec?.toString);
-  let invalidation = false;
-  const attrs: Record<string, string | undefined> = {};
-  for (let i = 0; i < params.length; ++i) {
-    const param = params[i].trimStart();
-    const name = param.split('=', 1)[0];
-    const value = param !== name
-      ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
-      : undefined;
-    invalidation ||= !spec || name in attrs;
-    if (spec && name in spec && !spec[name]) continue;
-    spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined
-      ? attrs[name] = value ?? ''
-      : invalidation ||= !!spec;
-    assert(!(name in {} && attrs.hasOwnProperty(name)));
-    splice(params, i--, 1);
-  }
-  invalidation ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
-  if (invalidation) {
-    attrs['class'] = classes.length === 0
-      ? 'invalid'
-      : `${classes.join(' ')}${classes.includes('invalid') ? '' : ' invalid'}`;
-    Object.assign(attrs, invalid(syntax, 'argument', 'Invalid argument'));
-  }
-  return attrs;
-}
