@@ -492,7 +492,7 @@
     color: red;
   }
   .message[data-type="warning"] h1::before {
-    content: "🚫"
+    content: "🚨"
   }
   hr {
     border-block-end: dashed 1px #ddd;
@@ -770,8 +770,17 @@
   .invalid {
     background-image: linear-gradient(transparent 90%, lightpink 0%);
     white-space: pre-wrap;
+    color: gray;
   }
-  .invalid[data-invalid-syntax][data-invalid-message]::before {
+  .invalid[data-invalid-syntax][data-invalid-message]::after {
+    position: relative;
+    content: "❗" !important;
+    top: -0.5em;
+    font-style: oblique;
+    font-size: smaller;
+    color: red;
+  }
+  .invalid[data-invalid-syntax][data-invalid-message]:hover:before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": " !important;
     font-style: normal;
     font-weight: bold;
@@ -862,7 +871,7 @@
 <h3 class="col-12">Secure markdown renderer working on browsers for user input data.</h3>
 <p class="col-12"><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
 <div class="col-12" style="overflow-y: scroll; height: 1.5em">Share: <a id="share" href="" style="word-break: break-all;"></a></div>
-<p class="col-12">Parsed <span id="chars">0</span> chars and rendered the result in <span id="time">-</span>ms.</p>
+<p class="col-12">Parsed <span id="chars">0</span> chars, rendered in <span id="render-time">-</span>ms, processed in <span id="proc-time">-</span>ms, displayed in <span id="display-time">-</span>ms.</p>
 </header>
 
 <div id="wrapper" class="row">
@@ -1345,23 +1354,18 @@
   })();
   async function display() {
     const { Date } = global;
+    const times = [0, 0];
+    const start = Date.now();
+    let index = 0;
+    let past = Date.now();
     let time = 0;
-    let start = Date.now();
-    let count = 0;
-    let resource = 100;
+    let resource = 800;
+    let scroll = window.scrollY;
     for (const result of parse(editor.getValue())) {
       if (wait) throw new Error('Cancel.');
       switch (result.type) {
         case 'segment':
-          if (++count % 100) continue;
-          count = 0;
           break;
-        case 'break':
-          if (++count % 100) continue;
-          count = 0;
-          break;
-        case 'note':
-          if (result.value.tagName !== 'LI') continue;
         case 'block':
           const el = result.value;
           el.parentNode
@@ -1370,24 +1374,41 @@
           break;
         case 'cancel':
           throw new Error('Cancel.');
+        default:
+          if (index === 0) {
+            times[index] = time;
+            time = 0;
+          }
+          index = 1;
       }
       const now = Date.now();
-      const delta = now - start;
+      const delta = now - past;
       time += delta;
       resource -= delta;
       if (resource > 0) {
-        start = now;
+        past = now;
       }
       else {
         await new Promise(requestAnimationFrame);
-        resource = 200;
-        start = Date.now();
+        if (scroll !== window.scrollY) {
+          resource = 200;
+          scroll = window.scrollY;
+        }
+        else {
+          resource = 800;
+        }
+        past = Date.now();
       }
     }
-    return time += Date.now() - start;
+    time += Date.now() - past;
+    times[index] = time;
+    times.push(Date.now() - start);
+    return times;
   }
-  function log(time) {
-    document.getElementById('time').textContent = time;
+  function log(times) {
+    document.getElementById('render-time').textContent = times[0];
+    document.getElementById('proc-time').textContent = times[1];
+    document.getElementById('display-time').textContent = times[2];
   }
   function share() {
     document.getElementById('chars').textContent = editor.getValue().length;
