@@ -243,7 +243,7 @@ export function attributes(
   let invalidation = false;
   const attrs: Record<string, string | undefined> = {};
   for (let i = 0; i < params.length; ++i) {
-    const param = params[i].trim();
+    const param = params[i].trimStart();
     const name = param.split('=', 1)[0];
     const value = param !== name
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
