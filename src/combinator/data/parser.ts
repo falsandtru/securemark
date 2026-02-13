@@ -19,7 +19,9 @@ export interface Ctx {
   precedence?: number;
   delimiters?: Delimiters;
   state?: number;
-  depth?: number;
+  // Objectの内部実装を利用する。
+  // 探索木を直接使用する場合は探索速度が重要で挿入は相対的に少なく削除は不要かつ不確実であるため
+  // AVL木が適当と思われる。
   backtracks?: Record<number, number>;
   linebreak?: number;
   recent?: string[];

@@ -38,11 +38,11 @@ export class Delimiters {
         return source => pattern.test(source) || undefined;
     }
   }
-  private readonly heap: Record<number, Delimiter[]> = {};
+  private readonly tree: Record<number, Delimiter[]> = {};
   private readonly map: Map<string, Delimiter[]> = new Map();
   private registry(signature: number | string): Delimiter[] {
     if (typeof signature === 'number') {
-      return this.heap[signature] ??= [];
+      return this.tree[signature] ??= [];
     }
     else {
       const ds = this.map.get(signature);
