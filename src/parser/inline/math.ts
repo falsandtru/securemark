@@ -31,8 +31,8 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
         : {
             class: 'invalid',
             translate: 'no',
-          ...invalid('math', 'content',
-            `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
+            ...invalid('math', 'content',
+              `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
       source)
   ], ''])));
