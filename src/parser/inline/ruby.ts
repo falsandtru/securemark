@@ -73,7 +73,7 @@ const rtext: RubyParser.TextParser = ({ source, context }) => {
         const result = unsafehtmlentity({ source, context });
         if (result) {
           acc[acc.length - 1] += eval(result)[0];
-          source = exec(result, source.slice(1));
+          source = exec(result) ?? source.slice(1);
           state ||= acc.at(-1)!.trimStart() !== '';
           continue;
         }
