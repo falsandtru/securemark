@@ -9,8 +9,9 @@ import { memoize } from 'spica/memoize';
 import { unshift, push, splice } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
-const tags = Object.freeze(['bdo', 'bdi']);
+const tags = Object.freeze(['wbr', 'bdo', 'bdi']);
 const attrspecs = {
+  wbr: {},
   bdo: {
     dir: Object.freeze(['ltr', 'rtl']),
   },
@@ -24,11 +25,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
       str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i),
       some(union([attribute])),
-      str(/^[^\S\n]*>/), true,
+      open(str(/^[^\S\n]*/), str('>'), true),
+      true,
       ([as, bs = [], cs], rest) =>
-        as[0].slice(1) === 'wbr' && bs.length === 0
-          ? [[h(as[0].slice(1) as 'wbr')], rest]
-          : [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])], rest],
       undefined,
       [3 | Backtrack.bracket]),
     match(
@@ -37,27 +37,29 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(
-            str(`<${tag}`), some(attribute), str(/^[^\S\n]*>/),
+            str(`<${tag}`), some(attribute), open(str(/^[^\S\n]*/), str('>'), true),
             true, undefined, undefined, [3 | Backtrack.bracket]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
             some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
           ]))),
-          str(`</${tag}>`), true,
+          str(`</${tag}>`),
+          true,
           ([as, bs = [], cs], rest) =>
-            [[elem(tag, as, bs, cs)], rest],
+            [[elem(tag, true, as, bs, cs)], rest],
           ([as, bs = []], rest) =>
-            [[elem(tag, as, bs, [])], rest]),
+            [[elem(tag, true, as, bs, [])], rest]),
       ([, tag]) => tag,
       new Map())),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/^<[a-z]+(?=[^\S\n]|>)/i),
+      str(/^<[a-z]{1,16}(?=[^\S\n]|>)/i),
       some(union([attribute])),
-      str(/^[^\S\n]*>/), true,
+      open(str(/^[^\S\n]*/), str('>'), true),
+      true,
       ([as, bs = [], cs], rest) =>
-        [[elem(as[0].slice(1), push(unshift(as, bs), cs), [], [])], rest],
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])], rest],
       undefined,
       [3 | Backtrack.bracket]),
   ])));
@@ -67,15 +69,18 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[^\s<>]+/),
 ]);
 
-function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
+function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
   assert(as.length > 0);
-  assert(as[0][0] === '<' && as.at(-1)!.slice(-1) === '>');
+  assert(as[0][0] === '<');
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
-  if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
-  if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
-  if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
-  const attrs = attributes('html', attrspecs[tag], as.slice(1, -1));
+  if (content) {
+    if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
+    if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
+    if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
+  }
+  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -2 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
+  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing bracket ">"`, as, bs, cs);
   return h(tag as 'span', attrs, defrag(bs));
 }
 
