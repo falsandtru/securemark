@@ -43,7 +43,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     if (content.at(-1) === Command.Escape) {
       content.pop();
       if (params === undefined) {
-        return void setBacktrack(context, [2 | Backtrack.link], context.recent!.reduce((a, b) => a + b.length, 0));
+        return void setBacktrack(context, [2 | Backtrack.link], context.recent!.reduce((a, b) => a + b.length, rest.length));
       }
     }
     else {

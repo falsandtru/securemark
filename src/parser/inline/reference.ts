@@ -24,7 +24,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       : undefined,
   ([as, bs], rest, context) => {
     if (rest[0] !== ']') {
-      setBacktrack(context, [2 | Backtrack.bracket], context.recent!.reduce((a, b) => a + b.length, 0), 2);
+      setBacktrack(context, [2 | Backtrack.bracket], context.recent!.reduce((a, b) => a + b.length, rest.length), 2);
     }
     return context.state! & State.annotation
       ? [unshift(as, bs), rest]
