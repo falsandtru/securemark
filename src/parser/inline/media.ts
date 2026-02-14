@@ -7,7 +7,6 @@ import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
 import { invalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
-import { push } from 'spica/array';
 import { html, define } from 'typed-dom/dom';
 
 const optspec = {
@@ -68,7 +67,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
     el.setAttribute('alt', text);
     if (!sanitize(el, uri)) return [[el], rest];
     assert(!el.matches('.invalid'));
-    define(el, attributes('media', push([], el.classList), optspec, params));
+    define(el, attributes('media', optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
     // Awaiting the generic support for attr().
     if (el.hasAttribute('aspect-ratio')) {

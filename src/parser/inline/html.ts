@@ -74,7 +74,7 @@ function elem(tag: string, as: string[], bs: (HTMLElement | string)[], cs: strin
   if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
   if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
   if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
-  const attrs = attributes('html', [], attrspecs[tag], as.slice(1, -1));
+  const attrs = attributes('html', attrspecs[tag], as.slice(1, -1));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
   return h(tag as 'span', attrs, defrag(bs));
 }
@@ -92,7 +92,6 @@ const requiredAttributes = memoize(
 
 export function attributes(
   syntax: string,
-  classes: readonly string[],
   spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
   params: string[],
 ): Record<string, string | undefined> {
@@ -117,9 +116,7 @@ export function attributes(
   }
   invalidation ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalidation) {
-    attrs['class'] = classes.length === 0
-      ? 'invalid'
-      : `${classes.join(' ')}${classes.includes('invalid') ? '' : ' invalid'}`;
+    attrs['class'] = 'invalid';
     Object.assign(attrs, invalid(syntax, 'argument', 'Invalid argument'));
   }
   return attrs;

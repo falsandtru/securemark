@@ -121,7 +121,7 @@ function parse(
     context.host?.origin || location.origin);
   return el.classList.contains('invalid')
     ? el
-    : define(el, attributes('link', [], optspec, params));
+    : define(el, attributes('link', optspec, params));
 }
 
 function elem(
