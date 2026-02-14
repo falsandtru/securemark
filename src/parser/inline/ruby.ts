@@ -65,7 +65,7 @@ const rtext: RubyParser.TextParser = ({ source, context }) => {
   const acc = [''];
   let state = false;
   while (source !== '') {
-    if (!/^(?:\\[^\n]|[^\\[\](){}<>"$\n])/.test(source)) break;
+    if (!/^(?:\\[^\n]|[^\\[\](){}<>"$#\n])/.test(source)) break;
     assert(source[0] !== '\n');
     switch (source[0]) {
       // @ts-expect-error

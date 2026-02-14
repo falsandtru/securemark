@@ -1,7 +1,7 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
 import { union, some, recursion, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
-import { escsource, unescsource, str } from '../source';
+import { escsource, str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
@@ -17,8 +17,8 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
     surround(
       /^\$(?![\s{}])/,
       precedence(2, some(union([
-        bracket,
-        focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|(?!:\/\/)[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
+        precedence(5, bracket),
+        some(focus(/^(?:[ ([](?!\$)|\\[\\{}$#]?|(?!:\/\/)[!%&')\x2A-\x5A\]^_\x61-\x7A|~])/, escsource, false)),
       ]))),
       /^\$(?![0-9A-Za-z])/,
       false, undefined, undefined, [3 | Backtrack.bracket]),
@@ -42,7 +42,7 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
   recursion(Recursion.terminal,
   some(union([
     bracket,
-    some(escsource, /^[{}$\n]/),
+    some(escsource, /^[{}$#\n]/),
   ]), undefined, [['://', 9]])),
   str('}'),
   true));

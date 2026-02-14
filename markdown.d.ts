@@ -1057,7 +1057,7 @@ export namespace MarkdownParser {
         MathParser.BracketParser,
         Parser<string, Context, [
           MathParser.BracketParser,
-          SourceParser.UnescapableSourceParser,
+          SourceParser.EscapableSourceParser,
         ]>,
       ]> {
     }
