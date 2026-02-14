@@ -51,6 +51,7 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
   return new RegExp(String.raw
     `^(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
       // 空行除去
+      // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
       starts && '+'
     })?${
       typeof delimiter === 'string'
