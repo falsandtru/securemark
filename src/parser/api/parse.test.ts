@@ -288,44 +288,47 @@ describe('Unit: parser/api/parse', () => {
 
     it('recursion', () => {
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(20)}a`).children].map(el => el.outerHTML),
-        [`<p>${'{'.repeat(20)}a</p>`]);
+        [...parse(`${'{'.repeat(20)}0`).children].map(el => el.outerHTML),
+        [`<p>${'{'.repeat(20)}0</p>`]);
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(21)}a`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'{'.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'{'.repeat(21)}a</pre>`,
+          `<pre class="error" translate="no">${'{'.repeat(21)}0</pre>`,
         ]);
       assert.deepStrictEqual(
-        [...parse(`${'('.repeat(20)}a`).children].map(el => el.outerHTML),
-        [`<p>${'('.repeat(20)}a</p>`]);
+        [...parse(`${'('.repeat(20)}0`).children].map(el => el.outerHTML),
+        [`<p>${'('.repeat(20)}0</p>`]);
       assert.deepStrictEqual(
-        [...parse(`${'('.repeat(21)}a`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'('.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'('.repeat(21)}a</pre>`,
+          `<pre class="error" translate="no">${'('.repeat(21)}0</pre>`,
         ]);
       assert.deepStrictEqual(
-        [...parse(`${'['.repeat(20)}a`).children].map(el => el.outerHTML),
-        [`<p>${'['.repeat(20)}a</p>`]);
+        [...parse(`${'['.repeat(20)}0`).children].map(el => el.outerHTML),
+        [`<p>${'['.repeat(20)}0</p>`]);
       assert.deepStrictEqual(
-        [...parse(`${'['.repeat(21)}a`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'['.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'['.repeat(21)}a</pre>`,
+          `<pre class="error" translate="no">${'['.repeat(21)}0</pre>`,
         ]);
-      assert.deepStrictEqual(
-        [...parse(`${'['.repeat(20)}\na`).children].map(el => el.outerHTML),
-        [`<p>${'['.repeat(20)}<br>a</p>`]);
     });
 
     it('recovery', () => {
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(21)}\n\na`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'['.repeat(20)}0\n\n[a]`).children].map(el => el.outerHTML),
         [
-          `<h1 id="error:rnd" class="error">Error: Too much recursion</h1>`,
-          `<pre class="error" translate="no">${'{'.repeat(21)}\n</pre>`,
-          '<p>a</p>',
+          `<p>${'['.repeat(20)}0</p>`,
+          '<p>[a]</p>',
+        ]);
+      assert.deepStrictEqual(
+        [...parse(`${'['.repeat(21)}0\n\n[a]`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [
+          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
+          `<pre class="error" translate="no">${'['.repeat(21)}0\n</pre>`,
+          '<p>[a]</p>',
         ]);
     });
 

@@ -16,6 +16,6 @@ export const reply: ReplyParser = block(validate(csyntax, fmap(
     quote,
     rewrite(
       some(anyline, delimiter),
-      visualize(lineable(some(inline), true))),
+      visualize(lineable(some(inline), 1))),
   ])),
   ns => [html('p', trimBlankNodeEnd(defrag(ns)))])));

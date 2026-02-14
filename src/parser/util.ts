@@ -4,12 +4,22 @@ import { Parser, Result, Ctx, Node, Context, eval, exec } from '../combinator/da
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
-export function lineable<P extends Parser<HTMLElement | string>>(parser: P, fillTrailingLinebreak?: boolean): P;
-export function lineable<N extends HTMLElement | string>(parser: Parser<N>, fillTrailingLinebreak = false): Parser<N> {
+export function lineable<P extends Parser<HTMLElement | string>>(parser: P, trim?: 0 | 1 | -1): P;
+export function lineable<N extends HTMLElement | string>(parser: Parser<N>, trim = -1): Parser<N> {
   return convert(
-    source => `\r${source}${fillTrailingLinebreak && source.at(-1) !== '\n' ? '\n' : ''}`,
+    source => `\r${
+      trim === 0
+        ? source
+        : trim > 0
+          ? source.at(-1) === '\n'
+            ? source
+            : source + '\n'
+          : source.at(-1) === '\n'
+            ? source.slice(0, -1)
+            : source
+    }`,
     parser,
-    !fillTrailingLinebreak);
+    trim === 0);
 }
 
 export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
