@@ -126,10 +126,12 @@ export function getBacktrack(
   source: string,
   length: number = 1,
 ): boolean {
-  if (length > 0) for (const backtrack of backtracks) {
+  if (length === 0 || source.length === 0) return false;
+  for (const backtrack of backtracks) {
     if (backtrack & 1) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
+        assert(i < source.length);
         if (source[i] !== source[0]) break;
         const pos = source.length - i + offset - 1;
         assert(pos >= 0);
@@ -146,8 +148,9 @@ export function setBacktrack(
   position: number,
   length: number = 1,
 ): void {
-  if (length > 0) for (const backtrack of backtracks) {
-    if (backtrack & 2) {
+  if (length === 0 || position === 0) return;
+  for (const backtrack of backtracks) {
+    if (backtrack & 2 && position !== 0) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
         const pos = position - i + offset - 1;
