@@ -57,7 +57,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;
-  for (let i = ns.length - 1; i >= 0; --i) {
+  for (let i = ns.length; i--;) {
     const node = ns[i];
     if (typeof node === 'string') return;
     if (i === ns.length - 1 && ['UL', 'OL'].includes(node.tagName)) continue;
