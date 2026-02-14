@@ -46,13 +46,13 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<bdi />')), [['<span class="invalid">&lt;bdi /&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<b><b><b>a</b></b></b>')), [['<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;a&lt;/b&gt;</span>&lt;/b&gt;</span>&lt;/b&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi><bdi><bdi>a</bdi></bdi></bdi>')), [['<bdi><bdi><bdi>a</bdi></bdi></bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser('<x a="*b*"')), undefined);
+      assert.deepStrictEqual(inspect(parser('<x a="*b*"')), [['<span class="invalid">&lt;x a="*b*"</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<x a="*b*">')), [['<span class="invalid">&lt;x a="*b*"&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<x a="*b*">c')), [['<span class="invalid">&lt;x a="*b*"&gt;</span>'], 'c']);
-      assert.deepStrictEqual(inspect(parser('<bdi a="*b*"')), undefined);
+      assert.deepStrictEqual(inspect(parser('<bdi a="*b*"')), [['<span class="invalid">&lt;bdi a="*b*"</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi a="*b*">')), [['<span class="invalid">&lt;bdi a="*b*"&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi a="*b*">c')), [['<span class="invalid">&lt;bdi a="*b*"&gt;c</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdi a b="*" *c*')), undefined);
+      assert.deepStrictEqual(inspect(parser('<bdi a b="*" *c*')), [['<span class="invalid">&lt;bdi a b="*" *c*</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi a b="*" *c*>')), [['<span class="invalid">&lt;bdi a b="*" *c*&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi a b="*" *c*>d</bdi>')), [['<span class="invalid">&lt;bdi a b="*" *c*&gt;d&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi a b="*" *>*c*')), [['<span class="invalid">&lt;bdi a b="*" *&gt;<em>c</em></span>'], '']);
