@@ -61,11 +61,11 @@ export function surround<N>(
     const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
     assert(check(me_, resultM));
     const nodesM = eval(resultM);
-    const e_ = exec(resultM, me_);
+    const e_ = exec(resultM) ?? me_;
     const resultE = nodesM || optional ? closer({ source: e_, context }) : undefined;
     assert(check(e_, resultE, false));
     const nodesE = eval(resultE);
-    const rest = exec(resultE, e_);
+    const rest = exec(resultE) ?? e_;
     nodesE || setBacktrack(context, backtracks, sme_.length);
     if (!nodesM && !optional) return void revert(context, linebreak);
     if (rest.length === sme_.length) return void revert(context, linebreak);

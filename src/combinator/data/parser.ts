@@ -44,8 +44,8 @@ function eval_<N>(result: Result<N>, default_?: N[]): N[] | undefined {
     : default_;
 }
 
-export function exec(result: NonNullable<Result<unknown>>, default_?: string): string;
-export function exec(result: Result<unknown>, default_: string): string
+export function exec(result: NonNullable<Result<unknown>>, default_?: ''): string;
+export function exec(result: Result<unknown>, default_: ''): string
 export function exec(result: Result<unknown>, default_?: undefined): string | undefined;
 export function exec(result: Result<unknown>, default_?: string): string | undefined {
   return result
