@@ -5,7 +5,7 @@ import { union, inits, some, precedence, state, constraint, validate, surround, 
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
-import { text, str } from '../../source';
+import { txt, str } from '../../source';
 import { tightStart, trimBlankNodeEnd } from '../../visibility';
 import { unshift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -46,9 +46,9 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   (_, rest, context) => {
     //context.offset ??= 0;
     //context.offset += rest.length;
-    const sig = eval(parser({ source: context.recent![1], context }), []).join('');
+    const text = eval(sig({ source: context.recent![1], context }), []).join('');
     //context.offset -= rest.length;
-    const index = identity('index', undefined, sig)?.slice(7);
+    const index = identity('index', undefined, text)?.slice(7);
     return index
       ? [[html('span', { class: 'indexer', 'data-index': index })], rest]
       : undefined;
@@ -66,7 +66,7 @@ export function dataindex(ns: readonly (string | HTMLElement)[]): string | undef
   }
 }
 
-const parser = some(union([
+const sig: IndexParser.SignatureParser.InternalParser = some(union([
   unsafehtmlentity,
-  text,
+  txt,
 ]));

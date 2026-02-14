@@ -736,21 +736,10 @@ export namespace MarkdownParser {
           ]> {
         }
         export namespace SignatureParser {
-          export interface BracketParser extends
-            Inline<'extension/index/signature/bracket'>,
+          export interface InternalParser extends
+            Inline<'extension/index/signature/internal'>,
             Parser<string, Context, [
-              Parser<string, Context, [
-                BracketParser,
-                SourceParser.TxtParser,
-              ]>,
-              Parser<string, Context, [
-                BracketParser,
-                SourceParser.TxtParser,
-              ]>,
-              Parser<string, Context, [
-                BracketParser,
-                SourceParser.TxtParser,
-              ]>,
+              UnsafeHTMLEntityParser,
               SourceParser.TxtParser,
             ]> {
           }
