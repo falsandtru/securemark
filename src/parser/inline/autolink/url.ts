@@ -4,15 +4,14 @@ import { union, tails, some, recursion, precedence, state, constraint, validate,
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
 
-const closer = /^[-+*=~^_,.;:!?]*(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/;
-
 export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'https://'], rewrite(
   open(
     /^https?:\/\/(?=[\x21-\x7E])/,
     precedence(1, some(union([
       verify(bracket, ns => ns.length > 0),
-      some(unescsource, closer),
-    ]), undefined, [[/^[^\x21-\x7E]/, 3]])),
+      // 再帰に注意
+      some(unescsource, /^[-+*=~^_/,.;:!?]{2}|^[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/),
+    ]), undefined, [[/^[^\x21-\x7E]|^\$/, 9]])),
     false,
     [3 | Backtrack.autolink]),
   union([

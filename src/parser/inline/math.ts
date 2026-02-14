@@ -18,7 +18,7 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
       /^\$(?![\s{}])/,
       precedence(2, some(union([
         bracket,
-        focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
+        focus(/^(?:[ ([](?!\$)|\\[\\{}$]?|(?!:\/\/)[!#%&')\x2A-\x5A\]^_\x61-\x7A|~])+/, some(unescsource)),
       ]))),
       /^\$(?![0-9A-Za-z])/,
       false, undefined, undefined, [3 | Backtrack.bracket]),
@@ -43,6 +43,6 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
   some(union([
     bracket,
     some(escsource, /^[{}$\n]/),
-  ]))),
+  ]), undefined, [['://', 9]])),
   str('}'),
   true));
