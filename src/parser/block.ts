@@ -1,6 +1,7 @@
 import { MarkdownParser } from '../../markdown';
 import { Recursion, Command } from './context';
 import { union, reset, open, fallback, recover } from '../combinator';
+import { MAX_SEGMENT_SIZE } from './segment';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
@@ -40,7 +41,8 @@ export import ParagraphParser = BlockParser.ParagraphParser;
 export const block: BlockParser = reset(
   {
     resources: {
-      clock: 100000,
+      // バックトラックのせいで文字数制限を受けないようにする。
+      clock: MAX_SEGMENT_SIZE * 12 + 1,
       recursions: [
         10 || Recursion.block,
         20 || Recursion.blockquote,
