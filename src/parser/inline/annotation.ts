@@ -7,14 +7,13 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
   '((',
-  precedence(1, state(State.annotation | State.media,
+  precedence(1, state(State.annotation,
   trimBlankStart(some(union([inline]), ')', [[')', 1]])))),
   '))',
   false,
   ([, ns], rest, context) =>
-    context.linebreak === 0 &&
-    trimBlankNodeEnd(ns).length > 0
-      ? [[html('sup', { class: 'annotation' }, [html('span', defrag(ns))])], rest]
+    context.linebreak === 0
+      ? [[html('sup', { class: 'annotation' }, [html('span', defrag(trimBlankNodeEnd(ns)))])], rest]
       : undefined,
   undefined,
   [3 | Backtrack.doublebracket, 1 | Backtrack.bracket])));

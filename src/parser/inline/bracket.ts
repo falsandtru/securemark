@@ -1,7 +1,8 @@
 import { BracketParser } from '../inline';
-import { Recursion, Backtrack } from '../context';
-import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
+import { State, Recursion, Backtrack } from '../context';
+import { union, some, recursion, precedence, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
+import { textlink } from './link';
 import { str } from '../source';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -41,7 +42,28 @@ export const bracket: BracketParser = lazy(() => union([
     precedence(1, recursion(Recursion.bracket, some(inline, ']', [[']', 1]]))),
     str(']'),
     true,
-    undefined,
+    ([as, bs = [], cs], rest, context) => {
+      if (context.state! & State.link) {
+        const { recent } = context;
+        const head = recent!.reduce((a, b) => a + b.length, rest.length);
+        if (context.linebreak! > 0 || rest[0] !== '{') {
+          setBacktrack(context, [2 | Backtrack.link], head);
+        }
+        else {
+          context.state! ^= State.link;
+          assert(rest.length > 0);
+          const result = !isBacktrack(context, [1 | Backtrack.link], rest)
+            ? textlink({ source: rest, context })
+            : undefined;
+          if (!result) {
+            setBacktrack(context, [2 | Backtrack.link], head);
+          }
+          context.state! ^= State.link;
+          context.recent = recent;
+        }
+      }
+      return [push(unshift(as, bs), cs), rest];
+    },
     ([as, bs = []], rest) => [unshift(as, bs), rest],
     [2 | Backtrack.bracket]),
   surround(

@@ -17,7 +17,7 @@ const optspec = {
 Object.setPrototypeOf(optspec, null);
 
 export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, creation(10,
-  precedence(1, state(State.linkers | State.media,
+  precedence(1, state(State.linkers,
   bind(subsequence([
     dup(surround(
       '[',
@@ -43,7 +43,8 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     if (content.at(-1) === Command.Escape) {
       content.pop();
       if (params === undefined) {
-        return void setBacktrack(context, [2 | Backtrack.link], context.recent!.reduce((a, b) => a + b.length, rest.length));
+        const head = context.recent!.reduce((a, b) => a + b.length, rest.length);
+        return void setBacktrack(context, [2 | Backtrack.link], head);
       }
     }
     else {

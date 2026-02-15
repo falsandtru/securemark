@@ -5,7 +5,10 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
-  return fmap(parser, ([el], _, { id }) => [define(el, { id: identity('index', id, el), 'data-index': null })]);
+  return fmap(parser, (ns, _, { id }) =>
+    ns.length === 1
+      ? [define(ns[0], { id: identity('index', id, ns[0]), 'data-index': null })]
+      : ns);
 }
 
 const MAX = 60;

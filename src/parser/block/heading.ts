@@ -13,7 +13,7 @@ export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
 
 export const heading: HeadingParser = block(rewrite(segment,
   // その他の表示制御は各所のCSSで行う。
-  state(State.annotation | State.reference | State.index | State.label | State.link | State.media,
+  state(State.annotation | State.reference | State.index | State.label | State.link,
   line(indexee(fmap(union([
     open(
       str(/^##+/),

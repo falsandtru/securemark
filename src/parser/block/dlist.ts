@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~[^\S\n]+(?=\S)/,
   some(inits([
-    state(State.annotation | State.reference | State.index | State.label | State.link | State.media,
+    state(State.annotation | State.reference | State.index | State.label | State.link,
     some(term)),
     some(desc),
   ]))),

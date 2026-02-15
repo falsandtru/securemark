@@ -7,36 +7,52 @@ import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
 import { txt, str } from '../../source';
 import { tightStart, trimBlankNodeEnd } from '../../visibility';
-import { unshift } from 'spica/array';
+import { unshift, push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
 export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(surround(
-  '[#',
-  precedence(1, state(State.linkers | State.media,
+  str('[#'),
+  precedence(1, state(State.linkers,
   tightStart(
   some(inits([
     inline,
     signature,
   ]), ']', [[']', 1]])))),
-  ']',
+  str(']'),
   false,
-  ([, ns], rest, context) =>
-    context.linebreak === 0 &&
-    trimBlankNodeEnd(ns).length > 0
-      ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
-      : undefined,
-  undefined,
+  ([as, bs, cs], rest, context) => {
+    if (context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0) {
+      return [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))], rest];
+    }
+    return (context.state! & State.linkers) === State.linkers
+      ? [push(push(unshift(as, bs), cs), ['']), rest]
+      : undefined;
+  },
+  ([as, bs], rest, context) => {
+    return (context.state! & State.linkers) === State.linkers
+      ? [push(unshift(as, bs), ['']), rest]
+      : undefined;
+  },
   [3 | Backtrack.bracket])),
-  ([el]: [HTMLAnchorElement]) => [
-    define(el,
-      {
-        id: el.id ? null : undefined,
-        class: 'index',
-        href: el.id ? `#${el.id}` : undefined,
-      }),
-  ])));
+  ns => {
+    if (ns.length === 1) {
+      const el = ns[0] as HTMLElement;
+      return [
+        define(el, {
+          id: el.id ? null : undefined,
+          class: 'index',
+          href: el.id ? `#${el.id}` : undefined,
+        })
+      ];
+    }
+    else {
+      assert(ns.at(-1) === '');
+      ns.pop();
+      return ns;
+    }
+  })));
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
   str(/^\|(?!\\?\s)/),

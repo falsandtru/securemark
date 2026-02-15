@@ -354,23 +354,22 @@ describe('Unit: parser/api/parse', () => {
     it('backtrack', function () {
       this.timeout(5000);
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して5倍遅い程度。
-      // 10n = link + link + template + annotation/reference + link +
-      //       html + code + url + ruby + text
-      const source = `${'.'.repeat(1 + 0)}!{ !{!{{{((([[[<a b="\`http://[${'.'.repeat(9984)}`;
+      // 11n = link + link + template + annotation/reference + link +
+      //       code + signature * 2 + url/math + ruby + text
+      const source = `${'.'.repeat(6 + 0)}!{ !{!{{{((([[[\`[#.|$[${'.'.repeat(9082)}]]]]`;
       assert.deepStrictEqual(
-        [...parse(source).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [`<p>${source.replace('<', '&lt;')}</p>`]);
+        [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
+          .map(el => el.tagName),
+        ['P', 'OL']);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const source = `${'.'.repeat(1 + 1)}!{ !{!{{{((([[[<a b="\`http://[${'.'.repeat(9984)}`;
+      const source = `${'.'.repeat(6 + 1)}!{ !{!{{{((([[[\`[#.|$[${'.'.repeat(9082)}]]]]`;
       assert.deepStrictEqual(
-        [...parse(source).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [
-          '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
-          `<pre class="error" translate="no">${source.slice(0, 1000 - 3).replace('<', '&lt;')}...</pre>`,
-        ]);
+        [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
+          .map(el => el.tagName),
+        ['H1', 'PRE']);
     });
 
   });

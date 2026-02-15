@@ -26,7 +26,8 @@ export const ruby: RubyParser = lazy(() => bind(
   ]),
   ([texts, rubies], rest, context) => {
     if (rubies === undefined) {
-      return void setBacktrack(context, [2 | Backtrack.ruby], context.recent!.reduce((a, b) => a + b.length, rest.length));
+      const head = context.recent!.reduce((a, b) => a + b.length, rest.length);
+      return void setBacktrack(context, [2 | Backtrack.ruby], head);
     }
     switch (true) {
       case rubies.length <= texts.length:
