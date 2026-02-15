@@ -9,8 +9,12 @@ import { memoize } from 'spica/memoize';
 
 export function indent<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
 export function indent<P extends Parser<unknown>>(opener: RegExp, parser: P, separation?: boolean): P;
-export function indent<N>(opener: RegExp | Parser<N>, parser?: Parser<N> | boolean, separation = false): Parser<N> {
-  if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser as boolean);
+export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolean = false, separation = false): Parser<N> {
+  if (typeof opener === 'function') {
+    separation = parser as boolean;
+    parser = opener;
+    opener = /^([ \t])\1*/;
+  }
   assert(parser);
   return bind(block(match(
     opener,
