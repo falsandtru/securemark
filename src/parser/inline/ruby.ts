@@ -75,13 +75,13 @@ const rtext: RubyParser.TextParser = ({ source, context }) => {
         if (result) {
           acc[acc.length - 1] += eval(result)[0];
           source = exec(result) ?? source.slice(1);
-          state ||= acc.at(-1)!.trimStart() !== '';
           continue;
         }
         // fallthrough
       }
       default: {
         if (source[0].trimStart() === '') {
+          state ||= acc.at(-1)!.trimStart() !== '';
           acc.push('');
           source = source.slice(1);
           continue;
@@ -90,11 +90,11 @@ const rtext: RubyParser.TextParser = ({ source, context }) => {
         assert(result);
         acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
         source = exec(result);
-        state ||= acc.at(-1)!.trimStart() !== '';
         continue;
       }
     }
   }
+  state ||= acc.at(-1)!.trimStart() !== '';
   return state
     ? [acc, source]
     : undefined;
