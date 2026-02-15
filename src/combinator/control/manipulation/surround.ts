@@ -6,35 +6,35 @@ export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
   f?: (rss: [S[], SubNode<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[], string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], SubNode<P>[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
   f?: (rss: [S[], SubNode<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], SubNode<P>[] | undefined], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
   f?: (rss: [S[], Node<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[], string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], Node<P>[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
   f?: (rss: [S[], Node<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[] | undefined, string], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], Node<P>[] | undefined], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
   f?: (rss: [N[], N[], N[]], rest: string, context: Ctx) => Result<N>,
-  g?: (rss: [N[], N[], string], rest: string, context: Ctx) => Result<N>,
+  g?: (rss: [N[], N[]], rest: string, context: Ctx) => Result<N>,
   backtracks: readonly number[] = [],
 ): Parser<N> {
   switch (typeof opener) {
@@ -79,7 +79,7 @@ export function surround<N>(
         ? f([nodesS, nodesM!, nodesE], rest, context)
         : [push(unshift(nodesS, nodesM ?? []), nodesE), rest] satisfies [N[], string]
       : g
-        ? g([nodesS, nodesM!, me_], rest, context)
+        ? g([nodesS, nodesM!], rest, context)
         : undefined;
     if (result) {
       context.linebreak ||= linebreak;

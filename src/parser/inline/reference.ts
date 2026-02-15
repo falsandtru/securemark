@@ -91,12 +91,12 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = surround(
-  '^',
+  str('^'),
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
   /^\|?(?=]])|^\|[^\S\n]*/,
   true,
   ([, ns], rest) => ns ? [[Command.Escape, ns[0].trimEnd()], rest.replace(blank.start, '')] : [[''], `^${rest}`],
-  ([, , rest]) => [[''], `^${rest}`]);
+  ([as, bs = ['']], rest) => [[''], as[0] + bs[0] + rest]);
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   switch (ns[0]) {
