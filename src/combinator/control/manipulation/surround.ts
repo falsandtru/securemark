@@ -57,7 +57,7 @@ export function surround<N>(
     if (resultS === undefined) return void revert(context, linebreak);
     const nodesS = eval(resultS);
     const me_ = exec(resultS);
-    if (getBacktrack(context, backtracks, sme_, sme_.length - me_.length)) return void revert(context, linebreak);
+    if (isBacktrack(context, backtracks, sme_, sme_.length - me_.length)) return void revert(context, linebreak);
     const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
     assert(check(me_, resultM));
     const nodesM = eval(resultM);
@@ -120,7 +120,7 @@ export function close<N>(
 }
 
 const statesize = 2;
-export function getBacktrack(
+export function isBacktrack(
   context: Ctx,
   backtracks: readonly number[],
   source: string,

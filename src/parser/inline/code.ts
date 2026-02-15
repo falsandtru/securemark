@@ -1,12 +1,12 @@
 import { CodeParser } from '../inline';
-import { validate, getBacktrack, setBacktrack, match } from '../../combinator';
+import { validate, isBacktrack, setBacktrack, match } from '../../combinator';
 import { Backtrack } from '../context';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = validate(
   ({ source, context }) =>
     source[0] === '`' &&
-    !getBacktrack(context, [1 | Backtrack.bracket], source),
+    !isBacktrack(context, [1 | Backtrack.bracket], source),
   match(
     /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
     ([whole, , body, closer]) => ({ source, context }) =>
