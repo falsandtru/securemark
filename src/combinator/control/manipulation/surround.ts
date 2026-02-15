@@ -51,7 +51,7 @@ export function surround<N>(
     const sme_ = source;
     if (sme_ === '') return;
     const { linebreak } = context;
-    context.linebreak = undefined;
+    context.linebreak = 0;
     const resultS = opener({ source: sme_, context });
     assert(check(sme_, resultS, false));
     if (resultS === undefined) return void revert(context, linebreak);
@@ -82,7 +82,7 @@ export function surround<N>(
         ? g([nodesS, nodesM!, me_], rest, context)
         : undefined;
     if (result) {
-      context.linebreak ??= linebreak;
+      context.linebreak ||= linebreak;
     }
     else {
       revert(context, linebreak);

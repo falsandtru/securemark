@@ -30,7 +30,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
       ']',
       true,
       ([, ns = []], rest, context) =>
-        context.linebreak === undefined
+        context.linebreak === 0
           ? [ns, rest]
           : undefined,
       undefined,

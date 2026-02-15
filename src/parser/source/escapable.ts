@@ -34,7 +34,7 @@ export const escsource: EscapableSourceParser = ({ source, context }) => {
               return [[source.slice(0, 2)], source.slice(2)];
           }
         case '\n':
-          context.linebreak ??= source.length;
+          context.linebreak ||= source.length;
           return [[html('br')], source.slice(1)];
         default:
           assert(source[0] !== '\n');

@@ -18,7 +18,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ']]',
   false,
   ([, ns], rest, context) =>
-    context.linebreak === undefined &&
+    context.linebreak === 0 &&
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', attributes(ns), [html('span', defrag(ns))])], rest]
       : undefined,

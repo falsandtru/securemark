@@ -23,7 +23,7 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   ']',
   false,
   ([, ns], rest, context) =>
-    context.linebreak === undefined &&
+    context.linebreak === 0 &&
     trimBlankNodeEnd(ns).length > 0
       ? [[html('a', { 'data-index': dataindex(ns) }, defrag(ns))], rest]
       : undefined,

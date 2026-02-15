@@ -12,7 +12,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   '))',
   false,
   ([, ns], rest, context) =>
-    context.linebreak === undefined &&
+    context.linebreak === 0 &&
     trimBlankNodeEnd(ns).length > 0
       ? [[html('sup', { class: 'annotation' }, [html('span', defrag(ns))])], rest]
       : undefined,

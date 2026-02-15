@@ -25,7 +25,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       ']',
       true,
       ([, ns = []], rest, context) =>
-        context.linebreak === undefined
+        context.linebreak === 0
           ? [push(ns, [Command.Escape]), rest]
           : undefined,
       undefined,
