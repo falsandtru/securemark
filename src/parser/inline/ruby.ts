@@ -3,7 +3,7 @@ import { Backtrack } from '../context';
 import { eval, exec } from '../../combinator/data/parser';
 import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
-import { text } from '../source';
+import { txt } from '../source';
 import { isTightNodeStart } from '../visibility';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const ruby: RubyParser = lazy(() => bind(
   inits([
     dup(surround(
-      '[', rtext, ']',
+      '[', text, ']',
       false,
       ([, ns], rest) => {
         ns && ns.at(-1) === '' && ns.pop();
@@ -20,7 +20,7 @@ export const ruby: RubyParser = lazy(() => bind(
       undefined,
       [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
     dup(surround(
-      '(', rtext, ')',
+      '(', text, ')',
       false, undefined, undefined,
       [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
   ]),
@@ -62,7 +62,7 @@ export const ruby: RubyParser = lazy(() => bind(
     }
   }));
 
-const rtext: RubyParser.TextParser = ({ source, context }) => {
+const text: RubyParser.TextParser = ({ source, context }) => {
   const acc = [''];
   let state = false;
   while (source !== '') {
@@ -86,7 +86,7 @@ const rtext: RubyParser.TextParser = ({ source, context }) => {
           source = source.slice(1);
           continue;
         }
-        const result = text({ source, context })!;
+        const result = txt({ source, context })!;
         assert(result);
         acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
         source = exec(result);
