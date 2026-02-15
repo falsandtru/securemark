@@ -40,9 +40,9 @@ const align: AlignParser = fmap(open(
   '|',
   union([
     focus(/^:-+:?/, ({ source }) =>
-      [[source[source.length - 1] === ':' ? 'center' : 'start'], ''], false),
+      [[source.at(-1) === ':' ? 'center' : 'start'], ''], false),
     focus(/^-+:?/, ({ source }) =>
-      [[source[source.length - 1] === ':' ? 'end' : ''], ''], false),
+      [[source.at(-1) === ':' ? 'end' : ''], ''], false),
   ])),
   ns => [html('td', defrag(ns))]);
 
