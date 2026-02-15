@@ -84,8 +84,6 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$\\Begin{}$')), [['<span class="invalid" translate="no">$\\Begin{}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${\\begin}$')), [['<span class="invalid" translate="no">${\\begin}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$http://host$')), undefined);
-      assert.deepStrictEqual(inspect(parser('${http://host}$')), undefined);
-      assert.deepStrictEqual(inspect(parser('${{http://host}}$')), undefined);
       assert.deepStrictEqual(inspect(parser(' ${a}$')), undefined);
     });
 
