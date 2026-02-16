@@ -2742,8 +2742,12 @@ const bind_1 = __webpack_require__(994);
 const match_1 = __webpack_require__(1638);
 const surround_1 = __webpack_require__(5781);
 const memoize_1 = __webpack_require__(6925);
-function indent(opener, parser, separation = false) {
-  if (typeof opener === 'function') return indent(/^([ \t])\1*/, opener, parser);
+function indent(opener, parser = false, separation = false) {
+  if (typeof opener === 'function') {
+    separation = parser;
+    parser = opener;
+    opener = /^([ \t])\1*/;
+  }
   return (0, bind_1.bind)((0, block_1.block)((0, match_1.match)(opener, (0, memoize_1.memoize)(([indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, ({
     source
   }) => [[source], '']))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation), (lines, rest, context) => {
@@ -2979,7 +2983,7 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
     if (!nodesM && !optional) return void revert(context, linebreak);
     if (rest.length === sme_.length) return void revert(context, linebreak);
     context.recent = [sme_.slice(0, sme_.length - me_.length), me_.slice(0, me_.length - e_.length), e_.slice(0, e_.length - rest.length)];
-    const result = nodesE ? f ? f([nodesS, nodesM, nodesE], rest, context) : [(0, array_1.push)((0, array_1.unshift)(nodesS, nodesM ?? []), nodesE), rest] : g ? g([nodesS, nodesM, me_], rest, context) : undefined;
+    const result = nodesE ? f ? f([nodesS, nodesM, nodesE], rest, context) : [(0, array_1.push)((0, array_1.unshift)(nodesS, nodesM ?? []), nodesE), rest] : g ? g([nodesS, nodesM], rest, context) : undefined;
     if (result) {
       context.linebreak ||= linebreak;
     } else {
@@ -5428,9 +5432,9 @@ const row = (parser, optional) => (0, combinator_1.fallback)((0, combinator_1.fm
 }, [(0, dom_1.html)('td', source.replace('\n', ''))])], '']));
 const align = (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_1.union)([(0, combinator_1.focus)(/^:-+:?/, ({
   source
-}) => [[source[source.length - 1] === ':' ? 'center' : 'start'], ''], false), (0, combinator_1.focus)(/^-+:?/, ({
+}) => [[source.at(-1) === ':' ? 'center' : 'start'], ''], false), (0, combinator_1.focus)(/^-+:?/, ({
   source
-}) => [[source[source.length - 1] === ':' ? 'end' : ''], ''], false)])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
+}) => [[source.at(-1) === ':' ? 'end' : ''], ''], false)])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
 const cell = (0, combinator_1.surround)(/^\|\s*(?=\S)/, (0, combinator_1.trimStart)((0, combinator_1.union)([(0, combinator_1.close)(inline_1.medialink, /^\s*(?=\||$)/), (0, combinator_1.close)(inline_1.media, /^\s*(?=\||$)/), (0, combinator_1.close)(inline_1.shortmedia, /^\s*(?=\||$)/), (0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline, /^\|/, [[/^[|\\]?\s*$/, 9]]))])), /^[^|]*/, true);
 const head = (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, dom_1.defrag)(ns))]);
 const data = (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
@@ -6929,7 +6933,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
   return context.state & 128 /* State.annotation */ ? [(0, array_1.unshift)(as, bs), rest] : undefined;
 }, [3 | 16 /* Backtrack.doublebracket */, 1 | 8 /* Backtrack.bracket */])));
 // Chicago-Style
-const abbr = (0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/, true, ([, ns], rest) => ns ? [["\u001B" /* Command.Escape */, ns[0].trimEnd()], rest.replace(visibility_1.blank.start, '')] : [[''], `^${rest}`], ([,, rest]) => [[''], `^${rest}`]);
+const abbr = (0, combinator_1.surround)((0, source_1.str)('^'), (0, combinator_1.union)([(0, source_1.str)(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]), /^\|?(?=]])|^\|[^\S\n]*/, true, ([, ns], rest) => ns ? [["\u001B" /* Command.Escape */, ns[0].trimEnd()], rest.replace(visibility_1.blank.start, '')] : [[''], `^${rest}`], ([as, bs = ['']], rest) => [[''], as[0] + bs[0] + rest]);
 function attributes(ns) {
   switch (ns[0]) {
     case '':
@@ -6994,10 +6998,10 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', rtext, ']', false, ([, ns], rest) => {
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', text, ']', false, ([, ns], rest) => {
   ns && ns.at(-1) === '' && ns.pop();
   return (0, visibility_1.isTightNodeStart)(ns) ? [ns, rest] : undefined;
-}, undefined, [3 | 32 /* Backtrack.ruby */, 1 | 8 /* Backtrack.bracket */])), (0, combinator_1.dup)((0, combinator_1.surround)('(', rtext, ')', false, undefined, undefined, [3 | 32 /* Backtrack.ruby */, 1 | 8 /* Backtrack.bracket */]))]), ([texts, rubies], rest, context) => {
+}, undefined, [3 | 32 /* Backtrack.ruby */, 1 | 8 /* Backtrack.bracket */])), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, undefined, undefined, [3 | 32 /* Backtrack.ruby */, 1 | 8 /* Backtrack.bracket */]))]), ([texts, rubies], rest, context) => {
   if (rubies === undefined) {
     const head = context.recent.reduce((a, b) => a + b.length, rest.length);
     return void (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.ruby */], head);
@@ -7011,7 +7015,7 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinato
       return [[(0, dom_1.html)('ruby', (0, dom_1.defrag)((0, array_1.unshift)([texts.join(' ')], [(0, dom_1.html)('rp', '('), (0, dom_1.html)('rt', rubies.join(' ').trim()), (0, dom_1.html)('rp', ')')])))], rest];
   }
 }));
-const rtext = ({
+const text = ({
   source,
   context
 }) => {
@@ -7030,7 +7034,6 @@ const rtext = ({
           if (result) {
             acc[acc.length - 1] += (0, parser_1.eval)(result)[0];
             source = (0, parser_1.exec)(result) ?? source.slice(1);
-            state ||= acc.at(-1).trimStart() !== '';
             continue;
           }
           // fallthrough
@@ -7038,21 +7041,22 @@ const rtext = ({
       default:
         {
           if (source[0].trimStart() === '') {
+            state ||= acc.at(-1).trimStart() !== '';
             acc.push('');
             source = source.slice(1);
             continue;
           }
-          const result = (0, source_1.text)({
+          const result = (0, source_1.txt)({
             source,
             context
           });
           acc[acc.length - 1] += (0, parser_1.eval)(result)[0] ?? source.slice(0, source.length - (0, parser_1.exec)(result).length);
           source = (0, parser_1.exec)(result);
-          state ||= acc.at(-1).trimStart() !== '';
           continue;
         }
     }
   }
+  state ||= acc.at(-1).trimStart() !== '';
   return state ? [acc, source] : undefined;
 };
 //function attributes(texts: string[], rubies: string[]): Record<string, string> {
