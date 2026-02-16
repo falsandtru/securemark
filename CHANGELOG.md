@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.291.1
+
+- Refactoring.
+
 ## 0.291.0
 
 - Fix backtracking control.
