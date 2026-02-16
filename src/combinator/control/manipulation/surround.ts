@@ -1,4 +1,4 @@
-import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, input, eval, exec, check, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 import { unshift, push } from 'spica/array';
 
@@ -47,22 +47,22 @@ export function surround<N>(
     case 'object':
       closer = match(closer);
   }
-  return ({ source, context }) => {
+  return failsafe(({ source, context }) => {
     const sme_ = source;
     if (sme_ === '') return;
     const { linebreak } = context;
     context.linebreak = 0;
-    const resultS = opener({ source: sme_, context });
+    const resultS = opener(input(sme_, context));
     assert(check(sme_, resultS, false));
     if (resultS === undefined) return void revert(context, linebreak);
     const nodesS = eval(resultS);
     const me_ = exec(resultS);
     if (isBacktrack(context, backtracks, sme_, sme_.length - me_.length)) return void revert(context, linebreak);
-    const resultM = me_ !== '' ? parser({ source: me_, context }) : undefined;
+    const resultM = me_ !== '' ? parser(input(me_, context)) : undefined;
     assert(check(me_, resultM));
     const nodesM = eval(resultM);
     const e_ = exec(resultM) ?? me_;
-    const resultE = nodesM || optional ? closer({ source: e_, context }) : undefined;
+    const resultE = nodesM || optional ? closer(input(e_, context)) : undefined;
     assert(check(e_, resultE, false));
     const nodesE = eval(resultE);
     const rest = exec(resultE) ?? e_;
@@ -74,10 +74,10 @@ export function surround<N>(
       me_.slice(0, me_.length - e_.length),
       e_.slice(0, e_.length - rest.length),
     ];
-    const result = nodesE
+    const result: Result<N> = nodesE
       ? f
         ? f([nodesS, nodesM!, nodesE], rest, context)
-        : [push(unshift(nodesS, nodesM ?? []), nodesE), rest] satisfies [N[], string]
+        : [push(unshift(nodesS, nodesM ?? []), nodesE), rest]
       : g
         ? g([nodesS, nodesM!], rest, context)
         : undefined;
@@ -88,7 +88,7 @@ export function surround<N>(
       revert(context, linebreak);
     }
     return result;
-  };
+  });
 }
 export function open<P extends Parser<unknown>>(
   opener: string | RegExp | Parser<Node<P>, Context<P>>,
@@ -97,7 +97,7 @@ export function open<P extends Parser<unknown>>(
   backtracks?: readonly number[],
 ): P;
 export function open<N>(
-  opener: string | RegExp | Parser<N>,
+  opener: string | RegExp | Parser<N, Ctx>,
   parser: Parser<N>,
   optional?: boolean,
   backtracks?: readonly number[],
@@ -112,7 +112,7 @@ export function close<P extends Parser<unknown>>(
 ): P;
 export function close<N>(
   parser: Parser<N>,
-  closer: string | RegExp | Parser<N>,
+  closer: string | RegExp | Parser<N, Ctx>,
   optional?: boolean,
   backtracks?: readonly number[],
 ): Parser<N> {
@@ -161,15 +161,20 @@ export function setBacktrack(
   }
 }
 
-function match(pattern: string | RegExp): (input: Input) => [never[], string] | undefined {
+function match(pattern: string | RegExp): (input: Input) => Result<never> {
   switch (typeof pattern) {
     case 'string':
-      return ({ source }) => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
+      return ({ source, context }) => {
+        if (source.slice(0, pattern.length) !== pattern) return;
+        context.position += pattern.length;
+        return [[], source.slice(pattern.length)];
+      };
     case 'object':
       return ({ source, context }) => {
         const m = source.match(pattern);
         if (m === null) return;
         consume(m[0].length, context);
+        context.position += m[0].length;
         return [[], source.slice(m[0].length)];
       };
   }

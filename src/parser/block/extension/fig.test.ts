@@ -1,10 +1,11 @@
 import { fig } from './fig';
 import { some } from '../../../combinator';
+import { input } from '../../../combinator/data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/fig', () => {
   describe('fig', () => {
-    const parser = (source: string) => some(fig)({ source, context: {} });
+    const parser = (source: string) => some(fig)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('\n!https://host\n')), undefined);

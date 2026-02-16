@@ -1,10 +1,11 @@
 import { sidefence } from './sidefence';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/sidefence', () => {
   describe('sidefence', () => {
-    const parser = (source: string) => some(sidefence)({ source, context: {} });
+    const parser = (source: string) => some(sidefence)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,53 +1,47 @@
 import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { nonWhitespace } from './text';
+import { nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
 import { html } from 'typed-dom/dom';
 
-const delimiter = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
-
-export const escsource: EscapableSourceParser = ({ source, context }) => {
-  if (source === '') return;
-  const i = source.search(delimiter);
-  switch (i) {
-    case -1:
-      consume(source.length, context);
-      return [[source], ''];
-    case 0:
+export const escsource: EscapableSourceParser = ({ context }) => {
+  const { source, position } = context;
+  if (position === source.length) return;
+  consume(1, context);
+  context.position += 1;
+  switch (source[position]) {
+    case '\r':
+      assert(!source.includes('\r', position + 1));
+      consume(-1, context);
+      return [[], source.slice(position + 1)];
+    case Command.Escape:
       consume(1, context);
-      switch (source[0]) {
-        case '\r':
-          assert(!source.includes('\r', 1));
-          consume(-1, context);
-          return [[], source.slice(1)];
-        case Command.Escape:
-          consume(1, context);
-          return [[source.slice(1, 2)], source.slice(2)];
-        case '\\':
-          switch (source[1]) {
-            case undefined:
-              return [[source[0]], ''];
-            case '\n':
-              return [[source[0]], source.slice(1)];
-            default:
-              consume(1, context);
-              return [[source.slice(0, 2)], source.slice(2)];
-          }
+      context.position += 1;
+      return [[source.slice(position + 1, position + 2)], source.slice(position + 2)];
+    case '\\':
+      switch (source[position + 1]) {
+        case undefined:
+          return [[source[position]], ''];
         case '\n':
-          context.linebreak ||= source.length;
-          return [[html('br')], source.slice(1)];
+          return [[source[position]], source.slice(position + 1)];
         default:
-          assert(source[0] !== '\n');
-          const b = source[0].trimStart() === '';
-          const i = b
-            ? source.search(nonWhitespace)
-            : 1;
-          assert(i > 0);
-          consume(i - 1, context);
-          return [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
+          consume(1, context);
+          context.position += 1;
+          return [[source.slice(position, position + 2)], source.slice(position + 2)];
       }
+    case '\n':
+      context.linebreak ||= source.length - position;
+      return [[html('br')], source.slice(position + 1)];
     default:
-      consume(i, context);
-      return [[source.slice(0, i)], source.slice(i)];
+      assert(source[position] !== '\n');
+      const b = source[position].trimStart() === '';
+      let i = b || isAlphanumeric(source[position])
+        ? source.slice(position).search(b ? nonWhitespace : nonAlphanumeric) || 1
+        : 1;
+      assert(i > 0);
+      i = i - +b || 1;
+      consume(i - 1, context);
+      context.position += i - 1;
+      return [[source.slice(position, position + i)], source.slice(position + i)];
   }
 };

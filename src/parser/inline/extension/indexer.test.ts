@@ -1,10 +1,11 @@
 import { indexer } from './indexer';
 import { some } from '../../../combinator';
+import { input } from '../../../combinator/data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/indexer', () => {
   describe('indexer', () => {
-    const parser = (source: string) => some(indexer)({ source, context: {} });
+    const parser = (source: string) => some(indexer)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

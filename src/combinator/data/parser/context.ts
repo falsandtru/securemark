@@ -1,8 +1,8 @@
 import { ObjectCreate, min } from 'spica/alias';
-import { Parser, Result, Ctx, Node, Context } from '../../data/parser';
+import { Parser, Result, Ctx, CtxOptions, Node, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
-export function reset<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
+export function reset<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
 export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -12,7 +12,7 @@ export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
     apply(parser, source, ObjectCreate(context), changes, values, true);
 }
 
-export function context<P extends Parser<unknown>>(base: Context<P>, parser: P): P;
+export function context<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
 export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -31,6 +31,9 @@ function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: read
     const change = changes[i];
     const prop = change[0];
     switch (prop) {
+      case 'source':
+      case 'position':
+        continue;
       case 'resources':
         assert(reset);
         assert(!context.offset);
@@ -48,6 +51,9 @@ function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: read
     const change = changes[i];
     const prop = change[0];
     switch (prop) {
+      case 'source':
+      case 'position':
+        continue;
       case 'resources':
         assert(reset);
         // プロトタイプに戻ることで戻す

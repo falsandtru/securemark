@@ -1,4 +1,4 @@
-import { Parser } from '../parser';
+import { Parser, input } from '../parser';
 import { union } from './union';
 import { inspect } from '../../../debug.test';
 
@@ -18,14 +18,14 @@ describe('Unit: combinator/data/parser/union', () => {
 
     it('basic', () => {
       const parser = ab;
-      assert.deepStrictEqual(inspect(parser({ source: '', context: {} })), undefined);
-      assert.deepStrictEqual(inspect(parser({ source: 'a', context: {} })), [['A'], '']);
-      assert.deepStrictEqual(inspect(parser({ source: 'b', context: {} })), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser({ source: 'ab', context: {} })), [['A'], 'b']);
-      assert.deepStrictEqual(inspect(parser({ source: 'ba', context: {} })), [['B'], 'a']);
-      assert.deepStrictEqual(inspect(parser({ source: 'aab', context: {} })), [['A'], 'ab']);
-      assert.deepStrictEqual(inspect(parser({ source: 'abb', context: {} })), [['A'], 'bb']);
-      assert.deepStrictEqual(inspect(parser({ source: 'bba', context: {} })), [['B'], 'ba']);
+      assert.deepStrictEqual(inspect(parser(input('', {}))), undefined);
+      assert.deepStrictEqual(inspect(parser(input('a', {}))), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser(input('b', {}))), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser(input('ab', {}))), [['A'], 'b']);
+      assert.deepStrictEqual(inspect(parser(input('ba', {}))), [['B'], 'a']);
+      assert.deepStrictEqual(inspect(parser(input('aab', {}))), [['A'], 'ab']);
+      assert.deepStrictEqual(inspect(parser(input('abb', {}))), [['A'], 'bb']);
+      assert.deepStrictEqual(inspect(parser(input('bba', {}))), [['B'], 'ba']);
     });
 
   });

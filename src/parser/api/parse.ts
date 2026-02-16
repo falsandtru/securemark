@@ -1,6 +1,6 @@
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
-import { eval } from '../../combinator/data/parser';
+import { input, eval } from '../../combinator/data/parser';
 import { segment, validate, MAX_SEGMENT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -15,7 +15,7 @@ interface Options extends ParserOptions {
   readonly test?: boolean;
 }
 
-export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Context): DocumentFragment {
+export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Options | MarkdownParser.Context): DocumentFragment {
   if (!validate(source, MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
@@ -35,7 +35,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   const node = frag();
   let index = 0;
   for (const seg of segment(source)) {
-    node.append(...eval(header({ source: seg, context: { header: index++ === 0 } }) || block({ source: seg, context }), []));
+    node.append(...eval(header(input(seg, { header: index++ === 0 })) || block(input(seg, context)), []));
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;

@@ -1,10 +1,10 @@
-import { Parser, exec, check } from '../../data/parser';
+import { Parser, exec, check, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 
 export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P, cost?: boolean): P;
 export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<N>, cost = false): Parser<N> {
   assert(!pattern.flags.match(/[gmy]/) && pattern.source.startsWith('^'));
-  return input => {
+  return failsafe(input => {
     const { source, context } = input;
     if (source === '') return;
     const param = source.match(pattern);
@@ -17,5 +17,5 @@ export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     return exec(result).length < source.length && exec(result).length <= source.length
       ? result
       : undefined;
-  };
+  });
 }

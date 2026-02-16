@@ -1,10 +1,11 @@
 import { reference } from './reference';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/reference', () => {
   describe('reference', () => {
-    const parser = (source: string) => some(reference)({ source, context: {} });
+    const parser = (source: string) => some(reference)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
-import { eval } from '../../combinator/data/parser';
+import { input, eval } from '../../combinator/data/parser';
 import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -19,7 +19,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  let context: MarkdownParser.Context = {
+  let context: MarkdownParser.Options = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
   };
@@ -78,7 +78,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(header({ source: seg, context: { header: index === 0 } }) || block({ source: seg, context }), []);
+      const es = eval(header(input(seg, { header: index === 0 })) || block(input(seg, context)), []);
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.

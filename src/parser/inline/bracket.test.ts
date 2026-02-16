@@ -1,10 +1,11 @@
 import { bracket } from './bracket';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/bracket', () => {
   describe('bracket', () => {
-    const parser = (source: string) => some(bracket)({ source, context: {} });
+    const parser = (source: string) => some(bracket)(input(source, {}));
 
     it('(', () => {
       assert.deepStrictEqual(inspect(parser('(')), [['('], '']);

@@ -1,6 +1,6 @@
 import { min } from 'spica/alias';
 import { Command } from './context';
-import { Parser, Result, Ctx, Node, Context, eval, exec } from '../combinator/data/parser';
+import { Parser, Result, Ctx, Node, Context, eval, exec, failsafe } from '../combinator/data/parser';
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
@@ -37,7 +37,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
   }
   return [nodes, rest];
 }): Parser<string | N> {
-  return input => {
+  return failsafe(input => {
     const { source, context } = input;
     assert(source.startsWith(symbol));
     let acc: N[][] = [];
@@ -82,7 +82,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     }
     const postfix = i;
     return termination(acc, rest, prefix, postfix, state);
-  };
+  });
 }
 
 export function invalid(

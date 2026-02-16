@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
-import { eval } from '../../../combinator/data/parser';
+import { input, eval } from '../../../combinator/data/parser';
 import { recursion, block, validate, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
 import { invalid } from '../../util';
@@ -46,7 +46,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
           html('aside', { class: 'example', 'data-type': 'math' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            eval(mathblock({ source: `$$\n${body}$$`, context }), [])[0],
+            eval(mathblock(input(`$$\n${body}$$`, context)), [])[0],
           ]),
         ];
       default:

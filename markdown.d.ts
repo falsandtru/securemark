@@ -1,5 +1,4 @@
-import { Parser, Ctx } from './src/combinator/data/parser';
-import { Command } from './src/parser/context';
+import { Parser, Ctx, CtxOptions } from './src/combinator/data/parser';
 import { Dict } from 'spica/dict';
 
 declare abstract class Markdown<T> {
@@ -13,7 +12,9 @@ export interface MarkdownParser extends
   ]> {
 }
 export namespace MarkdownParser {
-  export interface Context extends Ctx {
+  export interface Context extends Ctx, Options {
+  }
+  export interface Options extends CtxOptions {
     readonly host?: URL;
     readonly url?: URL;
     readonly id?: string;

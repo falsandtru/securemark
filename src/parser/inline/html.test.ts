@@ -1,10 +1,11 @@
 import { html } from './html';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/html', () => {
   describe('html', () => {
-    const parser = (source: string) => some(html)({ source, context: {} });
+    const parser = (source: string) => some(html)(input(source, {}));
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), [['<span class="invalid">&lt;script&gt;</span>'], '']);

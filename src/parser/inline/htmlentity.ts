@@ -6,7 +6,10 @@ import { html } from 'typed-dom/dom';
 export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
   /^&[0-9A-Za-z]{1,99};/,
   //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
-  ({ source }) => [[parser(source) ?? source], '']));
+  ({ source, context }) => {
+    context.position += source.length;
+    return [[parser(source) ?? source], ''];
+  }));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),

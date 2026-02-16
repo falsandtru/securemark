@@ -1,9 +1,9 @@
-import { Parser, Ctx } from '../../data/parser';
+import { Parser, Ctx, failsafe } from '../../data/parser';
 import { firstline, isBlank } from '../constraint/line';
 import { push } from 'spica/array';
 
 export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
-  return ({ source }) => {
+  return failsafe(({ source, context }) => {
     if (source === '') return;
     const matches = source.match(opener);
     if (!matches) return;
@@ -42,6 +42,7 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
       }
       rest = rest.slice(line.length);
     }
+    context.position += matches[0].length;
     return [push([block, overflow, closer], matches), rest];
-  };
+  });
 }

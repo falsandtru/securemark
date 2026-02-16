@@ -1,10 +1,11 @@
 import { math } from './math';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/math', () => {
   describe('math', () => {
-    const parser = (source: string) => some(math)({ source, context: {} });
+    const parser = (source: string) => some(math)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

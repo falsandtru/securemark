@@ -1,4 +1,4 @@
-import { eval, exec } from '../../combinator/data/parser';
+import { input, eval, exec } from '../../combinator/data/parser';
 import { header as h } from '../header';
 
 export function header(source: string): string {
@@ -12,7 +12,7 @@ export function headers(source: string): string[] {
 }
 
 function parse(source: string): [HTMLElement, string] | [] {
-  const result = h({ source, context: {} });
+  const result = h(input(source, {}));
   const [el] = eval(result, []);
   return el?.tagName === 'ASIDE'
     ? [el, exec(result!)]

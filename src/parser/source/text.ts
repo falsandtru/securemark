@@ -1,66 +1,67 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { Command } from '../context';
+import { input } from '../../combinator/data/parser';
 import { union, consume, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /[\s\x00-\x7F（）［］｛｝]|\S#|[0-9A-Za-z]>/u;
-export const nonWhitespace = /[\S\n]|$/u;
-export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|[0-9A-Za-z]>|$/u;
+export const delimiter = /[\s\x00-\x7F（）［］｛｝]|\S#|[0-9A-Za-z]>/;
+export const nonWhitespace = /[\S\n]|$/;
+export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|[0-9A-Za-z]>|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = ({ source, context }) => {
-  if (source === '') return;
-  const i = source.search(delimiter);
-  switch (i) {
-    case -1:
-      consume(source.length, context);
-      return [[source], ''];
-    case 0:
-      consume(1, context);
-      switch (source[0]) {
-        case '\r':
-          assert(!source.includes('\r', 1));
-          consume(-1, context);
-          return [[], source.slice(1)];
-        case Command.Escape:
-        case '\\':
-          switch (source[1]) {
-            case undefined:
-              return [[], ''];
-            case '\n':
-              assert(source[0] !== Command.Escape);
-              return [[], source.slice(1)];
-            default:
-              consume(1, context);
-              return [[source.slice(1, 2)], source.slice(2)];
-          }
+export const text: TextParser = ({ context }) => {
+  const { source, position } = context;
+  if (position === source.length) return;
+  consume(1, context);
+  context.position += 1;
+  switch (source[position]) {
+    case '\r':
+      assert(!source.includes('\r', position + 1));
+      consume(-1, context);
+      return [[], source.slice(position + 1)];
+    case Command.Escape:
+    case '\\':
+      switch (source[position + 1]) {
+        case undefined:
+          return [[], ''];
         case '\n':
-          context.linebreak ||= source.length;
-          return [[html('br')], source.slice(1)];
-        case '*':
-        case '`':
-          return source[1] === source[0]
-            ? repeat({ source, context })
-            : [[source[0]], source.slice(1)];
+          assert(source[0] !== Command.Escape);
+          return [[], source.slice(position + 1)];
         default:
-          assert(source[0] !== '\n');
-          const b = source[0].trimStart() === '';
-          const i = b || isAlphanumeric(source[0])
-            ? source.search(b ? nonWhitespace : nonAlphanumeric) || 1
-            : 1;
-          assert(i > 0);
-          assert(!['\\', '\n'].includes(source[0]));
-          consume(i - 1, context);
-          return b && i === source.length
-              || b && source[i] === '\n'
-              || b && source[i] === '\\' && source[i + 1] === '\n'
-            ? [[], source.slice(i)]
-            : [[source.slice(0, i - +b || 1)], source.slice(i - +b || 1)];
+          consume(1, context);
+          context.position += 1;
+          return [[source.slice(position + 1, position + 2)], source.slice(position + 2)];
       }
+    case '\n':
+      context.linebreak ||= source.length - position;
+      return [[html('br')], source.slice(position + 1)];
+    case '*':
+    case '`':
+      return source[position + 1] === source[position + 0]
+        ? repeat(input(source.slice(position), context))
+        : [[source[position]], source.slice(position + 1)];
     default:
-      consume(i, context);
-      return [[source.slice(0, i)], source.slice(i)];
+      assert(source[position] !== '\n');
+      const t = source.slice(position, position + 2).trimStart();
+      const b = t === ''
+        ? true
+        : t === '\\' && source[position + 1] === '\\' && source[position + 2] === '\n';
+      let i = b || isAlphanumeric(source[position])
+        ? source.slice(position).search(b ? nonWhitespace : nonAlphanumeric) || 1
+        : 1;
+      assert(i > 0);
+      assert(!['\\', '\n'].includes(source[position]));
+      const state = 0
+        || b && i === source.length - position
+        || b && source[position + i] === '\n'
+        || b && source[position + i] === '\\' && source[position + i + 1] === '\n';
+      i = state ? i : i - +b || 1;
+      consume(i - 1, context);
+      context.position += i - 1;
+      return state
+        ? [[], source.slice(position + i)]
+        : [[source.slice(position, position + i)], source.slice(position + i)];
   }
 };
 

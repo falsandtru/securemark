@@ -1,6 +1,6 @@
 import { RubyParser } from '../inline';
 import { Backtrack } from '../context';
-import { eval, exec } from '../../combinator/data/parser';
+import { eval } from '../../combinator/data/parser';
 import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { txt } from '../source';
@@ -62,41 +62,38 @@ export const ruby: RubyParser = lazy(() => bind(
     }
   }));
 
-const text: RubyParser.TextParser = ({ source, context }) => {
+const text: RubyParser.TextParser = input => {
+  const { context } = input;
+  const { source } = context;
   const acc = [''];
   let state = false;
-  while (source !== '') {
-    if (!/^(?:\\[^\n]|[^\\[\](){}<>"$#\n])/.test(source)) break;
-    assert(source[0] !== '\n');
-    switch (source[0]) {
-      // @ts-expect-error
+  for (let { position } = context; position < source.length; position = context.position) {
+    if (!/^(?:\\[^\n]|[^\\[\](){}<>"$#\n])/.test(source.slice(position, position + 2))) break;
+    assert(source[position] !== '\n');
+    switch (source[position]) {
       case '&': {
-        const result = unsafehtmlentity({ source, context });
-        if (result) {
-          acc[acc.length - 1] += eval(result)[0];
-          source = exec(result) ?? source.slice(1);
-          continue;
-        }
-        // fallthrough
+        const result = unsafehtmlentity({ source: source.slice(position), context }) ?? txt(input)!;
+        assert(result);
+        acc[acc.length - 1] += eval(result)[0];
+        continue;
       }
       default: {
-        if (source[0].trimStart() === '') {
+        if (source[position].trimStart() === '') {
           state ||= acc.at(-1)!.trimStart() !== '';
           acc.push('');
-          source = source.slice(1);
+          context.position += 1;
           continue;
         }
-        const result = txt({ source, context })!;
+        const result = txt(input)!;
         assert(result);
-        acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
-        source = exec(result);
+        acc[acc.length - 1] += eval(result)[0] ?? source.slice(position, context.position);
         continue;
       }
     }
   }
   state ||= acc.at(-1)!.trimStart() !== '';
   return state
-    ? [acc, source]
+    ? [acc, source.slice(context.position)]
     : undefined;
 };
 

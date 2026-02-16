@@ -1,10 +1,11 @@
 import { codeblock } from './codeblock';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/codeblock', () => {
   describe('codeblock', () => {
-    const parser = (source: string) => some(codeblock)({ source, context: {} });
+    const parser = (source: string) => some(codeblock)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

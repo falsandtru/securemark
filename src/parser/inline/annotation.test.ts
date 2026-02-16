@@ -1,10 +1,11 @@
 import { annotation } from './annotation';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/annotation', () => {
   describe('annotation', () => {
-    const parser = (source: string) => some(annotation)({ source, context: {} });
+    const parser = (source: string) => some(annotation)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,17 +1,18 @@
 import { block } from './block';
+import { input } from '../../data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/block', () => {
   describe('block', () => {
     it('invalid', () => {
-      assert.throws(() => block(_ => [[], '\n'])({ source: ' \n', context: {} }));
+      assert.throws(() => block(_ => [[], '\n'])(input(' \n', {})));
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(block(_ => [[], ''])({ source: '\n', context: {} })), [[], '']);
-      assert.deepStrictEqual(inspect(block(_ => [[], ''])({ source: ' \n', context: {} })), [[], '']);
-      assert.deepStrictEqual(inspect(block(_ => [[], ''])({ source: '\n\n', context: {} })), [[], '']);
-      assert.deepStrictEqual(inspect(block(_ => [[], '\n'])({ source: '\n\n', context: {} })), [[], '\n']);
+      assert.deepStrictEqual(inspect(block(_ => [[], '',])(input('\n', {}))), [[], '']);
+      assert.deepStrictEqual(inspect(block(_ => [[], ''])(input(' \n', {}))), [[], '']);
+      assert.deepStrictEqual(inspect(block(_ => [[], ''])(input('\n\n', {}))), [[], '']);
+      assert.deepStrictEqual(inspect(block(_ => [[], '\n'])(input('\n\n', {}))), [[], '\n']);
     });
 
   });

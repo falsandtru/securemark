@@ -1,15 +1,15 @@
 import { heading, segment } from './heading';
-import { eval, exec } from '../../combinator/data/parser';
+import { input, eval, exec } from '../../combinator/data/parser';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
     const parser = (source: string) => {
-      const result = segment({ source, context: {} });
+      const result = segment(input(source, {}));
       return result
-        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading({ source: seg, context: {} }), [seg])), exec(result)] as const
-        : some(heading)({ source, context: {} });
+        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading(input(seg, {})), [seg])), exec(result)] as const
+        : some(heading)(input(source, {}));
     };
 
     it('invalid', () => {

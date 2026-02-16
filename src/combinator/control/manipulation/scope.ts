@@ -1,4 +1,4 @@
-import { Parser, Context, eval, exec, check } from '../../data/parser';
+import { Parser, Context, input, eval, exec, check, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
@@ -8,7 +8,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
   const match: (source: string) => string = typeof scope === 'string'
     ? source => source.slice(0, scope.length) === scope ? scope : ''
     : source => source.match(scope)?.[0] ?? '';
-  return ({ source, context }) => {
+  return failsafe(({ source, context }) => {
     if (source === '') return;
     const src = match(source);
     assert(source.startsWith(src));
@@ -18,7 +18,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
     assert(offset >= 0);
     context.offset ??= 0;
     context.offset += offset;
-    const result = parser({ source: src, context });
+    const result = parser(input(src, context));
     assert(check(src, result));
     context.offset -= offset;
     if (result === undefined) return;
@@ -26,7 +26,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
       : undefined;
-  };
+  });
 }
 
 //export function rewrite<N, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<N, C, never>): Parser<N, C, D>;
@@ -34,13 +34,12 @@ export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Contex
 export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N> {
   assert(scope);
   assert(parser);
-  return input => {
-    const { source, context } = input;
+  return failsafe(({ source, context }) => {
     if (source === '') return;
     // 影響する使用はないはず
     //const { backtracks } = context;
     //context.backtracks = {};
-    const res1 = scope(input);
+    const res1 = scope({ source, context });
     assert(check(source, res1));
     //context.backtracks = backtracks;
     if (res1 === undefined || exec(res1).length >= source.length) return;
@@ -51,7 +50,7 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
     assert(offset >= 0);
     context.offset ??= 0;
     context.offset += offset;
-    const res2 = parser({ source: src, context });
+    const res2 = parser(input(src, context));
     assert(check(src, res2));
     context.offset -= offset;
     if (res2 === undefined) return;
@@ -59,5 +58,5 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
     return exec(res2).length < src.length
       ? [eval(res2), exec(res2) + exec(res1)]
       : undefined;
-  };
+  });
 }

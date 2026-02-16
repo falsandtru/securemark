@@ -1,9 +1,10 @@
 import { extension } from './extension';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 
 describe('Unit: parser/block/extension', () => {
   describe('extension', () => {
-    const parser = (source: string) => some(extension)({ source, context: {} });
+    const parser = (source: string) => some(extension)(input(source, {}));
 
     it('invalid', () => {
       assert(!parser(''));

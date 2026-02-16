@@ -1,9 +1,10 @@
 import { autolink } from './autolink';
+import { input } from '../combinator/data/parser';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/autolink', () => {
   describe('autolink', () => {
-    const parser = (source: string) => autolink({ source, context: {} });
+    const parser = (source: string) => autolink(input(source, {}));
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('http://host)')), [['<a class="url" href="http://host)" target="_blank">http://host)</a>'], '']);

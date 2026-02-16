@@ -1,10 +1,11 @@
 import { paragraph } from './paragraph';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
-    const parser = (source: string) => some(paragraph)({ source, context: {} });
+    const parser = (source: string) => some(paragraph)(input(source, {}));
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['<p>a</p>'], '']);

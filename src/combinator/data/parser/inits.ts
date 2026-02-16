@@ -1,8 +1,8 @@
-import { Parser, Ctx, Node, Context, SubParsers, SubNode, eval, exec, check } from '../parser';
+import { Parser, CtxOptions, Node, Context, SubParsers, SubNode, eval, exec, check, Ctx } from '../parser';
 import { push } from 'spica/array';
 
-export function inits<P extends Parser<unknown>>(parsers: SubParsers<P>, resume?: (nodes: SubNode<P>[], rest: string) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
-export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: N[], rest: string) => boolean): Parser<N, Ctx, D> {
+export function inits<P extends Parser<unknown, Ctx>>(parsers: SubParsers<P>, resume?: (nodes: SubNode<P>[], rest: string) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: N[], rest: string) => boolean): Parser<N, CtxOptions, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return ({ source, context }) => {

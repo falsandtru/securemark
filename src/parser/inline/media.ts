@@ -1,4 +1,5 @@
 import { MediaParser } from '../inline';
+import { input } from '../../combinator/data/parser';
 import { State, Recursion, Backtrack } from '../context';
 import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
@@ -78,7 +79,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
     return fmap(
       unsafelink as MediaParser,
       ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
-      ({ source: `{ ${INSECURE_URI}${params.join('')} }${rest}`, context });
+      (input(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context));
   }))))));
 
 export const linemedia: MediaParser.LineMediaParser = surround(

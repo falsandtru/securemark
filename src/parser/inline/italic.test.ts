@@ -1,10 +1,11 @@
 import { italic } from './italic';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/italic', () => {
   describe('italic', () => {
-    const parser = (source: string) => some(italic)({ source, context: {} });
+    const parser = (source: string) => some(italic)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('///')), undefined);

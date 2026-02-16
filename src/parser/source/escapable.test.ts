@@ -1,10 +1,11 @@
 import { escsource } from './escapable';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/escsource', () => {
   describe('escsource', () => {
-    const parser = (source: string) => some(escsource)({ source, context: {} });
+    const parser = (source: string) => some(escsource)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -13,7 +14,7 @@ describe('Unit: parser/source/escsource', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser('09あいAZaz')), [['09あいAZaz'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz')), [['09', 'あ', 'い', 'AZaz'], '']);
     });
 
     it('space', () => {

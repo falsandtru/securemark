@@ -1,10 +1,11 @@
 import { shortmedia } from './shortmedia';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/shortmedia', () => {
   describe('shortmedia', () => {
-    const parser = (source: string) => some(shortmedia)({ source, context: {} });
+    const parser = (source: string) => some(shortmedia)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

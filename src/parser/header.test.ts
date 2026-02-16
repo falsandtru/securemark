@@ -1,10 +1,11 @@
 import { header } from './header';
 import { some } from '../combinator';
+import { input } from '../combinator/data/parser';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/header', () => {
   describe('header', () => {
-    const parser = (source: string) => some(header)({ source, context: {} });
+    const parser = (source: string) => some(header)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

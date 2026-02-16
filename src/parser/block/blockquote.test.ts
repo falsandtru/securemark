@@ -1,10 +1,11 @@
 import { blockquote } from './blockquote';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/blockquote', () => {
   describe('blockquote', () => {
-    const parser = (source: string) => some(blockquote)({ source, context: {} });
+    const parser = (source: string) => some(blockquote)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

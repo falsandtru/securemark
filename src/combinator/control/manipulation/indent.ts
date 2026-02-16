@@ -1,4 +1,4 @@
-import { Parser, eval, exec } from '../../data/parser';
+import { Parser, input, eval, exec, failsafe } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { block } from '../constraint/block';
 import { line } from '../constraint/line';
@@ -16,7 +16,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
     opener = /^([ \t])\1*/;
   }
   assert(parser);
-  return bind(block(match(
+  return failsafe(bind(block(match(
     opener,
     memoize(
     ([indent]) =>
@@ -27,13 +27,13 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
       // 影響する使用はないはず
       //const { backtracks } = context;
       //context.backtracks = {};
-      const result = parser({ source: trimBlockEnd(lines.join('')), context });
+      const result = parser(input(trimBlockEnd(lines.join('')), context));
       //context.backtracks = backtracks;
       assert(result);
       return result && exec(result) === ''
         ? [eval(result), rest]
         : undefined;
-    });
+    }));
 }
 
 function trimBlockEnd(block: string): string {

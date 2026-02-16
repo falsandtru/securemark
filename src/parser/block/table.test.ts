@@ -1,10 +1,11 @@
 import { table } from './table';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/table', () => {
   describe('table', () => {
-    const parser = (source: string) => some(table)({ source, context: {} });
+    const parser = (source: string) => some(table)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

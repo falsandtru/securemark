@@ -1,6 +1,6 @@
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { Node, eval } from '../../../combinator/data/parser';
+import { Node, eval, input } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
@@ -39,7 +39,7 @@ export const table: TableParser = block(validate('~~~', fmap(
     switch (type) {
       case 'grid':
       case undefined:
-        return (eval(parser({ source: body, context })) ?? [html('table')])
+        return (eval(parser(input(body, context))) ?? [html('table')])
           .map(el => define(el, { 'data-type': type }));
       default:
         return [html('pre', {

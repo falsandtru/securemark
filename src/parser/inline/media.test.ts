@@ -1,10 +1,11 @@
 import { media } from './media';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/media', () => {
   describe('media', () => {
-    const parser = (source: string) => some(media)({ source, context: {} });
+    const parser = (source: string) => some(media)(input(source, {}));
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('![]{javascript:alert}')), [['<img class="invalid" alt="javascript:alert">'], '']);

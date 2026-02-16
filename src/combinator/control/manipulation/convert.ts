@@ -1,18 +1,22 @@
-import { Parser, Ctx, Context, check } from '../../data/parser';
+import { Parser, Ctx, Context, input, check, failsafe } from '../../data/parser';
 
 export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, continuous: boolean, empty?: boolean): P;
 export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, continuous: boolean, empty = false): Parser<N> {
   assert(parser);
-  return ({ source, context }) => {
+  return failsafe(({ source, context }) => {
     if (source === '') return;
     const src = conv(source, context);
-    if (src === '') return empty ? [[], ''] : undefined;
+    if (src === '') {
+      if (!empty) return;
+      context.position = source.length;
+      return [[], ''];
+    }
     const { backtracks } = context;
     assert(source.endsWith(src) || src.endsWith(source) || !continuous);
     context.backtracks = continuous ? backtracks : {};
-    const result = parser({ source: src, context });
+    const result = parser(input(src, context));
     assert(check(src, result));
     context.backtracks = backtracks;
     return result;
-  };
+  });
 }

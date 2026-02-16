@@ -1,10 +1,11 @@
 import { message } from './message';
 import { some } from '../../../combinator';
+import { input } from '../../../combinator/data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/message', () => {
   describe('message', () => {
-    const parser = (source: string) => some(message)({ source, context: {} });
+    const parser = (source: string) => some(message)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~message\n~~~')), undefined);

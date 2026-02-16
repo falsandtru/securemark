@@ -1,4 +1,5 @@
 import { ExtensionParser } from '../../block';
+import { input } from '../../../combinator/data/parser';
 import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
@@ -90,7 +91,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'fence',
           `Invalid trailing line after the closing delimiter "${delim}"`,
         ] ||
-        !seg_label({ source: opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context }) && [
+        !seg_label(input(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context)) && [
           'label',
           'Invalid label',
         ] ||

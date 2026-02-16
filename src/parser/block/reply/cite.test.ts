@@ -1,10 +1,11 @@
 import { cite } from './cite';
 import { some } from '../../../combinator';
+import { input } from '../../../combinator/data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/reply/cite', () => {
   describe('cite', () => {
-    const parser = (source: string) => some(cite)({ source, context: {} });
+    const parser = (source: string) => some(cite)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

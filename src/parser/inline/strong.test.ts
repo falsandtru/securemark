@@ -1,10 +1,11 @@
 import { strong } from './strong';
 import { some } from '../../combinator';
+import { input } from '../../combinator/data/parser';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/strong', () => {
   describe('strong', () => {
-    const parser = (source: string) => some(strong)({ source, context: {} });
+    const parser = (source: string) => some(strong)(input(source, {}));
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('**')), undefined);

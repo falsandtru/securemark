@@ -79,35 +79,38 @@ export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
       : undefined;
 }
 function isTightStart(input: Input<MarkdownParser.Context>, except?: string): boolean {
-  const { source } = input;
-  if (source === '') return true;
-  if (except && source.slice(0, except.length) === except) return false;
-  switch (source[0]) {
+  const { context } = input;
+  const { source, position } = context;
+  if (position === source.length) return true;
+  if (except && source.slice(position, position + except.length) === except) return false;
+  switch (source[position]) {
     case ' ':
     case '　':
     case '\t':
     case '\n':
       return false;
     case '\\':
-      return source[1]?.trimStart() !== '';
+      return source[position + 1]?.trimStart() !== '';
     case '&':
       switch (true) {
-        case source.length > 2
-          && source[1] !== ' '
+        case source.length - position > 2
+          && source[position + 1] !== ' '
           && eval(unsafehtmlentity(input))?.[0]?.trimStart() === '':
+          context.position = position;
           return false;
       }
+      context.position = position;
       return true;
     case '<':
       switch (true) {
-        case source.length >= 5
-          && source.slice(0, 4) === '<wbr'
-          && (source[5] === '>' || /^<wbr[^\S\n]*>/.test(source)):
+        case source.length - position >= 5
+          && source.slice(position, position + 4) === '<wbr'
+          && (source[position + 5] === '>' || /^<wbr[^\S\n]*>/.test(source.slice(position))):
           return false;
       }
       return true;
     default:
-      return source[0].trimStart() !== '';
+      return source[position].trimStart() !== '';
   }
 }
 

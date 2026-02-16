@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { eval, exec } from '../combinator/data/parser';
+import { input, eval, exec } from '../combinator/data/parser';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
@@ -26,7 +26,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
   if (!validate(source, MAX_INPUT_SIZE)) return yield `${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
-    const result = parser({ source, context: {} })!;
+    const result = parser(input(source, {}))!;
     assert(result);
     const rest = exec(result);
     const segs = eval(result).length ? eval(result) : [source.slice(0, source.length - rest.length)];
