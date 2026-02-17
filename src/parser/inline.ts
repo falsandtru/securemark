@@ -79,6 +79,9 @@ export const inline: InlineParser = lazy(() => union([
         return mark(input);
       case '//':
         return italic(input);
+      case '**':
+        return emstrong(input)
+            || strong(input);
     }
     switch (source[position]) {
       case '[':
@@ -94,9 +97,7 @@ export const inline: InlineParser = lazy(() => union([
       case '`':
         return code(input);
       case '*':
-        return emstrong(input)
-            || strong(input)
-            || emphasis(input);
+        return emphasis(input);
       case '&':
         return htmlentity(input);
     }
