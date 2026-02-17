@@ -55,20 +55,25 @@ export function surround<N>(
     context.linebreak = 0;
     const resultO = opener(input);
     assert(context.position >= position);
-    if (resultO === undefined) return void revert(context, linebreak);
+    if (!resultO) return void revert(context, linebreak);
     const nodesO = eval(resultO);
     const strO = source.slice(position, context.position);
     if (isBacktrack(context, backtracks, position, context.position - position || 1)) return void revert(context, linebreak);
     const resultM = context.position < source.length ? parser(input) : undefined;
     assert(context.position >= position + strO.length);
+    if (!resultM && !optional) {
+      setBacktrack(context, backtracks, position);
+      return void revert(context, linebreak);
+    }
     const nodesM = eval(resultM);
     const strM = source.slice(position + strO.length, context.position);
     const resultC = nodesM || optional ? closer(input) : undefined;
     assert(context.position >= position + strO.length + strM.length);
+    if (!resultC) {
+      setBacktrack(context, backtracks, position);
+    }
     const nodesC = eval(resultC);
     const strC = source.slice(position + strO.length + strM.length, context.position);
-    nodesC || setBacktrack(context, backtracks, position);
-    if (!nodesM && !optional) return void revert(context, linebreak);
     if (context.position === position) return void revert(context, linebreak);
     context.recent = [strO, strM, strC];
     const result = nodesC
