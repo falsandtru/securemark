@@ -1,4 +1,4 @@
-import { Parser, Ctx, Context, failsafe } from '../../data/parser';
+import { Parser, Ctx, Context, subinput, failsafe } from '../../data/parser';
 
 export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, continuous: boolean, empty?: boolean): P;
 export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, continuous: boolean, empty = false): Parser<N> {
@@ -23,15 +23,7 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
     }
     else {
     const { offset, backtracks } = context;
-      const result = parser({
-        context: {
-          ...context,
-          source: src,
-          position: 0,
-          offset: undefined,
-          backtracks: {},
-        },
-      });
+      const result = parser(subinput(src, context));
       context.position = context.source.length
       assert(context.offset === offset);
       assert(context.source === source);

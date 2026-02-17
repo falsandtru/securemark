@@ -52,6 +52,18 @@ export function input(source: string, context: CtxOptions): Input<Ctx> {
   };
 }
 
+export function subinput<C extends Ctx>(source: string, context: C): Input<C> {
+  return {
+    context: {
+      ...context,
+      source,
+      position: 0,
+      offset: undefined,
+      backtracks: {},
+    }
+  };
+}
+
 export function clean<C extends Ctx>(context: C): C {
   const { source, position } = context;
   for (const p of Object.keys(context)) {
