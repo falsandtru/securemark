@@ -147,7 +147,7 @@ describe('Unit: parser/block/extension/table', () => {
         [[html('table', [
           html('thead'),
           html('tbody', [
-            html('tr', [html('td', ['\\', html('br'), '\\', html('br'), '0'])]),
+            html('tr', [html('td', ['\\ ', html('br'), '\\ ', html('br'), '0'])]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
