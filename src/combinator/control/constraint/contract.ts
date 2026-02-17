@@ -1,5 +1,5 @@
 import { isArray } from 'spica/alias';
-import { Parser, Input, Ctx, Node, Context, eval, exec, check, failsafe } from '../../data/parser';
+import { Parser, Input, Ctx, Node, Context, eval, failsafe } from '../../data/parser';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
 //export function contract<N>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<N>, cond: (nodes: readonly N[], rest: string) => boolean): Parser<N> {
@@ -21,13 +21,11 @@ export function validate<N>(patterns: string | RegExp | (string | RegExp)[] | ((
         : `|| /${pattern.source}/${pattern.flags}.test(source.slice(position))`).join('').slice(2),
   ].join(''));
   return input => {
-    const { source, context } = input;
-    if (source === '') return;
+    const { context } = input;
+    const { source, position } = context;
+    if (position === source.length) return;
     if (!match(context)) return;
-    const result = parser(input);
-    assert(check(source, result));
-    assert(exec(result, '').length < source.length);
-    return result;
+    return parser(input);
   };
 }
 
@@ -39,16 +37,16 @@ function guard<N>(f: (input: Input<Ctx>) => boolean, parser: Parser<N>): Parser<
       : undefined;
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Node<P>[], rest: string, context: Context<P>) => boolean): P;
-export function verify<N>(parser: Parser<N>, cond: (nodes: readonly N[], rest: string, context: Ctx) => boolean): Parser<N> {
+export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Node<P>[], context: Context<P>) => boolean): P;
+export function verify<N>(parser: Parser<N>, cond: (nodes: readonly N[], context: Ctx) => boolean): Parser<N> {
   assert(parser);
   return failsafe(input => {
-    const { source, context } = input;
-    if (source === '') return;
+    const { context } = input;
+    const { source, position } = context;
+    if (position === source.length) return;
     const result = parser(input);
-    assert(check(source, result));
-    assert(exec(result, '').length < source.length);
-    if (result && !cond(eval(result), exec(result), context)) return;
+    assert(context.position > position || !result);
+    if (result && !cond(eval(result), context)) return;
     return result;
   });
 }

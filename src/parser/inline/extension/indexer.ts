@@ -13,6 +13,6 @@ export const indexer: ExtensionParser.IndexerParser = surround(
   /^\s+\[(?=\|\S)/,
   union([
     signature,
-    focus(/^\|(?=\])/, () => [[html('span', { class: 'indexer', 'data-index': '' })], '']),
+    focus(/^\|(?=\])/, () => [[html('span', { class: 'indexer', 'data-index': '' })]]),
   ]),
   /^\]\s*$/);

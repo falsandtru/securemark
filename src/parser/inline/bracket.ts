@@ -17,44 +17,42 @@ export const bracket: BracketParser = lazy(() => union([
     precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
     str(')'),
     true,
-    ([as, bs = [], cs], rest, { recent = [] }) => [
+    ([as, bs = [], cs], { recent = [] }) => [
       indexA.test(recent[1])
         ? recent
         : [html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))],
-      rest
     ],
-    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
   surround(
     str('（'),
     precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
     str('）'),
     true,
-    ([as, bs = [], cs], rest, { recent = [] }) => [
+    ([as, bs = [], cs], { recent = [] }) => [
       indexF.test(recent[1])
         ? recent
         : [html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))],
-      rest
     ],
-    ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    ([as, bs = []]) => [unshift(as, bs)]),
   surround(
     str('['),
     precedence(1, recursion(Recursion.bracket, some(inline, ']', [[']', 1]]))),
     str(']'),
     true,
-    ([as, bs = [], cs], rest, context) => {
+    ([as, bs = [], cs], context) => {
       if (context.state! & State.link) {
-        const { recent } = context;
-        const head = recent!.reduce((a, b) => a + b.length, rest.length);
-        if (context.linebreak! > 0 || rest[0] !== '{') {
+        const { source, position, recent = [] } = context;
+        const head = position - recent.reduce((a, b) => a + b.length, 0);
+        if (context.linebreak !== 0 || source[position] !== '{') {
           setBacktrack(context, [2 | Backtrack.link], head);
         }
         else {
           context.state! ^= State.link;
-          assert(rest.length > 0);
-          const result = !isBacktrack(context, [1 | Backtrack.link], rest)
-            ? textlink({ source: rest, context })
+          const result = !isBacktrack(context, [1 | Backtrack.link])
+            ? textlink({ context })
             : undefined;
+          context.position = position;
           if (!result) {
             setBacktrack(context, [2 | Backtrack.link], head);
           }
@@ -62,9 +60,9 @@ export const bracket: BracketParser = lazy(() => union([
           context.recent = recent;
         }
       }
-      return [push(unshift(as, bs), cs), rest];
+      return [push(unshift(as, bs), cs)];
     },
-    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
   surround(
     str('［'),
@@ -72,14 +70,14 @@ export const bracket: BracketParser = lazy(() => union([
     str('］'),
     true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    ([as, bs = []]) => [unshift(as, bs)]),
   surround(
     str('{'),
     precedence(1, recursion(Recursion.bracket, some(inline, '}', [['}', 1]]))),
     str('}'),
     true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
   surround(
     str('｛'),
@@ -87,17 +85,17 @@ export const bracket: BracketParser = lazy(() => union([
     str('｝'),
     true,
     undefined,
-    ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    ([as, bs = []]) => [unshift(as, bs)]),
   // 同一行内でしか閉じない以外括弧と同じ挙動
   surround(
     str('"'),
     precedence(2, recursion(Recursion.bracket, some(inline, '"', [['"', 2, false]]))),
     str('"'),
     true,
-    ([as, bs = [], cs], rest, { linebreak = 0 }) =>
-      linebreak > rest.length
-        ? [unshift(as, bs), cs[0] + rest]
-        : [push(unshift(as, bs), cs), rest],
-    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    ([as, bs = [], cs], context) =>
+      context.linebreak === 0
+        ? [push(unshift(as, bs), cs)]
+        : (context.position -= 1, [unshift(as, bs)]),
+    ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
 ]));

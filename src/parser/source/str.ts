@@ -15,7 +15,7 @@ export function str(pattern: string | RegExp, not?: string): Parser<string, Cont
         if (not && source.slice(position+pattern.length, position+pattern.length + not.length) === not) return;
         if (source.slice(position, position + pattern.length) !== pattern) return;
         context.position += pattern.length;
-        return [[pattern], source.slice(position + pattern.length)];
+        return [[pattern]];
       }
     : ({ context }) => {
         const { source, position } = context;
@@ -25,6 +25,6 @@ export function str(pattern: string | RegExp, not?: string): Parser<string, Cont
         count && consume(m[0].length, context);
         if (not && source.slice(position + m[0].length, position + m[0].length + not.length) === not) return;
         context.position += m[0].length;
-        return [[m[0]], source.slice(position + m[0].length)];
+        return [[m[0]]];
       };
 }

@@ -1,19 +1,19 @@
 import { CodeParser } from '../inline';
-import { validate, isBacktrack, setBacktrack, match } from '../../combinator';
+import { open, match } from '../../combinator';
 import { Backtrack } from '../context';
 import { html } from 'typed-dom/dom';
 
-export const code: CodeParser = validate(
-  ({ source, context }) =>
-    source[0] === '`' &&
-    !isBacktrack(context, [1 | Backtrack.bracket], source),
+export const code: CodeParser = open(
+  /^(?=`)/,
   match(
     /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
-    ([whole, , body, closer]) => ({ source, context }) =>
+    ([whole, , body, closer]) => () =>
       closer
-        ? [[html('code', { 'data-src': whole }, format(body))], source.slice(whole.length)]
-        : void setBacktrack(context, [2 | Backtrack.bracket], source.length),
-    true));
+        ? [[html('code', { 'data-src': whole }, format(body))]]
+        : undefined,
+    true),
+  false,
+  [3 | Backtrack.bracket]);
 
 function format(text: string): string {
   assert(text.length > 0);

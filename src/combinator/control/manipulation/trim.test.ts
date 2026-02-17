@@ -4,16 +4,18 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/trim', () => {
   describe('trim', () => {
+    const { context: ctx } = input('', {});
+
     it('', () => {
-      const parser = trim(({ source }) => [[source], '']);
-      assert.deepStrictEqual(inspect(parser(input('', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('a', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input('a\n', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input('a ', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input('a \n', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a ', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a \n b \n', {}))), [['a \n b'], '']);
+      const parser = trim(({ context }) => { context.position = context.source.length; return [[context.source]]; });
+      assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('a\n', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('a ', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('a \n', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a ', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a \n b \n', ctx)), ctx), [['a \n b'], '']);
     });
 
   });

@@ -11,27 +11,27 @@ export const template: TemplateParser = lazy(() => surround(
   some(union([bracket, escsource]), '}')),
   str('}}'),
   true,
-  ([as, bs = [], cs], rest) =>
-    [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))], rest],
+  ([as, bs = [], cs]) =>
+    [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))]],
   undefined,
   [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket]));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(
     str('"'),
     precedence(2, recursion(Recursion.terminal, some(escsource, '"', [['"', 2, false]]))),
     str('"'),
     true,
-    ([as, bs = [], cs], rest, { linebreak = 0 }) =>
-      linebreak > rest.length
-        ? [unshift(as, bs), cs[0] + rest]
-        : [push(unshift(as, bs), cs), rest],
-    ([as, bs = []], rest) => [unshift(as, bs), rest],
+    ([as, bs = [], cs], context) =>
+      context.linebreak === 0
+        ? [push(unshift(as, bs), cs)]
+        : (context.position -= 1, [unshift(as, bs)]),
+    ([as, bs = []]) => [unshift(as, bs)],
     [3 | Backtrack.escbracket]),
 ]));

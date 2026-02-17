@@ -10,8 +10,16 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
   inits([
     rewrite(
-      ({ source, context }) =>
-        [[], context.header ?? true ? source.slice(segment(source).next().value!.length) : ''],
+      ({ context }) => {
+        const { source } = context;
+        if (context.header ?? true) {
+          context.position += segment(source).next().value!.length;
+        }
+        else {
+          context.position = source.length;
+        }
+        return [[]];
+      },
       block(
         union([
           validate(({ context }) => context.header ?? true,
@@ -28,20 +36,24 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
                   ])),
                 ]),
               ]), false))),
-          ({ source }) => [[
-            html('pre', {
-              class: 'invalid',
-              translate: 'no',
-              ...invalid('header', 'syntax', 'Invalid syntax'),
-            }, normalize(source)),
-          ], ''],
+          ({ context }) => {
+            const { source, position } = context;
+            context.position += source.length;
+            return [[
+              html('pre', {
+                class: 'invalid',
+                translate: 'no',
+                ...invalid('header', 'syntax', 'Invalid syntax'),
+              }, normalize(source.slice(position))),
+            ]];
+          },
         ]))),
     clear(str(/^[^\S\v\f\r\n]*\r?\n/)),
   ])));
 
-const field: MarkdownParser.HeaderParser.FieldParser = line(({ source }) => {
-  const name = source.slice(0, source.indexOf(':'));
-  const value = source.slice(name.length + 1).trim();
+const field: MarkdownParser.HeaderParser.FieldParser = line(({ context: { source, position } }) => {
+  const name = source.slice(position, source.indexOf(':', position));
+  const value = source.slice(position + name.length + 1).trim();
   return [[
     html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
@@ -49,5 +61,5 @@ const field: MarkdownParser.HeaderParser.FieldParser = line(({ source }) => {
       html('span', { class: 'field-value' }, value),
       '\n',
     ]),
-  ], ''];
+  ]];
 });

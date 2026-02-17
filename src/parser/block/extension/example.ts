@@ -12,7 +12,7 @@ const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
 export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(validate('~~~', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, type = 'markdown', param]: string[], context) => {
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
@@ -46,7 +46,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
           html('aside', { class: 'example', 'data-type': 'math' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            eval(mathblock(input(`$$\n${body}$$`, context)), [])[0],
+            eval(mathblock(input(`$$\n${body}$$`, { ...context })), [])[0],
           ]),
         ];
       default:

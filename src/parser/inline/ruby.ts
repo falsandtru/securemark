@@ -13,9 +13,9 @@ export const ruby: RubyParser = lazy(() => bind(
     dup(surround(
       '[', text, ']',
       false,
-      ([, ns], rest) => {
+      ([, ns]) => {
         ns && ns.at(-1) === '' && ns.pop();
-        return isTightNodeStart(ns) ? [ns, rest] : undefined;
+        return isTightNodeStart(ns) ? [ns] : undefined;
       },
       undefined,
       [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
@@ -24,9 +24,9 @@ export const ruby: RubyParser = lazy(() => bind(
       false, undefined, undefined,
       [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
   ]),
-  ([texts, rubies], rest, context) => {
+  ([texts, rubies], context) => {
     if (rubies === undefined) {
-      const head = context.recent!.reduce((a, b) => a + b.length, rest.length);
+      const head = context.position - context.recent!.reduce((a, b) => a + b.length, 0);
       return void setBacktrack(context, [2 | Backtrack.ruby], head);
     }
     switch (true) {
@@ -40,7 +40,7 @@ export const ruby: RubyParser = lazy(() => bind(
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
             , []))),
-        ], rest];
+        ]];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
         return [[
           html('ruby', defrag([...texts[0]]
@@ -51,14 +51,14 @@ export const ruby: RubyParser = lazy(() => bind(
                   ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                   : [html('rt')]))
             , []))),
-        ], rest];
+        ]];
       default:
         assert(rubies.length > 0);
         return [[
           html('ruby', defrag(unshift(
             [texts.join(' ')],
             [html('rp', '('), html('rt', rubies.join(' ').trim()), html('rp', ')')]))),
-        ], rest];
+        ]];
     }
   }));
 
@@ -72,7 +72,7 @@ const text: RubyParser.TextParser = input => {
     assert(source[position] !== '\n');
     switch (source[position]) {
       case '&': {
-        const result = unsafehtmlentity({ source: source.slice(position), context }) ?? txt(input)!;
+        const result = unsafehtmlentity(input) ?? txt(input)!;
         assert(result);
         acc[acc.length - 1] += eval(result)[0];
         continue;
@@ -93,7 +93,7 @@ const text: RubyParser.TextParser = input => {
   }
   state ||= acc.at(-1)!.trimStart() !== '';
   return state
-    ? [acc, source.slice(context.position)]
+    ? [acc]
     : undefined;
 };
 

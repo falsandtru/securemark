@@ -30,7 +30,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
     // Bug: TypeScript
     const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
-    return parser({ source, context })
+    return parser({ context })
       ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
       : `${fence}figure ${source}\n\n${fence}`;
   },

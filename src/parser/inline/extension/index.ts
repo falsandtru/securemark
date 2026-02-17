@@ -22,17 +22,17 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   ]), ']', [[']', 1]])))),
   str(']'),
   false,
-  ([as, bs, cs], rest, context) => {
+  ([as, bs, cs], context) => {
     if (context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0) {
-      return [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))], rest];
+      return [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))]];
     }
     return (context.state! & State.linkers) === State.linkers
-      ? [push(push(unshift(as, bs), cs), ['']), rest]
+      ? [push(push(unshift(as, bs), cs), [''])]
       : undefined;
   },
-  ([as, bs], rest, context) => {
+  ([as, bs], context) => {
     return (context.state! & State.linkers) === State.linkers
-      ? [push(unshift(as, bs), ['']), rest]
+      ? [push(unshift(as, bs), [''])]
       : undefined;
   },
   [3 | Backtrack.bracket])),
@@ -59,17 +59,20 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   tightStart(some(union([inline]), ']', [[']', 1]])),
   /^(?=])/,
   false,
-  (_, rest, context) => {
-    //context.offset ??= 0;
-    //context.offset += rest.length;
+  (_, context) => {
+    const { source, position } = context;
+    context.offset ??= 0;
+    context.offset += position;
     const text = eval(sig(input(context.recent![1], context)), []).join('');
-    //context.offset -= rest.length;
+    context.position = position;
+    context.source = source;
+    context.offset -= position;
     const index = identity('index', undefined, text)?.slice(7);
     return index
-      ? [[html('span', { class: 'indexer', 'data-index': index })], rest]
+      ? [[html('span', { class: 'indexer', 'data-index': index })]]
       : undefined;
   },
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs]) => [unshift(as, bs)])));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;

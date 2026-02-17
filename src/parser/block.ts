@@ -42,7 +42,7 @@ export const block: BlockParser = reset(
   {
     resources: {
       // バックトラックのせいで文字数制限を受けないようにする。
-      clock: MAX_SEGMENT_SIZE * 11 * 1,
+      clock: MAX_SEGMENT_SIZE * 1,
       recursions: [
         10 || Recursion.block,
         20 || Recursion.blockquote,
@@ -52,6 +52,7 @@ export const block: BlockParser = reset(
         20 || Recursion.terminal,
       ],
     },
+    backtracks: {},
   },
   error(union([
     emptyline,
@@ -75,9 +76,9 @@ export const block: BlockParser = reset(
 function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}.*\n`)
   return recover<BlockParser>(fallback(
-    open(Command.Error, ({ source }) => { throw new Error(source.split('\n', 1)[0]); }),
+    open(Command.Error, ({ context: { source, position } }) => { throw new Error(source.slice(position).split('\n', 1)[0]); }),
     parser),
-    ({ source, context: { id } }, reason) => [[
+    ({ context: { source, position, id } }, reason) => [[
       html('h1',
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
@@ -91,9 +92,9 @@ function error(parser: BlockParser): BlockParser {
           class: 'error',
           translate: 'no',
         },
-        source
+        source.slice(position)
           .replace(reg, '')
           .slice(0, 1001)
           .replace(/^(.{997}).{4}$/s, '$1...') || undefined),
-    ], '']);
+    ]]);
 }

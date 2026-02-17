@@ -1,6 +1,6 @@
 import { min } from 'spica/alias';
 import { Command } from './context';
-import { Parser, Result, Ctx, Node, Context, eval, exec, failsafe } from '../combinator/data/parser';
+import { Parser, Result, Ctx, Node, Context, eval, failsafe } from '../combinator/data/parser';
 import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
@@ -22,8 +22,8 @@ export function lineable<N extends HTMLElement | string>(parser: Parser<N>, trim
     trim === 0);
 }
 
-export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
-export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: Ctx) => N[], termination: (acc: N[][], rest: string, prefix: number, postfix: number, state: boolean) => Result<string | N> = (acc, rest, prefix, postfix) => {
+export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[][], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
+export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: Ctx) => N[], termination: (acc: N[][], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N> = (acc, context, prefix, postfix) => {
   const nodes = [];
   if (prefix > 0) {
     nodes.push(symbol[0].repeat(prefix));
@@ -32,38 +32,39 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     nodes.push(...acc[i]);
   }
   if (postfix > 0) {
-    nodes.push(rest.slice(0, postfix));
-    rest = rest.slice(postfix);
+    const { source, position } = context;
+    nodes.push(source.slice(position, position + postfix));
+    context.position += postfix;
   }
-  return [nodes, rest];
+  return [nodes];
 }): Parser<string | N> {
   return failsafe(input => {
-    const { source, context } = input;
-    assert(source.startsWith(symbol));
+    const { context } = input;
+    const { source, position } = context;
+    assert(source.slice(position).startsWith(symbol));
     let acc: N[][] = [];
     let i = symbol.length;
-    while (source[i] === source[0]) ++i;
-    let rest = source.slice(i);
+    while (source[position + i] === source[position]) ++i;
+    context.position += i;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
-      if (acc.length > 0 && rest.startsWith(symbol)) {
+      if (acc.length > 0 && source.slice(context.position, context.position + symbol.length) === symbol) {
         acc = [cons(acc.flat(), context)];
-        rest = rest.slice(symbol.length);
+        context.position += symbol.length;
         continue;
       }
-      const result = parser({ source: rest, context });
+      const result = parser(input);
       if (result === undefined) break;
       const nodes = eval(result);
-      rest = exec(result);
       acc.push(nodes);
       switch (nodes.at(-1)) {
         case Command.Escape:
-          assert(!rest.startsWith(symbol));
+          assert(!source.slice(context.position).startsWith(symbol));
           nodes.pop();
           state = false;
           break;
         case Command.Separator:
-          assert(!rest.startsWith(symbol));
+          assert(!source.slice(context.position).startsWith(symbol));
           nodes.pop();
           state = true;
           continue;
@@ -77,11 +78,11 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     if (acc.length === 0) return;
     const prefix = i;
     i = 0;
-    for (let len = min(prefix, rest.length); i < len && rest[i] === symbol[0];) {
+    for (let len = min(prefix, source.length - context.position); i < len && source[context.position + i] === symbol[0];) {
       ++i;
     }
     const postfix = i;
-    return termination(acc, rest, prefix, postfix, state);
+    return termination(acc, context, prefix, postfix, state);
   });
 }
 

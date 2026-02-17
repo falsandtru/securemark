@@ -1,4 +1,4 @@
-import { Parser, eval, exec, check } from '../parser';
+import { Parser, eval } from '../parser';
 import { Delimiters } from './context/delimiter';
 import { unshift, push } from 'spica/array';
 
@@ -17,36 +17,34 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
     precedence,
     linebreakable,
   }));
-  return ({ source, context }) => {
-    if (source === '') return;
-    assert(context.backtracks ??= {});
-    let rest = source;
+  return input => {
+    const { context } = input;
+    const { source, position } = context;
+    //assert(context.backtracks ??= {});
     let nodes: N[] | undefined;
     if (delims.length > 0) {
       context.delimiters ??= new Delimiters();
       context.delimiters.push(delims);
     }
     while (true) {
-      if (rest === '') break;
-      if (match(rest)) break;
-      if (context.delimiters?.match(rest, context)) break;
-      const result = parser({ source: rest, context });
-      assert.doesNotThrow(() => limit === 0 && check(rest, result));
+      if (context.position === source.length) break;
+      if (match(context)) break;
+      if (context.delimiters?.match(context)) break;
+      const result = parser(input);
       if (result === undefined) break;
       nodes = nodes
         ? nodes.length < eval(result).length / 8
           ? unshift(nodes, eval(result))
           : push(nodes, eval(result))
         : eval(result);
-      rest = exec(result);
-      if (limit > 0 && source.length - rest.length > limit) break;
+      if (limit > 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
       context.delimiters!.pop(delims.length);
     }
-    assert(rest.length <= source.length);
-    return nodes && rest.length < source.length
-      ? [nodes, rest]
+    assert(context.position >= position);
+    return nodes && context.position > position
+      ? [nodes]
       : undefined;
   };
 }

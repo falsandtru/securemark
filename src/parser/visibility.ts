@@ -22,7 +22,7 @@ export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Pa
   return union([
     convert(
       source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${Command.Escape}$&`)),
-      verify(parser, (ns, rest) => !rest && hasVisible(ns)),
+      verify(parser, (ns, { source, position }) => position === source.length && hasVisible(ns)),
       false),
     some(union([linebreak, unescsource])),
   ]);
@@ -37,6 +37,7 @@ function hasVisible(
     }
     else {
       if (node.innerText.trimStart()) return true;
+      if (node.classList.contains('reference')) return true;
       //if (state & State.media ^ State.media &&
       //    (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }

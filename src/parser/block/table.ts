@@ -29,20 +29,20 @@ export const table: TableParser = lazy(() => block(fmap(validate(
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
   es => [html('tr', es)]),
-  rewrite(contentline, ({ source }) => [[
+  rewrite(contentline, ({ context: { source } }) => [[
     html('tr', {
       class: 'invalid',
       ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
     }, [html('td', source.replace('\n', ''))])
-  ], '']));
+  ]]));
 
 const align: AlignParser = fmap(open(
   '|',
   union([
-    focus(/^:-+:?/, ({ source }) =>
-      [[source.at(-1) === ':' ? 'center' : 'start'], ''], false),
-    focus(/^-+:?/, ({ source }) =>
-      [[source.at(-1) === ':' ? 'end' : ''], ''], false),
+    focus(/^:-+:?/, ({ context: { source } }) =>
+      [[source.at(-1) === ':' ? 'center' : 'start']], false),
+    focus(/^-+:?/, ({ context: { source } }) =>
+      [[source.at(-1) === ':' ? 'end' : '']], false),
   ])),
   ns => [html('td', defrag(ns))]);
 

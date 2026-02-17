@@ -81,7 +81,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   ])),
   fmap(
     fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
-    ([body, overflow, closer, opener, delim]: string[], _, context) => {
+    ([body, overflow, closer, opener, delim]: string[], context) => {
       const violation =
         !closer && [
           'fence',
@@ -91,7 +91,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'fence',
           `Invalid trailing line after the closing delimiter "${delim}"`,
         ] ||
-        !seg_label(input(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context)) && [
+        !seg_label(input(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', { ...context })) && [
           'label',
           'Invalid label',
         ] ||

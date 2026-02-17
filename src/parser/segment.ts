@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { input, eval, exec } from '../combinator/data/parser';
+import { clean, eval } from '../combinator/data/parser';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
@@ -25,20 +25,25 @@ const parser: SegmentParser = union([
 export function* segment(source: string): Generator<string, undefined, undefined> {
   if (!validate(source, MAX_INPUT_SIZE)) return yield `${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
-  while (source !== '') {
-    const result = parser(input(source, {}))!;
+  const context = {
+    source,
+    position: 0,
+  };
+  const input = { context };
+  while (context.position < source.length) {
+    const { position } = context;
+    const result = parser(input)!;
     assert(result);
-    const rest = exec(result);
-    const segs = eval(result).length ? eval(result) : [source.slice(0, source.length - rest.length)];
-    assert(source.slice(1).endsWith(rest));
-    assert(segs.join('') === source.slice(0, source.length - rest.length));
+    assert(context.position > position);
+    const segs = eval(result).length ? eval(result) : [source.slice(position, context.position)];
+    assert(segs.join('') === source.slice(position, context.position));
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
       validate(seg, MAX_SEGMENT_SIZE)
         ? yield seg
         : yield `${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`
     }
-    source = rest;
+    clean(context);
   }
 }
 

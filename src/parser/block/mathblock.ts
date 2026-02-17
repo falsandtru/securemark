@@ -14,7 +14,7 @@ export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
+  ([body, overflow, closer, opener, delim, param]: string[], { caches: { math: cache = undefined } = {} }) => [
     delim.length === 2 && closer && !overflow && param.trimStart() === ''
       ? cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
         html('div', { class: 'math', translate: 'no' }, `${delim}\n${body}${delim}`)

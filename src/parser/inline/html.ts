@@ -27,10 +27,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       some(union([attribute])),
       open(str(/^[^\S\n]*/), str('>'), true),
       true,
-      ([as, bs = [], cs], rest) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])], rest],
-      ([as, bs = []], rest) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])], rest]),
+      ([as, bs = [], cs]) =>
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])]],
+      ([as, bs = []]) =>
+        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])]]),
     match(
       new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
       memoize(
@@ -39,8 +39,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
           surround(
             str(`<${tag}`), some(attribute), open(str(/^[^\S\n]*/), str('>'), true),
             true,
-            ([as, bs = [], cs], rest) => [push(unshift(as, bs), cs), rest],
-            ([as, bs = []], rest) => [unshift(as, bs), rest]),
+            ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
+            ([as, bs = []]) => [unshift(as, bs)]),
           precedence(3, recursion(Recursion.inline,
           subsequence([
             focus(/^[^\S\n]*\n/, some(inline)),
@@ -48,10 +48,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
           ]))),
           str(`</${tag}>`),
           true,
-          ([as, bs = [], cs], rest) =>
-            [[elem(tag, true, as, bs, cs)], rest],
-          ([as, bs = []], rest) =>
-            [[elem(tag, true, as, bs, [])], rest]),
+          ([as, bs = [], cs]) =>
+            [[elem(tag, true, as, bs, cs)]],
+          ([as, bs = []]) =>
+            [[elem(tag, true, as, bs, [])]]),
       ([, tag]) => tag,
       new Map())),
     surround(
@@ -60,10 +60,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       some(union([attribute])),
       open(str(/^[^\S\n]*/), str('>'), true),
       true,
-      ([as, bs = [], cs], rest) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])], rest],
-      ([as, bs = []], rest) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])], rest]),
+      ([as, bs = [], cs]) =>
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])]],
+      ([as, bs = []]) =>
+        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])]]),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([

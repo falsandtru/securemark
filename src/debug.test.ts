@@ -1,8 +1,8 @@
-import { Result, eval, exec } from './combinator/data/parser';
+import { Result, Ctx, eval } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
-export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
+export function inspect(result: Result<HTMLElement | string>, ctx: Ctx, until: number | string = Infinity): [string[], string] | undefined {
   return result && [
     eval(result).map(node => {
       assert(node);
@@ -33,7 +33,7 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       }
       return normalize(node.outerHTML.slice(0, until));
     }),
-    exec(result)
+    ctx.source.slice(ctx.position),
   ];
 }
 

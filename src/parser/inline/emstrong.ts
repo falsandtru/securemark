@@ -40,34 +40,46 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
       open(some(inline, '*'), inline),
     ])))),
     str(/^\*{1,3}/), false,
-    ([, bs, cs], rest, context): Result<HTMLElement | string, typeof context> => {
+    ([, bs, cs], context): Result<HTMLElement | string, typeof context> => {
       assert(cs.length === 1);
       switch (cs[0]) {
         case '***':
-          return [bs, rest];
+          return [bs];
         case '**':
           return bind<EmphasisParser>(
             subemphasis,
-            (ds, rest) =>
-              rest.slice(0, 1) === '*'
-                ? [[html('em', unshift([html('strong', defrag(bs))], defrag(ds))), Command.Separator], rest.slice(1)]
-                : [push(unshift(['*', html('strong', defrag(bs))], ds), [Command.Separator]), rest])
-            ({ source: rest, context }) ?? [['*', html('strong', defrag(bs)), Command.Separator], rest];
+            ds => {
+              const { source } = context;
+              if (source.slice(context.position, context.position + 1) === '*') {
+                context.position += 1;
+                return [[html('em', unshift([html('strong', defrag(bs))], defrag(ds))), Command.Separator]];
+              }
+              else {
+                return [push(unshift(['*', html('strong', defrag(bs))], ds), [Command.Separator])];
+              }
+            })
+            ({ context }) ?? [['*', html('strong', defrag(bs)), Command.Separator]];
         case '*':
           return bind<StrongParser>(
             substrong,
-            (ds, rest) =>
-              rest.slice(0, 2) === '**'
-                ? [[html('strong', unshift([html('em', defrag(bs))], defrag(ds))), Command.Separator], rest.slice(2)]
-                : [push(unshift(['**', html('em', defrag(bs))], ds), [Command.Separator]), rest])
-            ({ source: rest, context }) ?? [['**', html('em', defrag(bs)), Command.Separator], rest];
+            ds => {
+              const { source } = context;
+              if (source.slice(context.position, context.position + 2) === '**') {
+                context.position += 2;
+                return [[html('strong', unshift([html('em', defrag(bs))], defrag(ds))), Command.Separator]];
+              }
+              else {
+                return [push(unshift(['**', html('em', defrag(bs))], ds), [Command.Separator])];
+              }
+            })
+            ({ context }) ?? [['**', html('em', defrag(bs)), Command.Separator]];
       }
       assert(false);
     },
-    ([as, bs], rest) => [push(unshift(as, bs), [Command.Escape]), rest]),
+    ([as, bs]) => [push(unshift(as, bs), [Command.Escape])]),
     // 3以上の`*`に対してemの適用を保証する
     nodes => [html('em', [html('strong', defrag(nodes))])],
-    (acc, rest, prefix, postfix, state) => {
+    (acc, context, prefix, postfix, state) => {
       const nodes = [];
       let i = postfix;
       if (state) while (i > 0) {
@@ -92,7 +104,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
         nodes.push(...acc[i]);
       }
       if (postfix > 0) {
-        rest = rest.slice(postfix);
+        context.position += postfix;
       }
-      return [nodes, rest];
+      return [nodes];
     }))));

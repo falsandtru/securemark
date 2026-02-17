@@ -4,7 +4,8 @@ import { input } from '../../combinator/data/parser';
 
 describe('Unit: parser/block/extension', () => {
   describe('extension', () => {
-    const parser = (source: string) => some(extension)(input(source, {}));
+    const parser = (source: string) => some(extension)(input(source, ctx));
+    const { context: ctx } = input('', {});
 
     it('invalid', () => {
       assert(!parser(''));

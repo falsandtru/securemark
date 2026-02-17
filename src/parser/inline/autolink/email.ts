@@ -17,6 +17,6 @@ export const email: AutolinkParser.EmailParser = rewrite(
     [3 | Backtrack.autolink]),
   union([
     constraint(State.autolink, state(State.autolink,
-      ({ source }) => [[html('a', { class: 'email', href: `mailto:${source}` }, source)], ''])),
-    ({ source }) => [[source], ''],
+      ({ context: { source } }) => [[html('a', { class: 'email', href: `mailto:${source}` }, source)]])),
+    ({ context: { source } }) => [[source]],
   ]));

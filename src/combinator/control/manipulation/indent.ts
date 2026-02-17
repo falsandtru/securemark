@@ -1,4 +1,4 @@
-import { Parser, input, eval, exec, failsafe } from '../../data/parser';
+import { Parser, input, eval, failsafe } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { block } from '../constraint/block';
 import { line } from '../constraint/line';
@@ -20,9 +20,14 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
     opener,
     memoize(
     ([indent]) =>
-      some(line(open(indent, ({ source }) => [[source], '']))),
+      some(line(open(indent, ({ context }) => {
+        const { source, position } = context;
+        context.position = source.length;
+        return [[source.slice(position)]];
+      }))),
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation),
-    (lines, rest, context) => {
+    (lines, context) => {
+      const { source, position } = context;
       assert(parser = parser as Parser<N>);
       // 影響する使用はないはず
       //const { backtracks } = context;
@@ -30,8 +35,10 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
       const result = parser(input(trimBlockEnd(lines.join('')), context));
       //context.backtracks = backtracks;
       assert(result);
-      return result && exec(result) === ''
-        ? [eval(result), rest]
+      context.position = position - (context.source.length - context.position);
+      context.source = source;
+      return result && context.position === position
+        ? [eval(result)]
         : undefined;
     }));
 }

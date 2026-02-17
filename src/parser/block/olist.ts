@@ -47,10 +47,10 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    ({ source }) => [[source.trimEnd().split('.', 1)[0] + '.'], '']),
+    ({ context: { source } }) => [[source.trimEnd().split('.', 1)[0] + '.']]),
   '(': focus(
     openers['('],
-    ({ source }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')], '']),
+    ({ context: { source } }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')]]),
 } as const;
 
 function idx(value: string): number {

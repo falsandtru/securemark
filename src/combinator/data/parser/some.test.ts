@@ -5,31 +5,32 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/data/parser/some', () => {
   describe('some', () => {
-    const a: Parser<string, never> = ({ source }) => {
-      return source && source[0] === 'a'
-        ? [['A'], source.slice(1)]
+    const a: Parser<string> = ({ context }) => {
+      return context.source[context.position] === 'a'
+        ? void ++context.position || [['A']]
         : undefined;
     };
-    const b: Parser<string, never> = ({ source }) => {
-      return source && source[0] === 'b'
-        ? [['B'], source.slice(1)]
+    const b: Parser<string> = ({ context }) => {
+      return context.source[context.position] === 'b'
+        ? void ++context.position || [['B']]
         : undefined;
     };
     const ab = union<Parser<string, {}, [typeof a, typeof b]>>([a, b]);
+    const { context: ctx } = input('', {});
 
     it('basic', () => {
       const parser = some(ab, /^aaa/);
-      assert.deepStrictEqual(inspect(parser(input('', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('a', {}))), [['A'], '']);
-      assert.deepStrictEqual(inspect(parser(input('b', {}))), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('ab', {}))), [['A', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('ba', {}))), [['B', 'A'], '']);
-      assert.deepStrictEqual(inspect(parser(input('aab', {}))), [['A', 'A', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('bba', {}))), [['B', 'B', 'A'], '']);
-      assert.deepStrictEqual(inspect(parser(input('aaa', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('bbb', {}))), [['B', 'B', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('aaab', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('baaa', {}))), [['B'], 'aaa']);
+      assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('a', ctx)), ctx), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser(input('b', ctx)), ctx), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser(input('ab', ctx)), ctx), [['A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser(input('ba', ctx)), ctx), [['B', 'A'], '']);
+      assert.deepStrictEqual(inspect(parser(input('aab', ctx)), ctx), [['A', 'A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser(input('bba', ctx)), ctx), [['B', 'B', 'A'], '']);
+      assert.deepStrictEqual(inspect(parser(input('aaa', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('bbb', ctx)), ctx), [['B', 'B', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser(input('aaab', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('baaa', ctx)), ctx), [['B'], 'aaa']);
     });
 
   });

@@ -24,5 +24,5 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
       unsafelink,
       false),
       ([el]) => [define(el, { class: 'account' })]))),
-    ({ source }) => [[source], ''],
+    ({ context: { source } }) => [[source]],
   ])));

@@ -1,6 +1,5 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { Command } from '../context';
-import { input } from '../../combinator/data/parser';
 import { union, consume, focus } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom/dom';
@@ -10,7 +9,8 @@ export const nonWhitespace = /[\S\n]|$/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|\S#|[0-9A-Za-z]>|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = ({ context }) => {
+export const text: TextParser = input => {
+  const { context } = input;
   const { source, position } = context;
   if (position === source.length) return;
   consume(1, context);
@@ -19,28 +19,28 @@ export const text: TextParser = ({ context }) => {
     case '\r':
       assert(!source.includes('\r', position + 1));
       consume(-1, context);
-      return [[], source.slice(position + 1)];
+      return [[]];
     case Command.Escape:
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return [[], ''];
+          return [[]];
         case '\n':
           assert(source[0] !== Command.Escape);
-          return [[], source.slice(position + 1)];
+          return [[]];
         default:
           consume(1, context);
           context.position += 1;
-          return [[source.slice(position + 1, position + 2)], source.slice(position + 2)];
+          return [[source.slice(position + 1, position + 2)]];
       }
     case '\n':
       context.linebreak ||= source.length - position;
-      return [[html('br')], source.slice(position + 1)];
+      return [[html('br')]];
     case '*':
     case '`':
       return source[position + 1] === source[position + 0]
-        ? repeat(input(source.slice(position), context))
-        : [[source[position]], source.slice(position + 1)];
+        ? void --context.position || repeat(input)
+        : [[source[position]]];
     default:
       assert(source[position] !== '\n');
       const t = source.slice(position, position + 2).trimStart();
@@ -60,8 +60,8 @@ export const text: TextParser = ({ context }) => {
       consume(i - 1, context);
       context.position += i - 1;
       return state
-        ? [[], source.slice(position + i)]
-        : [[source.slice(position, position + i)], source.slice(position + i)];
+        ? [[]]
+        : [[source.slice(position, position + i)]];
   }
 };
 

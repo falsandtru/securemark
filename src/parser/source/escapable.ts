@@ -13,25 +13,25 @@ export const escsource: EscapableSourceParser = ({ context }) => {
     case '\r':
       assert(!source.includes('\r', position + 1));
       consume(-1, context);
-      return [[], source.slice(position + 1)];
+      return [[]];
     case Command.Escape:
       consume(1, context);
       context.position += 1;
-      return [[source.slice(position + 1, position + 2)], source.slice(position + 2)];
+      return [[source.slice(position + 1, position + 2)]];
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return [[source[position]], ''];
+          return [[source[position]]];
         case '\n':
-          return [[source[position]], source.slice(position + 1)];
+          return [[source[position]]];
         default:
           consume(1, context);
           context.position += 1;
-          return [[source.slice(position, position + 2)], source.slice(position + 2)];
+          return [[source.slice(position, position + 2)]];
       }
     case '\n':
       context.linebreak ||= source.length - position;
-      return [[html('br')], source.slice(position + 1)];
+      return [[html('br')]];
     default:
       assert(source[position] !== '\n');
       const b = source[position].trimStart() === '';
@@ -42,6 +42,6 @@ export const escsource: EscapableSourceParser = ({ context }) => {
       i = i - +b || 1;
       consume(i - 1, context);
       context.position += i - 1;
-      return [[source.slice(position, position + i)], source.slice(position + i)];
+      return [[source.slice(position, position + i)]];
   }
 };

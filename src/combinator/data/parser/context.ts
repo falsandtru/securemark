@@ -1,4 +1,4 @@
-import { ObjectCreate, min } from 'spica/alias';
+import { min } from 'spica/alias';
 import { Parser, Result, Ctx, CtxOptions, Node, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
@@ -8,8 +8,8 @@ export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return ({ source, context }) =>
-    apply(parser, source, ObjectCreate(context), changes, values, true);
+  return ({ context }) =>
+    apply(parser, context, changes, values, true);
 }
 
 export function context<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
@@ -18,15 +18,12 @@ export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return ({ source, context }) =>
-    apply(parser, source, context, changes, values);
+  return ({ context }) =>
+    apply(parser, context, changes, values);
 }
 
-function apply<P extends Parser<unknown>>(parser: P, source: string, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
-function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
-  if (reset) {
-    context.backtracks = {};
-  }
+function apply<P extends Parser<unknown>>(parser: P, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
+function apply<N>(parser: Parser<N>, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -40,13 +37,16 @@ function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: read
         assert(!context.precedence);
         assert(!context.delimiters);
         assert(!context.state);
+        values[i] = context[prop];
         context[prop as string] ??= clone({}, change[1] as object);
         continue;
+      case 'backtracks':
+        change[1] = {};
     }
     values[i] = context[prop];
     context[prop] = change[1];
   }
-  const result = parser({ source, context });
+  const result = parser({ context });
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -56,8 +56,6 @@ function apply<N>(parser: Parser<N>, source: string, context: Ctx, changes: read
         continue;
       case 'resources':
         assert(reset);
-        // プロトタイプに戻ることで戻す
-        continue;
     }
     context[prop] = values[i];
     values[i] = undefined;

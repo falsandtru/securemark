@@ -1,40 +1,40 @@
-import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, input, eval, exec, check, failsafe } from '../../data/parser';
+import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  f?: (rss: [S[], SubNode<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [S[], SubNode<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], SubNode<P>[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  f?: (rss: [S[], SubNode<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[] | undefined], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [S[], SubNode<P>[] | undefined, S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], SubNode<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  f?: (rss: [S[], Node<P>[], S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [S[], Node<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], Node<P>[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  f?: (rss: [S[], Node<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[] | undefined], rest: string, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [S[], Node<P>[] | undefined, S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], Node<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
-  f?: (rss: [N[], N[], N[]], rest: string, context: Ctx) => Result<N>,
-  g?: (rss: [N[], N[]], rest: string, context: Ctx) => Result<N>,
+  f?: (rss: [N[], N[], N[]], context: Ctx) => Result<N>,
+  g?: (rss: [N[], N[]], context: Ctx) => Result<N>,
   backtracks: readonly number[] = [],
 ): Parser<N> {
   switch (typeof opener) {
@@ -47,39 +47,36 @@ export function surround<N>(
     case 'object':
       closer = match(closer);
   }
-  return failsafe(({ source, context }) => {
-    const sme_ = source;
-    if (sme_ === '') return;
+  return failsafe(input => {
+    const { context } = input;
+    const { source, position } = context;
+    if (position === source.length) return;
     const { linebreak } = context;
     context.linebreak = 0;
-    const resultS = opener(input(sme_, context));
-    assert(check(sme_, resultS, false));
-    if (resultS === undefined) return void revert(context, linebreak);
-    const nodesS = eval(resultS);
-    const me_ = exec(resultS);
-    if (isBacktrack(context, backtracks, sme_, sme_.length - me_.length)) return void revert(context, linebreak);
-    const resultM = me_ !== '' ? parser(input(me_, context)) : undefined;
-    assert(check(me_, resultM));
+    const resultO = opener(input);
+    assert(context.position >= position);
+    if (resultO === undefined) return void revert(context, linebreak);
+    const nodesO = eval(resultO);
+    const strO = source.slice(position, context.position);
+    if (isBacktrack(context, backtracks, position, context.position - position || 1)) return void revert(context, linebreak);
+    const resultM = context.position < source.length ? parser(input) : undefined;
+    assert(context.position >= position + strO.length);
     const nodesM = eval(resultM);
-    const e_ = exec(resultM) ?? me_;
-    const resultE = nodesM || optional ? closer(input(e_, context)) : undefined;
-    assert(check(e_, resultE, false));
-    const nodesE = eval(resultE);
-    const rest = exec(resultE) ?? e_;
-    nodesE || setBacktrack(context, backtracks, sme_.length);
+    const strM = source.slice(position + strO.length, context.position);
+    const resultC = nodesM || optional ? closer(input) : undefined;
+    assert(context.position >= position + strO.length + strM.length);
+    const nodesC = eval(resultC);
+    const strC = source.slice(position + strO.length + strM.length, context.position);
+    nodesC || setBacktrack(context, backtracks, position);
     if (!nodesM && !optional) return void revert(context, linebreak);
-    if (rest.length === sme_.length) return void revert(context, linebreak);
-    context.recent = [
-      sme_.slice(0, sme_.length - me_.length),
-      me_.slice(0, me_.length - e_.length),
-      e_.slice(0, e_.length - rest.length),
-    ];
-    const result: Result<N> = nodesE
+    if (context.position === position) return void revert(context, linebreak);
+    context.recent = [strO, strM, strC];
+    const result = nodesC
       ? f
-        ? f([nodesS, nodesM!, nodesE], rest, context)
-        : [push(unshift(nodesS, nodesM ?? []), nodesE), rest]
+        ? f([nodesO, nodesM!, nodesC], context)
+        : [push(unshift(nodesO, nodesM ?? []), nodesC)] satisfies [N[]]
       : g
-        ? g([nodesS, nodesM!], rest, context)
+        ? g([nodesO, nodesM!], context)
         : undefined;
     if (result) {
       context.linebreak ||= linebreak;
@@ -123,18 +120,19 @@ const statesize = 2;
 export function isBacktrack(
   context: Ctx,
   backtracks: readonly number[],
-  source: string,
+  position: number = context.position,
   length: number = 1,
 ): boolean {
-  if (length === 0 || source.length === 0) return false;
+  const { source } = context;
+  if (position === source.length) return false;
+  if (length === 0) return false;
   for (const backtrack of backtracks) {
     if (backtrack & 1) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
-        assert(i < source.length);
-        if (source[i] !== source[0]) break;
-        const pos = source.length - i + offset - 1;
-        assert(pos >= 0);
+        if (position + i === source.length) break;
+        if (source[position + i] !== source[position + 0]) break;
+        const pos = position + i + offset;
         if (!(pos in backtracks)) continue;
         if (backtracks[pos] & 1 << size(backtrack >>> statesize)) return true;
       }
@@ -148,13 +146,15 @@ export function setBacktrack(
   position: number,
   length: number = 1,
 ): void {
-  if (length === 0 || position === 0) return;
+  const { source } = context;
+  if (position === source.length) return;
+  if (length === 0) return;
   for (const backtrack of backtracks) {
-    if (backtrack & 2 && position !== 0) {
+    if (backtrack & 2) {
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
-        const pos = position - i + offset - 1;
-        assert(pos >= 0);
+        if (position + i === source.length) break;
+        const pos = position + i + offset;
         backtracks[pos] |= 1 << size(backtrack >>> statesize);
       }
     }
@@ -164,18 +164,20 @@ export function setBacktrack(
 function match(pattern: string | RegExp): (input: Input) => Result<never> {
   switch (typeof pattern) {
     case 'string':
-      return ({ source, context }) => {
-        if (source.slice(0, pattern.length) !== pattern) return;
+      return ({ context }) => {
+        const { source, position } = context;
+        if (source.slice(position, position + pattern.length) !== pattern) return;
         context.position += pattern.length;
-        return [[], source.slice(pattern.length)];
+        return [[]];
       };
     case 'object':
-      return ({ source, context }) => {
-        const m = source.match(pattern);
+      return ({ context }) => {
+        const { source, position } = context;
+        const m = source.slice(position).match(pattern);
         if (m === null) return;
         consume(m[0].length, context);
         context.position += m[0].length;
-        return [[], source.slice(m[0].length)];
+        return [[]];
       };
   }
 }

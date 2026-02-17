@@ -17,7 +17,7 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
 export const codeblock: CodeBlockParser = block(validate('```', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, param]: string[], context) => {
     const params = param.match(/(?:\\.?|\S)+/g)?.reduce<{
       lang?: string;
       path?: string;
@@ -72,6 +72,6 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       params.lang
         ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
           body.slice(0, -1) || undefined
-        : defrag(eval(autolink(input(body.slice(0, -1), context)), [])));
+        : defrag(eval(autolink(input(body.slice(0, -1), { ...context })), [])));
     return [el];
   })));

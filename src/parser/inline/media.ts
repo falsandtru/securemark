@@ -1,6 +1,6 @@
 import { MediaParser } from '../inline';
-import { input } from '../../combinator/data/parser';
 import { State, Recursion, Backtrack } from '../context';
+import { input } from '../../combinator/data/parser';
 import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
 import { attributes } from './html';
@@ -30,9 +30,9 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
       ]), ']')),
       ']',
       true,
-      ([, ns = []], rest, context) =>
+      ([, ns = []], context) =>
         context.linebreak === 0
-          ? [ns, rest]
+          ? [ns]
           : undefined,
       undefined,
       [3 | Backtrack.escbracket])),
@@ -45,7 +45,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
   ]),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
-  ([[text], params], rest, context) => {
+  ([[text], params], context) => {
     assert(text === text.trim());
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -66,7 +66,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
       || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
     el.setAttribute('alt', text);
-    if (!sanitize(el, uri)) return [[el], rest];
+    if (!sanitize(el, uri)) return [[el]];
     assert(!el.matches('.invalid'));
     define(el, attributes('media', optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
@@ -74,12 +74,17 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state! & State.link) return [[el], rest];
-    if (cache && cache.tagName !== 'IMG') return [[el], rest];
+    if (context.state! & State.link) return [[el]];
+    if (cache && cache.tagName !== 'IMG') return [[el]];
+    const { source, position } = context;
     return fmap(
       unsafelink as MediaParser,
-      ([link]) => [define(link, { class: null, target: '_blank' }, [el])])
-      (input(`{ ${INSECURE_URI}${params.join('')} }${rest}`, context));
+      ([link]) => {
+        context.source = source;
+        context.position = position;
+        return [define(link, { class: null, target: '_blank' }, [el])];
+      })
+      (input(`{ ${INSECURE_URI}${params.join('')} }`, context));
   }))))));
 
 export const linemedia: MediaParser.LineMediaParser = surround(
@@ -89,13 +94,13 @@ export const linemedia: MediaParser.LineMediaParser = surround(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
-    undefined, () => [[], ''], [3 | Backtrack.escbracket]),
+    undefined, () => [[]], [3 | Backtrack.escbracket]),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
@@ -104,11 +109,10 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
     str(/^[x:]/),
     str(/^[1-9][0-9]*(?=[^\S\n]|})/),
     false,
-    ([[a], [b], [c]], rest) => [
+    ([[a], [b], [c]]) => [
       b === 'x'
         ? [`width="${a}"`, `height="${c}"`]
         : [`aspect-ratio="${a}/${c}"`],
-      rest
     ]),
   linkoption,
 ]));

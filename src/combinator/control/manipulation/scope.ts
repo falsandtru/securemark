@@ -1,31 +1,31 @@
-import { Parser, Context, input, eval, exec, check, failsafe } from '../../data/parser';
+import { Parser, Context, input, eval, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
 export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true): Parser<N> {
   assert(scope instanceof RegExp ? !scope.flags.match(/[gmy]/) && scope.source.startsWith('^') : scope);
   assert(parser);
-  const match: (source: string) => string = typeof scope === 'string'
-    ? source => source.slice(0, scope.length) === scope ? scope : ''
-    : source => source.match(scope)?.[0] ?? '';
-  return failsafe(({ source, context }) => {
-    if (source === '') return;
-    const src = match(source);
-    assert(source.startsWith(src));
+  const match: (source: string, position: number) => string = typeof scope === 'string'
+    ? (source, position) => source.slice(position, position + scope.length) === scope ? scope : ''
+    : (source, position) => source.slice(position).match(scope)?.[0] ?? '';
+  return failsafe(({ context }) => {
+    const { source, position } = context;
+    if (position === source.length) return;
+    const src = match(source, position);
+    assert(source.slice(position).startsWith(src));
     if (src === '') return;
     cost && consume(src.length, context);
-    const offset = source.length - src.length;
-    assert(offset >= 0);
+    context.recent = [src];
     context.offset ??= 0;
-    context.offset += offset;
+    context.offset += position;
     const result = parser(input(src, context));
-    assert(check(src, result));
-    context.offset -= offset;
+    context.position += position;
+    context.position += result && context.position === position ? src.length : 0;
+    assert(context.position > position || !result);
+    context.source = source;
+    context.offset -= position;
     if (result === undefined) return;
-    assert(exec(result).length < src.length);
-    return exec(result).length < src.length
-      ? [eval(result), exec(result) + source.slice(src.length)]
-      : undefined;
+    return [eval(result)];
   });
 }
 
@@ -34,29 +34,29 @@ export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Contex
 export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N> {
   assert(scope);
   assert(parser);
-  return failsafe(({ source, context }) => {
-    if (source === '') return;
+  return failsafe(({ context }) => {
+    const { source, position } = context;
+    if (position === source.length) return;
     // 影響する使用はないはず
     //const { backtracks } = context;
     //context.backtracks = {};
-    const res1 = scope({ source, context });
-    assert(check(source, res1));
+    const res1 = scope({ context });
+    assert(context.position > position || !res1);
     //context.backtracks = backtracks;
-    if (res1 === undefined || exec(res1).length >= source.length) return;
-    const src = source.slice(0, source.length - exec(res1).length);
+    if (res1 === undefined || context.position < position) return;
+    const src = source.slice(position, context.position);
     assert(src !== '');
-    assert(source.startsWith(src));
-    const offset = source.length - src.length;
-    assert(offset >= 0);
+    assert(source.slice(position).startsWith(src));
     context.offset ??= 0;
-    context.offset += offset;
+    context.offset += position;
     const res2 = parser(input(src, context));
-    assert(check(src, res2));
-    context.offset -= offset;
+    context.position += position;
+    context.position += res2 && context.position === position ? src.length : 0;
+    assert(context.position > position || !res2);
+    context.source = source;
+    context.offset -= position;
     if (res2 === undefined) return;
-    assert(exec(res2) === '');
-    return exec(res2).length < src.length
-      ? [eval(res2), exec(res2) + exec(res1)]
-      : undefined;
+    assert(context.position === position + src.length);
+    return [eval(res2)];
   });
 }

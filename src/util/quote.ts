@@ -1,8 +1,10 @@
-import { input, exec } from '../combinator/data/parser';
+import { input } from '../combinator/data/parser';
 import { cite } from '../parser/block/reply/cite';
 
 export function quote(anchor: string, range: Range): string {
-  if (exec(cite(input(`>>${anchor}`, {}))) !== '') throw new Error(`Invalid anchor: ${anchor}`);
+  const { context } = input('', {});
+  cite(input(`>>${anchor}`, context));
+  if (context.position !== context.source.length) throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';

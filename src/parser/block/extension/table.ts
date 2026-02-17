@@ -25,7 +25,7 @@ export const segment_: TableParser.SegmentParser = block(validate('~~~',
 export const table: TableParser = block(validate('~~~', fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, type, param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
@@ -39,7 +39,7 @@ export const table: TableParser = block(validate('~~~', fmap(
     switch (type) {
       case 'grid':
       case undefined:
-        return (eval(parser(input(body, context))) ?? [html('table')])
+        return (eval(parser(input(body, { ...context }))) ?? [html('table')])
           .map(el => define(el, { 'data-type': type }));
       default:
         return [html('pre', {
@@ -114,8 +114,8 @@ const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
-      validate(/^!+\s/, convert(source => `:${source}`, data, true)),
-      convert(source => `: ${source}`, data, true),
+      validate(/^!+\s/, convert(source => `:${source}`, data, false)),
+      convert(source => `: ${source}`, data, false),
     ])));
 
 function attributes(source: string): Record<string, string | undefined> {

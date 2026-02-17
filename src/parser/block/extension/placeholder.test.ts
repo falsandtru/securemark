@@ -4,7 +4,8 @@ import { input } from '../../../combinator/data/parser';
 
 describe('Unit: parser/block/extension/placeholder', () => {
   describe('placeholder', () => {
-    const parser = (source: string) => some(placeholder)(input(source, {}));
+    const parser = (source: string) => some(placeholder)(input(source, ctx));
+    const { context: ctx } = input('', {});
 
     it('invalid', () => {
       assert(!parser(''));

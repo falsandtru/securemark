@@ -38,7 +38,8 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
     creation(10,
     rewrite(
       some(contentline, opener),
-      convert(unindent, ({ source, context }) => {
+      convert(unindent, ({ context }) => {
+        const { source } = context;
         const references = html('ol', { class: 'references' });
         const document = parse(source, {
           id: '',
@@ -46,7 +47,8 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
             references,
           },
         }, context);
-        return [[html('section', [document, html('h2', 'References'), references])], ''];
+        context.position = source.length;
+        return [[html('section', [document, html('h2', 'References'), references])]];
       }, false, true))),
   ]))),
   ns => [html('blockquote', ns)]));

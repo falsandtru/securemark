@@ -5,41 +5,42 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/account', () => {
   describe('account', () => {
-    const parser = (source: string) => some(autolink)(input(source, {}));
+    const parser = (source: string) => some(autolink)(input(source, ctx));
+    const { context: ctx } = input('', {});
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('@')), [['@'], '']);
-      assert.deepStrictEqual(inspect(parser('@+')), [['@'], '+']);
-      assert.deepStrictEqual(inspect(parser('@_')), [['@'], '_']);
-      assert.deepStrictEqual(inspect(parser('@-')), [['@'], '-']);
-      assert.deepStrictEqual(inspect(parser('@.')), [['@'], '.']);
-      assert.deepStrictEqual(inspect(parser('@0')), [['@0'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@')), [['@a@'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@b')), [['@a@b'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@b@c')), [['@a@b@c'], '']);
-      assert.deepStrictEqual(inspect(parser('@ab@')), [['@ab@'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@b')), [['@a@b'], '']);
-      assert.deepStrictEqual(inspect(parser('@@')), [['@@'], '']);
-      assert.deepStrictEqual(inspect(parser('@@a')), [['@@a'], '']);
-      assert.deepStrictEqual(inspect(parser('@@@a')), [['@@@a'], '']);
-      assert.deepStrictEqual(inspect(parser(' @a')), undefined);
+      assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@'), ctx), [['@'], '']);
+      assert.deepStrictEqual(inspect(parser('@+'), ctx), [['@'], '+']);
+      assert.deepStrictEqual(inspect(parser('@_'), ctx), [['@'], '_']);
+      assert.deepStrictEqual(inspect(parser('@-'), ctx), [['@'], '-']);
+      assert.deepStrictEqual(inspect(parser('@.'), ctx), [['@'], '.']);
+      assert.deepStrictEqual(inspect(parser('@0'), ctx), [['@0'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@'), ctx), [['@a@'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), [['@a@b'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@b@c'), ctx), [['@a@b@c'], '']);
+      assert.deepStrictEqual(inspect(parser('@ab@'), ctx), [['@ab@'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), [['@a@b'], '']);
+      assert.deepStrictEqual(inspect(parser('@@'), ctx), [['@@'], '']);
+      assert.deepStrictEqual(inspect(parser('@@a'), ctx), [['@@a'], '']);
+      assert.deepStrictEqual(inspect(parser('@@@a'), ctx), [['@@@a'], '']);
+      assert.deepStrictEqual(inspect(parser(' @a'), ctx), undefined);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" href="/@a">@a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@A')), [['<a class="account" href="/@A">@A</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a_b')), [['<a class="account" href="/@a">@a</a>'], '_b']);
-      assert.deepStrictEqual(inspect(parser('@a__b')), [['<a class="account" href="/@a">@a</a>'], '__b']);
-      assert.deepStrictEqual(inspect(parser('@a-')), [['<a class="account" href="/@a">@a</a>'], '-']);
-      assert.deepStrictEqual(inspect(parser('@a-b')), [['<a class="account" href="/@a-b">@a-b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a--b')), [['<a class="account" href="/@a">@a</a>'], '--b']);
-      assert.deepStrictEqual(inspect(parser('@a.')), [['<a class="account" href="/@a">@a</a>'], '.']);
-      assert.deepStrictEqual(inspect(parser('@a.domain.com')), [['<a class="account" href="/@a.domain.com">@a.domain.com</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@http://host')), [['<a class="account" href="/@http">@http</a>'], '://host']);
-      assert.deepStrictEqual(inspect(parser('@ttp://host')), [['<a class="account" href="/@ttp">@ttp</a>'], '://host']);
-      assert.deepStrictEqual(inspect(parser('@domain/a')), [['<a class="account" href="https://domain/@a" target="_blank">@domain/a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@domain.com/a')), [['<a class="account" href="https://domain.com/@a" target="_blank">@domain.com/a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a'), ctx), [['<a class="account" href="/@a">@a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@A'), ctx), [['<a class="account" href="/@A">@A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a_b'), ctx), [['<a class="account" href="/@a">@a</a>'], '_b']);
+      assert.deepStrictEqual(inspect(parser('@a__b'), ctx), [['<a class="account" href="/@a">@a</a>'], '__b']);
+      assert.deepStrictEqual(inspect(parser('@a-'), ctx), [['<a class="account" href="/@a">@a</a>'], '-']);
+      assert.deepStrictEqual(inspect(parser('@a-b'), ctx), [['<a class="account" href="/@a-b">@a-b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a--b'), ctx), [['<a class="account" href="/@a">@a</a>'], '--b']);
+      assert.deepStrictEqual(inspect(parser('@a.'), ctx), [['<a class="account" href="/@a">@a</a>'], '.']);
+      assert.deepStrictEqual(inspect(parser('@a.domain.com'), ctx), [['<a class="account" href="/@a.domain.com">@a.domain.com</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@http://host'), ctx), [['<a class="account" href="/@http">@http</a>'], '://host']);
+      assert.deepStrictEqual(inspect(parser('@ttp://host'), ctx), [['<a class="account" href="/@ttp">@ttp</a>'], '://host']);
+      assert.deepStrictEqual(inspect(parser('@domain/a'), ctx), [['<a class="account" href="https://domain/@a" target="_blank">@domain/a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@domain.com/a'), ctx), [['<a class="account" href="https://domain.com/@a" target="_blank">@domain.com/a</a>'], '']);
     });
 
   });

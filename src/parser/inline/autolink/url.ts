@@ -19,7 +19,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
       url => `{ ${url} }`,
       unsafelink,
       false))),
-    ({ source }) => [[source], ''],
+    ({ context: { source } }) => [[source]],
   ]))));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
@@ -33,7 +33,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
           url => `{ ${url} }`,
           unsafelink,
           false))),
-        ({ source }) => [[source], ''],
+        ({ context: { source } }) => [[source]],
       ]),
     ])),
   false,
@@ -41,11 +41,11 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,
-    undefined, () => [[], ''], [3 | Backtrack.autolink]),
+    undefined, () => [[]], [3 | Backtrack.autolink]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'), true,
-    undefined, () => [[], ''], [3 | Backtrack.autolink]),
+    undefined, () => [[]], [3 | Backtrack.autolink]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'), true,
-    undefined, () => [[], ''], [3 | Backtrack.autolink]),
+    undefined, () => [[]], [3 | Backtrack.autolink]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'), true,
-    undefined, () => [[], ''], [3 | Backtrack.autolink]),
+    undefined, () => [[]], [3 | Backtrack.autolink]),
 ]));

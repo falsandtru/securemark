@@ -18,5 +18,5 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
       unsafelink,
       false),
       ([el]) => [define(el, { class: 'hashnum', href: null })]))),
-    ({ source }) => [[source], ''],
+    ({ context: { source } }) => [[source]],
   ])));

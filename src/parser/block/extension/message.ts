@@ -22,7 +22,7 @@ import MessageParser = ExtensionParser.MessageParser;
 export const message: MessageParser = block(validate('~~~', fmap(
   fence(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, type, param]: string[], _, context) => {
+  ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
     if (!closer || overflow || param.trimStart()) return [html('pre', {
       class: 'invalid',
       translate: 'no',
@@ -48,7 +48,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
     return [
       html('section', { class: `message`, 'data-type': type }, unshift(
         [html('h1', title(type))],
-        [...segment(body)].reduce((acc, seg) => push(acc, eval(content(input(seg, context)), [])), []))),
+        [...segment(body)].reduce((acc, seg) => push(acc, eval(content(input(seg, { ...context })), [])), []))),
     ];
   })));
 

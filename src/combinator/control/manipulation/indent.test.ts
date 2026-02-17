@@ -4,21 +4,23 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/indent', () => {
   describe('indent', () => {
+    const { context: ctx } = input('', {});
+
     it('valid', () => {
-      const parser = indent(({ source }) => [[source], '']);
-      assert.deepStrictEqual(inspect(parser(input('', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input(' ', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('  ', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input('a ', {}))), undefined);
-      assert.deepStrictEqual(inspect(parser(input(' a\n', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a ', {}))), [['a '], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a \n', {}))), [['a '], '']);
-      assert.deepStrictEqual(inspect(parser(input('  a', {}))), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a\n a', {}))), [['a\na'], '']);
-      assert.deepStrictEqual(inspect(parser(input(' a\n  a', {}))), [['a\n a'], '']);
-      assert.deepStrictEqual(inspect(parser(input('  a\n a', {}))), [['a'], ' a']);
-      assert.deepStrictEqual(inspect(parser(input(' \ta', {}))), [['\ta'], '']);
-      assert.deepStrictEqual(inspect(parser(input('\ta', {}))), [['a'], '']);
+      const parser = indent(({ context }) => { context.position = context.source.length; return [[context.source]]; });
+      assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input(' ', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('  ', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input('a ', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(input(' a\n', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a ', ctx)), ctx), [['a '], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a \n', ctx)), ctx), [['a '], '']);
+      assert.deepStrictEqual(inspect(parser(input('  a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a\n a', ctx)), ctx), [['a\na'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a\n  a', ctx)), ctx), [['a\n a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('  a\n a', ctx)), ctx), [['a'], ' a']);
+      assert.deepStrictEqual(inspect(parser(input(' \ta', ctx)), ctx), [['\ta'], '']);
+      assert.deepStrictEqual(inspect(parser(input('\ta', ctx)), ctx), [['a'], '']);
     });
 
   });

@@ -15,9 +15,9 @@ export const mediablock: MediaBlockParser = block(validate(['[!', '!'], fmap(
       medialink,
       media,
       shortmedia,
-    ]), ({ source }) => [[html('span', {
+    ]), ({ context: { source } }) => [[html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
-    }, source.replace('\n', ''))], '']))),
+    }, source.replace('\n', ''))]]))),
   ]),
   ns => [html('div', ns)])));

@@ -25,5 +25,5 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       unsafelink,
       false),
       ([el]) => [define(el, { class: 'hashtag' })]))),
-    ({ source }) => [[source], ''],
+    ({ context: { source } }) => [[source]],
   ])));

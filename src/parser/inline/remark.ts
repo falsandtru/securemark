@@ -16,11 +16,11 @@ export const remark: RemarkParser = lazy(() => match(
       precedence(4, recursion(Recursion.inline,
       some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]))),
       close(some(text, '%'), str(`${fence}]`)), true,
-      ([as, bs = [], cs], rest) => [[
+      ([as, bs = [], cs]) => [[
         html('span', { class: 'remark' }, [
           html('input', { type: 'checkbox' }),
           html('span', defrag(push(unshift(as, bs), cs))),
         ]),
-      ], rest],
-      ([as, bs = []], rest) => [unshift(as, bs), rest]),
+      ]],
+      ([as, bs = []]) => [unshift(as, bs)]),
   ([, fence]) => fence.length, {})));

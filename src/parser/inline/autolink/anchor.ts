@@ -27,5 +27,5 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
         unsafelink,
         false),
         ([el]) => [define(el, { class: 'anchor' })]))),
-      ({ source }) => [[source], ''],
+      ({ context: { source } }) => [[source]],
     ]))));

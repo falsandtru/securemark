@@ -49,9 +49,9 @@ export import AutolinkParser = InlineParser.AutolinkParser;
 
 export const inline: InlineParser = lazy(() => union([
   input => {
-    const { source } = input;
-    if (source === '') return;
-    switch (source.slice(0, 2)) {
+    const { context: { source, position } } = input;
+    if (position === source.length) return;
+    switch (source.slice(position, position + 2)) {
       case '((':
         return annotation(input);
       case '[[':
@@ -80,7 +80,7 @@ export const inline: InlineParser = lazy(() => union([
       case '//':
         return italic(input);
     }
-    switch (source[0]) {
+    switch (source[position]) {
       case '[':
         return textlink(input)
             || ruby(input);

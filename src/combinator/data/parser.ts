@@ -4,12 +4,11 @@ import { MarkdownParser } from '../../../markdown';
 export type Parser<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
   = (input: Input<C & Ctx>) => Result<N, C, D>;
 export interface Input<C extends CtxOptions = CtxOptions> {
-  readonly source: string;
   readonly context: C & Ctx;
 }
 export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = readonly [N[], string, C, D]
-  | readonly [N[], string]
+  = readonly [N[], C, D]
+  | readonly [N[]]
   | undefined;
 export interface Ctx extends CtxOptions {
   source: string;
@@ -53,6 +52,16 @@ export function input(source: string, context: CtxOptions): Input<Ctx> {
   };
 }
 
+export function clean<C extends Ctx>(context: C): C {
+  const { source, position } = context;
+  for (const p of Object.keys(context)) {
+    context[p] = undefined;
+  }
+  context.source = source;
+  context.position = position;
+  return context;
+}
+
 export { eval_ as eval };
 function eval_<N>(result: NonNullable<Result<N>>, default_?: N[]): N[];
 function eval_<N>(result: Result<N>, default_: N[]): N[];
@@ -63,25 +72,8 @@ function eval_<N>(result: Result<N>, default_?: N[]): N[] | undefined {
     : default_;
 }
 
-export function exec(result: NonNullable<Result<unknown>>, default_?: ''): string;
-export function exec(result: Result<unknown>, default_: ''): string
-export function exec(result: Result<unknown>, default_?: undefined): string | undefined;
-export function exec(result: Result<unknown>, default_?: string): string | undefined {
-  return result
-    ? result[1]
-    : default_;
-}
-
-export function check(source: string, result: Result<unknown>, mustConsume = true): true {
-  assert.doesNotThrow(() => {
-    if (source.length > 1000) return;
-    if (source.slice(+mustConsume).slice(-exec(result, '').length || source.length) !== exec(result, '')) throw new Error();
-  });
-  return true;
-}
-
-export function failsafe<P extends Parser<unknown>>(parser: P, overwrite?: boolean): P;
-export function failsafe<N>(parser: Parser<N>, overwrite = false): Parser<N> {
+export function failsafe<P extends Parser<unknown>>(parser: P): P;
+export function failsafe<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
   return input => {
     const { context } = input;
@@ -90,11 +82,6 @@ export function failsafe<N>(parser: Parser<N>, overwrite = false): Parser<N> {
     if (result === undefined) {
       context.source = source;
       context.position = position;
-    }
-    else if (!overwrite) {
-      context.source = source;
-      //assert(context.position === source.length - exec(result).length);
-      context.position = source.length - exec(result).length;
     }
     return result;
   };

@@ -17,11 +17,11 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'), false,
-  ([, bs], rest) => [[
+  ([, bs]) => [[
     html('span', {
       class: 'invalid',
       ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
     }, defrag(bs)),
-  ], rest],
-  ([as, bs], rest) => [unshift(as, bs), rest],
+  ]],
+  ([as, bs]) => [unshift(as, bs)],
   [3 | Backtrack.bracket]));

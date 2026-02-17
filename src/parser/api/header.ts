@@ -1,9 +1,9 @@
-import { input, eval, exec } from '../../combinator/data/parser';
+import { input, eval } from '../../combinator/data/parser';
 import { header as h } from '../header';
 
 export function header(source: string): string {
-  const [, rest = source] = parse(source);
-  return source.slice(0, source.length - rest.length);
+  const [, pos = 0] = parse(source);
+  return source.slice(0, pos);
 }
 
 export function headers(source: string): string[] {
@@ -11,10 +11,11 @@ export function headers(source: string): string[] {
   return el?.textContent!.trimEnd().slice(el.firstChild!.firstChild!.textContent!.length).split('\n') ?? [];
 }
 
-function parse(source: string): [HTMLElement, string] | [] {
-  const result = h(input(source, {}));
+function parse(source: string): [HTMLElement, number] | [] {
+  const i = input(source, {});
+  const result = h(i);
   const [el] = eval(result, []);
   return el?.tagName === 'ASIDE'
-    ? [el, exec(result!)]
+    ? [el, i.context.position]
     : [];
 }
