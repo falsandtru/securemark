@@ -13,7 +13,7 @@ export function bind<N, U>(parser: Parser<N>, f: (nodes: N[], context: Ctx) => R
     const res1 = parser(input);
     assert(context.position > position || !res1);
     if (res1 === undefined) return;
-    context.recent = [source.slice(position, context.position)];
+    context.range = context.position - position;
     const res2 = f(eval(res1), context);
     assert(context.position > position || !res2);
     if (res2 === undefined) return;

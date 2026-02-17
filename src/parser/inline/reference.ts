@@ -20,26 +20,27 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ']]',
   false,
   ([, ns], context) => {
-    if (context.linebreak === 0) {
+    const { position, range = 0, linebreak = 0 } = context;
+    if (linebreak === 0) {
       return [[html('sup', attributes(ns), [html('span', defrag(trimBlankNodeEnd(ns)))])]];
     }
     else {
-      const head = context.position - context.recent!.reduce((a, b) => a + b.length, 0);
+      const head = position - range!;
       setBacktrack(context, [2 | Backtrack.link], head, 2);
     }
   },
   ([as, bs], context) => {
-    const { source, position, recent = [] } = context;
-    const head = position - recent.reduce((a, b) => a + b.length, 0);
+    const { source, position, range = 0, linebreak = 0, state = 0 } = context;
+    const head = position - range;
     if (source[position] !== ']') {
       setBacktrack(context, [2 | Backtrack.bracket], head, 2);
     }
-    else if (context.linebreak !== 0) {
+    else if (linebreak !== 0) {
       setBacktrack(context, [2 | Backtrack.link], head, 2);
     }
     else {
       assert(source[position] === ']');
-      if (context.state! & State.annotation) {
+      if (state & State.annotation) {
         push(bs, [source[position]]);
       }
       context.position += 1;
@@ -52,7 +53,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
         result = !isBacktrack(context, [1 | Backtrack.link])
           ? textlink({ context })
           : undefined;
-        context.recent = recent;
+        context.range = range;
         if (!result) {
           setBacktrack(context, [2 | Backtrack.link], head + 1);
           result = [[]];
@@ -63,7 +64,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
         setBacktrack(context, [2 | Backtrack.link], head);
       }
       else {
-        assert(context.state! ^ State.link);
+        assert(state ^ State.link);
         const next = surround(
           '',
           some(inline, ']', [[']', 1]]),
@@ -76,13 +77,13 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
             return [cs];
           })
           ({ context });
-        if (context.state! & State.annotation && next) {
+        if (state & State.annotation && next) {
           return [push(push(unshift(as, bs), eval(result)), eval(next))];
         }
       }
       context.position = position;
     }
-    return context.state! & State.annotation
+    return state & State.annotation
       ? [unshift(as, bs)]
       : undefined;
   },
@@ -92,16 +93,16 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
 const abbr: ReferenceParser.AbbrParser = surround(
   str('^'),
   union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
-  /^\|?(?=]])|^\|[^\S\n]*/,
+  /^\|?(?=]])|^\|/,
   true,
   ([, ns], context) => {
-    const { source, position } = context;
-    if (!ns) return [['', context.recent!.join('')]];
+    const { source, position, range = 0 } = context;
+    if (!ns) return [['', source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)]];
     context.position += source.slice(position).match(blank.start)?.[0].length ?? 0;
     return [[Command.Escape, ns[0].trimEnd()]];
   },
   (_, context) => {
-    context.position -= context.recent!.reduce((a, b) => a + b.length, 0);
+    context.position -= context.range!;
     return [['']];
   });
 

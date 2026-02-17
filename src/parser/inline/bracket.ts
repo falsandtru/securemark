@@ -17,11 +17,12 @@ export const bracket: BracketParser = lazy(() => union([
     precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
     str(')'),
     true,
-    ([as, bs = [], cs], { recent = [] }) => [
-      indexA.test(recent[1])
-        ? recent
-        : [html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))],
-    ],
+    ([as, bs = [], cs], { source, position, range = 0 }) => {
+      const str = source.slice(position - range + 1, position - 1);
+      return indexA.test(str)
+        ? [[as[0], str, cs[0]]]
+        : [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))]];
+    },
     ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
   surround(
@@ -29,11 +30,12 @@ export const bracket: BracketParser = lazy(() => union([
     precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
     str('）'),
     true,
-    ([as, bs = [], cs], { recent = [] }) => [
-      indexF.test(recent[1])
-        ? recent
-        : [html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))],
-    ],
+    ([as, bs = [], cs], { source, position, range = 0 }) => {
+      const str = source.slice(position - range + 1, position - 1);
+      return indexF.test(str)
+        ? [[as[0], str, cs[0]]]
+        : [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))]];
+    },
     ([as, bs = []]) => [unshift(as, bs)]),
   surround(
     str('['),
@@ -42,8 +44,8 @@ export const bracket: BracketParser = lazy(() => union([
     true,
     ([as, bs = [], cs], context) => {
       if (context.state! & State.link) {
-        const { source, position, recent = [] } = context;
-        const head = position - recent.reduce((a, b) => a + b.length, 0);
+        const { source, position, range = 0 } = context;
+        const head = position - range;
         if (context.linebreak !== 0 || source[position] !== '{') {
           setBacktrack(context, [2 | Backtrack.link], head);
         }
@@ -57,7 +59,7 @@ export const bracket: BracketParser = lazy(() => union([
             setBacktrack(context, [2 | Backtrack.link], head);
           }
           context.state! ^= State.link;
-          context.recent = recent;
+          context.range = range;
         }
       }
       return [push(unshift(as, bs), cs)];

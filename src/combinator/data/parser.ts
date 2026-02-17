@@ -28,7 +28,7 @@ export interface CtxOptions {
   // AVL木が適当と思われる。
   backtracks?: Record<number, number>;
   linebreak?: number;
-  recent?: string[];
+  range?: number;
 }
 export type Node<P extends Parser<unknown>> = P extends Parser<infer N> ? N : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, CtxOptions, infer D> ? D : never;

@@ -60,10 +60,10 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   /^(?=])/,
   false,
   (_, context) => {
-    const { source, position } = context;
+    const { source, position, range = 0 } = context;
     context.offset ??= 0;
     context.offset += position;
-    const text = eval(sig(input(context.recent![1], context)), []).join('');
+    const text = eval(sig(input(source.slice(position - range + 1, position), context)), []).join('');
     context.position = position;
     context.source = source;
     context.offset -= position;

@@ -15,7 +15,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
     assert(source.slice(position).startsWith(src));
     if (src === '') return;
     cost && consume(src.length, context);
-    context.recent = [src];
+    context.range = src.length;
     context.offset ??= 0;
     context.offset += position;
     const result = parser(input(src, context));
