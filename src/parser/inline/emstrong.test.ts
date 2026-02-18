@@ -42,10 +42,10 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser('***(***a***)***'), ctx), [['<em><strong><span class="paren">(<em><strong>a</strong></em>)</span></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*'), ctx), [['**', '<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b'), ctx), [['**', '<em>a</em>', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('***a*b*'), ctx), [['**', '<em>a</em>', 'b', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('***a*b*'), ctx), [['**', '<em>a</em>', 'b'], '*']);
       assert.deepStrictEqual(inspect(parser('***a*b*c'), ctx), [['**', '<em>a</em>', 'b', '*', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b*c*'), ctx), [['**', '<em>a</em>', 'b', '<em>c</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('***a*b*c**'), ctx), [['**', '<em>a</em>', 'b', '<em>c</em>', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('***a*b*c**'), ctx), [['**', '<em>a</em>', 'b', '<em>c</em>'], '*']);
       assert.deepStrictEqual(inspect(parser('***a*b*c***'), ctx), [['<strong><em>a</em>b<em>c</em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b**'), ctx), [['<strong><em>a</em>b</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b**c'), ctx), [['<strong><em>a</em>b</strong>'], 'c']);
@@ -54,12 +54,11 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser('***a**b*'), ctx), [['<em><strong>a</strong>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a**b**'), ctx), [['<em><strong>a</strong>b</em>'], '*']);
       assert.deepStrictEqual(inspect(parser('***a**b**c'), ctx), [['*', '<strong>a</strong>', 'b', '**', 'c'], '']);
-      assert.deepStrictEqual(inspect(parser('***a**b**c*'), ctx), [['*', '<strong>a</strong>', 'b', '**', 'c', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('***a**b**c*'), ctx), [['<em><strong>a</strong>b**c</em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a**b**c**'), ctx), [['*', '<strong>a</strong>', 'b', '<strong>c</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***a**b**c***'), ctx), [['<em><strong>a</strong>b<strong>c</strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('***a **b*'), ctx), [['***', 'a', ' ', '**', 'b', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('***a *b****'), ctx), [['<em><strong>a <em>b</em></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a\\ *b****'), ctx), [['<em><strong>a <em>b</em></strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('***a\\ **b*'), ctx), [['***', 'a', ' ', '**', 'b', '*'], '']);
       assert.deepStrictEqual(inspect(parser('***a&Tab;*b****'), ctx), [['<em><strong>a\t<em>b</em></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a<wbr>*b****'), ctx), [['<em><strong>a<wbr><em>b</em></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a *b****'), ctx), [['<em><strong>a <em>b</em></strong></em>'], '']);
@@ -105,7 +104,7 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser('******a******'), ctx), [['<em><strong><em><strong>a</strong></em></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('******a******b'), ctx), [['<em><strong><em><strong>a</strong></em></strong></em>'], 'b']);
       assert.deepStrictEqual(inspect(parser('******a*b'), ctx), [['***', '**', '<em>a</em>', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('******a*b *'), ctx), [['***', '**', '<em>a</em>', 'b', ' ', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('******a*b *'), ctx), [['***', '**', '<em>a</em>', 'b'], ' *']);
       assert.deepStrictEqual(inspect(parser('******a*b **'), ctx), [['***', '**', '<em>a</em>', 'b'], ' **']);
       assert.deepStrictEqual(inspect(parser('******a*b ***'), ctx), [['***', '**', '<em>a</em>', 'b'], ' ***']);
       assert.deepStrictEqual(inspect(parser('******a*b ****'), ctx), [['***', '**', '<em>a</em>', 'b'], ' ****']);

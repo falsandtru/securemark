@@ -12,10 +12,12 @@ import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
-  some(inline, blankWith('**')),
-  open(some(inline, '**'), union([
+  emphasis,
+  some(inline, blankWith('*')),
+  open(some(inline, '*'), union([
     emstrong,
     strong,
+    emphasis,
   ])),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([

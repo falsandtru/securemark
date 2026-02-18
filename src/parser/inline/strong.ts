@@ -3,6 +3,7 @@ import { Recursion } from '../context';
 import { union, some, recursion, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emstrong } from './emstrong';
+import { emphasis } from './emphasis';
 import { str } from '../source';
 import { tightStart, blankWith } from '../visibility';
 import { unshift } from 'spica/array';
@@ -12,10 +13,12 @@ export const strong: StrongParser = lazy(() => surround(
   str('**', '*'),
   precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
-    some(inline, blankWith('**')),
-    open(some(inline, '**'), union([
+    emphasis,
+    some(inline, blankWith('*')),
+    open(some(inline, '*'), union([
       emstrong,
       strong,
+      emphasis,
     ])),
   ]))))),
   str('**'), false,

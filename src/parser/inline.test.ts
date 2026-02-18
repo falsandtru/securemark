@@ -28,7 +28,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('**** a****'), ctx), [['****', ' ', 'a', '****'], '']);
       assert.deepStrictEqual(inspect(parser('*a**'), ctx), [['<em>a</em>', '*'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b'), ctx), [['*', 'a', '**', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('*a**b*'), ctx), [['*', 'a', '**', 'b', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**b*'), ctx), [['<em>a**b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b*c'), ctx), [['*', 'a', '**', 'b', '*', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b*c*'), ctx), [['*', 'a', '**', 'b', '<em>c</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b**'), ctx), [['*', 'a', '<strong>b</strong>'], '']);

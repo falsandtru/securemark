@@ -1011,10 +1011,12 @@ export namespace MarkdownParser {
       // **abc**
       Inline<'strong'>,
       Parser<HTMLElement | string, Context, [
+        EmphasisParser,
         InlineParser,
         Parser<HTMLElement | string, Context, [
           EmStrongParser,
           StrongParser,
+          EmphasisParser,
         ]>,
       ]> {
     }
