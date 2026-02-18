@@ -1,10 +1,7 @@
 import { TextParser, TxtParser, LinebreakParser } from '../source';
 import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
-import { str } from './str';
 import { html } from 'typed-dom/dom';
-
-const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = input => {
   const { context } = input;
@@ -33,11 +30,6 @@ export const text: TextParser = input => {
     case '\n':
       context.linebreak ||= source.length - position;
       return [[html('br')]];
-    case '*':
-    case '`':
-      return source[position + 1] === source[position + 0]
-        ? void --context.position || repeat(input)
-        : [[source[position]]];
     default:
       assert(source[position] !== '\n');
       return [[source[position]]];

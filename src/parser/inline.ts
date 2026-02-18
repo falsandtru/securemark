@@ -20,7 +20,7 @@ import { code } from './inline/code';
 import { htmlentity } from './inline/htmlentity';
 import { bracket } from './inline/bracket';
 import { autolink } from './inline/autolink';
-import { text } from './source';
+import { text, strs } from './source';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
@@ -46,6 +46,8 @@ export import UnsafeHTMLEntityParser = InlineParser.UnsafeHTMLEntityParser;
 export import ShortMediaParser = InlineParser.ShortMediaParser;
 export import BracketParser = InlineParser.BracketParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
+
+const stars = strs('*');
 
 export const inline: InlineParser = lazy(() => union([
   input => {
@@ -81,7 +83,8 @@ export const inline: InlineParser = lazy(() => union([
         return italic(input);
       case '**':
         return emstrong(input)
-            || strong(input);
+            || strong(input)
+            || stars(input);
     }
     switch (source[position]) {
       case '[':
@@ -97,7 +100,8 @@ export const inline: InlineParser = lazy(() => union([
       case '`':
         return code(input);
       case '*':
-        return emphasis(input);
+        return emphasis(input)
+            || stars(input);
       case '&':
         return htmlentity(input);
     }

@@ -28,3 +28,17 @@ export function str(pattern: string | RegExp, not?: string): Parser<string, Cont
         return [[m[0]]];
       };
 }
+
+export function strs(pattern: string): StrParser;
+export function strs(pattern: string): Parser<string> {
+  assert(pattern);
+  return ({ context }) => {
+    const { source } = context;
+    let acc = '';
+    while (context.position < source.length && source.startsWith(pattern, context.position)) {
+      acc += pattern;
+      context.position += pattern.length;
+    }
+    return [[acc]];
+  };
+}
