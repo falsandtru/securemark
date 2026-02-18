@@ -1,16 +1,23 @@
 import { CodeParser } from '../inline';
 import { open, match } from '../../combinator';
 import { Backtrack } from '../context';
+import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = open(
   /^(?=`)/,
   match(
-    /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|$|\n)/,
-    ([whole, , body, closer]) => () =>
+    /^(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/,
+    ([whole, opener, body, closer]) => () =>
       closer
         ? [[html('code', { 'data-src': whole }, format(body))]]
-        : undefined,
+        : body
+          ? [[html('code', {
+              class: 'invalid',
+              'data-src': whole,
+              ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
+            }, format(body))]]
+          : [[opener]],
     true),
   false,
   [3 | Backtrack.bracket]);

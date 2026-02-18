@@ -96,7 +96,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<bdi>[#</bdi>]'), ctx), [['<bdi>[#</bdi>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('"<bdi>("")</bdi>'), ctx), [['"', '<bdi><span class="paren">("")</span></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('++\na\n++\n~~\nb\n~~\nc'), ctx), [['<ins><br>a</ins>', '<br>', '<del><br>b</del>', '<br>', 'c'], '']);
-      assert.deepStrictEqual(inspect(parser('``a`'), ctx), [['``', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]'), ctx), [['[', '<a class="account" href="/@a">@a</a>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[#1][#2]'), ctx), [['<a class="index" href="#index::1">1</a>', '<a class="index" href="#index::2">2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[$1]'), ctx), [['[', '$', '1', ']'], '']);
