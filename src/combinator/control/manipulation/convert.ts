@@ -13,7 +13,7 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
       context.position = source.length;
       return [[]];
     }
-    assert(source.endsWith(src) || src.endsWith(source.slice(position)) || !continuous);
+    assert(source.endsWith(src) || src.endsWith(source, position) || !continuous);
     if (continuous) {
       context.position += source.length - position - src.length;
       const result = parser(input);

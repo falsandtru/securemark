@@ -41,7 +41,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
-    assert(source.slice(position).startsWith(symbol));
+    assert(source.startsWith(symbol, position));
     let acc: N[][] = [];
     let i = symbol.length;
     while (source[position + i] === source[position]) ++i;
@@ -59,12 +59,12 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
       acc.push(nodes);
       switch (nodes.at(-1)) {
         case Command.Escape:
-          assert(!source.slice(context.position).startsWith(symbol));
+          assert(!source.startsWith(symbol, context.position));
           nodes.pop();
           state = false;
           break;
         case Command.Separator:
-          assert(!source.slice(context.position).startsWith(symbol));
+          assert(!source.startsWith(symbol, context.position));
           nodes.pop();
           state = true;
           continue;

@@ -10,7 +10,7 @@ export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     if (position === source.length) return;
     const param = source.slice(position).match(pattern);
     if (!param) return;
-    assert(source.slice(position).startsWith(param[0]));
+    assert(source.startsWith(param[0], position));
     cost && consume(param[0].length, context);
     const result = f(param)(input);
     context.position += result && context.position === position ? param[0].length : 0;

@@ -12,7 +12,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
     const { source, position } = context;
     if (position === source.length) return;
     const src = match(source, position);
-    assert(source.slice(position).startsWith(src));
+    assert(source.startsWith(src, position));
     if (src === '') return;
     cost && consume(src.length, context);
     context.range = src.length;
@@ -46,7 +46,7 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
     if (res1 === undefined || context.position < position) return;
     const src = source.slice(position, context.position);
     assert(src !== '');
-    assert(source.slice(position).startsWith(src));
+    assert(source.startsWith(src, position));
     context.offset ??= 0;
     context.offset += position;
     const res2 = parser(input(src, context));
