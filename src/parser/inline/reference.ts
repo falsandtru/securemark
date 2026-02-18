@@ -25,7 +25,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       return [[html('sup', attributes(ns), [html('span', defrag(trimBlankNodeEnd(ns)))])]];
     }
     else {
-      const head = position - range!;
+      const head = position - range;
       setBacktrack(context, [2 | Backtrack.link], head, 2);
     }
   },
