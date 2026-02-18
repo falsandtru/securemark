@@ -82,7 +82,7 @@ function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | st
   }
   const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -2 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
-  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing bracket ">"`, as, bs, cs);
+  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, as, bs, cs);
   return h(tag as 'span', attrs, defrag(bs));
 }
 
