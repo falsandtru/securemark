@@ -13,6 +13,7 @@ import { html, defrag } from 'typed-dom/dom';
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surround(
+  // ^はabbrで使用済みだが^:などのようにして分離使用可能
   str(/^\[[:^|]/),
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
