@@ -83,7 +83,7 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
   const { context } = input;
   const { source, position } = context;
   if (position === source.length) return true;
-  if (except && source.slice(position, position + except.length) === except) return false;
+  if (except && source.startsWith(except, position)) return false;
   switch (source[position]) {
     case ' ':
     case '　':
@@ -105,7 +105,7 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
     case '<':
       switch (true) {
         case source.length - position >= 5
-          && source.slice(position, position + 4) === '<wbr'
+          && source.startsWith('<wbr', position)
           && (source[position + 5] === '>' || /^<wbr[^\S\n]*>/.test(source.slice(position))):
           return false;
       }

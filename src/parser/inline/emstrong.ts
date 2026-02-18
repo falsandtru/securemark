@@ -56,7 +56,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
             subemphasis,
             ds => {
               const { source } = context;
-              if (source.slice(context.position, context.position + 1) === '*') {
+              if (source.startsWith('*', context.position)) {
                 context.position += 1;
                 return [[html('em', unshift([html('strong', defrag(bs))], defrag(ds))), Command.Separator]];
               }
@@ -70,7 +70,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
             substrong,
             ds => {
               const { source } = context;
-              if (source.slice(context.position, context.position + 2) === '**') {
+              if (source.startsWith('**', context.position)) {
                 context.position += 2;
                 return [[html('strong', unshift([html('em', defrag(bs))], defrag(ds))), Command.Separator]];
               }

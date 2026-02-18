@@ -40,15 +40,15 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
 }): Parser<string | N> {
   return failsafe(input => {
     const { context } = input;
-    const { source, position } = context;
-    assert(source.startsWith(symbol, position));
+    const { source } = context;
+    assert(source.startsWith(symbol, context.position));
     let acc: N[][] = [];
     let i = symbol.length;
-    while (source[position + i] === source[position]) ++i;
+    while (source[context.position + i] === source[context.position]) ++i;
     context.position += i;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
-      if (acc.length > 0 && source.slice(context.position, context.position + symbol.length) === symbol) {
+      if (acc.length > 0 && source.startsWith(symbol, context.position)) {
         acc = [cons(acc.flat(), context)];
         context.position += symbol.length;
         continue;
