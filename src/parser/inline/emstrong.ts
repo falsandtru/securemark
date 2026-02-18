@@ -87,19 +87,18 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
     nodes => [html('em', [html('strong', defrag(nodes))])],
     (acc, context, prefix, postfix, state) => {
       const nodes = [];
-      let i = postfix;
-      if (state) while (i > 0) {
+      if (state) for (let i = postfix; i > 0;) {
         switch (i) {
           case 1:
-            acc = [[html('em', acc.flat())]];
+            acc = [[html('em', defrag(acc.flat()))]];
             i -= 1;
             break;
           case 2:
-            acc = [[html('strong', acc.flat())]];
+            acc = [[html('strong', defrag(acc.flat()))]];
             i -= 2;
             break;
           default:
-            acc = [[html('em', [html('strong', acc.flat())])]];
+            acc = [[html('em', [html('strong', defrag(acc.flat()))])]];
             i -= 3;
         }
       }
