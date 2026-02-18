@@ -13,7 +13,7 @@ import { unshift, push } from 'spica/array';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
   some(inline, blankWith('**')),
-  open(some(inline, '*'), union([
+  open(some(inline, '**'), union([
     emstrong,
     strong,
   ])),

@@ -13,7 +13,7 @@ export const strong: StrongParser = lazy(() => surround(
   precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
     some(inline, blankWith('**')),
-    open(some(inline, '*'), union([
+    open(some(inline, '**'), union([
       emstrong,
       strong,
     ])),
