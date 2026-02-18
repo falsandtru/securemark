@@ -46,8 +46,8 @@ describe('Unit: parser/inline/code', () => {
     it('trim', () => {
       assert.deepStrictEqual(inspect(parser('`a `'), ctx), [['<code data-src="`a `">a </code>'], '']);
       assert.deepStrictEqual(inspect(parser('` a`'), ctx), [['<code data-src="` a`"> a</code>'], '']);
-      assert.deepStrictEqual(inspect(parser('` a `'), ctx), [['<code data-src="` a `">a</code>'], '']);
-      assert.deepStrictEqual(inspect(parser('`  a  `'), ctx), [['<code data-src="`  a  `"> a </code>'], '']);
+      assert.deepStrictEqual(inspect(parser('` a `'), ctx), [['<code data-src="` a `"> a </code>'], '']);
+      assert.deepStrictEqual(inspect(parser('`  a  `'), ctx), [['<code data-src="`  a  `">  a  </code>'], '']);
       assert.deepStrictEqual(inspect(parser('`\ta\t`'), ctx), [['<code data-src="`\ta\t`">\ta\t</code>'], '']);
     });
 

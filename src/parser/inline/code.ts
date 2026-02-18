@@ -16,9 +16,10 @@ export const code: CodeParser = open(
   [3 | Backtrack.bracket]);
 
 function format(text: string): string {
-  assert(text.length > 0);
-  return `${text[0]}${text.at(-1)}` === '  '
-      && text.trimStart()
+  return text.length > 2
+      && text[0] === ' '
+      && text[1] === '`'
+      && text.at(-1) === ' '
     ? text.slice(1, -1)
     : text;
 }
