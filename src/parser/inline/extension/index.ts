@@ -7,7 +7,7 @@ import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
 import { txt, str } from '../../source';
 import { tightStart, trimBlankNodeEnd } from '../../visibility';
-import { unshift, push } from 'spica/array';
+import { unshift } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -22,19 +22,11 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   ]), ']', [[']', 1]])))),
   str(']'),
   false,
-  ([as, bs, cs], context) => {
-    if (context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0) {
-      return [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))]];
-    }
-    return (context.state! & State.linkers) === State.linkers
-      ? [push(push(unshift(as, bs), cs), [''])]
-      : undefined;
-  },
-  ([as, bs], context) => {
-    return (context.state! & State.linkers) === State.linkers
-      ? [push(unshift(as, bs), [''])]
-      : undefined;
-  },
+  ([, bs], context) =>
+    context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0
+      ? [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))]]
+      : undefined,
+  undefined,
   [3 | Backtrack.bracket])),
   ns => {
     if (ns.length === 1) {
