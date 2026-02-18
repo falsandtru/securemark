@@ -39,7 +39,11 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
     recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('*')),
-      open(some(inline, '*'), inline),
+      open(some(inline, '*'), union([
+        emstrong,
+        strong,
+        emphasis,
+      ])),
     ])))),
     str(/^\*{1,3}/), false,
     ([, bs, cs], context): Result<HTMLElement | string, typeof context> => {
