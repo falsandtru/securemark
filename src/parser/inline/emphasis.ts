@@ -23,4 +23,4 @@ export const emphasis: EmphasisParser = lazy(() => surround(
   ]))))),
   str('*'), false,
   ([, bs]) => [[html('em', defrag(bs))]],
-  ([as, bs]) => [unshift(as, bs)]));
+  ([as, bs]) => bs && [unshift(as, bs)]));

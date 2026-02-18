@@ -6,7 +6,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
   f?: (rss: [S[], SubNode<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], SubNode<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
@@ -20,7 +20,7 @@ export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
   f?: (rss: [S[], Node<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [S[], Node<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
@@ -34,7 +34,7 @@ export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
   f?: (rss: [N[], N[], N[]], context: Ctx) => Result<N>,
-  g?: (rss: [N[], N[]], context: Ctx) => Result<N>,
+  g?: (rss: [N[], N[] | undefined], context: Ctx) => Result<N>,
   backtracks: readonly number[] = [],
 ): Parser<N> {
   switch (typeof opener) {
@@ -55,31 +55,40 @@ export function surround<N>(
     context.linebreak = 0;
     const resultO = opener(input);
     assert(context.position >= position);
-    if (!resultO) return void revert(context, linebreak);
     const nodesO = eval(resultO);
-    if (isBacktrack(context, backtracks, position, context.position - position || 1)) return void revert(context, linebreak);
-    const resultM = context.position < source.length ? parser(input) : undefined;
-    assert(context.position >= position);
-    if (!resultM && !optional) {
-      setBacktrack(context, backtracks, position);
+    if (!nodesO) {
       return void revert(context, linebreak);
     }
-    const nodesM = eval(resultM);
-    const resultC = nodesM || optional ? closer(input) : undefined;
-    assert(context.position >= position);
-    if (!resultC) {
-      setBacktrack(context, backtracks, position);
+    if (isBacktrack(context, backtracks, position, context.position - position || 1)) {
+      return void revert(context, linebreak);
     }
-    const nodesC = eval(resultC);
-    if (context.position === position) return void revert(context, linebreak);
+    const resultM = context.position < source.length ? parser(input) : undefined;
+    assert(context.position >= position);
     context.range = context.position - position;
-    const result = nodesC
-      ? f
-        ? f([nodesO, nodesM!, nodesC], context)
-        : [push(unshift(nodesO, nodesM ?? []), nodesC)] satisfies [N[]]
-      : g
-        ? g([nodesO, nodesM!], context)
-        : undefined;
+    const nodesM = eval(resultM);
+    if (!resultM && !optional) {
+      setBacktrack(context, backtracks, position);
+      const result = g?.([nodesO, nodesM], context);
+      revert(context, linebreak);
+      return result;
+    }
+    const resultC = resultM || optional ? closer(input) : undefined;
+    assert(context.position >= position);
+    context.range = context.position - position;
+    const nodesC = eval(resultC);
+    if (!nodesC) {
+      setBacktrack(context, backtracks, position);
+      const result = g?.([nodesO, nodesM], context);
+      revert(context, linebreak);
+      return result;
+    }
+    if (context.position === position) {
+      return void revert(context, linebreak);
+    }
+    context.range = context.position - position;
+    const result = f
+      ? f([nodesO, nodesM!, nodesC], context)
+      : [push(nodesM ? unshift(nodesO, nodesM) : nodesO, nodesC)] satisfies [N[]];
     if (result) {
       context.linebreak ||= linebreak;
     }

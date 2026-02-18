@@ -76,7 +76,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
       }
       assert(false);
     },
-    ([as, bs]) => [push(unshift(as, bs), [Command.Escape])]),
+    ([as, bs]) => bs && [push(unshift(as, bs), [Command.Escape])]),
     // 3以上の`*`に対してemの適用を保証する
     nodes => [html('em', [html('strong', defrag(nodes))])],
     (acc, context, prefix, postfix, state) => {

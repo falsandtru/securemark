@@ -17,5 +17,5 @@ export const insertion: InsertionParser = lazy(() => validate('++',
     ]))),
     '++', false,
     ([, bs]) => [bs],
-    ([, bs]) => [push(bs, [Command.Escape])]),
+    ([, bs]) => bs && [push(bs, [Command.Escape])]),
     nodes => [html('ins', defrag(nodes))]))));

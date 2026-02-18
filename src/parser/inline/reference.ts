@@ -30,6 +30,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     }
   },
   ([as, bs], context) => {
+    if (!bs) return;
     const { source, position, range = 0, linebreak = 0, state = 0 } = context;
     const head = position - range;
     if (source[position] !== ']') {

@@ -64,7 +64,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
       ? [[html('span', { class: 'indexer', 'data-index': index })]]
       : undefined;
   },
-  ([as, bs]) => [unshift(as, bs)])));
+  ([as, bs]) => bs && [unshift(as, bs)])));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;

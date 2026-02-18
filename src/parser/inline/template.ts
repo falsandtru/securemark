@@ -32,6 +32,6 @@ const bracket: TemplateParser.BracketParser = lazy(() => union([
       context.linebreak === 0
         ? [push(unshift(as, bs), cs)]
         : (context.position -= 1, [unshift(as, bs)]),
-    ([as, bs = []]) => [unshift(as, bs)],
+    ([as, bs]) => bs && [unshift(as, bs)],
     [3 | Backtrack.escbracket]),
 ]));

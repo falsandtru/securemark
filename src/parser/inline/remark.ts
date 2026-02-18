@@ -22,5 +22,5 @@ export const remark: RemarkParser = lazy(() => match(
           html('span', defrag(push(unshift(as, bs), cs))),
         ]),
       ]],
-      ([as, bs = []]) => [unshift(as, bs)]),
+      ([as, bs]) => bs && [unshift(as, bs)]),
   ([, fence]) => fence.length, {})));
