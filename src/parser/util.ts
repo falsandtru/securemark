@@ -58,7 +58,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
       const nodes = eval(result);
       acc.push(nodes);
       switch (nodes.at(-1)) {
-        case Command.Escape:
+        case Command.Cancel:
           assert(!source.startsWith(symbol, context.position));
           nodes.pop();
           state = false;

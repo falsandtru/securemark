@@ -17,5 +17,5 @@ export const deletion: DeletionParser = lazy(() => validate('~~',
     ]))),
     '~~', false,
     ([, bs]) => [bs],
-    ([, bs]) => bs && [push(bs, [Command.Escape])]),
+    ([, bs]) => bs && [push(bs, [Command.Cancel])]),
     nodes => [html('del', defrag(nodes))]))));
