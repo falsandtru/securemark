@@ -177,7 +177,7 @@ function match(pattern: string | RegExp): (input: Input) => Result<never> {
     case 'string':
       return ({ context }) => {
         const { source, position } = context;
-        if (source.slice(position, position + pattern.length) !== pattern) return;
+        if (!source.startsWith(pattern, position)) return;
         context.position += pattern.length;
         return [[]];
       };

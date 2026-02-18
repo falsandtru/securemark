@@ -33,7 +33,7 @@ export class Delimiters {
       case 'undefined':
         return () => undefined;
       case 'string':
-        return ({ source, position }) => source.slice(position, position + pattern.length) === pattern || undefined;
+        return ({ source, position }) => source.startsWith(pattern, position) || undefined;
       case 'object':
         return ({ source, position }) => pattern.test(source.slice(position)) || undefined;
     }

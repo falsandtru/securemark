@@ -12,8 +12,8 @@ export function str(pattern: string | RegExp, not?: string): Parser<string, Cont
     ? ({ context }) => {
         const { source, position } = context;
         if (position === source.length) return;
-        if (not && source.slice(position+pattern.length, position+pattern.length + not.length) === not) return;
-        if (source.slice(position, position + pattern.length) !== pattern) return;
+        if (!source.startsWith(pattern, position)) return;
+        if (not && source.startsWith(not, position + pattern.length)) return;
         context.position += pattern.length;
         return [[pattern]];
       }

@@ -17,7 +17,7 @@ export function validate<N>(patterns: string | RegExp | (string | RegExp)[] | ((
     '({ source, position }) =>',
     patterns.map(pattern =>
       typeof pattern === 'string'
-        ? `|| source.slice(position, position + ${pattern.length}) === '${pattern}'`
+        ? `|| source.startsWith('${pattern}', position)`
         : `|| /${pattern.source}/${pattern.flags}.test(source.slice(position))`).join('').slice(2),
   ].join(''));
   return input => {

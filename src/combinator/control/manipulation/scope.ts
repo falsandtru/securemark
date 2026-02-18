@@ -6,7 +6,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
   assert(scope instanceof RegExp ? !scope.flags.match(/[gmy]/) && scope.source.startsWith('^') : scope);
   assert(parser);
   const match: (source: string, position: number) => string = typeof scope === 'string'
-    ? (source, position) => source.slice(position, position + scope.length) === scope ? scope : ''
+    ? (source, position) => source.startsWith(scope, position) ? scope : ''
     : (source, position) => source.slice(position).match(scope)?.[0] ?? '';
   return failsafe(({ context }) => {
     const { source, position } = context;
