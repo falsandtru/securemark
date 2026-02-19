@@ -13,6 +13,7 @@ export interface MarkdownParser extends
 }
 export namespace MarkdownParser {
   export interface Context extends Ctx, Options {
+    buffer?: (string | HTMLElement)[];
   }
   export interface Options extends CtxOptions {
     readonly host?: URL;

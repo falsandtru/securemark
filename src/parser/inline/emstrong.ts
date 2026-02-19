@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { Result, IntermediateParser } from '../../combinator/data/parser';
+import { Result, Node, Context, IntermediateParser } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
@@ -8,8 +8,8 @@ import { emphasis } from './emphasis';
 import { str } from '../source';
 import { tightStart, blankWith } from '../visibility';
 import { repeat } from '../util';
-import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
+import { html, defrag } from 'typed-dom/dom';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
   emphasis,
@@ -46,8 +46,9 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
       ])),
     ])))),
     str(/^\*{1,3}/), false,
-    ([, bs, cs], context): Result<HTMLElement | string, typeof context> => {
+    ([, bs, cs], context): Result<Node<EmStrongParser>, Context<EmStrongParser>> => {
       assert(cs.length === 1);
+      const { buffer } = context;
       switch (cs[0]) {
         case '***':
           return [bs];
@@ -58,13 +59,13 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
               const { source } = context;
               if (source.startsWith('*', context.position)) {
                 context.position += 1;
-                return [[html('em', unshift([html('strong', defrag(bs))], defrag(ds))), Command.Separator]];
+                return [[html('em', push(push(buffer!, [html('strong', defrag(bs))]), defrag(ds))), Command.Separator]];
               }
               else {
-                return [push(unshift(['*', html('strong', defrag(bs))], ds), [Command.Separator])];
+                return [prepend('*', push(push(push(buffer!, [html('strong', defrag(bs))]), defrag(ds)), [Command.Separator]))];
               }
             })
-            ({ context }) ?? [['*', html('strong', defrag(bs)), Command.Separator]];
+            ({ context }) ?? [prepend('*', push(push(buffer!, [html('strong', defrag(bs))]), [Command.Separator]))];
         case '*':
           return bind<StrongParser>(
             substrong,
@@ -72,44 +73,86 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
               const { source } = context;
               if (source.startsWith('**', context.position)) {
                 context.position += 2;
-                return [[html('strong', unshift([html('em', defrag(bs))], defrag(ds))), Command.Separator]];
+                return [[html('strong', push(push(buffer!, [html('em', defrag(bs))]), defrag(ds))), Command.Separator]];
               }
               else {
-                return [push(unshift(['**', html('em', defrag(bs))], ds), [Command.Separator])];
+                return [prepend('**', push(push(push(buffer!, [html('em', defrag(bs))]), defrag(ds)), [Command.Separator]))];
               }
             })
-            ({ context }) ?? [['**', html('em', defrag(bs)), Command.Separator]];
+            ({ context }) ?? [prepend('**', push(push(buffer!, [html('em', defrag(bs))]), [Command.Separator]))];
       }
       assert(false);
     },
-    ([as, bs]) => bs && [push(unshift(as, bs), [Command.Cancel])]),
+    ([, bs], { buffer }) => bs && [push(push(buffer!, bs), [Command.Cancel])]),
     // 3以上の`*`に対してemの適用を保証する
     nodes => [html('em', [html('strong', defrag(nodes))])],
-    (acc, context, prefix, postfix, state) => {
-      const nodes = [];
-      if (state) for (let i = postfix; i > 0;) {
-        switch (i) {
+    (nodes, context, prefix, postfix, state) => {
+      context.position += postfix;
+      assert(postfix < 3);
+      if (state) {
+        switch (postfix) {
+          case 0:
+            break;
           case 1:
-            acc = [[html('em', defrag(acc.flat()))]];
-            i -= 1;
+            nodes = [html('em', defrag(nodes))];
             break;
           case 2:
-            acc = [[html('strong', defrag(acc.flat()))]];
-            i -= 2;
+            nodes = [html('strong', defrag(nodes))];
             break;
           default:
-            acc = [[html('em', [html('strong', defrag(acc.flat()))])]];
-            i -= 3;
+            assert(false);
+        }
+        prefix -= postfix;
+        postfix -= postfix;
+        switch (prefix) {
+          case 0:
+            break;
+          case 1:
+            nodes = bind<EmphasisParser>(
+              subemphasis,
+              ds => {
+                const { source } = context;
+                if (source.startsWith('*', context.position)) {
+                  context.position += 1;
+                  return [[html('em', push(nodes, defrag(ds)))]];
+                }
+                else {
+                  return [prepend('*', push(nodes, defrag(ds)))];
+                }
+              })
+              ({ context })?.[0] ?? prepend('*', nodes);
+            prefix -= 1;
+            break;
+          case 2:
+            nodes = bind<StrongParser>(
+              substrong,
+              ds => {
+                const { source } = context;
+                if (source.startsWith('**', context.position)) {
+                  context.position += 2;
+                  return [[html('strong', push(nodes, defrag(ds)))]];
+                }
+                else {
+                  return [prepend('**', push(nodes, defrag(ds)))];
+                }
+              })
+              ({ context })?.[0] ?? prepend('**', nodes);
+            prefix -= 2;
+            break;
         }
       }
       if (prefix > postfix) {
-        nodes.push('*'.repeat(prefix - postfix));
-      }
-      for (let i = 0; i < acc.length; ++i) {
-        nodes.push(...acc[i]);
-      }
-      if (postfix > 0) {
-        context.position += postfix;
+        nodes = push(['*'.repeat(prefix - postfix)], nodes);
       }
       return [nodes];
     }))));
+
+function prepend<N>(prefix: string, nodes: N[]): N[] {
+  if (typeof nodes[0] === 'string') {
+    nodes[0] = prefix + nodes[0] as N;
+  }
+  else {
+    unshift([prefix], nodes);
+  }
+  return nodes;
+}

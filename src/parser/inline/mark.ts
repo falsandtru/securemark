@@ -17,8 +17,8 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
       open(some(inline, '='), mark),
     ])))),
     '==', false,
-    ([, bs]) => [bs],
-    ([, bs]) => bs && [push(bs, [Command.Cancel])]),
+    ([, bs], { buffer }) => [push(buffer!, bs)],
+    ([, bs], { buffer }) => bs && [push(push(buffer!, bs), [Command.Cancel])]),
     (nodes, { id }) => {
       const el = html('mark', defrag(nodes));
       define(el, { id: identity('mark', id, signature(el)) });

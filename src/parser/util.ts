@@ -1,4 +1,5 @@
 import { min } from 'spica/alias';
+import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
 import { Parser, Result, Ctx, Node, Context, eval, failsafe } from '../combinator/data/parser';
 import { convert } from '../combinator';
@@ -22,41 +23,41 @@ export function lineable<N extends HTMLElement | string>(parser: Parser<N>, trim
     trim === 0);
 }
 
-export function repeat<P extends Parser<HTMLElement | string>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[][], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
-export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: Ctx) => N[], termination: (acc: N[][], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N> = (acc, context, prefix, postfix) => {
-  const nodes = [];
+export function repeat<P extends Parser<HTMLElement |  string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
+export function repeat<N extends HTMLElement |  string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: MarkdownParser.Context) => N[], termination: (acc: N[], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
+  const acc = [];
   if (prefix > 0) {
-    nodes.push(symbol[0].repeat(prefix));
+    acc.push(symbol[0].repeat(prefix));
   }
-  for (let i = 0; i < acc.length; ++i) {
-    nodes.push(...acc[i]);
-  }
+  acc.push(...nodes);
   if (postfix > 0) {
     const { source, position } = context;
-    nodes.push(source.slice(position, position + postfix));
+    acc.push(source.slice(position, position + postfix));
     context.position += postfix;
   }
-  return [nodes];
-}): Parser<string | N> {
+  return [acc];
+}): Parser<string | N, MarkdownParser.Context> {
   return failsafe(input => {
     const { context } = input;
-    const { source } = context;
+    const { source, position } = context;
     assert(source.startsWith(symbol, context.position));
-    let acc: N[][] = [];
+    let nodes: N[] = [];
     let i = symbol.length;
     while (source[context.position + i] === source[context.position]) ++i;
     context.position += i;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
-      if (acc.length > 0 && source.startsWith(symbol, context.position)) {
-        acc = [cons(acc.flat(), context)];
+      if (nodes.length > 0 && source.startsWith(symbol, context.position)) {
+        nodes = cons(nodes, context);
         context.position += symbol.length;
         continue;
       }
+      const buf = context.buffer;
+      context.buffer = nodes;
       const result = parser(input);
+      context.buffer = buf;
       if (result === undefined) break;
-      const nodes = eval(result);
-      acc.push(nodes);
+      nodes = eval(result);
       switch (nodes.at(-1)) {
         case Command.Cancel:
           assert(!source.startsWith(symbol, context.position));
@@ -69,20 +70,21 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
           state = true;
           continue;
         default:
-          acc = [cons(acc.flat(), context)];
+          nodes = cons(nodes, context);
           state = true;
           continue;
       }
       break;
     }
-    if (acc.length === 0) return;
+    if (nodes.length === 0) return;
     const prefix = i;
     i = 0;
     for (let len = min(prefix, source.length - context.position); i < len && source[context.position + i] === symbol[0];) {
       ++i;
     }
     const postfix = i;
-    return termination(acc, context, prefix, postfix, state);
+    context.range = context.position - position;
+    return termination(nodes, context, prefix, postfix, state);
   });
 }
 

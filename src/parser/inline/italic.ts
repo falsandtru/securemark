@@ -19,6 +19,6 @@ export const italic: ItalicParser = lazy(() => validate('///',
       open(some(inline, '/'), italic),
     ])))),
     '///', false,
-    ([, bs]) => [bs],
-    ([, bs]) => bs && [push(bs, [Command.Cancel])]),
+    ([, bs], { buffer }) => [push(buffer!, bs)],
+    ([, bs], { buffer }) => bs && [push(push(buffer!, bs), [Command.Cancel])]),
     nodes => [html('i', defrag(nodes))]))));
