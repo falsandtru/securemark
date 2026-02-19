@@ -1,7 +1,7 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
 import { Ctx } from '../../combinator/data/parser';
-import { union, subsequence, some, recursion, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
+import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isLooseNodeStart, blankWith } from '../visibility';
@@ -43,10 +43,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
             ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
             ([as, bs = []]) => [unshift(as, bs)]),
           precedence(3, recursion(Recursion.inline,
-          subsequence([
-            focus(/^[^\S\n]*\n/, some(inline)),
-            some(open(/^\n?/, some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]), true)),
-          ]))),
+          some(union([
+            some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]),
+            open('\n', some(inline, `</${tag}>`, [[`</${tag}>`, 3]]), true),
+          ])))),
           str(`</${tag}>`),
           true,
           ([as, bs = [], cs], context) =>
