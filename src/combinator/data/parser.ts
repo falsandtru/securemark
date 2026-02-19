@@ -46,7 +46,6 @@ export function input(source: string, context: CtxOptions): Input<Ctx> {
   // @ts-expect-error
   context.position = 0;
   return {
-    source,
     // @ts-expect-error
     context,
   };
