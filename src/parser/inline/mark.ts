@@ -23,6 +23,6 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
       const el = html('mark', defrag(nodes));
       define(el, { id: identity('mark', id, signature(el)) });
       return el.id
-        ? [el, el.id && html('a', { href: `#${el.id}` })]
+        ? [el, html('a', { href: `#${el.id}` })]
         : [el];
     }))))));
