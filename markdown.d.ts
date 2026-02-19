@@ -786,7 +786,7 @@ export namespace MarkdownParser {
       // { uri }
       // [abc]{uri nofollow}
       Inline<'link'>,
-      Parser<HTMLAnchorElement, Context, [
+      Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
         LinkParser.MediaLinkParser,
         LinkParser.TextLinkParser,
       ]> {
@@ -800,7 +800,7 @@ export namespace MarkdownParser {
       }
       export interface TextLinkParser extends
         Inline<'link/textlink'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
           Parser<(HTMLElement | string)[], Context, [
             InlineParser,
           ]>,
@@ -809,7 +809,7 @@ export namespace MarkdownParser {
       }
       export interface MediaLinkParser extends
         Inline<'link/medialink'>,
-        Parser<HTMLAnchorElement, Context, [
+        Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
           Parser<HTMLElement[], Context, [
             MediaParser,
             ShortMediaParser,

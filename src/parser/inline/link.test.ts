@@ -62,17 +62,17 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[{b}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[]{}'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{ }'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{  }'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{   }'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{ }'), ctx), [['<span class="invalid">[]{ }</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{  }'), ctx), [['<span class="invalid">[]{  }</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{   }'), ctx), [['<span class="invalid">[]{   }</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{{}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[]{}}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[]{{}}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[]{{b}}'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{b\nb}'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{b\\\nb}'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{ b}'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{ b\n}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{b\nc}'), ctx), [['<span class="invalid">[]{b</span>'], '\nc}']);
+      assert.deepStrictEqual(inspect(parser('[]{b\\\nc}'), ctx), [['<span class="invalid">[]{b\\</span>'], '\nc}']);
+      assert.deepStrictEqual(inspect(parser('[]{ b}'), ctx), [['<span class="invalid">[]{ b}</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{ b\n}'), ctx), [['<span class="invalid">[]{ b</span>'], '\n}']);
       assert.deepStrictEqual(inspect(parser('[ ]{}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[ ]{ }'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[ ]{b}'), ctx), undefined);
@@ -210,7 +210,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{/ 4:3}'), ctx), [['<a class="invalid" href="/">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/ =}'), ctx), [['<a class="invalid" href="/">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/  name}'), ctx), [['<a class="invalid" href="/">/</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{/\nname}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/\nname}'), ctx), [['<span class="invalid">[]{/</span>'], '\nname}']);
     });
 
     it('nofollow', () => {

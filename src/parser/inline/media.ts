@@ -1,13 +1,14 @@
 import { MediaParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { State, Recursion, Backtrack, Command } from '../context';
 import { subinput } from '../../combinator/data/parser';
-import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, linebreak, str } from '../source';
 import { invalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
+import { unshift, push } from 'spica/array';
 import { html, define } from 'typed-dom/dom';
 
 const optspec = {
@@ -40,12 +41,30 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
       /^{(?![{}])/,
       inits([uri, some(option)]),
       /^[^\S\n]*}/,
-      false, undefined, undefined,
+      false,
+      undefined,
+      ([as, bs], context) => {
+        if (!bs) return;
+        const head = context.position - context.range!;
+        setBacktrack(context, [2 | Backtrack.link], head);
+        return [push(unshift(as, bs), [Command.Cancel])];
+      },
       [3 | Backtrack.link])),
   ]),
   ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]),
   ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], context) => {
+    if (params.at(-1) === Command.Cancel) {
+      params.pop();
+      return [[
+        html('span',
+          {
+            class: 'invalid',
+            ...invalid('media', 'syntax', 'Missing the closing symbol "}"')
+          },
+          '!' + context.source.slice(context.position - context.range!, context.position))
+      ]];
+    }
     assert(text === text.trim());
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());

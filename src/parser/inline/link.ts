@@ -8,7 +8,7 @@ import { linebreak, unescsource, str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
-import { push } from 'spica/array';
+import { unshift, push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const optspec = {
@@ -36,7 +36,14 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       /^{(?![{}])/,
       inits([uri, some(option)]),
       /^[^\S\n]*}/,
-      false, undefined, undefined,
+      false,
+      undefined,
+      ([as, bs], context) => {
+        if (!bs) return;
+        const head = context.position - context.range!;
+        setBacktrack(context, [2 | Backtrack.link], head);
+        return [push(unshift(as, bs), [Command.Cancel])];
+      },
       [3 | Backtrack.link])),
   ]),
   ([content, params]: [(HTMLElement | string)[], string[]], context) => {
@@ -50,6 +57,17 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     else {
       params = content as string[];
       content = [];
+    }
+    if (params.at(-1) === Command.Cancel) {
+      params.pop();
+      return [[
+        html('span',
+          {
+            class: 'invalid',
+            ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
+          },
+          context.source.slice(context.position - context.range!, context.position))
+      ]];
     }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
     assert(content[0] !== '');
