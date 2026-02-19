@@ -3,7 +3,7 @@ import { State } from '../context';
 import { union, inits, some, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
-import { lineable } from '../util';
+import { linearize } from '../util';
 import { visualize, trimBlank, trimBlankEnd } from '../visibility';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -27,7 +27,7 @@ const desc: DListParser.DescriptionParser = block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    visualize(trimBlankEnd(lineable(some(union([inline])))))),
+    visualize(trimBlankEnd(linearize(some(union([inline])))))),
   true),
   ns => [html('dd', defrag(ns))]),
   false);

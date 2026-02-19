@@ -4,7 +4,7 @@ import { cite, syntax as csyntax } from './reply/cite';
 import { quote, syntax as qsyntax } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { lineable } from '../util';
+import { linearize } from '../util';
 import { visualize, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -16,6 +16,6 @@ export const reply: ReplyParser = block(validate(csyntax, fmap(
     quote,
     rewrite(
       some(anyline, delimiter),
-      visualize(lineable(some(inline), 1))),
+      visualize(linearize(some(inline), 1))),
   ])),
   ns => [html('p', trimBlankNodeEnd(defrag(ns)))])));

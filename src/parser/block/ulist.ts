@@ -4,7 +4,7 @@ import { union, inits, subsequence, some, recursion, block, line, validate, inde
 import { olist_ } from './olist';
 import { ilist_, ilistitem } from './ilist';
 import { inline, indexer, indexee, dataindex } from '../inline';
-import { lineable } from '../util';
+import { linearize } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -20,7 +20,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
       inits([
         line(open(/^-(?:$|\s)/, subsequence([
           checkbox,
-          trim(visualize(lineable(trimBlank(some(union([indexer, inline])))))),
+          trim(visualize(linearize(trimBlank(some(union([indexer, inline])))))),
         ]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
