@@ -14,9 +14,8 @@ export const code: CodeParser = open(
         : body
           ? [[html('code', {
               class: 'invalid',
-              'data-src': whole,
               ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
-            }, format(body))]]
+            }, whole)]]
           : [[opener]],
     true),
   false,

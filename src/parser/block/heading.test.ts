@@ -28,7 +28,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a\nb'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('# *a\nb*'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('# a\n#b'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('####### a'), ctx), [['<h6 class="invalid" id="index::a">a</h6>'], '']);
+      assert.deepStrictEqual(inspect(parser('####### a'), ctx), [['<h6 class="invalid" id="index::#######_a">####### a</h6>'], '']);
       assert.deepStrictEqual(inspect(parser(' # a'), ctx), undefined);
     });
 
@@ -61,11 +61,11 @@ describe('Unit: parser/block/heading', () => {
     });
 
     it('indexer', () => {
-      assert.deepStrictEqual(inspect(parser('# [|a]'), ctx), [['<h1 id="index::a"><span class="invalid">a</span></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a[|b]'), ctx), [['<h1 id="index::ab">a<span class="invalid">b</span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# [|a]'), ctx), [['<h1 id="index::[|a]"><span class="invalid">[|a]</span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a[|b]'), ctx), [['<h1 id="index::a[|b]">a<span class="invalid">[|b]</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|b]'), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|b] '), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [|b]\\'), ctx), [['<h1 id="index::a_b">a <span class="invalid">b</span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [|b]\\'), ctx), [['<h1 id="index::a_[|b]">a <span class="invalid">[|b]</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|B]'), ctx), [['<h1 id="index::B">a<span class="indexer" data-index="B"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|b ]'), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|b  ]'), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
@@ -76,10 +76,10 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a [|!http://host]'), ctx), [['<h1 id="index::!http://host">a<span class="indexer" data-index="!http://host"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|a((b))]'), ctx), [['<h1 id="index::a((b))">a<span class="indexer" data-index="a((b))"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [|a[[b]]]'), ctx), [['<h1 id="index::a[[b]]">a<span class="indexer" data-index="a[[b]]"></span></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [|b] [|c]'), ctx), [['<h1 id="index::c">a <span class="invalid">b</span><span class="indexer" data-index="c"></span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [|b] [|c]'), ctx), [['<h1 id="index::c">a <span class="invalid">[|b]</span><span class="indexer" data-index="c"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a  [|b] \n'), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \\[|b]'), ctx), [['<h1 id="index::a_[|b]">a [|b]</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('## a [|b] [|c]'), ctx), [['<h2 id="index::c">a <span class="invalid">b</span><span class="indexer" data-index="c"></span></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('## a [|b] [|c]'), ctx), [['<h2 id="index::c">a <span class="invalid">[|b]</span><span class="indexer" data-index="c"></span></h2>'], '']);
     });
 
   });

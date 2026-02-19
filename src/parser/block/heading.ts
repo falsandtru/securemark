@@ -23,11 +23,11 @@ export const heading: HeadingParser = block(rewrite(segment,
       state(State.linkers,
       visualize(trimBlank(some(union([indexer, inline]))))), true),
   ]),
-  ([h, ...ns]: [string, ...(HTMLElement | string)[]]) => [
+  ([h, ...ns]: [string, ...(HTMLElement | string)[]], context) => [
     h.length <= 6
       ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, defrag(ns))
       : html(`h6`, {
           class: 'invalid',
           ...invalid('heading', 'syntax', 'Heading level must be up to 6'),
-        }, defrag(ns))
+        }, context.source.slice(context.position - context.range!, context.position))
   ]))))));

@@ -6,7 +6,7 @@ import { str } from '../../source';
 import { tightStart } from '../../visibility';
 import { invalid } from '../../util';
 import { unshift } from 'spica/array';
-import { html, defrag } from 'typed-dom/dom';
+import { html } from 'typed-dom/dom';
 
 // Don't use the symbols already used: !#$%@&*+~=|
 
@@ -18,11 +18,13 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'), false,
-  ([, bs]) => [[
-    html('span', {
-      class: 'invalid',
-      ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
-    }, defrag(bs)),
+  (_, context) => [[
+    html('span',
+      {
+        class: 'invalid',
+        ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
+      },
+      context.source.slice(context.position - context.range!, context.position))
   ]],
   ([as, bs]) => bs && [unshift(as, bs)],
   [3 | Backtrack.bracket]));

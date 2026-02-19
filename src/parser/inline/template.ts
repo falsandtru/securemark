@@ -14,11 +14,15 @@ export const template: TemplateParser = lazy(() => surround(
   true,
   ([as, bs = [], cs]) =>
     [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))]],
-  ([as, bs]) =>
-    bs && [[html('span', {
-      class: 'invalid',
-      ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
-    }, defrag(unshift(as, bs)))]],
+  ([, bs], context) =>
+    bs && [[
+      html('span',
+        {
+          class: 'invalid',
+          ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
+        },
+        context.source.slice(context.position - context.range!, context.position))
+    ]],
   [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket]));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([

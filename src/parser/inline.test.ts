@@ -139,7 +139,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('(((a\nb)))'), ctx), [['<span class="paren">(<span class="paren">(<span class="paren">(a<br>b)</span>)</span>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(([[a] ]))'), ctx), [['<sup class="annotation"><span>[[a] ]</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(([["*(*"] ]))'), ctx), [['<sup class="annotation"><span>[["*(*"] ]</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(([:a\n]'), ctx), [['(', '(', '<span class="invalid">a<br></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('(([:a\n]'), ctx), [['(', '(', '<span class="invalid">[:a\n]</span>'], '']);
       assert.deepStrictEqual(inspect(parser('(({{\n}}'), ctx), [['(', '(', '<span class="template">{{<br>}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('"((""))'), ctx), [['"', '(', '(', '"', '"', ')', ')'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]'), ctx), [['[', '<sup class="reference"><span>a</span></sup>'], '']);

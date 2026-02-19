@@ -1,5 +1,6 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
+import { Ctx } from '../../combinator/data/parser';
 import { union, subsequence, some, recursion, precedence, validate, focus, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -27,10 +28,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       some(union([attribute])),
       open(str(/^[^\S\n]*/), str('>'), true),
       true,
-      ([as, bs = [], cs]) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])]],
-      ([as, bs = []]) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])]]),
+      ([as, bs = [], cs], context) =>
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
+      ([as, bs = []], context) =>
+        [[elem(as[0].slice(1), false, unshift(as, bs), [], [], context)]]),
     match(
       new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
       memoize(
@@ -48,10 +49,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
           ]))),
           str(`</${tag}>`),
           true,
-          ([as, bs = [], cs]) =>
-            [[elem(tag, true, as, bs, cs)]],
-          ([as, bs = []]) =>
-            [[elem(tag, true, as, bs, [])]]),
+          ([as, bs = [], cs], context) =>
+            [[elem(tag, true, as, bs, cs, context)]],
+          ([as, bs = []], context) =>
+            [[elem(tag, true, as, bs, [], context)]]),
       ([, tag]) => tag,
       new Map())),
     surround(
@@ -60,10 +61,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       some(union([attribute])),
       open(str(/^[^\S\n]*/), str('>'), true),
       true,
-      ([as, bs = [], cs]) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [])]],
-      ([as, bs = []]) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [])]]),
+      ([as, bs = [], cs], context) =>
+        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
+      ([as, bs = []], context) =>
+        [[elem(as[0].slice(1), false, unshift(as, bs), [], [], context)]]),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
@@ -71,25 +72,25 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/^[^\S\n]+[^\s<>]+/),
 ]);
 
-function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[]): HTMLElement {
+function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[], context: Ctx): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<');
-  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, as, bs, cs);
+  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
   if (content) {
-    if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, as, bs, cs);
-    if (bs.length === 0) return ielem('content', `Missing the content`, as, bs, cs);
-    if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, as, bs, cs);
+    if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, context);
+    if (bs.length === 0) return ielem('content', `Missing the content`, context);
+    if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
   const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -2 : as.length));
-  if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', as, bs, cs)
-  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, as, bs, cs);
+  if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)
+  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
   return h(tag as 'span', attrs, defrag(bs));
 }
 
-function ielem(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
+function ielem(type: string, message: string, context: Ctx): HTMLElement {
   return h('span',
     { class: 'invalid', ...invalid('html', type, message) },
-    defrag(push(unshift(as, bs), cs)));
+    context.source.slice(context.position - context.range!, context.position));
 }
 
 const requiredAttributes = memoize(
