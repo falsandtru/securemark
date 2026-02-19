@@ -734,17 +734,9 @@ export namespace MarkdownParser {
         export interface SignatureParser extends
           Inline<'extension/index/signature'>,
           Parser<string | HTMLElement, Context, [
-            InlineParser,
+            UnsafeHTMLEntityParser,
+            SourceParser.TxtParser,
           ]> {
-        }
-        export namespace SignatureParser {
-          export interface InternalParser extends
-            Inline<'extension/index/signature/internal'>,
-            Parser<string, Context, [
-              UnsafeHTMLEntityParser,
-              SourceParser.TxtParser,
-            ]> {
-          }
         }
       }
       export interface IndexerParser extends

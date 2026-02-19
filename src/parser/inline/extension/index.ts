@@ -1,7 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { input, eval } from '../../../combinator/data/parser';
-import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
+import { union, inits, some, precedence, state, constraint, validate, focus, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
@@ -48,18 +47,17 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
   str(/^\|(?!\\?\s)/),
-  tightStart(some(union([inline]), ']', [[']', 1]])),
+  some(union([
+    unsafehtmlentity,
+    focus(
+      /^(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/,
+      txt,
+      false),
+  ]), ']'),
   /^(?=])/,
   false,
-  (_, context) => {
-    const { source, position, range = 0 } = context;
-    context.offset ??= 0;
-    context.offset += position;
-    const text = eval(sig(input(source.slice(position - range + 1, position), context)), []).join('');
-    context.position = position;
-    context.source = source;
-    context.offset -= position;
-    const index = identity('index', undefined, text)?.slice(7);
+  ([, ns]) => {
+    const index = identity('index', undefined, ns.join(''))?.slice(7);
     return index
       ? [[html('span', { class: 'indexer', 'data-index': index })]]
       : undefined;
@@ -76,8 +74,3 @@ export function dataindex(ns: readonly (string | HTMLElement)[]): string | undef
     return node.getAttribute('data-index') ?? undefined;
   }
 }
-
-const sig: IndexParser.SignatureParser.InternalParser = some(union([
-  unsafehtmlentity,
-  txt,
-]));
