@@ -26,7 +26,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       true,
       ([, ns = []], context) =>
         context.linebreak === 0
-          ? [push(ns, [Command.Escape])]
+          ? [push(ns, [Command.Separator])]
           : undefined,
       undefined,
       [3 | Backtrack.link, 2 | Backtrack.ruby, 3 | Backtrack.bracket])),
@@ -40,7 +40,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       [3 | Backtrack.link])),
   ]),
   ([content, params]: [(HTMLElement | string)[], string[]], context) => {
-    if (content.at(-1) === Command.Escape) {
+    if (content.at(-1) === Command.Separator) {
       content.pop();
       if (params === undefined) {
         const head = context.position - context.range!;

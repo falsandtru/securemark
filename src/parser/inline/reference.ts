@@ -100,7 +100,7 @@ const abbr: ReferenceParser.AbbrParser = surround(
     const { source, position, range = 0 } = context;
     if (!ns) return [['', source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)]];
     context.position += source.slice(position).match(blank.start)?.[0].length ?? 0;
-    return [[Command.Escape, ns[0].trimEnd()]];
+    return [[Command.Separator, ns[0].trimEnd()]];
   },
   (_, context) => {
     context.position -= context.range!;
@@ -111,7 +111,7 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
   switch (ns[0]) {
     case '':
       return { class: 'invalid', ...invalid('reference', 'syntax', 'Invalid abbreviation') };
-    case Command.Escape:
+    case Command.Separator:
       const abbr = ns[1] as string;
       ns[0] = ns[1] = '';
       return { class: 'reference', 'data-abbr': abbr };
