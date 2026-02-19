@@ -4,18 +4,20 @@ import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
-  /^&[0-9A-Za-z]{1,99};/,
+  /^&(?:[0-9A-Za-z]+;?)?/,
   //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
   ({ context }) => {
     const { source } = context;
     context.position += source.length;
-    return [[parser(source) ?? source]];
+    return source.length > 1 && source.at(-1) === ';'
+      ? [[parser(source) ?? source]]
+      : [[source]];
   }));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([text]) => [
-    text.length === 1 || text[0] !== '&'
+    length === 1 || text.at(-1) !== ';'
       ? text
       : html('span', {
           class: 'invalid',
