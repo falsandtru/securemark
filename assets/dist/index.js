@@ -6390,7 +6390,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.dataindex = exports.signature = exports.index = void 0;
-const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const indexee_1 = __webpack_require__(7610);
@@ -6414,19 +6413,8 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* 
     return ns;
   }
 })));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/^\|(?!\\?\s)/), (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), /^(?=])/, false, (_, context) => {
-  const {
-    source,
-    position,
-    range = 0
-  } = context;
-  context.offset ??= 0;
-  context.offset += position;
-  const text = (0, parser_1.eval)(sig((0, parser_1.input)(source.slice(position - range + 1, position), context)), []).join('');
-  context.position = position;
-  context.source = source;
-  context.offset -= position;
-  const index = (0, indexee_1.identity)('index', undefined, text)?.slice(7);
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/^\|(?!\\?\s)/), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.focus)(/^(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/, source_1.txt, false)]), ']'), /^(?=])/, false, ([, ns]) => {
+  const index = (0, indexee_1.identity)('index', undefined, ns.join(''))?.slice(7);
   return index ? [[(0, dom_1.html)('span', {
     class: 'indexer',
     'data-index': index
@@ -6443,7 +6431,6 @@ function dataindex(ns) {
   }
 }
 exports.dataindex = dataindex;
-const sig = (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]));
 
 /***/ },
 
@@ -6767,7 +6754,7 @@ exports.htmlentity = exports.unsafehtmlentity = void 0;
 const combinator_1 = __webpack_require__(3484);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&[0-9A-Za-z]{1,99};/,
+exports.unsafehtmlentity = (0, combinator_1.validate)('&', (0, combinator_1.focus)(/^&(?:[0-9A-Za-z]+;?)?/,
 //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
 ({
   context
@@ -6776,9 +6763,9 @@ exports.unsafehtmlentity = (0, combinator_1.validate)('&', (0, combinator_1.focu
     source
   } = context;
   context.position += source.length;
-  return [[parser(source) ?? source]];
+  return source.length > 1 && source.at(-1) === ';' ? [[parser(source) ?? source]] : [[source]];
 }));
-exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([text]) => [text.length === 1 || text[0] !== '&' ? text : (0, dom_1.html)('span', {
+exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([text]) => [length === 1 || text.at(-1) !== ';' ? text : (0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('htmlentity', 'syntax', 'Invalid HTML entity')
 }, text)]);
@@ -7358,7 +7345,7 @@ const text = input => {
   for (let {
     position
   } = context; position < source.length; position = context.position) {
-    if (!/^(?:\\[^\n]|[^\\[\](){}<>"$#:^|\n])/.test(source.slice(position, position + 2))) break;
+    if (!/^(?:\\[^\n]|[^\\[\](){}<>"`$#:^|\n])/.test(source.slice(position, position + 2))) break;
     switch (source[position]) {
       case '&':
         {
