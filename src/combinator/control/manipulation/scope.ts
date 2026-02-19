@@ -37,12 +37,8 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
   return failsafe(({ context }) => {
     const { source, position } = context;
     if (position === source.length) return;
-    // 影響する使用はないはず
-    //const { backtracks } = context;
-    //context.backtracks = {};
     const res1 = scope({ context });
     assert(context.position > position || !res1);
-    //context.backtracks = backtracks;
     if (res1 === undefined || context.position < position) return;
     const src = source.slice(position, context.position);
     assert(src !== '');
