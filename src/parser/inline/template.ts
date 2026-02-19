@@ -2,6 +2,7 @@ import { TemplateParser } from '../inline';
 import { Recursion, Backtrack } from '../context';
 import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
+import { invalid } from '../util';
 import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -13,7 +14,11 @@ export const template: TemplateParser = lazy(() => surround(
   true,
   ([as, bs = [], cs]) =>
     [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))]],
-  undefined,
+  ([as, bs]) =>
+    bs && [[html('span', {
+      class: 'invalid',
+      ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
+    }, defrag(unshift(as, bs)))]],
   [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket]));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([

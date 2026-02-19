@@ -288,13 +288,13 @@ describe('Unit: parser/api/parse', () => {
 
     it('recursion', () => {
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(20)}0`).children].map(el => el.outerHTML),
-        [`<p>${'{'.repeat(20)}0</p>`]);
+        [...parse(`${'{ '.repeat(20)}0`).children].map(el => el.outerHTML),
+        [`<p>${'{ '.repeat(20)}0</p>`]);
       assert.deepStrictEqual(
-        [...parse(`${'{'.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...parse(`${'{ '.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'{'.repeat(21)}0</pre>`,
+          `<pre class="error" translate="no">${'{ '.repeat(21)}0</pre>`,
         ]);
       assert.deepStrictEqual(
         [...parse(`${'('.repeat(20)}0`).children].map(el => el.outerHTML),
@@ -354,9 +354,9 @@ describe('Unit: parser/api/parse', () => {
     it('backtrack', function () {
       this.timeout(5000);
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して5倍遅い程度。
-      // 10n = link + link + template + annotation/reference + link +
-      //       signature * 2 + url/math + ruby + text
-      const source = `${'.'.repeat(6 + 0)}!{ !{!{{{((([[[[#.|$[${'.'.repeat(9992)}]]]]`;
+      // 9n = link + link + annotation/reference + link +
+      //      signature * 2 + url/math + ruby + text
+      const source = `${'.'.repeat(5 + 0)}!{ !{!{((([[[[#.|$[${'.'.repeat(11103)}]]]]`;
       assert.deepStrictEqual(
         [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
           .map(el => el.tagName),
@@ -365,7 +365,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const source = `${'.'.repeat(6 + 1)}!{ !{!{{{((([[[[#.|$[${'.'.repeat(9992)}]]]]`;
+      const source = `${'.'.repeat(5 + 1)}!{ !{!{((([[[[#.|$[${'.'.repeat(11103)}]]]]`;
       assert.deepStrictEqual(
         [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
           .map(el => el.tagName),
