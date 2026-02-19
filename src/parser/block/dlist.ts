@@ -27,7 +27,7 @@ const desc: DListParser.DescriptionParser = block(fmap(open(
   /^:[^\S\n]+(?=\S)|/,
   rewrite(
     some(anyline, /^[~:][^\S\n]+\S/),
-    visualize(trimBlankEnd(linearize(some(union([inline])))))),
+    visualize(trimBlankEnd(linearize(some(union([inline])), -1)))),
   true),
   ns => [html('dd', defrag(ns))]),
   false);

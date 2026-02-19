@@ -104,7 +104,7 @@ const data: CellParser.DataParser = block(fmap(open(
       block(surround(/^[^\n]/, medialink, /^\s*$/)),
       block(surround(/^[^\n]/, media, /^\s*$/)),
       block(surround(/^[^\n]/, shortmedia, /^\s*$/)),
-      open(/^(?:\s*\n|\s)/, visualize(trimBlankEnd(linearize(some(inline)))), true),
+      open(/^(?:\s*\n|\s)/, visualize(trimBlankEnd(linearize(some(inline), -1))), true),
     ])),
   true),
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),

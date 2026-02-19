@@ -36,7 +36,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
       inits([
         line(open(heads[form], subsequence([
           checkbox,
-          trim(visualize(linearize(trimBlank(some(union([indexer, inline]))))))]), true)),
+          trim(visualize(linearize(trimBlank(some(union([indexer, inline]))), -1)))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),

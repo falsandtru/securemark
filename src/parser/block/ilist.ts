@@ -19,7 +19,7 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   some(recursion(Recursion.listitem, union([
     fmap(fallback(
       inits([
-        line(open(/^[-+*](?:$|\s)/, trim(visualize(trimBlank(linearize(some(inline))))), true)),
+        line(open(/^[-+*](?:$|\s)/, trim(visualize(trimBlank(linearize(some(inline), -1)))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),

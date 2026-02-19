@@ -6,7 +6,7 @@ import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
 
 export function linearize<P extends Parser<HTMLElement | string>>(parser: P, trim?: 0 | 1 | -1): P;
-export function linearize<N extends HTMLElement | string>(parser: Parser<N>, trim = -1): Parser<N> {
+export function linearize<N extends HTMLElement | string>(parser: Parser<N>, trim = 0): Parser<N> {
   return convert(
     source => `\r${
       trim === 0

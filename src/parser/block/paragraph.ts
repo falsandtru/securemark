@@ -6,5 +6,5 @@ import { visualize, trimBlankEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
 export const paragraph: ParagraphParser = block(fmap(
-  visualize(trimBlankEnd(linearize(some(union([inline]))))),
+  visualize(trimBlankEnd(linearize(some(union([inline])), -1))),
   ns => [html('p', defrag(ns))]));
