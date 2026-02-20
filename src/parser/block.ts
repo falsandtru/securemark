@@ -55,23 +55,56 @@ export const block: BlockParser = reset(
     backtracks: {},
   },
   error(union([
+    input => {
+      const { context: { source, position } } = input;
+      if (position === source.length) return;
+      switch (source.slice(position, position + 3)) {
+        case '===':
+          return pagebreak(input);
+        case '~~~':
+          return extension(input);
+      }
+      switch (source.slice(position, position + 2)) {
+        case '$$':
+          return mathblock(input);
+        case '[$':
+          return extension(input);
+        case '[!':
+          return mediablock(input);
+        case '!>':
+          return blockquote(input);
+        case '>>':
+          return blockquote(input)
+              || reply(input);
+      }
+      switch (source[position]) {
+        case '#':
+          return heading(input);
+        case '-':
+          return ulist(input)
+              || ilist(input);
+        case '+':
+        case '*':
+          return ilist(input);
+        case '~':
+          return dlist(input);
+        case '|':
+          return table(input)
+              || sidefence(input);
+        case '`':
+          return codeblock(input);
+        case '$':
+          return extension(input);
+        case '>':
+          return blockquote(input);
+        case '!':
+          return mediablock(input);
+      }
+    },
     emptyline,
-    pagebreak,
-    heading,
-    ulist,
     olist,
-    ilist,
-    dlist,
-    table,
-    codeblock,
-    mathblock,
-    extension,
-    sidefence,
-    blockquote,
-    mediablock,
-    reply,
     paragraph
-  ])));
+  ]) as any));
 
 function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}.*\n`)
