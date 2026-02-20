@@ -4338,11 +4338,58 @@ const dom_1 = __webpack_require__(394);
 exports.block = (0, combinator_1.reset)({
   resources: {
     // バックトラックのせいで文字数制限を受けないようにする。
-    clock: segment_1.MAX_SEGMENT_SIZE * 5,
+    clock: segment_1.MAX_SEGMENT_SIZE * 5 + 1,
     recursions: [10 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
   },
   backtracks: {}
-}, error((0, combinator_1.union)([source_1.emptyline, pagebreak_1.pagebreak, heading_1.heading, ulist_1.ulist, olist_1.olist, ilist_1.ilist, dlist_1.dlist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, extension_1.extension, sidefence_1.sidefence, blockquote_1.blockquote, mediablock_1.mediablock, reply_1.reply, paragraph_1.paragraph])));
+}, error((0, combinator_1.union)([input => {
+  const {
+    context: {
+      source,
+      position
+    }
+  } = input;
+  if (position === source.length) return;
+  switch (source.slice(position, position + 3)) {
+    case '===':
+      return (0, pagebreak_1.pagebreak)(input);
+    case '~~~':
+      return (0, extension_1.extension)(input);
+  }
+  switch (source.slice(position, position + 2)) {
+    case '$$':
+      return (0, mathblock_1.mathblock)(input);
+    case '[$':
+      return (0, extension_1.extension)(input);
+    case '[!':
+      return (0, mediablock_1.mediablock)(input);
+    case '!>':
+      return (0, blockquote_1.blockquote)(input);
+    case '>>':
+      return (0, blockquote_1.blockquote)(input) || (0, reply_1.reply)(input);
+    case '- ':
+      return (0, ulist_1.ulist)(input) || (0, ilist_1.ilist)(input);
+    case '+ ':
+    case '* ':
+      return (0, ilist_1.ilist)(input);
+    case '~ ':
+      return (0, dlist_1.dlist)(input);
+  }
+  switch (source[position]) {
+    case '#':
+      return (0, heading_1.heading)(input);
+    case '|':
+      return (0, table_1.table)(input) || (0, sidefence_1.sidefence)(input);
+    case '`':
+      return (0, codeblock_1.codeblock)(input);
+    case '$':
+      return (0, extension_1.extension)(input);
+    case '>':
+      return (0, blockquote_1.blockquote)(input);
+    case '!':
+      return (0, mediablock_1.mediablock)(input);
+  }
+}, source_1.emptyline, olist_1.olist, paragraph_1.paragraph])));
 function error(parser) {
   const reg = new RegExp(String.raw`^${"\u0007" /* Command.Error */}.*\n`);
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)("\u0007" /* Command.Error */, ({
@@ -5172,8 +5219,8 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/[-+*](?=[^\S\n]|\n[^\S\n]*\S)/y, exports.ilist_)));
-exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/[-+*](?:$|\s)/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/[-+*](?:$|\s)/y, (0, combinator_1.trim)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, util_1.linearize)((0, combinator_1.some)(inline_1.inline), -1)))), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), exports.ilistitem), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
+exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/[-+*] /y, exports.ilist_)));
+exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/[-+*](?:$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/[-+*](?:$|[ \n])/y, (0, combinator_1.trim)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, util_1.linearize)((0, combinator_1.some)(inline_1.inline), -1)))), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), exports.ilistitem), ns => [(0, dom_1.html)('li', (0, dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, dom_1.html)('ul', {
   class: 'invalid',
   ...(0, util_1.invalid)('list', 'syntax', 'Use "-" instead of "+" or "*"')
 }, es)])));
@@ -5269,10 +5316,10 @@ const visibility_1 = __webpack_require__(6364);
 const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
 const openers = {
-  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/y,
-  '(': /\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/y
+  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?=$|[0-9\n])[0-9]*)*(?:\.?(?:$|[\n])|\. )/y,
+  '(': /\((?=$|[0-9a-z\n])([0-9]*|[a-z]*)(?=$|[)\n])\)?(?:-(?=$|[0-9\n])[0-9]*)*(?:$|[ \n])/y
 };
-exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/y.source, /\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/y.source].join('|'), 'y'), exports.olist_)));
+exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\. /y.source, /\(([0-9]+|[a-z]+)\)(?:-[0-9]+)* /y.source].join('|'), 'y'), exports.olist_)));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []))])));
 const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.linearize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))), -1)))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => [(0, dom_1.html)('li', {
   'data-index': (0, inline_1.dataindex)(ns),
@@ -5608,11 +5655,11 @@ const util_1 = __webpack_require__(4992);
 const visibility_1 = __webpack_require__(6364);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/-(?=[^\S\n]|\n[^\S\n]*\S)/y, exports.ulist_)));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/-(?=$|\s)/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/-(?:$|\s)/y, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.linearize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))), -1)))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => [(0, dom_1.html)('li', {
+exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/- /y, exports.ulist_)));
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/-(?=$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/-(?:$|[ \n])/y, (0, combinator_1.subsequence)([exports.checkbox, (0, combinator_1.trim)((0, visibility_1.visualize)((0, util_1.linearize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))), -1)))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => [(0, dom_1.html)('li', {
   'data-index': (0, inline_1.dataindex)(ns)
 }, (0, dom_1.defrag)(fillFirstLine(ns)))]))])))), es => [format((0, dom_1.html)('ul', es))])));
-exports.checkbox = (0, combinator_1.focus)(/\[[xX ]\](?=$|\s)/y, ({
+exports.checkbox = (0, combinator_1.focus)(/\[[xX ]\](?=$|[ \n])/y, ({
   context: {
     source
   }
@@ -5871,18 +5918,13 @@ const hashtag_1 = __webpack_require__(5764);
 const hashnum_1 = __webpack_require__(8684);
 const anchor_1 = __webpack_require__(8535);
 const source_1 = __webpack_require__(8745);
-const util_1 = __webpack_require__(4992);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/(?:[@#>0-9a-z]|\S#|[0-9a-z]>|[\r\n]!?https?:\/\/)/yiu, (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.union)([url_1.lineurl])), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yiu.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yiu.source, /(?<![0-9a-z][.+-]?)[0-9a-z]/yiu.source, /[\r\n]!?https?:\/\//yiu.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
 // Escape unmatched email-like strings.
-(0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+|@(?=@))*/yi), channel_1.channel, account_1.account,
+(0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+@?|@(?=@))*/yi), channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
-(0, source_1.str)(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi),
-// Escape invalid leading characters.
-(0, source_1.str)(new RegExp(/(?:[^\p{C}\p{S}\p{P}\s]|emoji)(?=#)/yu.source.replace('emoji', hashtag_1.emoji), 'yu')), hashtag_1.hashtag, hashnum_1.hashnum,
+(0, source_1.str)(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi), hashtag_1.hashtag, hashnum_1.hashnum,
 // Escape unmatched hashtag-like strings.
-(0, source_1.str)(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, hashtag_1.emoji), 'yu')),
-// Escape invalid leading characters.
-(0, source_1.str)(/[0-9a-z](?=>)/yiu), anchor_1.anchor])), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)])]))));
+(0, source_1.str)(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, hashtag_1.emoji), 'yu')), anchor_1.anchor]))));
 
 /***/ },
 
@@ -5901,7 +5943,7 @@ const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/yi)])), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![0-9a-z@#]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
   class: 'account'
 })]))), ({
   context: {
@@ -5923,6 +5965,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.anchor = void 0;
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
+const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
@@ -5931,13 +5974,13 @@ const dom_1 = __webpack_require__(394);
 // cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.focus)(/>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/yi, (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#]|>>|:\S)/yi), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
   class: 'anchor'
 })]))), ({
   context: {
     source
   }
-}) => [[source]]]))));
+}) => [[source]]])));
 
 /***/ },
 
@@ -5952,20 +5995,27 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.channel = void 0;
 const combinator_1 = __webpack_require__(3484);
-const account_1 = __webpack_require__(4107);
+const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
-const util_1 = __webpack_require__(4992);
+const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.channel = (0, combinator_1.validate)('@', (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.bind)((0, combinator_1.sequence)([account_1.account, (0, combinator_1.some)(hashtag_1.hashtag)]), es => {
-  const source = (0, util_1.stringify)(es);
-  const el = es[0];
-  const url = `${el.getAttribute('href')}?ch=${source.slice(source.indexOf('#') + 1).replace(/#/g, '+')}`;
-  return [[(0, dom_1.define)(el, {
+exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![0-9a-z@]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.open)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), ([source]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(source)), false, [3 | 0 /* Backtrack.autolink */]))]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}` : `/${source.slice(0, source.indexOf('#'))}`} }`, link_1.unsafelink, false), ([el], {
+  source,
+  position,
+  range = 0
+}) => {
+  const src = source.slice(position - range, position);
+  const url = `${el.getAttribute('href')}?ch=${src.slice(src.indexOf('#') + 1).replace(/#/g, '+')}`;
+  return [(0, dom_1.define)(el, {
     class: 'channel',
     href: url
-  }, source)]];
-})));
+  }, src)];
+}))), ({
+  context: {
+    source
+  }
+}) => [[source]]])));
 
 /***/ },
 
@@ -5983,7 +6033,7 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://html.spec.whatwg.org/multipage/input.html
-exports.email = (0, combinator_1.rewrite)((0, combinator_1.surround)((0, source_1.str)(/[0-9a-z]/yi), (0, combinator_1.verify)((0, source_1.str)(/(?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z])/yi), ([source]) => source.length <= 255 - 1), '', false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
+exports.email = (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z][_.+-]?)(?=[0-9a-z])/yi, (0, combinator_1.verify)((0, source_1.str)(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z@#]|>>|:\S)/yi), ([source]) => source.length <= 255), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
   context: {
     source
   }
@@ -6013,7 +6063,7 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/, hashtag_1.emoji), 'yu'))), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashnum',
   href: null
 })]))), ({
@@ -6041,7 +6091,7 @@ const dom_1 = __webpack_require__(394);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(new RegExp([/(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji)))/yu.source, /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, exports.emoji), 'yu')), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, exports.emoji), 'yu'), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, exports.emoji), 'yu')), ([source]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(source)), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, link_1.unsafelink, false), ([el]) => [(0, dom_1.define)(el, {
   class: 'hashtag'
 })]))), ({
   context: {
@@ -6064,7 +6114,7 @@ exports.lineurl = exports.url = void 0;
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.verify)(bracket, ns => ns.length > 0),
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.verify)(bracket, ns => ns.length > 0),
 // 再帰に注意
 (0, combinator_1.some)(source_1.unescsource, /[-+*=~^_/,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/y)]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
   context: {
@@ -6098,7 +6148,7 @@ const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
 const indexF = new RegExp(indexA.source.replace(', ', '[，、]').replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0) + 0xFEE0)));
-exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], {
+exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/[([{（［｛"]/y, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, ([as, bs = [], cs], {
   source,
   position,
   range = 0
@@ -6142,7 +6192,7 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, comb
   return [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)];
 }, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]),
 // 同一行内でしか閉じない以外括弧と同じ挙動
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], context) => context.linebreak === 0 ? [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)] : (context.position -= 1, [(0, array_1.unshift)(as, bs)]), ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */])]));
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], context) => context.linebreak === 0 ? [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)] : (context.position -= 1, [(0, array_1.unshift)(as, bs)]), ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */])])));
 
 /***/ },
 
@@ -6400,7 +6450,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* 
     return ns;
   }
 })));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.focus)(/(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/y, source_1.txt, false)]), ']'), /(?=])/y, false, ([, ns]) => {
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.some)(source_1.txt, /(?:[&$[\](){}<>"`]|\\?\n)/y)]), ']'), /(?=])/y, false, ([, ns]) => {
   const index = (0, indexee_1.identity)('index', undefined, ns.join(''))?.slice(7);
   return index ? [[(0, dom_1.html)('span', {
     class: 'indexer',
@@ -7013,8 +7063,8 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
-exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(5, bracket), '$', false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.precedence)(5, bracket), (0, combinator_1.some)((0, combinator_1.focus)(/(?:[ ([](?!\$)|\\[\\{}$#]?|[!%&')\x2A-\x5A\]^_\x61-\x7A|~])/y, source_1.escsource, false), '://')]))), /\$(?![0-9A-Za-z])/y, false, undefined, undefined, [3 | 8 /* Backtrack.bracket */])]), ({
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
+exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(5, bracket), '$', false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(5, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, undefined, undefined, [3 | 8 /* Backtrack.bracket */])]), ({
   context: {
     source,
     caches: {
@@ -7030,7 +7080,7 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('$', (0, 
   translate: 'no',
   ...(0, util_1.invalid)('math', 'content', `"${source.match(forbiddenCommand)[0]}" command is forbidden`)
 }, source)]])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /[{}$#\n]/y)]))), (0, source_1.str)('}'), true));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /[{}$\n]/y)]))), (0, source_1.str)('}'), true));
 
 /***/ },
 
