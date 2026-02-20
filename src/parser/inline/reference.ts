@@ -5,7 +5,7 @@ import { union, subsequence, some, precedence, state, constraint, surround, isBa
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
-import { blank, trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 import { unshift, push } from 'spica/array';
 import { invalid } from '../util';
@@ -99,7 +99,7 @@ const abbr: ReferenceParser.AbbrParser = surround(
   ([, ns], context) => {
     const { source, position, range = 0 } = context;
     if (!ns) return [['', source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)]];
-    context.position += source.slice(position).match(blank.start)?.[0].length ?? 0;
+    context.position += source[position] === ' ' ? 1 : 0;
     return [[Command.Separator, ns[0].trimEnd()]];
   },
   (_, context) => {
