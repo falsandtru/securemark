@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Input, eval } from '../combinator/data/parser';
+import { Parser, Input, eval, failsafe } from '../combinator/data/parser';
 import { union, some, verify, convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { linebreak, unescsource } from './source';
@@ -13,8 +13,8 @@ export namespace blank {
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   export const start = new RegExp(
-    /^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/.source
-      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`));
+    /(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/y.source
+      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`), 'y');
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
@@ -165,10 +165,15 @@ export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Pa
 }
 export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
 export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
-  return convert(
-    source => source.replace(blank.start, ''),
-    parser,
-    true);
+  return failsafe(input => {
+    const { context } = input;
+    const { source, position } = context;
+    const reg = blank.start;
+    reg.lastIndex = position;
+    reg.test(source);
+    context.position = reg.lastIndex || position;
+    return parser(input);
+  });
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlankEnd<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
