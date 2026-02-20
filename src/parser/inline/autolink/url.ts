@@ -6,7 +6,7 @@ import { linebreak, unescsource, str } from '../../source';
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   open(
-    /https?:\/\/(?=[\x21-\x7E])/y,
+    /(?<![0-9a-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y,
     precedence(1, some(union([
       verify(bracket, ns => ns.length > 0),
       // 再帰に注意

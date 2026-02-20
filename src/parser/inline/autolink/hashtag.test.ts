@@ -12,10 +12,12 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('#'), ctx), [['#'], '']);
       assert.deepStrictEqual(inspect(parser('# '), ctx), [['#'], ' ']);
-      assert.deepStrictEqual(inspect(parser('#a#'), ctx), [['#a#'], '']);
-      assert.deepStrictEqual(inspect(parser('#a#b'), ctx), [['#a#b'], '']);
-      assert.deepStrictEqual(inspect(parser('#a#b#c'), ctx), [['#a#b#c'], '']);
-      assert.deepStrictEqual(inspect(parser('#a@b'), ctx), [['#a@b'], '']);
+      assert.deepStrictEqual(inspect(parser('#a#'), ctx), [['#a'], '#']);
+      assert.deepStrictEqual(inspect(parser('#a#b'), ctx), [['#a'], '#b']);
+      assert.deepStrictEqual(inspect(parser('#a#b#c'), ctx), [['#a'], '#b#c']);
+      assert.deepStrictEqual(inspect(parser('#a@b'), ctx), [['#a'], '@b']);
+      assert.deepStrictEqual(inspect(parser('#@'), ctx), [['#', '@'], '']);
+      assert.deepStrictEqual(inspect(parser('#@a'), ctx), [['#', '<a class="account" href="/@a">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#\\'), ctx), [['#'], '\\']);
       assert.deepStrictEqual(inspect(parser('#\\ '), ctx), [['#'], '\\ ']);
       assert.deepStrictEqual(inspect(parser('#\\\n'), ctx), [['#'], '\\\n']);
@@ -33,12 +35,8 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#{}}'), ctx), [['#'], '{}}']);
       assert.deepStrictEqual(inspect(parser('#{#}'), ctx), [['#'], '{#}']);
       assert.deepStrictEqual(inspect(parser('#{a}'), ctx), [['#'], '{a}']);
+      assert.deepStrictEqual(inspect(parser('#12345a'), ctx), [['#12345a'], '']);
       assert.deepStrictEqual(inspect(parser('#　'), ctx), [['#'], '　']);
-      assert.deepStrictEqual(inspect(parser('a#1'), ctx), [['a#1'], '']);
-      assert.deepStrictEqual(inspect(parser('a#b'), ctx), [['a#b'], '']);
-      assert.deepStrictEqual(inspect(parser('a##1'), ctx), [['a##1'], '']);
-      assert.deepStrictEqual(inspect(parser('a##b'), ctx), [['a##b'], '']);
-      assert.deepStrictEqual(inspect(parser('あ#b'), ctx), [['あ#b'], '']);
       assert.deepStrictEqual(inspect(parser(' #a'), ctx), undefined);
     });
 
@@ -66,7 +64,8 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser(`#a'0`), ctx), [[`<a class="hashtag" href="/hashtags/a'0">#a'0</a>`], '']);
       assert.deepStrictEqual(inspect(parser(`#a'_b`), ctx), [[`<a class="hashtag" href="/hashtags/a">#a</a>`], `'_b`]);
       assert.deepStrictEqual(inspect(parser(`#a_'b`), ctx), [[`<a class="hashtag" href="/hashtags/a">#a</a>`], `_'b`]);
-      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(9)}a`), ctx), [[`<a class="hashtag" href="/hashtags/${'1'.repeat(9)}a">#${'1'.repeat(9)}a</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('#1234a'), ctx), [['<a class="hashtag" href="/hashtags/1234a">#1234a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#a+b'), ctx), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '+b']);
     });
 
   });

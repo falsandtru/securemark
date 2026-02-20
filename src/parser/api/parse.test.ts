@@ -353,9 +353,9 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack', function () {
       this.timeout(5000);
-      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して5倍遅い程度。
+      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して3倍遅い程度。
       // 5n = annotation/reference + link + url/math + ruby + text
-      const source = `${'.'.repeat(3 + 0)}((([[[[#$[${'.'.repeat(19998)}`;
+      const source = `${'.'.repeat(0 + 0)}((([[[[#$[${'.'.repeat(19998)}`;
       assert.deepStrictEqual(
         [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
           .map(el => el.tagName),
@@ -364,7 +364,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const source = `${'.'.repeat(3 + 1)}((([[[[#$[${'.'.repeat(19998)}`;
+      const source = `${'.'.repeat(0 + 1)}((([[[[#$[${'.'.repeat(19998)}`;
       assert.deepStrictEqual(
         [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
           .map(el => el.tagName),

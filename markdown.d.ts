@@ -1100,22 +1100,17 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLElement | string, Context, [
-        Parser<HTMLElement | string, Context, [
-          AutolinkParser.UrlParser.LineUrlParser,
-        ]>,
-        Parser<HTMLElement | string, Context, [
-          AutolinkParser.UrlParser,
-          AutolinkParser.EmailParser,
-          SourceParser.StrParser,
-          AutolinkParser.ChannelParser,
-          AutolinkParser.AccountParser,
-          SourceParser.StrParser,
-          SourceParser.StrParser,
-          AutolinkParser.HashtagParser,
-          AutolinkParser.HashnumParser,
-          SourceParser.StrParser,
-          AutolinkParser.AnchorParser,
-        ]>,
+        AutolinkParser.UrlParser.LineUrlParser,
+        AutolinkParser.UrlParser,
+        AutolinkParser.EmailParser,
+        SourceParser.StrParser,
+        AutolinkParser.ChannelParser,
+        AutolinkParser.AccountParser,
+        SourceParser.StrParser,
+        AutolinkParser.HashtagParser,
+        AutolinkParser.HashnumParser,
+        SourceParser.StrParser,
+        AutolinkParser.AnchorParser,
       ]> {
     }
     export namespace AutolinkParser {
@@ -1169,8 +1164,8 @@ export namespace MarkdownParser {
         // @user#tag
         Inline<'channel'>,
         Parser<string | HTMLAnchorElement, Context, [
-          InlineParser.AutolinkParser.AccountParser,
-          InlineParser.AutolinkParser.HashtagParser,
+          LinkParser.UnsafeLinkParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export interface AccountParser extends
