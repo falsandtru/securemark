@@ -1,6 +1,6 @@
 import { BracketParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
-import { union, some, recursion, precedence, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
+import { union, some, recursion, precedence, validate, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
@@ -11,7 +11,7 @@ const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
 const indexF = new RegExp(indexA.source.replace(', ', '[，、]')
   .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)));
 
-export const bracket: BracketParser = lazy(() => union([
+export const bracket: BracketParser = lazy(() => validate(/[([{（［｛"]/y, union([
   surround(
     str('('),
     precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
@@ -100,4 +100,4 @@ export const bracket: BracketParser = lazy(() => union([
         : (context.position -= 1, [unshift(as, bs)]),
     ([as, bs = []]) => [unshift(as, bs)],
     [2 | Backtrack.bracket]),
-]));
+])));
