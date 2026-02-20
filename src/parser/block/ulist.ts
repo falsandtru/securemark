@@ -10,15 +10,15 @@ import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ulist: UListParser = lazy(() => block(validate(
-  /-(?=[^\S\n]|\n[^\S\n]*\S)/y,
+  /- /y,
   ulist_)));
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
-  /-(?=$|\s)/y,
+  /-(?=$|[ \n])/y,
   some(recursion(Recursion.listitem, union([
     indexee(fmap(fallback(
       inits([
-        line(open(/-(?:$|\s)/y, subsequence([
+        line(open(/-(?:$|[ \n])/y, subsequence([
           checkbox,
           trim(visualize(linearize(trimBlank(some(union([indexer, inline]))), - 1))),
         ]), true)),
@@ -30,7 +30,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
   es => [format(html('ul', es))])));
 
 export const checkbox = focus(
-  /\[[xX ]\](?=$|\s)/y,
+  /\[[xX ]\](?=$|[ \n])/y,
   ({ context: { source } }) => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ]]);

@@ -19,6 +19,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-[ ]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('-[x]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('-\n'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n- a'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' - '), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('+'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('*'), ctx), undefined);
@@ -36,23 +37,23 @@ describe('Unit: parser/block/ulist', () => {
 
     it('multiple', () => {
       // pending
-      assert.deepStrictEqual(inspect(parser('-\n-'), ctx), [['<ul><li></li><li></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \n-'), ctx), [['<ul><li></li><li></li></ul>'], '']);
       // filled
       assert.deepStrictEqual(inspect(parser('- 1\n- 2'), ctx), [['<ul><li id="index::1">1</li><li id="index::2">2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2\n- 3'), ctx), [['<ul><li id="index::1">1</li><li id="index::2">2</li><li id="index::3">3</li></ul>'], '']);
       // invalid
-      assert.deepStrictEqual(inspect(parser('-\n+'), ctx), [['<ul><li></li><li id="index::+"><span class="invalid">+</span></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('-\n0'), ctx), [['<ul><li></li><li id="index::0"><span class="invalid">0</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \n+'), ctx), [['<ul><li></li><li id="index::+"><span class="invalid">+</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \n0'), ctx), [['<ul><li></li><li id="index::0"><span class="invalid">0</span></li></ul>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('-\n -'), ctx), [['<ul><li><br><ul><li></li></ul></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \n -'), ctx), [['<ul><li><br><ul><li></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2'), ctx), [['<ul><li id="index::1">1<ul><li id="index::2">2</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n- 3'), ctx), [['<ul><li id="index::1">1<ul><li id="index::2">2</li></ul></li><li id="index::3">3</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3'), ctx), [['<ul><li id="index::1">1<ul><li id="index::2">2</li><li id="index::3">3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3'), ctx), [['<ul><li id="index::1">1<ul><li id="index::2">2<ul><li id="index::3">3</li></ul></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n  - 2\n - 3'), ctx), [['<ul><li id="index::1">1<ul><li id="index::2">2</li></ul></li><li id="index::-_3"><span class="invalid"> - 3</span></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('-\n -\n +\n -\n +\n+'), ctx), [['<ul><li><br><ul><li></li><li id="index::+"><span class="invalid">+</span></li><li></li><li id="index::+"><span class="invalid">+</span></li></ul></li><li id="index::+"><span class="invalid">+</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- \n -\n +\n -\n +\n+'), ctx), [['<ul><li><br><ul><li></li><li id="index::+"><span class="invalid">+</span></li><li></li><li id="index::+"><span class="invalid">+</span></li></ul></li><li id="index::+"><span class="invalid">+</span></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n + 2'), ctx), [['<ul><li id="index::1">1<ul class="invalid"><li>2</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0'), ctx), [['<ul><li id="index::1">1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0.'), ctx), [['<ul><li id="index::1">1<ol><li></li></ol></li></ul>'], '']);

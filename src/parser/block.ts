@@ -76,18 +76,18 @@ export const block: BlockParser = reset(
         case '>>':
           return blockquote(input)
               || reply(input);
+        case '- ':
+          return ulist(input)
+              || ilist(input);
+        case '+ ':
+        case '* ':
+          return ilist(input);
+        case '~ ':
+          return dlist(input);
       }
       switch (source[position]) {
         case '#':
           return heading(input);
-        case '-':
-          return ulist(input)
-              || ilist(input);
-        case '+':
-        case '*':
-          return ilist(input);
-        case '~':
-          return dlist(input);
         case '|':
           return table(input)
               || sidefence(input);

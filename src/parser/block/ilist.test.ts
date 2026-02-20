@@ -15,9 +15,9 @@ describe('Unit: parser/block/ilist', () => {
       assert(parser('- '));
       assert(parser('+ '));
       assert(parser('* '));
-      assert(parser('-\n-'));
-      assert(parser('+\n+'));
-      assert(parser('*\n*'));
+      assert(parser('- \n-'));
+      assert(parser('+ \n+'));
+      assert(parser('* \n*'));
     });
 
   });

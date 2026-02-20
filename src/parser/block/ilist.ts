@@ -11,15 +11,15 @@ import { linearize, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
-  /[-+*](?=[^\S\n]|\n[^\S\n]*\S)/y,
+  /[-+*] /y,
   ilist_)));
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
-  /[-+*](?:$|\s)/y,
+  /[-+*](?:$|[ \n])/y,
   some(recursion(Recursion.listitem, union([
     fmap(fallback(
       inits([
-        line(open(/[-+*](?:$|\s)/y, trim(visualize(trimBlank(linearize(some(inline), -1)))), true)),
+        line(open(/[-+*](?:$|[ \n])/y, trim(visualize(trimBlank(linearize(some(inline), -1)))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
