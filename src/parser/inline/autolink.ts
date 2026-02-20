@@ -12,7 +12,7 @@ import { str } from '../source';
 import { stringify } from '../util';
 
 export const autolink: AutolinkParser = lazy(() =>
-  validate(/(?:[@#>0-9a-z]|\S#|[0-9a-z]>|[\r\n]!?https?:\/\/)/yiu,
+  validate(/(?:(?<![0-9a-z])[@#>0-9a-z]|\S#|[\r\n]!?https?:\/\/)/yiu,
   state(~State.autolink,
   union([
     some(union([lineurl])),
@@ -31,8 +31,6 @@ export const autolink: AutolinkParser = lazy(() =>
       hashnum,
       // Escape unmatched hashtag-like strings.
       str(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, emoji), 'yu')),
-      // Escape invalid leading characters.
-      str(/[0-9a-z](?=>)/yiu),
       anchor,
     ])),
     ns => ns.length === 1 ? ns : [stringify(ns)]),

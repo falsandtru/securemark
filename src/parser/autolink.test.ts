@@ -23,7 +23,7 @@ describe('Unit: parser/autolink', () => {
       assert.deepStrictEqual(inspect(parser('0aあい#b'), ctx), [['0a', 'あ', 'い#b'], '']);
       assert.deepStrictEqual(inspect(parser('a\n#b'), ctx), [['a', '<br>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n#b'), ctx), [['a', '\\', '<br>', '<a class="hashtag" href="/hashtags/b">#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('0a>>b'), ctx), [['0a>>b'], '']);
+      assert.deepStrictEqual(inspect(parser('0a>>b'), ctx), [['0a', '>', '>', 'b'], '']);
     });
 
   });

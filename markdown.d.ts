@@ -1114,7 +1114,6 @@ export namespace MarkdownParser {
           AutolinkParser.HashtagParser,
           AutolinkParser.HashnumParser,
           SourceParser.StrParser,
-          SourceParser.StrParser,
           AutolinkParser.AnchorParser,
         ]>,
       ]> {
