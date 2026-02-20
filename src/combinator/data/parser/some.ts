@@ -6,7 +6,7 @@ type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number,
 
 export function some<P extends Parser<unknown>>(parser: P, limit?: number): P;
 export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp, delimiters?: readonly DelimiterOption[], limit?: number): P;
-export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = 0): Parser<N> {
+export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = -1): Parser<N> {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   assert(parser);
   const match = Delimiters.matcher(end);
@@ -36,7 +36,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
           ? unshift(nodes, eval(result))
           : push(nodes, eval(result))
         : eval(result);
-      if (limit > 0 && context.position - position > limit) break;
+      if (limit >= 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
       context.delimiters!.pop(delims.length);
