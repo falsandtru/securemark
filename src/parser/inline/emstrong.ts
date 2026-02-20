@@ -14,20 +14,12 @@ import { html, defrag } from 'typed-dom/dom';
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
   emphasis,
   some(inline, blankWith('*')),
-  open(some(inline, '*'), union([
-    emstrong,
-    strong,
-    emphasis,
-  ])),
+  open(some(inline, '*'), inline),
 ])));
 const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
   some(inline, blankWith('*')),
-  open(some(inline, '*'), union([
-    emstrong,
-    strong,
-    emphasis,
-  ])),
+  open(some(inline, '*'), inline),
 ])));
 
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
@@ -39,11 +31,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
     recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('*')),
-      open(some(inline, '*'), union([
-        emstrong,
-        strong,
-        emphasis,
-      ])),
+      open(some(inline, '*'), inline),
     ])))),
     str(/^\*{1,3}/), false,
     ([, bs, cs], context): Result<Node<EmStrongParser>, Context<EmStrongParser>> => {

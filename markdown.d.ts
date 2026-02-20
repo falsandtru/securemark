@@ -973,7 +973,7 @@ export namespace MarkdownParser {
       Inline<'insertion'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InsertionParser,
+        InlineParser,
       ]> {
     }
     export interface DeletionParser extends
@@ -981,7 +981,7 @@ export namespace MarkdownParser {
       Inline<'deletion'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        DeletionParser,
+        InlineParser,
       ]> {
     }
     export interface MarkParser extends
@@ -989,7 +989,7 @@ export namespace MarkdownParser {
       Inline<'mark'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        MarkParser,
+        InlineParser,
       ]> {
     }
     export interface EmStrongParser extends
@@ -997,11 +997,7 @@ export namespace MarkdownParser {
       Inline<'emstrong'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        Parser<HTMLElement | string, Context, [
-          EmStrongParser,
-          StrongParser,
-          EmphasisParser,
-        ]>,
+        InlineParser,
       ]> {
     }
     export interface StrongParser extends
@@ -1010,11 +1006,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         EmphasisParser,
         InlineParser,
-        Parser<HTMLElement | string, Context, [
-          EmStrongParser,
-          StrongParser,
-          EmphasisParser,
-        ]>,
+        InlineParser,
       ]> {
     }
     export interface EmphasisParser extends
@@ -1023,11 +1015,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, Context, [
         StrongParser,
         InlineParser,
-        Parser<HTMLElement | string, Context, [
-          EmStrongParser,
-          StrongParser,
-          EmphasisParser,
-        ]>,
+        InlineParser,
       ]> {
     }
     export interface ItalicParser extends
@@ -1035,7 +1023,7 @@ export namespace MarkdownParser {
       Inline<'italic'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        ItalicParser,
+        InlineParser,
       ]> {
     }
     export interface MathParser extends

@@ -16,7 +16,7 @@ export const italic: ItalicParser = lazy(() => validate('///',
     recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('///')),
-      open(some(inline, '/'), italic),
+      open(some(inline, '/'), inline),
     ])))),
     '///', false,
     ([, bs], { buffer }) => [push(buffer!, bs)],

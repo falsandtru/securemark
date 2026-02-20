@@ -2,7 +2,6 @@ import { StrongParser } from '../inline';
 import { Recursion } from '../context';
 import { union, some, recursion, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { emstrong } from './emstrong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
 import { tightStart, blankWith } from '../visibility';
@@ -15,11 +14,7 @@ export const strong: StrongParser = lazy(() => surround(
   tightStart(some(union([
     emphasis,
     some(inline, blankWith('*')),
-    open(some(inline, '*'), union([
-      emstrong,
-      strong,
-      emphasis,
-    ])),
+    open(some(inline, '*'), inline),
   ]))))),
   str('**'), false,
   ([, bs]) => [[html('strong', defrag(bs))]],

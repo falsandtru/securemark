@@ -13,7 +13,7 @@ export const insertion: InsertionParser = lazy(() => validate('++',
     recursion(Recursion.inline,
     some(union([
       some(inline, blankWith('\n', '++')),
-      open('\n', some(insertion, '+'), true),
+      open('\n', some(inline, '+'), true),
     ]))),
     '++', false,
     ([, bs], { buffer }) => [push(buffer!, bs)],

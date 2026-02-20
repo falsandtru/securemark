@@ -14,7 +14,7 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
     recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('==')),
-      open(some(inline, '='), mark),
+      open(some(inline, '='), inline),
     ])))),
     '==', false,
     ([, bs], { buffer }) => [push(buffer!, bs)],

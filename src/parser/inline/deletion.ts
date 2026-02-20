@@ -13,7 +13,7 @@ export const deletion: DeletionParser = lazy(() => validate('~~',
     recursion(Recursion.inline,
     some(union([
       some(inline, blankWith('\n', '~~')),
-      open('\n', some(deletion, '~'), true),
+      open('\n', some(inline, '~'), true),
     ]))),
     '~~', false,
     ([, bs], { buffer }) => [push(buffer!, bs)],
