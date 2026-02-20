@@ -9,7 +9,6 @@ export function some<P extends Parser<unknown>>(parser: P, end?: string | RegExp
 export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delimiters: readonly DelimiterOption[] = [], limit = 0): Parser<N> {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   assert(parser);
-  assert([end].concat(delimiters.map(o => o[0])).every(d => d instanceof RegExp ? !d.flags.match(/[gmy]/) && d.source.startsWith('^') : true));
   const match = Delimiters.matcher(end);
   const delims = delimiters.map(([delimiter, precedence, linebreakable = true]) => ({
     signature: Delimiters.signature(delimiter, linebreakable),
@@ -28,8 +27,8 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
     }
     while (true) {
       if (context.position === source.length) break;
-      if (match(context)) break;
-      if (context.delimiters?.match(context)) break;
+      if (match(input)) break;
+      if (context.delimiters?.match(input)) break;
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes

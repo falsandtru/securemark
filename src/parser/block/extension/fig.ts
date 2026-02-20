@@ -12,9 +12,9 @@ import { media, shortmedia } from '../../inline';
 
 import FigParser = ExtensionParser.FigParser;
 
-export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
+export const segment: FigParser.SegmentParser = block(validate(/\[?\$/y,
   sequence([
-    line(close(seg_label, /^(?=\s).*\n/)),
+    line(close(seg_label, /(?=\s).*\n/y)),
     union([
       seg_code,
       seg_math,
@@ -39,7 +39,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
   ([el]) => el.tagName === 'FIGURE')));
 
 const parser = sequence([
-  line(close(seg_label, /^(?=\s).*\n/)),
+  line(close(seg_label, /(?=\s).*\n/y)),
   line(union([
     media,
     shortmedia,

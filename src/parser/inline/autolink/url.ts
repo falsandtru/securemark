@@ -1,17 +1,17 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
-import { union, tails, some, recursion, precedence, state, constraint, validate, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
+import { union, tails, some, recursion, precedence, state, constraint, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { linebreak, unescsource, str } from '../../source';
 
-export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'https://'], rewrite(
+export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   open(
-    /^https?:\/\/(?=[\x21-\x7E])/,
+    /https?:\/\/(?=[\x21-\x7E])/y,
     precedence(1, some(union([
       verify(bracket, ns => ns.length > 0),
       // 再帰に注意
-      some(unescsource, /^[-+*=~^_/,.;:!?]{2}|^[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/),
-    ]), undefined, [[/^[^\x21-\x7E]|^\$/, 9]])),
+      some(unescsource, /[-+*=~^_/,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/y),
+    ]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
     [3 | Backtrack.autolink]),
   union([
@@ -20,12 +20,12 @@ export const url: AutolinkParser.UrlParser = lazy(() => validate(['http://', 'ht
       unsafelink,
       false))),
     ({ context: { source } }) => [[source]],
-  ]))));
+  ])));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
   linebreak,
   focus(
-    /^!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/,
+    /!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y,
     tails([
       str('!'),
       union([

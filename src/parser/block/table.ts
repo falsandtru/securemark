@@ -13,7 +13,7 @@ import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
-  /^\|[^\n]*(?:\n\|[^\n]*){2}/,
+  /\|[^\n]*(?:\n\|[^\n]*){2}/y,
   sequence([
     row(some(head), true),
     row(some(align), false),
@@ -27,7 +27,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   ])));
 
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
-  line(surround(/^(?=\|)/, some(union([parser])), /^[|\\]?\s*$/, optional)),
+  line(surround(/(?=\|)/y, some(union([parser])), /[|\\]?\s*$/y, optional)),
   es => [html('tr', es)]),
   rewrite(contentline, ({ context: { source } }) => [[
     html('tr', {
@@ -39,22 +39,22 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
 const align: AlignParser = fmap(open(
   '|',
   union([
-    focus(/^:-+:?/, ({ context: { source } }) =>
+    focus(/:-+:?/y, ({ context: { source } }) =>
       [[source.at(-1) === ':' ? 'center' : 'start']], false),
-    focus(/^-+:?/, ({ context: { source } }) =>
+    focus(/-+:?/y, ({ context: { source } }) =>
       [[source.at(-1) === ':' ? 'end' : '']], false),
   ])),
   ns => [html('td', defrag(ns))]);
 
 const cell: CellParser = surround(
-  /^\|\s*(?=\S)/,
+  /\|\s*(?=\S)/y,
   trimStart(union([
-    close(medialink, /^\s*(?=\||$)/),
-    close(media, /^\s*(?=\||$)/),
-    close(shortmedia, /^\s*(?=\||$)/),
-    trimBlank(some(inline, /^\|/, [[/^[|\\]?\s*$/, 9]])),
+    close(medialink, /\s*(?=\||$)/y),
+    close(media, /\s*(?=\||$)/y),
+    close(shortmedia, /\s*(?=\||$)/y),
+    trimBlank(some(inline, /\|/y, [[/[|\\]?\s*$/y, 9]])),
   ])),
-  /^[^|]*/, true);
+  /[^|]*/y, true);
 
 const head: CellParser.HeadParser = fmap(
   cell,

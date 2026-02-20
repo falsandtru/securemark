@@ -21,9 +21,9 @@ import { html, defrag } from 'typed-dom/dom';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})(?:figure[^\S\n])?(?=\[?\$)/,
+  /(~{3,})(?:figure[^\S\n])?(?=\[?\$)/y,
   memoize(
-  ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) => close(
+  ([, fence], closer = new RegExp(String.raw`${fence}[^\S\n]*(?:$|\n)`, 'y')) => close(
     sequence([
       contentline,
       inits([
@@ -49,7 +49,7 @@ export const segment: FigureParser.SegmentParser = block(match(
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(sequence([label, str(/^(?=\s).*\n/)])),
+    line(sequence([label, str(/(?=\s).*\n/y)])),
     inits([
       block(union([
         ulist,
@@ -80,7 +80,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       ])
   ])),
   fmap(
-    fence(/^(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/, 300),
+    fence(/(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/y, 300),
     ([body, overflow, closer, opener, delim]: string[], context) => {
       const violation =
         !closer && [

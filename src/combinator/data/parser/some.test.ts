@@ -19,7 +19,7 @@ describe('Unit: combinator/data/parser/some', () => {
     const { context: ctx } = input('', {});
 
     it('basic', () => {
-      const parser = some(ab, /^aaa/);
+      const parser = some(ab, /aaa/y);
       assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(input('a', ctx)), ctx), [['A'], '']);
       assert.deepStrictEqual(inspect(parser(input('b', ctx)), ctx), [['B'], '']);

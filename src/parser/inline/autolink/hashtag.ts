@@ -14,9 +14,9 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
   open(
     '#',
     str(new RegExp([
-      /^(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji)))/u.source,
-      /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+/u.source,
-    ].join('').replace(/emoji/g, emoji), 'u')),
+      /(?!['_])(?=(?:[0-9]{1,9})?(?:[^\d\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji)))/yu.source,
+      /(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+/yu.source,
+    ].join('').replace(/emoji/g, emoji), 'yu')),
     false,
     [3 | Backtrack.autolink]),
   union([

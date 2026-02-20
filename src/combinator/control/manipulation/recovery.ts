@@ -9,7 +9,7 @@ export function recover<N>(parser: Parser<N>, fallback: (input: Input<Ctx>, reas
       return parser(input);
     }
     catch (reason) {
-      assert(reason instanceof Error && reason.name === 'AssertionError' && !+console.error(reason) && eval(`throw new Error("${reason.name}")`) || 1);
+      assert(reason instanceof Error && reason.name === 'AssertionError' && !+console.error(reason) || 1);
       context.source = source;
       context.position = position;
       return fallback(input, reason);

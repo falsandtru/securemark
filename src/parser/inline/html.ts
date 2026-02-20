@@ -20,25 +20,25 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
+export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
   union([
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/i),
+      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/yi),
       some(union([attribute])),
-      open(str(/^[^\S\n]*/), str('>'), true),
+      open(str(/[^\S\n]*/y), str('>'), true),
       true,
       ([as, bs = [], cs], context) =>
         [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
       ([as, bs = []], context) =>
         [[elem(as[0].slice(1), false, unshift(as, bs), [], [], context)]]),
     match(
-      new RegExp(String.raw`^<(${TAGS.join('|')})(?=[^\S\n]|>)`),
+      new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'),
       memoize(
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(
-            str(`<${tag}`), some(attribute), open(str(/^[^\S\n]*/), str('>'), true),
+            str(`<${tag}`), some(attribute), open(str(/[^\S\n]*/y), str('>'), true),
             true,
             ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
             ([as, bs = []]) => [unshift(as, bs)]),
@@ -57,9 +57,9 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
       new Map())),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/^<[a-z]{1,16}(?=[^\S\n]|>)/i),
+      str(/<[a-z]+(?=[^\S\n]|>)/yi),
       some(union([attribute])),
-      open(str(/^[^\S\n]*/), str('>'), true),
+      open(str(/[^\S\n]*/y), str('>'), true),
       true,
       ([as, bs = [], cs], context) =>
         [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
@@ -68,8 +68,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+(?=[^\S\n]|>)/i,
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
-  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/i),
-  str(/^[^\S\n]+[^\s<>]+/),
+  str(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/yi),
+  str(/[^\S\n]+[^\s<>]+/y),
 ]);
 
 function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[], context: Ctx): HTMLElement {

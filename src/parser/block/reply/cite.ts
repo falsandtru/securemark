@@ -5,7 +5,7 @@ import { str } from '../../source';
 import { invalid } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const syntax = /^>*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/;
+export const syntax = />*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/y;
 
 export const cite: ReplyParser.CiteParser = line(fmap(validate(
   '>>',
@@ -15,9 +15,9 @@ export const cite: ReplyParser.CiteParser = line(fmap(validate(
       anchor,
       // Subject page representation.
       // リンクの実装は後で検討
-      focus(/^>>#\S*(?=\s*$)/, ({ context: { source } }) => [[html('a', { class: 'anchor' }, source)]]),
-      focus(/^>>https?:\/\/\S+(?=\s*$)/, ({ context: { source } }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)]]),
-      focus(/^>>.+(?=\s*$)/, ({ context: { source } }) => [[source]]),
+      focus(/>>#\S*(?=\s*$)/y, ({ context: { source } }) => [[html('a', { class: 'anchor' }, source)]]),
+      focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ context: { source } }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)]]),
+      focus(/>>.+(?=\s*$)/y, ({ context: { source } }) => [[source]]),
     ]),
   )),
   ([quotes, node]: [string, HTMLElement | string]) => [

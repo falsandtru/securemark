@@ -14,7 +14,7 @@ import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
-const opener = /^(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
+const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
 
 export const segment: TableParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 10000))));
@@ -68,43 +68,43 @@ const row: RowParser = lazy(() => dup(fmap(
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
 
-const alignment = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/;
+const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|^[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/;
+const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y;
 
 const head: CellParser.HeadParser = block(fmap(open(
-  str(/^#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
+  str(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y),
   rewrite(
     inits([
       anyline,
       some(contentline, delimiter),
     ]),
     union([
-      block(surround(/^[^\n]/, medialink, /^\s*$/)),
-      block(surround(/^[^\n]/, media, /^\s*$/)),
-      block(surround(/^[^\n]/, shortmedia, /^\s*$/)),
-      open(/^(?:\s*\n|\s)/, visualize(trimBlank(some(inline))), true),
+      block(surround(/[^\n]/y, medialink, /\s*$/y)),
+      block(surround(/[^\n]/y, media, /\s*$/y)),
+      block(surround(/[^\n]/y, shortmedia, /\s*$/y)),
+      open(/(?:\s*\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
   ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
-  str(/^:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/),
+  str(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y),
   rewrite(
     inits([
       anyline,
       some(contentline, delimiter),
     ]),
     union([
-      block(surround(/^[^\n]/, medialink, /^\s*$/)),
-      block(surround(/^[^\n]/, media, /^\s*$/)),
-      block(surround(/^[^\n]/, shortmedia, /^\s*$/)),
-      open(/^(?:\s*\n|\s)/, visualize(trimBlankEnd(linearize(some(inline), -1))), true),
+      block(surround(/[^\n]/y, medialink, /\s*$/y)),
+      block(surround(/[^\n]/y, media, /\s*$/y)),
+      block(surround(/[^\n]/y, shortmedia, /\s*$/y)),
+      open(/(?:\s*\n|\s)/y, visualize(trimBlankEnd(linearize(some(inline), -1))), true),
     ])),
   true),
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
@@ -114,7 +114,7 @@ const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
-      validate(/^!+\s/, convert(source => `:${source}`, data, false)),
+      validate(/!+\s/y, convert(source => `:${source}`, data, false)),
       convert(source => `: ${source}`, data, false),
     ])));
 

@@ -8,9 +8,9 @@ import { html } from 'typed-dom/dom';
 
 export const email: AutolinkParser.EmailParser = rewrite(
   surround(
-    str(/^[0-9a-z]/i),
+    str(/[0-9a-z]/yi),
     verify(
-      str(/^(?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z])/i),
+      str(/(?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z])/yi),
       ([source]) => source.length <= 255 - 1),
     '',
     false, undefined, undefined,

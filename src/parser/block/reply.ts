@@ -8,7 +8,7 @@ import { linearize } from '../util';
 import { visualize, trimBlankNodeEnd } from '../visibility';
 import { html, defrag } from 'typed-dom/dom';
 
-const delimiter = new RegExp(`${csyntax.source}|${qsyntax.source}`);
+const delimiter = new RegExp(`${csyntax.source}|${qsyntax.source}`, 'y');
 
 export const reply: ReplyParser = block(validate(csyntax, fmap(
   some(union([

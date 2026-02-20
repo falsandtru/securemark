@@ -8,13 +8,13 @@ import { unshift, push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 export const remark: RemarkParser = lazy(() => match(
-  /^\[(%+)\s/,
+  /\[(%+)\s/y,
   memoize(
   ([, fence]) =>
     surround(
       str(`[${fence}`),
       precedence(4, recursion(Recursion.inline,
-      some(union([inline]), new RegExp(String.raw`^\s+${fence}\]`), [[new RegExp(String.raw`^\s+${fence}\]`), 4]]))),
+      some(union([inline]), new RegExp(String.raw`\s+${fence}\]`, 'y'), [[new RegExp(String.raw`\s+${fence}\]`, 'y'), 4]]))),
       close(some(text, '%'), str(`${fence}]`)), true,
       ([as, bs = [], cs]) => [[
         html('span', { class: 'remark' }, [

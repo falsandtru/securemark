@@ -33,9 +33,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
     dup(surround(
-      /^{(?![{}])/,
+      /{(?![{}])/y,
       inits([uri, some(option)]),
-      /^[^\S\n]*}/,
+      /[^\S\n]*}/y,
       false,
       undefined,
       ([as, bs], context) => {
@@ -75,14 +75,14 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     return [[parse(defrag(content), params, context)]];
   }))))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, validate(['[', '{'], creation(10,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, validate(/[[{]/y, creation(10,
   state(State.linkers,
   bind(reverse(sequence([
     dup(surround(
       '[',
       union([media, shortmedia]),
       ']')),
-    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
+    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), /[^\S\n]*}/y)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], context) =>
     [[parse(defrag(content), params, context)]]))))));
@@ -90,7 +90,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
 export const linemedialink: LinkParser.LineMediaLinkParser = surround(
   linebreak,
   union([medialink]),
-  /^(?=[^\S\n]*(?:$|\n))/);
+  /(?=[^\S\n]*(?:$|\n))/y);
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10,
@@ -99,20 +99,20 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
       '[',
       some(union([unescsource]), ']'),
       ']')),
-    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]*}/)),
+    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), /[^\S\n]*}/y)),
   ])),
   ([params, content = []], context) =>
     [[parse(defrag(content), params, context)]])));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
-  open(/^[^\S\n]+/, str(/^\S+/)),
-  str(/^[^\s{}]+/),
+  open(/[^\S\n]+/y, str(/\S+/y)),
+  str(/[^\s{}]+/y),
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
-  fmap(str(/^[^\S\n]+nofollow(?=[^\S\n]|})/), () => [` rel="nofollow"`]),
-  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/i),
-  str(/^[^\S\n]+[^\s{}]+/),
+  fmap(str(/[^\S\n]+nofollow(?=[^\S\n]|})/y), () => [` rel="nofollow"`]),
+  str(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/yi),
+  str(/[^\S\n]+[^\s{}]+/y),
 ]);
 
 function parse(
@@ -248,10 +248,10 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
 }
 
 export function decode(uri: string): string {
-  const origin = uri.match(/^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/i)?.[0] ?? '';
+  const origin = uri.match(/[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/yi)?.[0] ?? '';
   try {
     let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /^[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/i.test(path)) {
+    if (!origin && /[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/yi.test(path)) {
       path = uri.slice(origin.length);
     }
     uri = origin + path;

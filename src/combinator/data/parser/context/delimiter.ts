@@ -1,10 +1,11 @@
-import { Ctx } from '../../parser';
+import { Input, Ctx } from '../../parser';
+import { matcher } from '../../../../combinator';
 
 interface Delimiter {
   readonly memory: Delimiter[];
   readonly index: number;
   readonly signature: number | string;
-  readonly matcher: (context: Ctx) => boolean | undefined;
+  readonly matcher: (input: Input) => boolean | undefined;
   readonly precedence: number;
   readonly linebreakable: boolean;
   state: boolean;
@@ -28,14 +29,14 @@ export class Delimiters {
         return `r/${pattern.source}/${+linebreakable}`;
     }
   }
-  public static matcher(pattern: string | RegExp | undefined): (context: Ctx) => true | undefined {
+  public static matcher(pattern: string | RegExp | undefined): (input: Input<Ctx>) => true | undefined {
     switch (typeof pattern) {
       case 'undefined':
         return () => undefined;
       case 'string':
-        return ({ source, position }) => source.startsWith(pattern, position) || undefined;
       case 'object':
-        return ({ source, position }) => pattern.test(source.slice(position)) || undefined;
+        const match = matcher(pattern, false);
+        return input => match(input) !== undefined || undefined;
     }
   }
   private readonly tree: Record<number, Delimiter[]> = {};
@@ -58,7 +59,7 @@ export class Delimiters {
   public push(
     delims: readonly {
       readonly signature: number | string;
-      readonly matcher: (context: Ctx) => boolean | undefined;
+      readonly matcher: (input: Input) => boolean | undefined;
       readonly precedence: number;
       readonly linebreakable: boolean;
     }[]
@@ -132,13 +133,13 @@ export class Delimiters {
       delimiters[indexes[i]].state = true;
     }
   }
-  public match(context: Ctx): boolean {
-    const { precedence = 0, linebreak = 0 } = context;
+  public match(input: Input): boolean {
+    const { precedence = 0, linebreak = 0 } = input.context;
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
       if (delimiter.precedence <= precedence || !delimiter.state) continue;
-      switch (delimiter.matcher(context)) {
+      switch (delimiter.matcher(input)) {
         case true:
           if (!delimiter.linebreakable && linebreak > 0) return false;
           return true;

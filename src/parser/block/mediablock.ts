@@ -4,7 +4,7 @@ import { medialink, media, shortmedia } from '../inline';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-export const mediablock: MediaBlockParser = block(validate(['[!', '!'], fmap(
+export const mediablock: MediaBlockParser = block(validate(/\[?!/y, fmap(
   inits([
     line(union([
       medialink,

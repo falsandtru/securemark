@@ -10,21 +10,21 @@ const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 export const math: MathParser = lazy(() => validate('$', rewrite(
   union([
     surround(
-      /^\$(?={)/,
+      /\$(?={)/y,
       precedence(5, bracket),
       '$',
       false, undefined, undefined, [3 | Backtrack.bracket]),
     surround(
-      /^\$(?![\s{}])/,
+      /\$(?![\s{}])/y,
       precedence(2, some(union([
         precedence(5, bracket),
         some(focus(
-          /^(?:[ ([](?!\$)|\\[\\{}$#]?|[!%&')\x2A-\x5A\]^_\x61-\x7A|~])/,
+          /(?:[ ([](?!\$)|\\[\\{}$#]?|[!%&')\x2A-\x5A\]^_\x61-\x7A|~])/y,
           escsource,
           false),
           '://'),
       ]))),
-      /^\$(?![0-9A-Za-z])/,
+      /\$(?![0-9A-Za-z])/y,
       false, undefined, undefined, [3 | Backtrack.bracket]),
   ]),
   ({ context: { source, caches: { math: cache } = {} } }) => [[
@@ -46,7 +46,7 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
   recursion(Recursion.terminal,
   some(union([
     bracket,
-    some(escsource, /^[{}$#\n]/),
+    some(escsource, /[{}$#\n]/y),
   ]))),
   str('}'),
   true));

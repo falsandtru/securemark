@@ -19,7 +19,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => constraint(State.media, validate(['![', '!{'], creation(10, open(
+export const media: MediaParser = lazy(() => constraint(State.media, validate(/![[{]/y, creation(10, open(
   '!',
   bind(verify(fmap(tails([
     dup(surround(
@@ -38,9 +38,9 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
       undefined,
       [3 | Backtrack.escbracket])),
     dup(surround(
-      /^{(?![{}])/,
+      /{(?![{}])/y,
       inits([uri, some(option)]),
-      /^[^\S\n]*}/,
+      /[^\S\n]*}/y,
       false,
       undefined,
       ([as, bs], context) => {
@@ -109,7 +109,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(['
 export const linemedia: MediaParser.LineMediaParser = surround(
   linebreak,
   union([media]),
-  /^(?=[^\S\n]*(?:$|\n))/);
+  /(?=[^\S\n]*(?:$|\n))/y);
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
@@ -124,9 +124,9 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recur
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
   surround(
-    open(/^[^\S\n]+/, str(/^[1-9][0-9]*/)),
-    str(/^[x:]/),
-    str(/^[1-9][0-9]*(?=[^\S\n]|})/),
+    open(/[^\S\n]+/y, str(/[1-9][0-9]*/y)),
+    str(/[x:]/y),
+    str(/[1-9][0-9]*(?=[^\S\n]|})/y),
     false,
     ([[a], [b], [c]]) => [
       b === 'x'

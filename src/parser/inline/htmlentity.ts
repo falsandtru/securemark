@@ -4,7 +4,7 @@ import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
-  /^&(?:[0-9A-Za-z]+;?)?/,
+  /&(?:[0-9A-Za-z]+;?)?/y,
   //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
   ({ context }) => {
     const { source } = context;

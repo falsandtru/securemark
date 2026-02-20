@@ -3,11 +3,13 @@ import { firstline, isBlank } from '../constraint/line';
 import { push } from 'spica/array';
 
 export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
+  assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
     if (position === source.length) return;
-    const matches = source.slice(position).match(opener);
+    opener.lastIndex = position;
+    const matches = opener.exec(source);
     if (!matches) return;
     assert(matches[0] === firstline(source, position));
     const delim = matches[1];

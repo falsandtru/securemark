@@ -7,7 +7,7 @@ import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom/dom';
 
 export const header: MarkdownParser.HeaderParser = lazy(() => validate(
-  /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
+  /---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/y,
   inits([
     rewrite(
       ({ context }) => {
@@ -23,7 +23,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
       block(
         union([
           validate(({ context }) => context.header ?? true,
-          focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
+          focus(/---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/y,
           convert(source =>
             normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
             fmap(
@@ -48,7 +48,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
             ]];
           },
         ]))),
-    clear(str(/^[^\S\v\f\r\n]*\r?\n/)),
+    clear(str(/[^\S\v\f\r\n]*\r?\n/y)),
   ])));
 
 const field: MarkdownParser.HeaderParser.FieldParser = line(({ context: { source, position } }) => {

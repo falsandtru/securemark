@@ -93,8 +93,8 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = surround(
   str('^'),
-  union([str(/^(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/)]),
-  /^\|?(?=]])|^\|/,
+  union([str(/(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/y)]),
+  /\|?(?=]])|\|/y,
   true,
   ([, ns], context) => {
     const { source, position, range = 0 } = context;

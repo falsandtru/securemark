@@ -158,3 +158,34 @@ export function constraint<N>(state: number, positive: boolean | Parser<N>, pars
       : undefined;
   };
 }
+
+export function matcher(pattern: string | RegExp, advance: boolean): Parser<string> {
+  assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
+  const count = typeof pattern === 'object'
+    ? /[^^\\*+][*+]/.test(pattern.source)
+    : false;
+  switch (typeof pattern) {
+    case 'string':
+      return ({ context }) => {
+        const { source, position } = context;
+        if (!source.startsWith(pattern, position)) return;
+        if (advance) {
+          context.position += pattern.length;
+        }
+        return [[pattern]];
+      };
+    case 'object':
+      assert(pattern.sticky);
+      return ({ context }) => {
+        const { source, position } = context;
+        pattern.lastIndex = position;
+        const m = pattern.exec(source);
+        if (m === null) return;
+        count && consume(m[0].length, context);
+        if (advance) {
+          context.position += m[0].length;
+        }
+        return [[m[0]]];
+      };
+  }
+}

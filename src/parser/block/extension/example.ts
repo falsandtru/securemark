@@ -7,7 +7,7 @@ import { invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
-const opener = /^(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/;
+const opener = /(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
 
 export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(validate('~~~', fmap(
   fence(opener, 300),

@@ -68,7 +68,7 @@ const text: RubyParser.TextParser = input => {
   const acc = [''];
   let state = false;
   for (let { position } = context; position < source.length; position = context.position) {
-    if (!/^(?:\\[^\n]|[^\\[\](){}<>"`$#:^|\n])/.test(source.slice(position, position + 2))) break;
+    if (!/(?:\\[^\n]|[^\\[\](){}<>"`$#:^|\n])/y.test(source.slice(position, position + 2))) break;
     assert(source[position] !== '\n');
     switch (source[position]) {
       case '&': {

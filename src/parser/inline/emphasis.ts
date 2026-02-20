@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
 
 export const emphasis: EmphasisParser = lazy(() => surround(
-  str('*', '*'),
+  str(/\*(?!\*)/y),
   precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
     strong,

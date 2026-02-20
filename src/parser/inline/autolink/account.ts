@@ -11,8 +11,8 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
   open(
     '@',
     tails([
-      str(/^[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//i),
-      str(/^[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/i),
+      str(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi),
+      str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*/yi),
     ])),
   union([
     constraint(State.autolink, state(State.autolink, fmap(convert(

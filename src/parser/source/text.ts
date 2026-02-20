@@ -40,7 +40,7 @@ export const txt: TxtParser = union([
   text,
 ]) as TxtParser;
 
-export const linebreak: LinebreakParser = focus(/^[\r\n]/, union([
+export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
 

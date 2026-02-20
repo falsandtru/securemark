@@ -50,7 +50,7 @@ export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp
 export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
   if (delimiter === undefined) return blankWith('', starts);
   return new RegExp(String.raw
-    `^(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
+    `(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
       // 空行除去
       // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
       starts && '+'
@@ -58,7 +58,7 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
       typeof delimiter === 'string'
         ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
         : delimiter.source
-    }`);
+    }`, 'y');
 }
 
 //export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;

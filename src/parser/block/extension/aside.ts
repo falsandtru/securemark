@@ -7,7 +7,7 @@ import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
 export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(validate('~~~', fmap(
-  fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
+  fence(/(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, param]: string[], context) => {
     if (!closer || overflow || param.trimStart()) return [html('pre', {

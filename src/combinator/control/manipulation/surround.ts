@@ -1,5 +1,5 @@
-import { Parser, Input, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
-import { consume } from '../../../combinator';
+import { Parser, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
+import { matcher, clear } from '../../../combinator';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
@@ -40,12 +40,12 @@ export function surround<N>(
   switch (typeof opener) {
     case 'string':
     case 'object':
-      opener = match(opener);
+      opener = clear(matcher(opener, true));
   }
   switch (typeof closer) {
     case 'string':
     case 'object':
-      closer = match(closer);
+      closer = clear(matcher(closer, true));
   }
   return failsafe(input => {
     const { context } = input;
@@ -172,26 +172,6 @@ export function setBacktrack(
   }
 }
 
-function match(pattern: string | RegExp): (input: Input) => Result<never> {
-  switch (typeof pattern) {
-    case 'string':
-      return ({ context }) => {
-        const { source, position } = context;
-        if (!source.startsWith(pattern, position)) return;
-        context.position += pattern.length;
-        return [[]];
-      };
-    case 'object':
-      return ({ context }) => {
-        const { source, position } = context;
-        const m = source.slice(position).match(pattern);
-        if (m === null) return;
-        consume(m[0].length, context);
-        context.position += m[0].length;
-        return [[]];
-      };
-  }
-}
 function revert(context: Ctx, linebreak: number | undefined): void {
   context.linebreak = linebreak;
 }

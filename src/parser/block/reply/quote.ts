@@ -5,7 +5,7 @@ import { autolink } from '../../inline/autolink';
 import { linebreak, unescsource, anyline } from '../../source';
 import { html, defrag } from 'typed-dom/dom';
 
-export const syntax = /^>+[^\S\n]/;
+export const syntax = />+[^\S\n]/y;
 
 export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(validate(
   '>',

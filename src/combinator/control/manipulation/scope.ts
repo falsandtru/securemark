@@ -1,17 +1,14 @@
 import { Parser, Context, input, eval, failsafe } from '../../data/parser';
-import { consume } from '../../../combinator';
+import { consume, matcher } from '../../../combinator';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
 export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true): Parser<N> {
-  assert(scope instanceof RegExp ? !scope.flags.match(/[gmy]/) && scope.source.startsWith('^') : scope);
   assert(parser);
-  const match: (source: string, position: number) => string = typeof scope === 'string'
-    ? (source, position) => source.startsWith(scope, position) ? scope : ''
-    : (source, position) => source.slice(position).match(scope)?.[0] ?? '';
+  const match = matcher(scope, false);
   return failsafe(({ context }) => {
     const { source, position } = context;
     if (position === source.length) return;
-    const src = match(source, position);
+    const src = eval(match({ context }))?.[0] ?? '';
     assert(source.startsWith(src, position));
     if (src === '') return;
     cost && consume(src.length, context);

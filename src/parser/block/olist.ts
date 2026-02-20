@@ -10,15 +10,15 @@ import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const openers = {
-  '.': /^([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/,
-  '(': /^\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/,
+  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?:$|\s)/y,
+  '(': /\(([0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?:$|\s)/y,
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(
   new RegExp([
-    /^([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/.source,
-    /^\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/.source,
-  ].join('|')),
+    /([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\.(?=[^\S\n]|\n[^\S\n]*\S)/y.source,
+    /\(([0-9]+|[a-z]+)\)(?:-[0-9]+)*(?=[^\S\n]|\n[^\S\n]*\S)/y.source,
+  ].join('|'), 'y'),
   olist_)));
 
 export const olist_: OListParser = lazy(() => block(union([
@@ -101,15 +101,15 @@ function style(type: string): string {
 function pattern(type: string): RegExp {
   switch (type) {
     case 'i':
-      return /^\(?i[).]?$/;
+      return /\(?i[).]?$/y;
     case 'a':
-      return /^\(?a[).]?$/;
+      return /\(?a[).]?$/y;
     case 'I':
-      return /^\(?I[).]?$/;
+      return /\(?I[).]?$/y;
     case 'A':
-      return /^\(?A[).]?$/;
+      return /\(?A[).]?$/y;
     default:
-      return /^\(?[01][).]?$/;
+      return /\(?[01][).]?$/y;
   }
 }
 

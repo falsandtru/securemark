@@ -7,7 +7,7 @@ import { invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
-  /^(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/,
+  /(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y,
   union([source]), false),
   ([el]) => [
     define(el, {
@@ -16,13 +16,13 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
     }),
   ])));
 
-const opener = /^(?=\|\|+(?:$|\s))/;
+const opener = /(?=\|\|+(?:$|\s))/y;
 const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   some(recursion(Recursion.block, union([
     focus(
-      /^(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/,
+      /(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/y,
       convert(unindent, source, false, true), false),
     rewrite(
       some(contentline, opener),

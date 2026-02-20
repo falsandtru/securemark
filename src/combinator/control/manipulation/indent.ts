@@ -13,8 +13,9 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
   if (typeof opener === 'function') {
     separation = parser as boolean;
     parser = opener;
-    opener = /^([ \t])\1*/;
+    opener = /([ \t])\1*/y;
   }
+  assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
   assert(parser);
   return failsafe(bind(block(match(
     opener,

@@ -9,12 +9,12 @@ import { aside } from './extension/aside';
 import { example } from './extension/example';
 import { placeholder, segment as seg_placeholder } from './extension/placeholder';
 
-export const segment: ExtensionParser.SegmentParser = validate(['~~~', '[$', '$'], validate(/^~{3,}|^\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/, union([
+export const segment: ExtensionParser.SegmentParser = validate(/~~~|\[?\$|~{3,}|\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/y, union([
   seg_fig,
   seg_figure,
   seg_table,
   seg_placeholder,
-])));
+]));
 
 export const extension: ExtensionParser = union([
   figbase,

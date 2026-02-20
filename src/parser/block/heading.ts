@@ -8,7 +8,7 @@ import { invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
-  /^#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/,
+  /#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/y,
   some(line(({ context: { source } }) => [[source]])))));
 
 export const heading: HeadingParser = block(rewrite(segment,
@@ -16,7 +16,7 @@ export const heading: HeadingParser = block(rewrite(segment,
   state(State.annotation | State.reference | State.index | State.label | State.link,
   line(indexee(fmap(union([
     open(
-      str(/^##+/),
+      str(/##+/y),
       visualize(trimBlank(some(union([indexer, inline])))), true),
     open(
       str('#'),

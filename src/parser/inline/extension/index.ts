@@ -46,15 +46,15 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   })));
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
-  str(/^\|(?!\\?\s)/),
+  str(/\|(?!\\?\s)/y),
   some(union([
     unsafehtmlentity,
     focus(
-      /^(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/,
+      /(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/y,
       txt,
       false),
   ]), ']'),
-  /^(?=])/,
+  /(?=])/y,
   false,
   ([, ns]) => {
     const index = identity('index', undefined, ns.join(''))?.slice(7);

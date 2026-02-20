@@ -16,7 +16,7 @@ import { define } from 'typed-dom/dom';
 
 export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>',
   focus(
-    /^>>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/i,
+    />>(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#:])/yi,
     union([
       constraint(State.autolink, state(State.autolink, fmap(convert(
         source =>
