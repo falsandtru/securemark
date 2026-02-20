@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { union, inits, some, precedence, state, constraint, validate, focus, surround, lazy, fmap } from '../../../combinator';
+import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
@@ -49,10 +49,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   str(/\|(?!\\?\s)/y),
   some(union([
     unsafehtmlentity,
-    focus(
-      /(?:[^\\[\](){}<>"$`\n]|\\[^\n]?)/y,
-      txt,
-      false),
+    some(txt, /(?:[&$[\](){}<>"`]|\\?\n)/y),
   ]), ']'),
   /(?=])/y,
   false,
