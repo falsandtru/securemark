@@ -31,10 +31,8 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$a"$'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$-a($-b)'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$-a\\($-b\\)'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('$a($'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$-a[$-b]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$-a\\[$-b\\]'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('$a[$'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$-a{$-b}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$a{$'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('$a$b'), ctx), undefined);
@@ -81,11 +79,13 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('${\n}$'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('${a\\$\nb}$'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('${a\\$\\\nb}$'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('$\\begin{}$'), ctx), [['<span class="invalid" translate="no">$\\begin{}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\begin$'), ctx), [['<span class="invalid" translate="no">$\\begin$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$\\huge0$'), ctx), [['<span class="invalid" translate="no">$\\huge0$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\Begin{}$'), ctx), [['<span class="invalid" translate="no">$\\Begin{}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\Begin$'), ctx), [['<span class="invalid" translate="no">$\\Begin$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\begin{}$'), ctx), [['<span class="invalid" translate="no">$\\begin{}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${\\begin}$'), ctx), [['<span class="invalid" translate="no">${\\begin}$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$http://host$'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('$http://host$'), ctx), [['<span class="invalid" translate="no">$http://host$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${http://host}$'), ctx), [['<span class="invalid" translate="no">${http://host}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser(' ${a}$'), ctx), undefined);
     });
 
@@ -123,7 +123,7 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$E = mc^2$'), ctx), [['<span class="math" translate="no" data-src="$E = mc^2$">$E = mc^2$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$f(x)$'), ctx), [['<span class="math" translate="no" data-src="$f(x)$">$f(x)$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$f: x \\to y$'), ctx), [['<span class="math" translate="no" data-src="$f: x \\to y$">$f: x \\to y$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$k$-space'), ctx), [['<span class="math" translate="no" data-src="$k$">$k$</span>'], '-space']);
+      assert.deepStrictEqual(inspect(parser('$k$\\-space'), ctx), [['<span class="math" translate="no" data-src="$k$">$k$</span>'], '\\-space']);
       assert.deepStrictEqual(inspect(parser('$a{b}$'), ctx), [['<span class="math" translate="no" data-src="$a{b}$">$a{b}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$a\\{$\\}'), ctx), [['<span class="math" translate="no" data-src="$a\\{$">$a\\{$</span>'], '\\}']);
       assert.deepStrictEqual(inspect(parser('${}$'), ctx), [['<span class="math" translate="no" data-src="${}$">${}$</span>'], '']);

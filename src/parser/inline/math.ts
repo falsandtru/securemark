@@ -1,11 +1,11 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
-import { union, some, recursion, precedence, validate, focus, rewrite, surround, lazy } from '../../combinator';
+import { union, some, recursion, precedence, validate, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
 
 export const math: MathParser = lazy(() => validate('$', rewrite(
   union([
@@ -17,14 +17,10 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
+        some(escsource, /\s?\$|[`"{}\n]/y),
         precedence(5, bracket),
-        some(focus(
-          /(?:[ ([](?!\$)|\\[\\{}$#]?|[!%&')\x2A-\x5A\]^_\x61-\x7A|~])/y,
-          escsource,
-          false),
-          '://'),
       ]))),
-      /\$(?![0-9A-Za-z])/y,
+      /\$(?![-0-9A-Za-z])/y,
       false, undefined, undefined, [3 | Backtrack.bracket]),
   ]),
   ({ context: { source, caches: { math: cache } = {} } }) => [[
@@ -46,7 +42,7 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
   recursion(Recursion.terminal,
   some(union([
     bracket,
-    some(escsource, /[{}$#\n]/y),
+    some(escsource, /[{}$\n]/y),
   ]))),
   str('}'),
   true));

@@ -1033,8 +1033,8 @@ export namespace MarkdownParser {
       Parser<HTMLElement, Context, [
         MathParser.BracketParser,
         Parser<string, Context, [
-          MathParser.BracketParser,
           SourceParser.EscapableSourceParser,
+          MathParser.BracketParser,
         ]>,
       ]> {
     }
