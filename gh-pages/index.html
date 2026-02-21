@@ -1315,11 +1315,12 @@
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.getValue().length;
-  new ResizeObserver(() => {
-    const el = document.getElementById('primary');
-    el.style.height = document.documentElement.clientHeight - Math.max(el.offsetTop - window.scrollY, 0) + 'px';
-    editor.refresh();
-  }).observe(document.body);
+  // クソ重い
+  //new ResizeObserver(() => {
+  //  const el = document.getElementById('primary');
+  //  el.style.height = document.documentElement.clientHeight - Math.max(el.offsetTop - window.scrollY, 0) + 'px';
+  //  editor.refresh();
+  //}).observe(document.body);
   window.addEventListener('scroll', () => {
     const el = document.getElementById('primary');
     el.style.height = document.documentElement.clientHeight - Math.max(el.offsetTop - window.scrollY, 0) + 'px';
