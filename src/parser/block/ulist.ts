@@ -19,7 +19,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
       inits([
         line(open(/-(?:$|[ \n])/y, subsequence([
           checkbox,
-          trimBlank(visualize(some(union([indexer, inline])))),
+          visualize(trimBlank(some(union([indexer, inline])))),
         ]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),

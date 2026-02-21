@@ -1,9 +1,8 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
 import { Parser, Input, eval, failsafe } from '../combinator/data/parser';
-import { union, some, verify, convert, fmap } from '../combinator';
+import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
-import { linebreak, unescsource } from './source';
 import { invisibleHTMLEntityNames } from './api/normalize';
 import { push } from 'spica/array';
 
@@ -20,31 +19,28 @@ export namespace blank {
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
-  return union([
-    convert(
-      source => source.replace(blank.line, `${Command.Escape}$1`),
-      verify(parser, (ns, { source, position }) => position === source.length && hasVisible(ns)),
-      false),
-    some(union([linebreak, unescsource])),
-  ]);
+  return convert(
+    source => source.replace(blank.line, `${Command.Escape}$1`),
+    parser,
+    false);
 }
-function hasVisible(
-  nodes: readonly (HTMLElement | string)[],
-): boolean {
-  for (let i = 0; i < nodes.length; ++i) {
-    const node = nodes[i];
-    if (typeof node === 'string') {
-      if (node && node.trimStart()) return true;
-    }
-    else {
-      if (node.innerText.trimStart()) return true;
-      if (node.classList.contains('reference')) return true;
-      //if (state & State.media ^ State.media &&
-      //    (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
-    }
-  }
-  return false;
-}
+//function hasVisible(
+//  nodes: readonly (HTMLElement | string)[],
+//): boolean {
+//  for (let i = 0; i < nodes.length; ++i) {
+//    const node = nodes[i];
+//    if (typeof node === 'string') {
+//      if (node && node.trimStart()) return true;
+//    }
+//    else {
+//      if (node.innerText.trimStart()) return true;
+//      if (node.classList.contains('reference')) return true;
+//      //if (state & State.media ^ State.media &&
+//      //    (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
+//    }
+//  }
+//  return false;
+//}
 
 export function blankWith(delimiter: string | RegExp): RegExp;
 export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp;
@@ -171,18 +167,19 @@ export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
+    if (position === source.length) return;
     const reg = blank.start;
     reg.lastIndex = position;
     reg.test(source);
     context.position = reg.lastIndex || position;
-    return parser(input);
+    return context.position === source.length
+      ? [[]]
+      : parser(input);
   });
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlankEnd<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
-  return fmap(
-    parser,
-    trimBlankNodeEnd);
+  return fmap(parser, trimBlankNodeEnd);
 }
 //export function trimBlankNode<N extends HTMLElement | string>(nodes: N[]): N[] {
 //  return trimBlankNodeStart(trimBlankNodeEnd(nodes));
