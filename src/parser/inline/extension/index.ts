@@ -49,17 +49,18 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   str(/\|(?!\\?\s)/y),
   some(union([
     unsafehtmlentity,
-    some(txt, /(?:[&$[\](){}<>"`]|\\?\n)/y),
+    some(txt, /(?:[$"`\[\](){}<>（）［］｛｝])/y),
   ]), ']'),
   /(?=])/y,
   false,
-  ([, ns]) => {
+  ([, ns], context) => {
     const index = identity('index', undefined, ns.join(''))?.slice(7);
-    return index
+    return index && context.linebreak === 0
       ? [[html('span', { class: 'indexer', 'data-index': index })]]
       : undefined;
   },
-  ([as, bs]) => bs && [unshift(as, bs)])));
+  ([as, bs]) => bs && [unshift(as, bs)],
+  [3 | Backtrack.bracket])));
 
 export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
   if (ns.length === 0) return;
