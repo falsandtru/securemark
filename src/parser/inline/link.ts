@@ -29,7 +29,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
           ? [push(ns, [Command.Separator])]
           : undefined,
       undefined,
-      [3 | Backtrack.link, 2 | Backtrack.ruby, 3 | Backtrack.bracket])),
+      [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby])),
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
     dup(surround(

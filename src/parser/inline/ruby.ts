@@ -18,11 +18,11 @@ export const ruby: RubyParser = lazy(() => bind(
         return isTightNodeStart(ns) ? [ns] : undefined;
       },
       undefined,
-      [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
+      [1 | Backtrack.bracket, 3 | Backtrack.ruby])),
     dup(surround(
       '(', text, ')',
       false, undefined, undefined,
-      [3 | Backtrack.ruby, 1 | Backtrack.bracket])),
+      [1 | Backtrack.bracket, 3 | Backtrack.ruby])),
   ]),
   ([texts, rubies], context) => {
     if (rubies === undefined) {

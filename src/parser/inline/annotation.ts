@@ -16,4 +16,4 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       ? [[html('sup', { class: 'annotation' }, [html('span', defrag(trimBlankNodeEnd(ns)))])]]
       : undefined,
   undefined,
-  [3 | Backtrack.doublebracket, 1 | Backtrack.bracket])));
+  [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));
