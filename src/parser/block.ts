@@ -63,6 +63,8 @@ export const block: BlockParser = reset(
           return pagebreak(input);
         case '~~~':
           return extension(input);
+        case '```':
+          return codeblock(input);
       }
       switch (source.slice(position, position + 2)) {
         case '$$':
@@ -91,8 +93,6 @@ export const block: BlockParser = reset(
         case '|':
           return table(input)
               || sidefence(input);
-        case '`':
-          return codeblock(input);
         case '$':
           return extension(input);
         case '>':
