@@ -55,22 +55,27 @@ export const inline: InlineParser = lazy(() => union([
     if (position === source.length) return;
     switch (source.slice(position, position + 2)) {
       case '((':
-        return annotation(input);
+        return annotation(input)
+            || bracket(input);
       case '[[':
         return reference(input)
-            || textlink(input);
+            || textlink(input)
+            || bracket(input);
       case '{{':
-        return template(input);
+        return template(input)
+            || bracket(input);
       case '[%':
         return remark(input)
-            || textlink(input);
+            || textlink(input)
+            || bracket(input);
       case '[#':
       case '[$':
       case '[:':
       case '[^':
       case '[|':
         return extension(input)
-            || textlink(input);
+            || textlink(input)
+            || bracket(input);
       case '${':
         return math(input);
       case '++':
@@ -89,9 +94,11 @@ export const inline: InlineParser = lazy(() => union([
     switch (source[position]) {
       case '[':
         return textlink(input)
-            || ruby(input);
+            || ruby(input)
+            || bracket(input);
       case '{':
-        return textlink(input);
+        return textlink(input)
+            || bracket(input);
       case '<':
         return html(input);
       case '$':
@@ -104,9 +111,14 @@ export const inline: InlineParser = lazy(() => union([
             || stars(input);
       case '&':
         return htmlentity(input);
+      case '(':
+      case '（':
+      case '［':
+      case '｛':
+      case '"':
+        return bracket(input);
     }
   },
-  bracket,
   autolink,
   text
 ])) as any;
