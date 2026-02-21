@@ -9,8 +9,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     /(?<![0-9a-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y,
     precedence(1, some(union([
       verify(bracket, ns => ns.length > 0),
-      // 再帰に注意
-      some(unescsource, /[-+*=~^_/,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/y),
+      some(unescsource, /([-+*=~^_/])\1|[,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`|\[\](){}<>]|[^\x21-\x7E]|$)/y),
     ]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
     [3 | Backtrack.autolink]),
