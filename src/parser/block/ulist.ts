@@ -1,6 +1,6 @@
 import { UListParser } from '../block';
 import { Recursion } from '../context';
-import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_, ilistitem } from './ilist';
 import { inline, indexer, indexee, dataindex } from '../inline';
@@ -19,7 +19,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
       inits([
         line(open(/-(?:$|[ \n])/y, subsequence([
           checkbox,
-          trim(visualize(trimBlank(some(union([indexer, inline]))))),
+          trimBlank(visualize(some(union([indexer, inline])))),
         ]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),

@@ -15,7 +15,6 @@ export * from './combinator/control/manipulation/clear';
 export * from './combinator/control/manipulation/surround';
 export * from './combinator/control/manipulation/match';
 export * from './combinator/control/manipulation/convert';
-export * from './combinator/control/manipulation/trim';
 export * from './combinator/control/manipulation/duplicate';
 export * from './combinator/control/manipulation/reverse';
 export * from './combinator/control/manipulation/fallback';

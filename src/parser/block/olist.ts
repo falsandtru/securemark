@@ -1,6 +1,6 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
-import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, fillFirstLine } from './ulist';
 import { ilist_, ilistitem } from './ilist';
 import { inline, indexee, indexer, dataindex } from '../inline';
@@ -36,7 +36,7 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
       inits([
         line(open(heads[form], subsequence([
           checkbox,
-          trim(visualize(trimBlank(some(union([indexer, inline])))))]), true)),
+          trimBlank(visualize(some(union([indexer, inline]))))]), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),

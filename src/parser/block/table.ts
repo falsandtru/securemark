@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, trimStart, fallback, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
 import { trimBlank } from '../visibility';
@@ -48,12 +48,12 @@ const align: AlignParser = fmap(open(
 
 const cell: CellParser = surround(
   /\|\s*(?=\S)/y,
-  trimStart(union([
+  union([
     close(medialink, /\s*(?=\||$)/y),
     close(media, /\s*(?=\||$)/y),
     close(shortmedia, /\s*(?=\||$)/y),
     trimBlank(some(inline, /\|/y, [[/[|\\]?\s*$/y, 9]])),
-  ])),
+  ]),
   /[^|]*/y, true);
 
 const head: CellParser.HeadParser = fmap(

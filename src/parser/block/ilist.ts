@@ -1,7 +1,7 @@
 import { IListParser } from '../block';
 import { Parser } from '../../combinator/data/parser';
 import { Recursion } from '../context';
-import { union, inits, some, recursion, block, line, validate, indent, rewrite, open, trim, fallback, lazy, fmap } from '../../combinator';
+import { union, inits, some, recursion, block, line, validate, indent, rewrite, open, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
@@ -19,7 +19,7 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   some(recursion(Recursion.listitem, union([
     fmap(fallback(
       inits([
-        line(open(/[-+*](?:$|[ \n])/y, trim(visualize(trimBlank(some(inline)))), true)),
+        line(open(/[-+*](?:$|[ \n])/y, trimBlank(visualize(some(inline))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
