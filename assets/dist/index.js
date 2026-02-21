@@ -3713,7 +3713,7 @@ exports.some = void 0;
 const parser_1 = __webpack_require__(605);
 const delimiter_1 = __webpack_require__(5691);
 const array_1 = __webpack_require__(6876);
-function some(parser, end, delimiters = [], limit = 0) {
+function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
   const delims = delimiters.map(([delimiter, precedence, linebreakable = true]) => ({
@@ -3743,7 +3743,7 @@ function some(parser, end, delimiters = [], limit = 0) {
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes ? nodes.length < (0, parser_1.eval)(result).length / 8 ? (0, array_1.unshift)(nodes, (0, parser_1.eval)(result)) : (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
-      if (limit > 0 && context.position - position > limit) break;
+      if (limit >= 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
       context.delimiters.pop(delims.length);
@@ -7283,7 +7283,7 @@ const abbr = (0, combinator_1.surround)((0, source_1.str)('^'), (0, combinator_1
     range = 0
   } = context;
   if (!ns) return [['', source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)]];
-  context.position += source.slice(position).match(visibility_1.blank.start)?.[0].length ?? 0;
+  context.position += source[position] === ' ' ? 1 : 0;
   return [["\u001F" /* Command.Separator */, ns[0].trimEnd()]];
 }, (_, context) => {
   context.position -= context.range;
@@ -7977,7 +7977,7 @@ exports.escsource = escsource;
 /***/ },
 
 /***/ 702
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 "use strict";
 
@@ -7986,18 +7986,52 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.contentline = exports.emptyline = exports.anyline = void 0;
-const combinator_1 = __webpack_require__(3484);
-exports.anyline = (0, combinator_1.line)(() => [[]]);
-exports.emptyline = (0, combinator_1.line)(({
-  context: {
-    source
-  }
-}) => (0, combinator_1.isBlank)(source) ? [[]] : undefined);
-exports.contentline = (0, combinator_1.line)(({
-  context: {
-    source
-  }
-}) => !(0, combinator_1.isBlank)(source) ? [[]] : undefined);
+const anyline = input => {
+  const {
+    context
+  } = input;
+  const {
+    source,
+    position
+  } = context;
+  context.position = source.indexOf('\n', position) + 1 || source.length;
+  return [[]];
+};
+exports.anyline = anyline;
+const regEmptyline = /[^\S\n]*(?:$|\n)/y;
+const emptyline = input => {
+  const {
+    context
+  } = input;
+  const {
+    source,
+    position
+  } = context;
+  regEmptyline.lastIndex = position;
+  regEmptyline.test(source);
+  const i = regEmptyline.lastIndex;
+  if (i === 0) return;
+  context.position = i;
+  return [[]];
+};
+exports.emptyline = emptyline;
+const regContentline = /[^\S\n]*\S[^\n]*(?:$|\n)/y;
+const contentline = input => {
+  const {
+    context
+  } = input;
+  const {
+    source,
+    position
+  } = context;
+  regContentline.lastIndex = position;
+  regContentline.test(source);
+  const i = regContentline.lastIndex;
+  if (i === 0) return;
+  context.position = i;
+  return [[]];
+};
+exports.contentline = contentline;
 
 /***/ },
 
@@ -8282,7 +8316,7 @@ const array_1 = __webpack_require__(6876);
 var blank;
 (function (blank) {
   blank.line = new RegExp(/^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
-  blank.start = new RegExp(/^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`));
+  blank.start = new RegExp(/(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
 })(blank || (exports.blank = blank = {}));
 function visualize(parser) {
   return (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${"\u001B" /* Command.Escape */}$&`)), (0, combinator_1.verify)(parser, (ns, {
@@ -8400,7 +8434,20 @@ function trimBlank(parser) {
 }
 exports.trimBlank = trimBlank;
 function trimBlankStart(parser) {
-  return (0, combinator_1.convert)(source => source.replace(blank.start, ''), parser, true);
+  return (0, parser_1.failsafe)(input => {
+    const {
+      context
+    } = input;
+    const {
+      source,
+      position
+    } = context;
+    const reg = blank.start;
+    reg.lastIndex = position;
+    reg.test(source);
+    context.position = reg.lastIndex || position;
+    return parser(input);
+  });
 }
 exports.trimBlankStart = trimBlankStart;
 function trimBlankEnd(parser) {
