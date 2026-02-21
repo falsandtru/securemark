@@ -1,7 +1,7 @@
 import { UnescapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { blank, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
+import { blank, nonWhitespace, nonAlphanumeric, ASCII, isAlphanumeric, isASCII } from './text';
 import { html } from 'typed-dom/dom';
 
 export const unescsource: UnescapableSourceParser = ({ context }) => {
@@ -23,9 +23,11 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
       return [[html('br')]];
     default:
       assert(source[position] !== '\n');
+      if (context.sequential) return [[source[position]]];
       blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
+      ASCII.lastIndex = position + 1;
       const b = blank.test(source);
       let i = b
         ? nonWhitespace.test(source)
@@ -35,7 +37,11 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
           ? nonAlphanumeric.test(source)
             ? nonAlphanumeric.lastIndex - 1
             : source.length
-          : position + 1;
+          : !isASCII(source[position])
+            ? ASCII.test(source)
+              ? ASCII.lastIndex - 1
+              : source.length
+            : position + 1;
       assert(i > position);
       i -= position;
       consume(i - 1, context);

@@ -67,6 +67,7 @@ const text: RubyParser.TextParser = input => {
   const { source } = context;
   const acc = [''];
   let state = false;
+  context.sequential = true;
   for (let { position } = context; position < source.length; position = context.position) {
     if (!/(?:\\[^\n]|[^\\[\](){}<>"`$#:^|\n])/y.test(source.slice(position, position + 2))) break;
     assert(source[position] !== '\n');
@@ -91,6 +92,7 @@ const text: RubyParser.TextParser = input => {
       }
     }
   }
+  context.sequential = false;
   state ||= acc.at(-1)!.trimStart() !== '';
   return state
     ? [acc]

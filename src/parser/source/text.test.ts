@@ -15,7 +15,7 @@ describe('Unit: parser/source/text', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a'), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab'), ctx), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09', 'あ', 'い', 'AZaz'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09', 'あい', 'AZaz'], '']);
       assert.deepStrictEqual(inspect(parser('a\nb'), ctx), [['a', '<br>', 'b'], '']);
     });
 

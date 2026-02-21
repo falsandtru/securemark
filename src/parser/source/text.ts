@@ -7,7 +7,7 @@ export const blank = /\s(?:$|\s|\\\n)/y;
 export const category = /(\s)|(\p{ASCII})|(.)/yu;
 export const nonWhitespace = /[\S\r\n]/g;
 export const nonAlphanumeric = /[^0-9A-Za-z]/g;
-export const ASCII = /[\x00-\x7F]/g;
+export const ASCII = /[\x00-\x7F（）［］｛｝]/g;
 
 export const text: TextParser = input => {
   const { context } = input;
@@ -38,9 +38,11 @@ export const text: TextParser = input => {
       return [[html('br')]];
     default:
       assert(source[position] !== '\n');
+      if (context.sequential) return [[source[position]]];
       blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
+      ASCII.lastIndex = position + 1;
       const b = blank.test(source);
       let i = b
         ? nonWhitespace.test(source)
@@ -50,7 +52,11 @@ export const text: TextParser = input => {
           ? nonAlphanumeric.test(source)
             ? nonAlphanumeric.lastIndex - 1
             : source.length
-          : position + 1;
+          : !isASCII(source[position])
+            ? ASCII.test(source)
+              ? ASCII.lastIndex - 1
+              : source.length
+            : position + 1;
       assert(i > position);
       const lineend = 0
         || b && i === source.length
@@ -87,5 +93,8 @@ export function isAlphanumeric(char: string): boolean {
 
 export function isASCII(char: string): boolean {
   assert(char.length === 1);
-  return char <= '\x7F';
+  return char <= '\x7F'
+      || char === '（' || char === '）'
+      || char === '［' || char === '］'
+      || char === '｛' || char === '｝';
 }
