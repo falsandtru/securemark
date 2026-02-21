@@ -4,7 +4,7 @@ import { Node, eval, input } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, shortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { linearize, invalid } from '../../util';
+import { invalid } from '../../util';
 import { visualize, trimBlank, trimBlankEnd } from '../../visibility';
 import { unshift, splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -104,7 +104,7 @@ const data: CellParser.DataParser = block(fmap(open(
       block(surround(/[^\n]/y, medialink, /\s*$/y)),
       block(surround(/[^\n]/y, media, /\s*$/y)),
       block(surround(/[^\n]/y, shortmedia, /\s*$/y)),
-      open(/(?:\s*\n|\s)/y, visualize(trimBlankEnd(linearize(some(inline), -1))), true),
+      open(/(?:\s*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),

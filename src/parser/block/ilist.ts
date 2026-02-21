@@ -7,7 +7,7 @@ import { olist_ } from './olist';
 import { inline } from '../inline';
 import { contentline } from '../source';
 import { visualize, trimBlank } from '../visibility';
-import { linearize, invalid } from '../util';
+import { invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ilist: IListParser = lazy(() => block(validate(
@@ -19,7 +19,7 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   some(recursion(Recursion.listitem, union([
     fmap(fallback(
       inits([
-        line(open(/[-+*](?:$|[ \n])/y, trim(visualize(trimBlank(linearize(some(inline), -1)))), true)),
+        line(open(/[-+*](?:$|[ \n])/y, trim(visualize(trimBlank(some(inline)))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
