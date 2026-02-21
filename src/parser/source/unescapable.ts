@@ -1,7 +1,7 @@
 import { UnescapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { blank, nonWhitespace, nonAlphanumeric, ASCII, isAlphanumeric, isASCII } from './text';
+import { nonWhitespace, nonAlphanumeric, ASCII, isBlank, isAlphanumeric, isASCII } from './text';
 import { html } from 'typed-dom/dom';
 
 export const unescsource: UnescapableSourceParser = ({ context }) => {
@@ -25,11 +25,10 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
     default:
       assert(char !== '\n');
       if (context.sequential) return [[char]];
-      blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
       ASCII.lastIndex = position + 1;
-      const b = blank.test(source);
+      const b = isBlank(source, position);
       let i = b
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1

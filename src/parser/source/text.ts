@@ -3,7 +3,6 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const blank = /\s(?:$|\s|\\\n)/y;
 export const category = /(\s)|(\p{ASCII})|(.)/yu;
 export const nonWhitespace = /[\S\r\n]/g;
 export const nonAlphanumeric = /[^0-9A-Za-z]/g;
@@ -40,11 +39,10 @@ export const text: TextParser = input => {
     default:
       assert(char !== '\n');
       if (context.sequential) return [[char]];
-      blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
       ASCII.lastIndex = position + 1;
-      const b = blank.test(source);
+      const b = isBlank(source, position);
       let i = b
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
@@ -83,6 +81,12 @@ export const txt: TxtParser = union([
 export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
+
+const blank = /\s(?:$|\s|\\\n)/y;
+export function isBlank(source: string, position: number): boolean {
+  blank.lastIndex = position;
+  return blank.test(source);
+}
 
 export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
