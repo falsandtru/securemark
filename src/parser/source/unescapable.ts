@@ -7,9 +7,10 @@ import { html } from 'typed-dom/dom';
 export const unescsource: UnescapableSourceParser = ({ context }) => {
   const { source, position } = context;
   if (position === source.length) return;
+  const char = source[position];
   consume(1, context);
   context.position += 1;
-  switch (source[position]) {
+  switch (char) {
     case '\r':
       assert(!source.includes('\r', position + 1));
       consume(-1, context);
@@ -22,8 +23,8 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
       context.linebreak ||= source.length - position;
       return [[html('br')]];
     default:
-      assert(source[position] !== '\n');
-      if (context.sequential) return [[source[position]]];
+      assert(char !== '\n');
+      if (context.sequential) return [[char]];
       blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
@@ -33,11 +34,11 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : isAlphanumeric(source[position])
+        : isAlphanumeric(char)
           ? nonAlphanumeric.test(source)
             ? nonAlphanumeric.lastIndex - 1
             : source.length
-          : !isASCII(source[position])
+          : !isASCII(char)
             ? ASCII.test(source)
               ? ASCII.lastIndex - 1
               : source.length

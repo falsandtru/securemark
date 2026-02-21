@@ -13,9 +13,10 @@ export const text: TextParser = input => {
   const { context } = input;
   const { source, position } = context;
   if (position === source.length) return;
+  const char = source[position];
   consume(1, context);
   context.position += 1;
-  switch (source[position]) {
+  switch (char) {
     case '\r':
       assert(!source.includes('\r', position + 1));
       consume(-1, context);
@@ -26,7 +27,7 @@ export const text: TextParser = input => {
         case undefined:
           return [[]];
         case '\n':
-          assert(source[0] !== Command.Escape);
+          assert(char !== Command.Escape);
           return [[]];
         default:
           consume(1, context);
@@ -37,8 +38,8 @@ export const text: TextParser = input => {
       context.linebreak ||= source.length - position;
       return [[html('br')]];
     default:
-      assert(source[position] !== '\n');
-      if (context.sequential) return [[source[position]]];
+      assert(char !== '\n');
+      if (context.sequential) return [[char]];
       blank.lastIndex = position;
       nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
@@ -48,11 +49,11 @@ export const text: TextParser = input => {
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : isAlphanumeric(source[position])
+        : isAlphanumeric(char)
           ? nonAlphanumeric.test(source)
             ? nonAlphanumeric.lastIndex - 1
             : source.length
-          : !isASCII(source[position])
+          : !isASCII(char)
             ? ASCII.test(source)
               ? ASCII.lastIndex - 1
               : source.length
