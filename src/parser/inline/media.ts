@@ -5,7 +5,7 @@ import { union, inits, tails, some, creation, recursion, precedence, constraint,
 import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
-import { txt, linebreak, str } from '../source';
+import { txt, str } from '../source';
 import { invalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push } from 'spica/array';
@@ -107,7 +107,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(/!
   }))))));
 
 export const linemedia: MediaParser.LineMediaParser = surround(
-  linebreak,
+  /(?<=^|[\r\n])/y,
   union([media]),
   /(?=[^\S\n]*(?:$|\n))/y);
 

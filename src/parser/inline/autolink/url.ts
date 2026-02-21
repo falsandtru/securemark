@@ -2,7 +2,7 @@ import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
 import { union, tails, some, recursion, precedence, state, constraint, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
-import { linebreak, unescsource, str } from '../../source';
+import { unescsource, str } from '../../source';
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   open(
@@ -22,22 +22,18 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     ({ context: { source } }) => [[source]],
   ])));
 
-export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => open(
-  linebreak,
-  focus(
-    /!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y,
-    tails([
-      str('!'),
-      union([
-        constraint(State.autolink, state(State.autolink, convert(
-          url => `{ ${url} }`,
-          unsafelink,
-          false))),
-        ({ context: { source } }) => [[source]],
-      ]),
-    ])),
-  false,
-  [3 | Backtrack.autolink]));
+export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
+  /(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y,
+  tails([
+    str('!'),
+    union([
+      constraint(State.autolink, state(State.autolink, convert(
+        url => `{ ${url} }`,
+        unsafelink,
+        false))),
+      ({ context: { source } }) => [[source]],
+    ]),
+  ])));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,

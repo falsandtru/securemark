@@ -12,11 +12,10 @@ import { str } from '../source';
 
 export const autolink: AutolinkParser = lazy(() =>
   validate(new RegExp([
-    /(?<![0-9a-z])@/yiu.source,
+    /(?<![0-9a-z])@/yi.source,
     /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
-    /(?<![0-9a-z])>>/yiu.source,
-    /(?<![0-9a-z][.+-]?)[0-9a-z]/yiu.source,
-    /[\r\n]!?https?:\/\//yiu.source,
+    /(?<![0-9a-z])>>/yi.source,
+    /(?<![0-9a-z][.+-]?)!?[0-9a-z]/yi.source,
   ].join('|').replace(/emoji/g, emoji), 'yiu'),
   state(~State.autolink,
   union([

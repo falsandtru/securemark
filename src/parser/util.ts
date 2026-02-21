@@ -8,7 +8,7 @@ import { define } from 'typed-dom/dom';
 export function linearize<P extends Parser<HTMLElement | string>>(parser: P, trim?: 0 | 1 | -1): P;
 export function linearize<N extends HTMLElement | string>(parser: Parser<N>, trim = 0): Parser<N> {
   return convert(
-    source => `\r${
+    source => `${
       trim === 0
         ? source
         : trim > 0

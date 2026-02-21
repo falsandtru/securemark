@@ -4,7 +4,7 @@ import { State, Backtrack, Command } from '../context';
 import { union, inits, tails, sequence, subsequence, some, creation, precedence, state, constraint, validate, surround, open, setBacktrack, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
-import { linebreak, unescsource, str } from '../source';
+import { unescsource, str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
@@ -88,7 +88,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
     [[parse(defrag(content), params, context)]]))))));
 
 export const linemedialink: LinkParser.LineMediaLinkParser = surround(
-  linebreak,
+  /(?<=^|[\r\n])/y,
   union([medialink]),
   /(?=[^\S\n]*(?:$|\n))/y);
 
