@@ -1336,7 +1336,7 @@
   let wait;
   (async () => {
     await new Promise(requestAnimationFrame);
-    log(await display());
+    log(await display(4));
     let timer = 0;
     editor.on('change', run);
     function run() {
@@ -1345,21 +1345,21 @@
       timer = setTimeout(async function () {
         await wait;
         wait = undefined;
-        log(await display());
+        log(await display(1));
         //nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
         nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
         share();
       }, 500);
     }
   })();
-  async function display() {
+  async function display(rate) {
     const { Date } = global;
     const times = [0, 0];
     const start = Date.now();
     let index = 0;
     let past = Date.now();
     let time = 0;
-    let resource = 800;
+    let resource = 200 * rate;
     let scroll = window.scrollY;
     for (const result of parse(editor.getValue())) {
       if (wait) throw new Error('Cancel.');
@@ -1395,7 +1395,7 @@
           scroll = window.scrollY;
         }
         else {
-          resource = 800;
+          resource = 200 * rate;
         }
         past = Date.now();
       }
