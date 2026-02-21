@@ -1,7 +1,7 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
 import { input, eval } from '../../../combinator/data/parser';
-import { recursion, block, validate, fence, fmap } from '../../../combinator';
+import { recursion, block, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
 import { invalid } from '../../util';
 import { parse } from '../../api/parse';
@@ -9,7 +9,7 @@ import { html } from 'typed-dom/dom';
 
 const opener = /(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
 
-export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(validate('~~~', fmap(
+export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, type = 'markdown', param]: string[], context) => {
@@ -58,4 +58,4 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
           }, `${opener}${body}${closer}`),
         ];
     }
-  }))));
+  })));

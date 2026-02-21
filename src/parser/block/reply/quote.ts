@@ -8,8 +8,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = />+[^\S\n]/y;
 
-export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(validate(
-  '>',
+export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
   rewrite(
     some(validate(syntax, anyline)),
     linearize(convert(
@@ -21,7 +20,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(validate(
         linebreak,
         unescsource,
       ])),
-      false), -1))),
+      false), -1)),
   (ns: [string, ...(string | HTMLElement)[]]) => [
     html('span', { class: 'quote' }, defrag(ns)),
     html('br'),

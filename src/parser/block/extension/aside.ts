@@ -1,12 +1,12 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
-import { recursion, block, validate, fence, fmap } from '../../../combinator';
+import { recursion, block, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
 import { invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
-export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(validate('~~~', fmap(
+export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(fmap(
   fence(/(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, param]: string[], context) => {
@@ -42,4 +42,4 @@ export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, blo
         references,
       ]),
     ];
-  }))));
+  })));

@@ -1,7 +1,7 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
 import { subinput } from '../../combinator/data/parser';
-import { union, inits, tails, some, creation, recursion, precedence, constraint, validate, verify, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creation, recursion, precedence, constraint, verify, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -19,7 +19,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => constraint(State.media, validate(/![[{]/y, creation(10, open(
+export const media: MediaParser = lazy(() => constraint(State.media, creation(10, open(
   '!',
   bind(verify(fmap(tails([
     dup(surround(
@@ -104,7 +104,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(/!
         return [define(link, { class: null, target: '_blank' }, [el])];
       })
       (subinput(`{ ${INSECURE_URI}${params.join('')} }`, context));
-  }))))));
+  })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,

@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { input, eval } from '../../../combinator/data/parser';
-import { union, block, validate, fence, fmap } from '../../../combinator';
+import { union, block, fence, fmap } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
 import { ulist } from '../ulist';
@@ -19,7 +19,7 @@ import { html } from 'typed-dom/dom';
 
 import MessageParser = ExtensionParser.MessageParser;
 
-export const message: MessageParser = block(validate('~~~', fmap(
+export const message: MessageParser = block(fmap(
   fence(/(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
@@ -50,7 +50,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
         [html('h1', title(type))],
         [...segment(body)].reduce((acc, seg) => push(acc, eval(content(input(seg, { ...context })), [])), []))),
     ];
-  })));
+  }));
 
 function title(type: string): string {
   switch (type) {

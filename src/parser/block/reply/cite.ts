@@ -1,5 +1,5 @@
 import { ReplyParser } from '../../block';
-import { union, line, validate, focus, open, fmap } from '../../../combinator';
+import { union, line, focus, open, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
 import { invalid } from '../../util';
@@ -7,8 +7,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 export const syntax = />*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/y;
 
-export const cite: ReplyParser.CiteParser = line(fmap(validate(
-  '>>',
+export const cite: ReplyParser.CiteParser = line(fmap(
   open(
     str(syntax),
     union([
@@ -18,8 +17,7 @@ export const cite: ReplyParser.CiteParser = line(fmap(validate(
       focus(/>>#\S*(?=\s*$)/y, ({ context: { source } }) => [[html('a', { class: 'anchor' }, source)]]),
       focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ context: { source } }) => [[html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)]]),
       focus(/>>.+(?=\s*$)/y, ({ context: { source } }) => [[source]]),
-    ]),
-  )),
+    ])),
   ([quotes, node]: [string, HTMLElement | string]) => [
     html('span',
       typeof node === 'object'

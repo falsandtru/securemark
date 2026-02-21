@@ -1,10 +1,10 @@
 import { MediaBlockParser } from '../block';
-import { union, inits, some, block, line, validate, fallback, fmap } from '../../combinator';
+import { union, inits, some, block, line, fallback, fmap } from '../../combinator';
 import { medialink, media, lineshortmedia } from '../inline';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-export const mediablock: MediaBlockParser = block(validate(/\[?!/y, fmap(
+export const mediablock: MediaBlockParser = block(fmap(
   inits([
     line(union([
       medialink,
@@ -20,4 +20,4 @@ export const mediablock: MediaBlockParser = block(validate(/\[?!/y, fmap(
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
     }, source.replace('\n', ''))]]))),
   ]),
-  ns => [html('div', ns)])));
+  ns => [html('div', ns)]));

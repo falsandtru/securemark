@@ -16,13 +16,13 @@ import CellParser = TableParser.CellParser;
 
 const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
 
-export const segment: TableParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 10000))));
+export const segment: TableParser.SegmentParser = block(
+  clear(fence(opener, 10000)));
 
-export const segment_: TableParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 10000, false))), false);
+export const segment_: TableParser.SegmentParser = block(
+  clear(fence(opener, 10000, false)), false);
 
-export const table: TableParser = block(validate('~~~', fmap(
+export const table: TableParser = block(fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
@@ -48,7 +48,7 @@ export const table: TableParser = block(validate('~~~', fmap(
           ...invalid('table', 'argument', 'Invalid table type'),
         }, `${opener}${body}${closer}`)];
     }
-  })));
+  }));
 
 const parser: TableParser = lazy(() => block(fmap(
   some(union([row])),

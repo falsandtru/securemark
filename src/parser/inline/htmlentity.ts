@@ -1,9 +1,9 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
-import { union, validate, focus, fmap } from '../../combinator';
+import { union, focus, fmap } from '../../combinator';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
+export const unsafehtmlentity: UnsafeHTMLEntityParser = focus(
   /&(?:[0-9A-Za-z]+;?)?/y,
   //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
   ({ context }) => {
@@ -12,7 +12,7 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = validate('&', focus(
     return source.length > 1 && source.at(-1) === ';'
       ? [[parser(source) ?? source]]
       : [[source]];
-  }));
+  });
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),

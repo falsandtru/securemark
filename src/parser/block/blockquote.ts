@@ -6,9 +6,9 @@ import { contentline } from '../source';
 import { parse } from '../api/parse';
 import { html, defrag } from 'typed-dom/dom';
 
-export const segment: BlockquoteParser.SegmentParser = block(validate(/!?>/y, union([
+export const segment: BlockquoteParser.SegmentParser = block(union([
   validate(/!?>+(?=[^\S\n]|\n[^\S\n]*\S)/y, some(contentline)),
-])));
+]));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
   open(/(?=>)/y, source),

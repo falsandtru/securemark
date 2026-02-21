@@ -1,6 +1,6 @@
 import { CodeBlockParser } from '../block';
 import { input, eval } from '../../combinator/data/parser';
-import { block, validate, fence, clear, fmap } from '../../combinator';
+import { block, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -8,13 +8,13 @@ import { html, defrag } from 'typed-dom/dom';
 const opener = /(`{3,})(?!`)([^\n]*)(?:$|\n)/y;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 
-export const segment: CodeBlockParser.SegmentParser = block(validate('```',
-  clear(fence(opener, 300))));
+export const segment: CodeBlockParser.SegmentParser = block(
+  clear(fence(opener, 300)));
 
-export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
-  clear(fence(opener, 300, false))), false);
+export const segment_: CodeBlockParser.SegmentParser = block(
+  clear(fence(opener, 300, false)), false);
 
-export const codeblock: CodeBlockParser = block(validate('```', fmap(
+export const codeblock: CodeBlockParser = block(fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, overflow, closer, opener, delim, param]: string[], context) => {
@@ -74,4 +74,4 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
           body.slice(0, -1) || undefined
         : defrag(eval(autolink(input(body.slice(0, -1), { ...context })), [])));
     return [el];
-  })));
+  }));

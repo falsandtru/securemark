@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../block';
-import { union, validate } from '../../combinator';
+import { union } from '../../combinator';
 import { figbase } from './extension/figbase';
 import { fig, segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
@@ -9,12 +9,12 @@ import { aside } from './extension/aside';
 import { example } from './extension/example';
 import { placeholder, segment as seg_placeholder } from './extension/placeholder';
 
-export const segment: ExtensionParser.SegmentParser = validate(/~~~|\[?\$|~{3,}|\[?\$[A-Za-z-]\S+[^\S\n]*(?:$|\n)/y, union([
+export const segment: ExtensionParser.SegmentParser = union([
   seg_fig,
   seg_figure,
   seg_table,
   seg_placeholder,
-]));
+]);
 
 export const extension: ExtensionParser = union([
   figbase,

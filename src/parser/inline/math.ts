@@ -1,13 +1,13 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
-import { union, some, recursion, precedence, validate, rewrite, surround, lazy } from '../../combinator';
+import { union, some, recursion, precedence, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
 
-export const math: MathParser = lazy(() => validate('$', rewrite(
+export const math: MathParser = lazy(() => rewrite(
   union([
     surround(
       /\$(?={)/y,
@@ -35,7 +35,7 @@ export const math: MathParser = lazy(() => validate('$', rewrite(
               `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
       source)
-  ]])));
+  ]]));
 
 const bracket: MathParser.BracketParser = lazy(() => surround(
   str('{'),
