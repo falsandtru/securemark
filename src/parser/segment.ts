@@ -14,13 +14,31 @@ export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB
 export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
 
 const parser: SegmentParser = union([
-  heading,
-  codeblock,
-  mathblock,
-  extension,
+  input => {
+    const { context: { source, position } } = input;
+    if (position === source.length) return;
+    switch (source.slice(position, position + 3)) {
+      case '~~~':
+        return extension(input);
+      case '```':
+        return codeblock(input);
+    }
+    switch (source.slice(position, position + 2)) {
+      case '$$':
+        return mathblock(input);
+      case '[$':
+        return extension(input);
+    }
+    switch (source[position]) {
+      case '#':
+        return heading(input);
+      case '$':
+        return extension(input);
+    }
+  },
   some(contentline, MAX_SEGMENT_SIZE + 1),
   some(emptyline, MAX_SEGMENT_SIZE + 1),
-]);
+]) as any;
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   if (!validate(source, MAX_INPUT_SIZE)) return yield `${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
