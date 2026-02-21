@@ -575,12 +575,12 @@ export namespace MarkdownParser {
         Parser<HTMLElement, Context, [
           InlineParser.LinkParser.MediaLinkParser,
           InlineParser.MediaParser,
-          InlineParser.ShortMediaParser,
+          InlineParser.ShortMediaParser.LineShortMediaParser,
         ]>,
         Parser<HTMLElement, Context, [
           InlineParser.LinkParser.MediaLinkParser,
           InlineParser.MediaParser,
-          InlineParser.ShortMediaParser,
+          InlineParser.ShortMediaParser.LineShortMediaParser,
         ]>,
       ]> {
     }
@@ -785,12 +785,6 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace LinkParser {
-      export interface LineMediaLinkParser extends
-        Inline<'link/linemedialink'>,
-        Parser<HTMLElement, Context, [
-          LinkParser.MediaLinkParser,
-        ]> {
-      }
       export interface TextLinkParser extends
         Inline<'link/textlink'>,
         Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
@@ -866,12 +860,6 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace MediaParser {
-      export interface LineMediaParser extends
-        Inline<'media/linemedia'>,
-        Parser<HTMLElement, Context, [
-          MediaParser,
-        ]> {
-      }
       export interface TextParser extends
         Inline<'media/text'>,
         Parser<string[], Context, [

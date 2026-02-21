@@ -106,11 +106,6 @@ export const media: MediaParser = lazy(() => constraint(State.media, validate(/!
       (subinput(`{ ${INSECURE_URI}${params.join('')} }`, context));
   }))))));
 
-export const linemedia: MediaParser.LineMediaParser = surround(
-  /(?<=^|[\r\n])/y,
-  union([media]),
-  /(?=[^\S\n]*(?:$|\n))/y);
-
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
     undefined, () => [[]], [3 | Backtrack.escbracket]),

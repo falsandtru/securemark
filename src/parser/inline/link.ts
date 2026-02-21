@@ -87,11 +87,6 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
   ([params, content = []]: [string[], (HTMLElement | string)[]], context) =>
     [[parse(defrag(content), params, context)]]))))));
 
-export const linemedialink: LinkParser.LineMediaLinkParser = surround(
-  /(?<=^|[\r\n])/y,
-  union([medialink]),
-  /(?=[^\S\n]*(?:$|\n))/y);
-
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10,
   bind(reverse(tails([
