@@ -14,17 +14,17 @@ describe('Unit: parser/source/unescapable', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a'), ctx), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser('ab'), ctx), [['a', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['0', '9', 'あ', 'い', 'A', 'Z', 'a', 'z'], '']);
+      assert.deepStrictEqual(inspect(parser('ab'), ctx), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09', 'あ', 'い', 'AZaz'], '']);
     });
 
     it('space', () => {
       assert.deepStrictEqual(inspect(parser(' '), ctx), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('  '), ctx), [[' ', ' '], '']);
-      assert.deepStrictEqual(inspect(parser('   '), ctx), [[' ', ' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('  '), ctx), [['  '], '']);
+      assert.deepStrictEqual(inspect(parser('   '), ctx), [['   '], '']);
       assert.deepStrictEqual(inspect(parser(' \n'), ctx), [[' ', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('  \n'), ctx), [[' ', ' ', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('   \n'), ctx), [[' ', ' ', ' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('  \n'), ctx), [['  ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('   \n'), ctx), [['   ', '<br>'], '']);
     });
 
     it('linebreak', () => {

@@ -12,7 +12,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('**a'), ctx), [['**', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('**a **'), ctx), [['**', 'a', ' ', '**'], '']);
-      assert.deepStrictEqual(inspect(parser('**a  **'), ctx), [['**', 'a', ' ', ' ', '**'], '']);
+      assert.deepStrictEqual(inspect(parser('**a  **'), ctx), [['**', 'a', ' ', '**'], '']);
       assert.deepStrictEqual(inspect(parser('**a\n**'), ctx), [['**', 'a', '<br>', '**'], '']);
       assert.deepStrictEqual(inspect(parser('**a\\ **'), ctx), [['**', 'a', ' ', '**'], '']);
       assert.deepStrictEqual(inspect(parser('**a\\\n**'), ctx), [['**', 'a', '<br>', '**'], '']);

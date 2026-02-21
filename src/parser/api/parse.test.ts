@@ -82,7 +82,7 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<br>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\n\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a<br>\\ <br>b</p>']);
+        ['<p>a<br>\\<br>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\n\\\nb').children].map(el => el.outerHTML),
         ['<p>a<br>\\<br>b</p>']);

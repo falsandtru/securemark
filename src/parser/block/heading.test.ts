@@ -35,7 +35,7 @@ describe('Unit: parser/block/heading', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('# a'), ctx), [['<h1 id="index::a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a '), ctx), [['<h1 id="index::a">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a b  c \n'), ctx), [['<h1 id="index::a_b__c">a b  c</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a b  c \n'), ctx), [['<h1 id="index::a_b_c">a b c</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\n'), ctx), [['<h1 id="index::a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# *a*`b`${c}$'), ctx), [['<h1 id="index::a`b`${c}$"><em>a</em><code data-src="`b`">b</code><span class="math" translate="no" data-src="${c}$">${c}$</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\'), ctx), [['<h1 id="index::a">a</h1>'], '']);

@@ -35,8 +35,8 @@ describe('Unit: parser/inline/autolink/url', () => {
     });
 
     it('trailing symbols', () => {
-      assert.deepStrictEqual(inspect(parser(' http://host '), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', ' '], '']);
-      assert.deepStrictEqual(inspect(parser(' http://host. '), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '.', ' '], '']);
+      assert.deepStrictEqual(inspect(parser(' http://host '), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' http://host. '), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '.'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host\n'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host.\n'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '.', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host\\'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);

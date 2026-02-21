@@ -36,9 +36,9 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('***a**b\n<wbr>*\nc'), ctx), [['<p>*<strong>a</strong>b<br><wbr>*<br>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser('==a\n<wbr>==\nb'), ctx), [['<p>==a<br><wbr>==<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('http://host)'), ctx), [['<p><a class="url" href="http://host)" target="_blank">http://host)</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\nhttp://host) \nb'), ctx), [['<p>a<br><a class="url" href="http://host)" target="_blank">http://host)</a> <br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\nhttp://host) \nb'), ctx), [['<p>a<br><a class="url" href="http://host)" target="_blank">http://host)</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('!http://host)'), ctx), [['<p>!<a class="url" href="http://host)" target="_blank">http://host)</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n!http://host) \nb'), ctx), [['<p>a<br>!<a class="url" href="http://host)" target="_blank">http://host)</a> <br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n!http://host) \nb'), ctx), [['<p>a<br>!<a class="url" href="http://host)" target="_blank">http://host)</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\ta'), ctx), [['<p>\ta</p>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^A]]'), ctx), [['<p><sup class="reference" data-abbr="A"><span></span></sup></p>'], '']);
     });

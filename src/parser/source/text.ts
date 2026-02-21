@@ -3,6 +3,12 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
+export const blank = /\s(?:$|\s|\\\n)/y;
+export const category = /(\s)|(\p{ASCII})|(.)/yu;
+export const nonWhitespace = /[\S\r\n]/g;
+export const nonAlphanumeric = /[^0-9A-Za-z]/g;
+export const ASCII = /[\x00-\x7F]/g;
+
 export const text: TextParser = input => {
   const { context } = input;
   const { source, position } = context;
@@ -25,14 +31,41 @@ export const text: TextParser = input => {
         default:
           consume(1, context);
           context.position += 1;
-          return [[source.slice(position + 1, position + 2)]];
+          return [[source.slice(position + 1, context.position)]];
       }
     case '\n':
       context.linebreak ||= source.length - position;
       return [[html('br')]];
     default:
       assert(source[position] !== '\n');
-      return [[source[position]]];
+      blank.lastIndex = position;
+      nonAlphanumeric.lastIndex = position + 1;
+      nonWhitespace.lastIndex = position + 1;
+      const b = blank.test(source);
+      let i = b
+        ? nonWhitespace.test(source)
+          ? nonWhitespace.lastIndex - 1
+          : source.length
+        : isAlphanumeric(source[position])
+          ? nonAlphanumeric.test(source)
+            ? nonAlphanumeric.lastIndex - 1
+            : source.length
+          : position + 1;
+      assert(i > position);
+      const lineend = 0
+        || b && i === source.length
+        || b && source[i] === '\n'
+        || b && source[i] === '\\' && source[i + 1] === '\n';
+      i -= position;
+      i = lineend ? i : i - +b || 1;
+      consume(i - 1, context);
+      context.position += i - 1;
+      const linestart = position === 0 || source[position - 1] === '\n';
+      i = linestart && b && i >= 3 ? i - 3 : 0;
+      i += position;
+      return i === context.position || b && !linestart || lineend
+        ? [[]]
+        : [[source.slice(i, context.position)]];
   }
 };
 
@@ -50,4 +83,9 @@ export function isAlphanumeric(char: string): boolean {
   return '0' <= char && char <= '9'
       || 'a' <= char && char <= 'z'
       || 'A' <= char && char <= 'Z';
+}
+
+export function isASCII(char: string): boolean {
+  assert(char.length === 1);
+  return char <= '\x7F';
 }
