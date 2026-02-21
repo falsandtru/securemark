@@ -23,7 +23,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a\\\n'), ctx), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb'), ctx), [['<p>a<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a&NewLine;b'), ctx), [['<p>a b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('&Tab;&NewLine;'), ctx), [['<p>&amp;Tab;&amp;NewLine;</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('&Tab;&NewLine;'), ctx), [['<p>&amp;NewLine;</p>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>'), ctx), [['<p>&lt;wbr&gt;</p>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>\n'), ctx), [['<p>&lt;wbr&gt;</p>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>\na'), ctx), [['<p>&lt;wbr&gt;<br>a</p>'], '']);

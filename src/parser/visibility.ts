@@ -9,7 +9,8 @@ import { push } from 'spica/array';
 
 export namespace blank {
   export const line = new RegExp(
-    /^(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/.source
+    // TODO: 行全体をエスケープ
+    /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/mg.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   export const start = new RegExp(
@@ -21,7 +22,7 @@ export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return union([
     convert(
-      source => source.replace(blank.line, line => line.replace(/[\\&<]/g, `${Command.Escape}$&`)),
+      source => source.replace(blank.line, `${Command.Escape}$1`),
       verify(parser, (ns, { source, position }) => position === source.length && hasVisible(ns)),
       false),
     some(union([linebreak, unescsource])),
