@@ -4,13 +4,21 @@ import { html } from 'typed-dom/dom';
 describe('Unit: parser/api/parse', () => {
   describe('parse', () => {
     it('huge input', () => {
-      assert.throws(() =>
-        parse(`${'\n'.repeat(10 * 1000 ** 2)}`));
+      assert.deepStrictEqual(
+        [...parse(`${'\n'.repeat(10 * 1000 ** 2)}`, { id: '' }).children].map(el => el.outerHTML),
+        [
+          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
+          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
+        ]);
     });
 
     it('huge segment', () => {
-      assert.throws(() =>
-        parse(`${'\n'.repeat(100 * 1000 + 1)}`));
+      assert.deepStrictEqual(
+        [...parse(`${'\n'.repeat(100 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
+        [
+          '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
+          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
+        ]);
     });
 
     it('result', () => {

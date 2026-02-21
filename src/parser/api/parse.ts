@@ -1,7 +1,7 @@
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { input, eval } from '../../combinator/data/parser';
-import { segment, validate, MAX_SEGMENT_SIZE } from '../segment';
+import { segment } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
 import { normalize } from './normalize';
@@ -16,7 +16,6 @@ interface Options extends ParserOptions {
 }
 
 export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Options | MarkdownParser.Context): DocumentFragment {
-  if (!validate(source, MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
   context = {
