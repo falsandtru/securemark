@@ -10,7 +10,7 @@ import { html } from 'typed-dom/dom';
 // 継続的編集において最も簡便となる。
 
 export const indexer: ExtensionParser.IndexerParser = surround(
-  /\s+\[(?=\|\S)/y,
+  /\s\[(?=\|\S)/y,
   union([
     signature,
     focus(/\|(?=\])/y, () => [[html('span', { class: 'indexer', 'data-index': '' })]]),

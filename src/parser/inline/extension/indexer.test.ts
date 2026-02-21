@@ -34,7 +34,6 @@ describe('Unit: parser/inline/extension/indexer', () => {
       assert.deepStrictEqual(inspect(parser(' [|*A*]'), ctx), [['<span class="indexer" data-index="*A*"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|\\`A\\`]'), ctx), [['<span class="indexer" data-index="`A`"></span>'], '']);
       assert.deepStrictEqual(inspect(parser(' [|\\$\\{A\\}\\$]'), ctx), [['<span class="indexer" data-index="${A}$"></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('  [|a]'), ctx), [['<span class="indexer" data-index="a"></span>'], '']);
     });
 
   });
