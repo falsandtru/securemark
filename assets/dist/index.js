@@ -4260,7 +4260,6 @@ const note_1 = __webpack_require__(165);
 const url_1 = __webpack_require__(1904);
 const dom_1 = __webpack_require__(394);
 function parse(source, opts = {}, context) {
-  if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${segment_1.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes`);
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
@@ -4301,7 +4300,7 @@ exports.autolink = void 0;
 const combinator_1 = __webpack_require__(3484);
 const autolink_1 = __webpack_require__(8072);
 const source_1 = __webpack_require__(8745);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.convert)(source => `\r${source}`, (0, combinator_1.some)((0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource])), false));
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([autolink_1.autolink, source_1.linebreak, source_1.unescsource])));
 
 /***/ },
 
@@ -5547,11 +5546,12 @@ const combinator_1 = __webpack_require__(3484);
 const math_1 = __webpack_require__(2962);
 const autolink_1 = __webpack_require__(8072);
 const source_1 = __webpack_require__(8745);
+const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.syntax = />+[^\S\n]/y;
-exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.anyline)), (0, combinator_1.convert)(source => source.replace(/(?<=^>+[^\S\n])/mg, '\r').replace(/\n$/, ''), (0, combinator_1.some)((0, combinator_1.union)([
+exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.anyline)), (0, util_1.linearize)((0, combinator_1.convert)(source => source.replace(/(?<=^>+[^\S\n])/mg, '\r'), (0, combinator_1.some)((0, combinator_1.union)([
 // quote補助関数が残した数式をパースする。
-math_1.math, autolink_1.autolink, source_1.linebreak, source_1.unescsource])), false))), ns => [(0, dom_1.html)('span', {
+math_1.math, autolink_1.autolink, source_1.linebreak, source_1.unescsource])), false), -1))), ns => [(0, dom_1.html)('span', {
   class: 'quote'
 }, (0, dom_1.defrag)(ns)), (0, dom_1.html)('br')]), false));
 
@@ -5918,7 +5918,7 @@ const hashtag_1 = __webpack_require__(5764);
 const hashnum_1 = __webpack_require__(8684);
 const anchor_1 = __webpack_require__(8535);
 const source_1 = __webpack_require__(8745);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yiu.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yiu.source, /(?<![0-9a-z][.+-]?)[0-9a-z]/yiu.source, /[\r\n]!?https?:\/\//yiu.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?)!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
 // Escape unmatched email-like strings.
 (0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+@?|@(?=@))*/yi), channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
@@ -6121,11 +6121,11 @@ exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combina
     source
   }
 }) => [[source]]])));
-exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.focus)(/!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
+exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
   context: {
     source
   }
-}) => [[source]]])])), false, [3 | 0 /* Backtrack.autolink */]));
+}) => [[source]]])])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [[]], [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [[]], [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [[]], [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, undefined, () => [[]], [3 | 0 /* Backtrack.autolink */])]));
 
 /***/ },
@@ -6919,7 +6919,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
   return [[parse((0, dom_1.defrag)(content), params, context)]];
 }))))));
 exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.validate)(/[[{]/y, (0, combinator_1.creation)(10, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]]))))));
-exports.linemedialink = (0, combinator_1.surround)(source_1.linebreak, (0, combinator_1.union)([exports.medialink]), /(?=[^\S\n]*(?:$|\n))/y);
+exports.linemedialink = (0, combinator_1.surround)(/(?<=^|[\r\n])/y, (0, combinator_1.union)([exports.medialink]), /(?=[^\S\n]*(?:$|\n))/y);
 exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]])));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/[^\S\n]+/y, (0, source_1.str)(/\S+/y)), (0, source_1.str)(/[^\s{}]+/y)]);
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/[^\S\n]+nofollow(?=[^\S\n]|})/y), () => [` rel="nofollow"`]), (0, source_1.str)(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/yi), (0, source_1.str)(/[^\S\n]+[^\s{}]+/y)]);
@@ -7158,7 +7158,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     }, [el])];
   })((0, parser_1.subinput)(`{ ${INSECURE_URI}${params.join('')} }`, context));
 }))))));
-exports.linemedia = (0, combinator_1.surround)(source_1.linebreak, (0, combinator_1.union)([exports.media]), /(?=[^\S\n]*(?:$|\n))/y);
+exports.linemedia = (0, combinator_1.surround)(/(?<=^|[\r\n])/y, (0, combinator_1.union)([exports.media]), /(?=[^\S\n]*(?:$|\n))/y);
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */])])));
 const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, combinator_1.open)(/[^\S\n]+/y, (0, source_1.str)(/[1-9][0-9]*/y)), (0, source_1.str)(/[x:]/y), (0, source_1.str)(/[1-9][0-9]*(?=[^\S\n]|})/y), false, ([[a], [b], [c]]) => [b === 'x' ? [`width="${a}"`, `height="${c}"`] : [`aspect-ratio="${a}/${c}"`]]), link_1.option]));
 function sanitize(target, uri) {
@@ -7379,6 +7379,7 @@ const text = input => {
   } = context;
   const acc = [''];
   let state = false;
+  context.sequential = true;
   for (let {
     position
   } = context; position < source.length; position = context.position) {
@@ -7404,6 +7405,7 @@ const text = input => {
         }
     }
   }
+  context.sequential = false;
   state ||= acc.at(-1).trimStart() !== '';
   return state ? [acc] : undefined;
 };
@@ -7437,9 +7439,8 @@ exports.lineshortmedia = exports.shortmedia = void 0;
 const combinator_1 = __webpack_require__(3484);
 const url_1 = __webpack_require__(2129);
 const media_1 = __webpack_require__(7478);
-const source_1 = __webpack_require__(8745);
 exports.shortmedia = (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.rewrite)((0, combinator_1.open)('!', url_1.url), (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media]), false)));
-exports.lineshortmedia = (0, combinator_1.open)(source_1.linebreak, (0, combinator_1.focus)(/!https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y, (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media]), false)));
+exports.lineshortmedia = (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y, (0, combinator_1.convert)(source => `!{ ${source.slice(1)} }`, (0, combinator_1.union)([media_1.media]), false));
 
 /***/ },
 
@@ -7935,6 +7936,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.escsource = void 0;
 const combinator_1 = __webpack_require__(3484);
+const text_1 = __webpack_require__(5655);
 const dom_1 = __webpack_require__(394);
 const escsource = ({
   context
@@ -7944,9 +7946,10 @@ const escsource = ({
     position
   } = context;
   if (position === source.length) return;
+  const char = source[position];
   (0, combinator_1.consume)(1, context);
   context.position += 1;
-  switch (source[position]) {
+  switch (char) {
     case '\r':
       (0, combinator_1.consume)(-1, context);
       return [[]];
@@ -7957,9 +7960,9 @@ const escsource = ({
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return [[source[position]]];
+          return [[char]];
         case '\n':
-          return [[source[position]]];
+          return [[char]];
         default:
           (0, combinator_1.consume)(1, context);
           context.position += 1;
@@ -7969,7 +7972,16 @@ const escsource = ({
       context.linebreak ||= source.length - position;
       return [[(0, dom_1.html)('br')]];
     default:
-      return [[source[position]]];
+      if (context.sequential) return [[char]];
+      text_1.nonAlphanumeric.lastIndex = position + 1;
+      text_1.nonWhitespace.lastIndex = position + 1;
+      text_1.ASCII.lastIndex = position + 1;
+      const b = (0, text_1.isBlank)(source, position);
+      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.isAlphanumeric)(char) ? text_1.nonAlphanumeric.test(source) ? text_1.nonAlphanumeric.lastIndex - 1 : source.length : !(0, text_1.isASCII)(char) ? text_1.ASCII.test(source) ? text_1.ASCII.lastIndex - 1 : source.length : position + 1;
+      i -= position;
+      (0, combinator_1.consume)(i - 1, context);
+      context.position += i - 1;
+      return [[source.slice(position, context.position)]];
   }
 };
 exports.escsource = escsource;
@@ -8078,9 +8090,13 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isAlphanumeric = exports.linebreak = exports.txt = exports.text = void 0;
+exports.isASCII = exports.isAlphanumeric = exports.isBlank = exports.linebreak = exports.txt = exports.text = exports.ASCII = exports.nonAlphanumeric = exports.nonWhitespace = exports.category = void 0;
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
+exports.category = /(\s)|(\p{ASCII})|(.)/yu;
+exports.nonWhitespace = /[\S\r\n]/g;
+exports.nonAlphanumeric = /[^0-9A-Za-z]/g;
+exports.ASCII = /[\x00-\x7F（）［］｛｝]/g;
 const text = input => {
   const {
     context
@@ -8090,9 +8106,10 @@ const text = input => {
     position
   } = context;
   if (position === source.length) return;
+  const char = source[position];
   (0, combinator_1.consume)(1, context);
   context.position += 1;
-  switch (source[position]) {
+  switch (char) {
     case '\r':
       (0, combinator_1.consume)(-1, context);
       return [[]];
@@ -8106,23 +8123,47 @@ const text = input => {
         default:
           (0, combinator_1.consume)(1, context);
           context.position += 1;
-          return [[source.slice(position + 1, position + 2)]];
+          return [[source.slice(position + 1, context.position)]];
       }
     case '\n':
       context.linebreak ||= source.length - position;
       return [[(0, dom_1.html)('br')]];
     default:
-      return [[source[position]]];
+      if (context.sequential) return [[char]];
+      exports.nonAlphanumeric.lastIndex = position + 1;
+      exports.nonWhitespace.lastIndex = position + 1;
+      exports.ASCII.lastIndex = position + 1;
+      const b = isBlank(source, position);
+      let i = b ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : isAlphanumeric(char) ? exports.nonAlphanumeric.test(source) ? exports.nonAlphanumeric.lastIndex - 1 : source.length : !isASCII(char) ? exports.ASCII.test(source) ? exports.ASCII.lastIndex - 1 : source.length : position + 1;
+      const lineend =  false || b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n';
+      i -= position;
+      i = lineend ? i : i - +b || 1;
+      (0, combinator_1.consume)(i - 1, context);
+      context.position += i - 1;
+      const linestart = position === 0 || source[position - 1] === '\n';
+      i = linestart && b && i >= 3 ? i - 3 : 0;
+      i += position;
+      return i === context.position || b && !linestart || lineend ? [[]] : [[source.slice(i, context.position)]];
   }
 };
 exports.text = text;
 exports.txt = (0, combinator_1.union)([exports.text]);
 exports.linebreak = (0, combinator_1.focus)(/[\r\n]/y, (0, combinator_1.union)([exports.text]));
+const blank = /\s(?:$|\s|\\\n)/y;
+function isBlank(source, position) {
+  blank.lastIndex = position;
+  return blank.test(source);
+}
+exports.isBlank = isBlank;
 function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
 }
 exports.isAlphanumeric = isAlphanumeric;
+function isASCII(char) {
+  return char <= '\x7F' || char === '（' || char === '）' || char === '［' || char === '］' || char === '｛' || char === '｝';
+}
+exports.isASCII = isASCII;
 
 /***/ },
 
@@ -8137,6 +8178,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.unescsource = void 0;
 const combinator_1 = __webpack_require__(3484);
+const text_1 = __webpack_require__(5655);
 const dom_1 = __webpack_require__(394);
 const unescsource = ({
   context
@@ -8146,9 +8188,10 @@ const unescsource = ({
     position
   } = context;
   if (position === source.length) return;
+  const char = source[position];
   (0, combinator_1.consume)(1, context);
   context.position += 1;
-  switch (source[position]) {
+  switch (char) {
     case '\r':
       (0, combinator_1.consume)(-1, context);
       return [[]];
@@ -8160,7 +8203,16 @@ const unescsource = ({
       context.linebreak ||= source.length - position;
       return [[(0, dom_1.html)('br')]];
     default:
-      return [[source[position]]];
+      if (context.sequential) return [[char]];
+      text_1.nonAlphanumeric.lastIndex = position + 1;
+      text_1.nonWhitespace.lastIndex = position + 1;
+      text_1.ASCII.lastIndex = position + 1;
+      const b = (0, text_1.isBlank)(source, position);
+      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.isAlphanumeric)(char) ? text_1.nonAlphanumeric.test(source) ? text_1.nonAlphanumeric.lastIndex - 1 : source.length : !(0, text_1.isASCII)(char) ? text_1.ASCII.test(source) ? text_1.ASCII.lastIndex - 1 : source.length : position + 1;
+      i -= position;
+      (0, combinator_1.consume)(i - 1, context);
+      context.position += i - 1;
+      return [[source.slice(position, context.position)]];
   }
 };
 exports.unescsource = unescsource;
@@ -8182,7 +8234,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
 function linearize(parser, trim = 0) {
-  return (0, combinator_1.convert)(source => `\r${trim === 0 ? source : trim > 0 ? source.at(-1) === '\n' ? source : source + '\n' : source.at(-1) === '\n' ? source.slice(0, -1) : source}`, parser, trim === 0);
+  return (0, combinator_1.convert)(source => `${trim === 0 ? source : trim > 0 ? source.at(-1) === '\n' ? source : source + '\n' : source.at(-1) === '\n' ? source.slice(0, -1) : source}`, parser, trim === 0);
 }
 exports.linearize = linearize;
 function repeat(symbol, parser, cons, termination = (nodes, context, prefix, postfix) => {
