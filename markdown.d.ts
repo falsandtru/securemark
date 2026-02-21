@@ -355,7 +355,7 @@ export namespace MarkdownParser {
               BlockquoteParser,
               PlaceholderParser,
               InlineParser.MediaParser,
-              InlineParser.ShortMediaParser,
+              InlineParser.ShortMediaParser.LineShortMediaParser,
             ]>,
             SourceParser.EmptyLineParser,
             InlineParser,
@@ -458,7 +458,7 @@ export namespace MarkdownParser {
             Parser<HTMLTableCellElement, Context, [
               InlineParser.LinkParser.MediaLinkParser,
               InlineParser.MediaParser,
-              InlineParser.ShortMediaParser,
+              InlineParser.ShortMediaParser.LineShortMediaParser,
               InlineParser,
             ]> {
           }
@@ -467,7 +467,7 @@ export namespace MarkdownParser {
             Parser<HTMLTableCellElement, Context, [
               InlineParser.LinkParser.MediaLinkParser,
               InlineParser.MediaParser,
-              InlineParser.ShortMediaParser,
+              InlineParser.ShortMediaParser.LineShortMediaParser,
               InlineParser,
             ]> {
           }

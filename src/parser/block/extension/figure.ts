@@ -12,7 +12,7 @@ import { example } from './example';
 import { table, segment_ as seg_table } from './table';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
-import { inline, media, shortmedia } from '../../inline';
+import { inline, media, lineshortmedia } from '../../inline';
 import { visualize, trimBlank } from '../../visibility';
 import { invalid } from '../../util';
 import { memoize } from 'spica/memoize';
@@ -62,7 +62,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         blockquote,
         placeholder,
         line(media),
-        line(shortmedia),
+        line(lineshortmedia),
       ])),
       emptyline,
       block(visualize(trimBlank(some(inline)))),

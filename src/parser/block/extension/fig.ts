@@ -8,7 +8,7 @@ import { segment as seg_math } from '../mathblock';
 import { segment as seg_table } from './table';
 import { segment as seg_blockquote } from '../blockquote';
 import { segment as seg_placeholder } from './placeholder';
-import { media, shortmedia } from '../../inline';
+import { media, lineshortmedia } from '../../inline';
 
 import FigParser = ExtensionParser.FigParser;
 
@@ -42,7 +42,7 @@ const parser = sequence([
   line(close(seg_label, /(?=\s).*\n/y)),
   line(union([
     media,
-    shortmedia,
+    lineshortmedia,
   ])),
   some(contentline),
 ]);

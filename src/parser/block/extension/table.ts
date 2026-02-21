@@ -2,7 +2,7 @@ import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { Node, eval, input } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
-import { inline, medialink, media, shortmedia } from '../../inline';
+import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { invalid } from '../../util';
 import { visualize, trimBlank, trimBlankEnd } from '../../visibility';
@@ -86,7 +86,7 @@ const head: CellParser.HeadParser = block(fmap(open(
     union([
       block(surround(/[^\n]/y, medialink, /\s*$/y)),
       block(surround(/[^\n]/y, media, /\s*$/y)),
-      block(surround(/[^\n]/y, shortmedia, /\s*$/y)),
+      block(surround(/[^\n]/y, lineshortmedia, /\s*$/y)),
       open(/(?:\s*\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
@@ -103,7 +103,7 @@ const data: CellParser.DataParser = block(fmap(open(
     union([
       block(surround(/[^\n]/y, medialink, /\s*$/y)),
       block(surround(/[^\n]/y, media, /\s*$/y)),
-      block(surround(/[^\n]/y, shortmedia, /\s*$/y)),
+      block(surround(/[^\n]/y, lineshortmedia, /\s*$/y)),
       open(/(?:\s*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
