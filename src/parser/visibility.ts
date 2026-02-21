@@ -79,6 +79,7 @@ export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
       ? parser(input)
       : undefined;
 }
+const wbr = /<wbr[^\S\n]*>/y;
 function isTightStart(input: Input<MarkdownParser.Context>, except?: string): boolean {
   const { context } = input;
   const { source, position } = context;
@@ -103,10 +104,11 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
       context.position = position;
       return true;
     case '<':
+      wbr.lastIndex = position;
       switch (true) {
         case source.length - position >= 5
           && source.startsWith('<wbr', position)
-          && (source[position + 5] === '>' || /^<wbr[^\S\n]*>/.test(source.slice(position))):
+          && (source[position + 5] === '>' || wbr.test(source)):
           return false;
       }
       return true;
