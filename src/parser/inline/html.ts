@@ -115,8 +115,8 @@ export function attributes(
     const value = param !== name
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
-    invalidation ||= !spec || name in attrs;
-    if (spec && name in spec && !spec[name]) continue;
+    invalidation ||= name === '' || !spec || name in attrs;
+    if (name === '' || spec && name in spec && !spec[name]) continue;
     spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined
       ? attrs[name] = value ?? ''
       : invalidation ||= !!spec;
