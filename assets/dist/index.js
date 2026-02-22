@@ -3422,13 +3422,13 @@ function matcher(pattern, advance) {
           position
         } = context;
         pattern.lastIndex = position;
-        const m = pattern.exec(source);
-        if (m === null) return;
-        count && consume(m[0].length, context);
+        if (!pattern.test(source)) return;
+        const src = source.slice(position, pattern.lastIndex);
+        count && consume(src.length, context);
         if (advance) {
-          context.position += m[0].length;
+          context.position += src.length;
         }
-        return [[m[0]]];
+        return [[src]];
       };
   }
 }
@@ -4938,8 +4938,8 @@ const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.
 const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
 const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y;
-const head = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.medialink, /\s*$/y)), (0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.media, /\s*$/y)), (0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.lineshortmedia, /\s*$/y)), (0, combinator_1.open)(/(?:\s*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false);
-const data = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.medialink, /\s*$/y)), (0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.media, /\s*$/y)), (0, combinator_1.block)((0, combinator_1.surround)(/[^\n]/y, inline_1.lineshortmedia, /\s*$/y)), (0, combinator_1.open)(/(?:\s*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false);
+const head = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /\s*$/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => [(0, dom_1.html)('th', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false);
+const data = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /\s*$/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => [(0, dom_1.html)('td', attributes(ns.shift()), (0, dom_1.defrag)(ns))]), false);
 const dataline = (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/!+\s/y, (0, combinator_1.convert)(source => `:${source}`, data, false)), (0, combinator_1.convert)(source => `: ${source}`, data, false)])));
 function attributes(source) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(?:(!+)([+]?))?$/) ?? [];
@@ -5877,7 +5877,7 @@ const visibility_1 = __webpack_require__(6364);
 const dom_1 = __webpack_require__(394);
 exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, ([, ns], context) => context.linebreak === 0 ? [[(0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, visibility_1.trimBlankNodeEnd)(ns)))])]] : undefined, undefined, [1 | 8 /* Backtrack.bracket */, 3 | 16 /* Backtrack.doublebracket */])));
+}, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, visibility_1.trimBlankNodeEnd)(ns)))])]] : undefined, undefined, [1 | 64 /* Backtrack.bracket */, 3 | 32 /* Backtrack.doublebracket */])));
 
 /***/ },
 
@@ -5902,7 +5902,7 @@ const anchor_1 = __webpack_require__(8535);
 const source_1 = __webpack_require__(8745);
 exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?)!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
 // Escape unmatched email-like strings.
-(0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+@?|@(?=@))*/yi), channel_1.channel, account_1.account,
+(0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi), channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
 (0, source_1.str)(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi), hashtag_1.hashtag, hashnum_1.hashnum,
 // Escape unmatched hashtag-like strings.
@@ -6137,7 +6137,7 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/[([{�
   return indexA.test(str) ? [[as[0], str, cs[0]]] : [[(0, dom_1.html)('span', {
     class: 'paren'
   }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))]];
-}, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], {
+}, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 64 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, ([as, bs = [], cs], {
   source,
   position,
   range = 0
@@ -6155,24 +6155,24 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/[([{�
     } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[position] !== '{') {
-      (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+      (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
     } else {
       context.state ^= 8 /* State.link */;
-      const result = !(0, combinator_1.isBacktrack)(context, [1 | 64 /* Backtrack.link */]) ? (0, link_1.textlink)({
+      const result = !(0, combinator_1.isBacktrack)(context, [1 | 16 /* Backtrack.link */]) ? (0, link_1.textlink)({
         context
       }) : undefined;
       context.position = position;
       if (!result) {
-        (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+        (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
       }
       context.state ^= 8 /* State.link */;
       context.range = range;
     }
   }
   return [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)];
-}, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]),
+}, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 64 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 64 /* Backtrack.bracket */]), (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, undefined, ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]),
 // 同一行内でしか閉じない以外括弧と同じ挙動
-(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], context) => context.linebreak === 0 ? [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)] : (context.position -= 1, [(0, array_1.unshift)(as, bs)]), ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 8 /* Backtrack.bracket */])])));
+(0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], context) => context.linebreak === 0 ? [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)] : (context.position -= 1, [(0, array_1.unshift)(as, bs)]), ([as, bs = []]) => [(0, array_1.unshift)(as, bs)], [2 | 64 /* Backtrack.bracket */])])));
 
 /***/ },
 
@@ -6194,7 +6194,7 @@ exports.code = (0, combinator_1.open)(/(?=`)/y, (0, combinator_1.match)(/(`+)(?!
 }, format(body))]] : body ? [[(0, dom_1.html)('code', {
   class: 'invalid',
   ...(0, util_1.invalid)('code', 'syntax', `Missing the closing symbol "${opener}"`)
-}, whole)]] : [[opener]], true), false, [3 | 8 /* Backtrack.bracket */]);
+}, whole)]] : [[opener]], true), false, [3 | 64 /* Backtrack.bracket */]);
 function format(text) {
   return text.length > 2 && text[0] === ' ' && text[1] === '`' && text.at(-1) === ' ' ? text.slice(1, -1) : text;
 }
@@ -6417,7 +6417,7 @@ const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? [[(0, dom_1.html)('a', {
   'data-index': dataindex(bs)
-}, (0, dom_1.defrag)(bs))]] : undefined, undefined, [3 | 8 /* Backtrack.bracket */])), ns => {
+}, (0, dom_1.defrag)(bs))]] : undefined, undefined, [3 | 64 /* Backtrack.bracket */])), ns => {
   if (ns.length === 1) {
     const el = ns[0];
     return [(0, dom_1.define)(el, {
@@ -6436,7 +6436,7 @@ exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|',
     class: 'indexer',
     'data-index': index
   })]] : undefined;
-}, ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)], [3 | 8 /* Backtrack.bracket */])));
+}, ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)], [3 | 64 /* Backtrack.bracket */])));
 function dataindex(ns) {
   if (ns.length === 0) return;
   for (let i = ns.length; i--;) {
@@ -6628,7 +6628,7 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 const body = (0, source_1.str)(/\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/y);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body]));
-exports.label = (0, combinator_1.constraint)(16 /* State.label */, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, undefined, undefined, [1 | 8 /* Backtrack.bracket */, 1]), body]), ([text]) => [(0, dom_1.html)('a', {
+exports.label = (0, combinator_1.constraint)(16 /* State.label */, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, undefined, undefined, [1 | 64 /* Backtrack.bracket */, 1]), body]), ([text]) => [(0, dom_1.html)('a', {
   class: 'label',
   'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
 }, text)]));
@@ -6676,7 +6676,7 @@ exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)(
 (0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, (_, context) => [[(0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('extension', 'syntax', `Invalid start symbol or linebreak`)
-}, context.source.slice(context.position - context.range, context.position))]], ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)], [3 | 8 /* Backtrack.bracket */]));
+}, context.source.slice(context.position - context.range, context.position))]], ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)], [3 | 64 /* Backtrack.bracket */]));
 
 /***/ },
 
@@ -6698,7 +6698,7 @@ const util_1 = __webpack_require__(4992);
 const memoize_1 = __webpack_require__(6925);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-const tags = Object.freeze(['wbr', 'bdo', 'bdi']);
+const tags = ['wbr', 'bdo', 'bdi'];
 const attrspecs = {
   wbr: {},
   bdo: {
@@ -6720,7 +6720,7 @@ function elem(tag, content, as, bs, cs, context) {
     if (bs.length === 0) return ielem('content', `Missing the content`, context);
     if (!(0, visibility_1.isLooseNodeStart)(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
-  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -2 : as.length));
+  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context);
   if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
   return (0, dom_1.html)(tag, attrs, (0, dom_1.defrag)(bs));
@@ -6737,10 +6737,11 @@ function attributes(syntax, spec, params) {
   const attrs = {};
   for (let i = 0; i < params.length; ++i) {
     const param = params[i].trimStart();
+    if (param === '') continue;
     const name = param.split('=', 1)[0];
     const value = param !== name ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1') : undefined;
-    invalidation ||= !spec || name in attrs;
-    if (spec && name in spec && !spec[name]) continue;
+    invalidation ||= name === '' || !spec || name in attrs;
+    if (name === '' || spec && name in spec && !spec[name]) continue;
     spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined ? attrs[name] = value ?? '' : invalidation ||= !!spec;
     (0, array_1.splice)(params, i--, 1);
   }
@@ -6754,7 +6755,7 @@ function attributes(syntax, spec, params) {
 exports.attributes = attributes;
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
-const TAGS = Object.freeze(["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "hgroup", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"]);
+const TAGS = ["html", "base", "head", "link", "meta", "style", "title", "body", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "hgroup", "main", "nav", "section", "blockquote", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "menu", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "img", "map", "track", "video", "embed", "iframe", "object", "picture", "portal", "source", "svg", "math", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "summary", "slot", "template", "acronym", "applet", "bgsound", "big", "blink", "center", "content", "dir", "font", "frame", "frameset", "image", "keygen", "marquee", "menuitem", "nobr", "noembed", "noframes", "param", "plaintext", "rb", "rtc", "shadow", "spacer", "strike", "tt", "xmp"];
 
 /***/ },
 
@@ -6869,20 +6870,20 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.creation)(10, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [(0, array_1.push)(ns, ["\u001F" /* Command.Separator */])] : undefined, undefined, [3 | 8 /* Backtrack.bracket */, 3 | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */])),
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.creation)(10, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [(0, array_1.push)(ns, ["\u001F" /* Command.Separator */])] : undefined, undefined, [3 | 64 /* Backtrack.bracket */, 3 | 16 /* Backtrack.link */, 2 | 8 /* Backtrack.ruby */])),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
 (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y, false, undefined, ([as, bs], context) => {
   if (!bs) return;
   const head = context.position - context.range;
-  (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+  (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
   return [(0, array_1.push)((0, array_1.unshift)(as, bs), ["\u0018" /* Command.Cancel */])];
-}, [3 | 64 /* Backtrack.link */]))]), ([content, params], context) => {
+}, [3 | 16 /* Backtrack.link */]))]), ([content, params], context) => {
   if (content.at(-1) === "\u001F" /* Command.Separator */) {
     content.pop();
     if (params === undefined) {
       const head = context.position - context.range;
-      return void (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+      return void (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
     }
   } else {
     params = content;
@@ -7043,7 +7044,7 @@ const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
-exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(5, bracket), '$', false, undefined, undefined, [3 | 8 /* Backtrack.bracket */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(5, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, undefined, undefined, [3 | 8 /* Backtrack.bracket */])]), ({
+exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(5, bracket), '$', false, undefined, undefined, [3 | 64 /* Backtrack.bracket */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(5, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, undefined, undefined, [3 | 64 /* Backtrack.bracket */])]), ({
   context: {
     source,
     caches: {
@@ -7093,9 +7094,9 @@ Object.setPrototypeOf(optspec, null);
 exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [ns] : undefined, undefined, [3 | 4 /* Backtrack.escbracket */])), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /[^\S\n]*}/y, false, undefined, ([as, bs], context) => {
   if (!bs) return;
   const head = context.position - context.range;
-  (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+  (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
   return [(0, array_1.push)((0, array_1.unshift)(as, bs), ["\u0018" /* Command.Cancel */])];
-}, [3 | 64 /* Backtrack.link */]))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], context) => {
+}, [3 | 16 /* Backtrack.link */]))]), ([as, bs]) => bs ? [[as.join('').trim() || as.join('')], bs] : [[''], as]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], context) => {
   if (params.at(-1) === "\u0018" /* Command.Cancel */) {
     params.pop();
     return [[(0, dom_1.html)('span', {
@@ -7201,7 +7202,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     return [[(0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, visibility_1.trimBlankNodeEnd)(ns)))])]];
   } else {
     const head = position - range;
-    (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head, 2);
+    (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head, 2);
   }
 }, ([as, bs], context) => {
   if (!bs) return;
@@ -7214,9 +7215,9 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
   } = context;
   const head = position - range;
   if (source[position] !== ']') {
-    (0, combinator_1.setBacktrack)(context, [2 | 8 /* Backtrack.bracket */], head, 2);
+    (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.bracket */], head, 2);
   } else if (linebreak !== 0) {
-    (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head, 2);
+    (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head, 2);
   } else {
     if (state & 128 /* State.annotation */) {
       (0, array_1.push)(bs, [source[position]]);
@@ -7224,23 +7225,23 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     context.position += 1;
     let result;
     if (source[context.position] !== '{') {
-      (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head + 1);
+      (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head + 1);
       result = [[]];
     } else {
-      result = !(0, combinator_1.isBacktrack)(context, [1 | 64 /* Backtrack.link */]) ? (0, link_1.textlink)({
+      result = !(0, combinator_1.isBacktrack)(context, [1 | 16 /* Backtrack.link */]) ? (0, link_1.textlink)({
         context
       }) : undefined;
       context.range = range;
       if (!result) {
-        (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head + 1);
+        (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head + 1);
         result = [[]];
       }
     }
     if (context.position === source.length) {
-      (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+      (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
     } else {
       const next = (0, combinator_1.surround)('', (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]), (0, source_1.str)(']'), true, ([, cs = [], ds]) => [(0, array_1.push)(cs, ds)], ([, cs = []]) => {
-        (0, combinator_1.setBacktrack)(context, [2 | 64 /* Backtrack.link */], head);
+        (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
         return [cs];
       })({
         context
@@ -7252,7 +7253,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     context.position = position;
   }
   return state & 128 /* State.annotation */ ? [(0, array_1.unshift)(as, bs)] : undefined;
-}, [1 | 8 /* Backtrack.bracket */, 3 | 16 /* Backtrack.doublebracket */])));
+}, [1 | 64 /* Backtrack.bracket */, 3 | 32 /* Backtrack.doublebracket */])));
 // Chicago-Style
 const abbr = (0, combinator_1.surround)((0, source_1.str)('^'), (0, combinator_1.union)([(0, source_1.str)(/(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/y)]), /\|?(?=]])|\|/y, true, ([, ns], context) => {
   const {
@@ -7303,14 +7304,21 @@ exports.remark = void 0;
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const source_1 = __webpack_require__(8745);
-const memoize_1 = __webpack_require__(6925);
+const util_1 = __webpack_require__(4992);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.match)(/\[(%+)\s/y, (0, memoize_1.memoize)(([, fence]) => (0, combinator_1.surround)((0, source_1.str)(`[${fence}`), (0, combinator_1.precedence)(4, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), new RegExp(String.raw`\s+${fence}\]`, 'y'), [[new RegExp(String.raw`\s+${fence}\]`, 'y'), 4]]))), (0, combinator_1.close)((0, combinator_1.some)(source_1.text, '%'), (0, source_1.str)(`${fence}]`)), true, ([as, bs = [], cs]) => [[(0, dom_1.html)('span', {
+exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.fallback)((0, combinator_1.surround)((0, source_1.str)(/\[%(?=\s)/y), (0, combinator_1.precedence)(4, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /\s%\]/y, [[/\s%\]/y, 4]]))), (0, combinator_1.close)(source_1.text, (0, source_1.str)(`%]`)), true, ([as, bs = [], cs]) => [[(0, dom_1.html)('span', {
   class: 'remark'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
-}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])]], ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)]), ([, fence]) => fence.length, {})));
+}), (0, dom_1.html)('span', (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))])]], ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)]), (0, combinator_1.focus)(/\[%+(?=\s)/y, ({
+  context: {
+    source
+  }
+}) => [[(0, dom_1.html)('span', {
+  class: 'invalid',
+  ...(0, util_1.invalid)('remark', 'syntax', 'Invalid start symbol')
+}, source)]])));
 
 /***/ },
 
@@ -7334,10 +7342,10 @@ const dom_1 = __webpack_require__(394);
 exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', text, ']', false, ([, ns]) => {
   ns && ns.at(-1) === '' && ns.pop();
   return (0, visibility_1.isTightNodeStart)(ns) ? [ns] : undefined;
-}, undefined, [1 | 8 /* Backtrack.bracket */, 3 | 32 /* Backtrack.ruby */])), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, undefined, undefined, [1 | 8 /* Backtrack.bracket */, 3 | 32 /* Backtrack.ruby */]))]), ([texts, rubies], context) => {
+}, undefined, [1 | 64 /* Backtrack.bracket */, 3 | 8 /* Backtrack.ruby */])), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, undefined, undefined, [1 | 64 /* Backtrack.bracket */, 3 | 8 /* Backtrack.ruby */]))]), ([texts, rubies], context) => {
   if (rubies === undefined) {
     const head = context.position - context.range;
-    return void (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.ruby */], head);
+    return void (0, combinator_1.setBacktrack)(context, [2 | 8 /* Backtrack.ruby */], head);
   }
   switch (true) {
     case rubies.length <= texts.length:
@@ -7463,7 +7471,7 @@ exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, s
 }, (0, dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))]], ([, bs], context) => bs && [[(0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('template', 'syntax', `Missing the closing symbol "}}"`)
-}, context.source.slice(context.position - context.range, context.position))]], [3 | 16 /* Backtrack.doublebracket */, 3 | 4 /* Backtrack.escbracket */]));
+}, context.source.slice(context.position - context.range, context.position))]], [3 | 32 /* Backtrack.doublebracket */, 3 | 4 /* Backtrack.escbracket */]));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, '"', [['"', 2, false]]))), (0, source_1.str)('"'), true, ([as, bs = [], cs], context) => context.linebreak === 0 ? [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)] : (context.position -= 1, [(0, array_1.unshift)(as, bs)]), ([as, bs]) => bs && [(0, array_1.unshift)(as, bs)], [3 | 4 /* Backtrack.escbracket */])]));
 
 /***/ },
@@ -7941,6 +7949,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.escsource = void 0;
 const combinator_1 = __webpack_require__(3484);
 const text_1 = __webpack_require__(5655);
+const unescapable_1 = __webpack_require__(8407);
 const dom_1 = __webpack_require__(394);
 const escsource = ({
   context
@@ -7977,11 +7986,9 @@ const escsource = ({
       return [[(0, dom_1.html)('br')]];
     default:
       if (context.sequential) return [[char]];
-      text_1.nonAlphanumeric.lastIndex = position + 1;
       text_1.nonWhitespace.lastIndex = position + 1;
-      text_1.ASCII.lastIndex = position + 1;
       const b = (0, text_1.isBlank)(source, position);
-      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.isAlphanumeric)(char) ? text_1.nonAlphanumeric.test(source) ? text_1.nonAlphanumeric.lastIndex - 1 : source.length : !(0, text_1.isASCII)(char) ? text_1.ASCII.test(source) ? text_1.ASCII.lastIndex - 1 : source.length : position + 1;
+      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, unescapable_1.delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
@@ -8094,13 +8101,11 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isASCII = exports.isAlphanumeric = exports.isBlank = exports.linebreak = exports.txt = exports.text = exports.ASCII = exports.nonAlphanumeric = exports.nonWhitespace = exports.category = void 0;
+exports.isAlphanumeric = exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = exports.delimiter = void 0;
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-exports.category = /(\s)|(\p{ASCII})|(.)/yu;
+exports.delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|+~=/]|\s(?:\\?(?:$|\s)|[$*%|]|([+~=])\1)|\/{3}|:\/\/|\n)/g;
 exports.nonWhitespace = /[\S\r\n]/g;
-exports.nonAlphanumeric = /[^0-9A-Za-z]/g;
-exports.ASCII = /[\x00-\x7F（）［］｛｝]/g;
 const text = input => {
   const {
     context
@@ -8134,11 +8139,9 @@ const text = input => {
       return [[(0, dom_1.html)('br')]];
     default:
       if (context.sequential) return [[char]];
-      exports.nonAlphanumeric.lastIndex = position + 1;
       exports.nonWhitespace.lastIndex = position + 1;
-      exports.ASCII.lastIndex = position + 1;
       const b = isBlank(source, position);
-      let i = b ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : isAlphanumeric(char) ? exports.nonAlphanumeric.test(source) ? exports.nonAlphanumeric.lastIndex - 1 : source.length : !isASCII(char) ? exports.ASCII.test(source) ? exports.ASCII.lastIndex - 1 : source.length : position + 1;
+      let i = b ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position, exports.delimiter);
       const lineend =  false || b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n';
       i -= position;
       i = lineend ? i : i - +b || 1;
@@ -8153,6 +8156,90 @@ const text = input => {
 exports.text = text;
 exports.txt = (0, combinator_1.union)([exports.text]);
 exports.linebreak = (0, combinator_1.focus)(/[\r\n]/y, (0, combinator_1.union)([exports.text]));
+function next(source, position, delimiter) {
+  delimiter.lastIndex = position + 1;
+  delimiter.test(source);
+  let index = delimiter.lastIndex;
+  if (index === 0) return source.length;
+  const char = source[index];
+  switch (char) {
+    case ':':
+      index = backToUrlHead(source, position, index);
+      break;
+    case '@':
+      index = backToEmailHead(source, position, index);
+      break;
+  }
+  if (index > position + 1) switch (char) {
+    case '*':
+    case '+':
+    case '~':
+    case '=':
+    case '/':
+    case '%':
+    case '|':
+      index -= /\s/.test(source[index - 1]) ? 1 : 0;
+  }
+  return index;
+}
+exports.next = next;
+function backToUrlHead(source, position, index) {
+  const delim = index;
+  let state = false;
+  let offset = 0;
+  for (let i = index; --i > position;) {
+    index = i;
+    const char = source[i];
+    if (state) switch (char) {
+      case '.':
+      case '+':
+      case '-':
+        state = false;
+        offset = 1;
+        continue;
+    }
+    if (isAlphanumeric(char)) {
+      state = true;
+      offset = 0;
+      continue;
+    }
+    break;
+  }
+  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
+    return delim;
+  }
+  return index + offset;
+}
+exports.backToUrlHead = backToUrlHead;
+function backToEmailHead(source, position, index) {
+  const delim = index;
+  let state = false;
+  let offset = 0;
+  for (let i = index; --i > position;) {
+    index = i;
+    const char = source[i];
+    if (state) switch (char) {
+      case '_':
+      case '.':
+      case '+':
+      case '-':
+        state = false;
+        offset = 1;
+        continue;
+    }
+    if (isAlphanumeric(char)) {
+      state = true;
+      offset = 0;
+      continue;
+    }
+    break;
+  }
+  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
+    return delim;
+  }
+  return index + offset;
+}
+exports.backToEmailHead = backToEmailHead;
 const blank = /\s(?:$|\s|\\\n)/y;
 function isBlank(source, position) {
   blank.lastIndex = position;
@@ -8164,10 +8251,6 @@ function isAlphanumeric(char) {
   return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
 }
 exports.isAlphanumeric = isAlphanumeric;
-function isASCII(char) {
-  return char <= '\x7F' || char === '（' || char === '）' || char === '［' || char === '］' || char === '｛' || char === '｝';
-}
-exports.isASCII = isASCII;
 
 /***/ },
 
@@ -8180,10 +8263,11 @@ exports.isASCII = isASCII;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.unescsource = void 0;
+exports.unescsource = exports.delimiter = void 0;
 const combinator_1 = __webpack_require__(3484);
 const text_1 = __webpack_require__(5655);
 const dom_1 = __webpack_require__(394);
+exports.delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
 const unescsource = ({
   context
 }) => {
@@ -8208,11 +8292,9 @@ const unescsource = ({
       return [[(0, dom_1.html)('br')]];
     default:
       if (context.sequential) return [[char]];
-      text_1.nonAlphanumeric.lastIndex = position + 1;
       text_1.nonWhitespace.lastIndex = position + 1;
-      text_1.ASCII.lastIndex = position + 1;
       const b = (0, text_1.isBlank)(source, position);
-      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.isAlphanumeric)(char) ? text_1.nonAlphanumeric.test(source) ? text_1.nonAlphanumeric.lastIndex - 1 : source.length : !(0, text_1.isASCII)(char) ? text_1.ASCII.test(source) ? text_1.ASCII.lastIndex - 1 : source.length : position + 1;
+      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
