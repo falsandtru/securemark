@@ -15,7 +15,7 @@ describe('Unit: parser/source/text', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a'), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab'), ctx), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09', 'あい', 'AZaz'], '']);
+      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09あいAZaz'], '']);
       assert.deepStrictEqual(inspect(parser('a\nb'), ctx), [['a', '<br>', 'b'], '']);
     });
 
@@ -41,18 +41,18 @@ describe('Unit: parser/source/text', () => {
       assert.deepStrictEqual(inspect(parser('  \n'), ctx), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser(' \\\n'), ctx), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser('  \\\n'), ctx), [['<br>'], '']);
-      assert.deepStrictEqual(inspect(parser(' a'), ctx), [[' ', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('  a'), ctx), [[' ', ' ', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('   a'), ctx), [['  ', ' ', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser(' a'), ctx), [[' a'], '']);
+      assert.deepStrictEqual(inspect(parser('  a'), ctx), [[' ', ' a'], '']);
+      assert.deepStrictEqual(inspect(parser('   a'), ctx), [['  ', ' a'], '']);
       assert.deepStrictEqual(inspect(parser('a '), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('a  '), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('a \n'), ctx), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a  \n'), ctx), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a \\\n'), ctx), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a  \\\n'), ctx), [['a', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('a b'), ctx), [['a', ' ', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('a  b'), ctx), [['a', ' ', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('a   b'), ctx), [['a', ' ', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('a b'), ctx), [['a b'], '']);
+      assert.deepStrictEqual(inspect(parser('a  b'), ctx), [['a', ' b'], '']);
+      assert.deepStrictEqual(inspect(parser('a   b'), ctx), [['a', ' b'], '']);
     });
 
     it('hardbreak', () => {
@@ -76,45 +76,45 @@ describe('Unit: parser/source/text', () => {
     });
 
     it('account', () => {
-      assert.deepStrictEqual(inspect(parser('@0'), ctx), [['@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('_@0'), ctx), [['_', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('$@0'), ctx), [['$', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('+@0'), ctx), [['+', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('-@0'), ctx), [['-', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('0@0'), ctx), [['0', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('a@0'), ctx), [['a', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('A@0'), ctx), [['A', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('aA@0'), ctx), [['aA', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser(' @0'), ctx), [[' ', '@', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('@@0'), ctx), [['@', '@', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('@0'), ctx), [['@0'], '']);
+      assert.deepStrictEqual(inspect(parser('_@0'), ctx), [['_', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('$@0'), ctx), [['$', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('+@0'), ctx), [['+', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('-@0'), ctx), [['-', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('0@0'), ctx), [['0', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('a@0'), ctx), [['a', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('A@0'), ctx), [['A', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA@0'), ctx), [['aA', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser(' @0'), ctx), [[' ', '@0'], '']);
+      assert.deepStrictEqual(inspect(parser('@@0'), ctx), [['@', '@0'], '']);
     });
 
     it('hashtag', () => {
-      assert.deepStrictEqual(inspect(parser('#0'), ctx), [['#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('_#0'), ctx), [['_', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('$#0'), ctx), [['$', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('+#0'), ctx), [['+', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('-#0'), ctx), [['-', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('0#0'), ctx), [['0', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('a#0'), ctx), [['a', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('A#0'), ctx), [['A', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('aA#0'), ctx), [['aA', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser(' #0'), ctx), [[' ', '#', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('##0'), ctx), [['#', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('#0'), ctx), [['#0'], '']);
+      assert.deepStrictEqual(inspect(parser('_#0'), ctx), [['_', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('$#0'), ctx), [['$', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('+#0'), ctx), [['+', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('-#0'), ctx), [['-', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('0#0'), ctx), [['0', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('a#0'), ctx), [['a', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('A#0'), ctx), [['A', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA#0'), ctx), [['aA', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser(' #0'), ctx), [[' ', '#0'], '']);
+      assert.deepStrictEqual(inspect(parser('##0'), ctx), [['#', '#0'], '']);
     });
 
     it('anchor', () => {
-      assert.deepStrictEqual(inspect(parser('>>0'), ctx), [['>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('_>>0'), ctx), [['_', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('$>>0'), ctx), [['$', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('+>>0'), ctx), [['+', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('->>0'), ctx), [['-', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('0>>0'), ctx), [['0', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('a>>0'), ctx), [['a', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('A>>0'), ctx), [['A', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('aA>>0'), ctx), [['aA', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser(' >>0'), ctx), [[' ', '>', '>', '0'], '']);
-      assert.deepStrictEqual(inspect(parser('>>>>0'), ctx), [['>', '>', '>', '>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0'), ctx), [['>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('_>>0'), ctx), [['_', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('$>>0'), ctx), [['$', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('+>>0'), ctx), [['+', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('->>0'), ctx), [['-', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('0>>0'), ctx), [['0', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('a>>0'), ctx), [['a', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('A>>0'), ctx), [['A', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('aA>>0'), ctx), [['aA', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser(' >>0'), ctx), [[' ', '>', '>0'], '']);
+      assert.deepStrictEqual(inspect(parser('>>>>0'), ctx), [['>', '>', '>', '>0'], '']);
     });
 
   });

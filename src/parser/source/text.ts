@@ -3,10 +3,8 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const category = /(\s)|(\p{ASCII})|(.)/yu;
+export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|+~=/]|\s(?:\\?(?:$|\s)|[$*%|]|([+~=])\1)|\/{3}|:\/\/|\n)/g;
 export const nonWhitespace = /[\S\r\n]/g;
-export const nonAlphanumeric = /[^0-9A-Za-z]/g;
-export const ASCII = /[\x00-\x7F（）［］｛｝]/g;
 
 export const text: TextParser = input => {
   const { context } = input;
@@ -39,23 +37,13 @@ export const text: TextParser = input => {
     default:
       assert(char !== '\n');
       if (context.sequential) return [[char]];
-      nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
-      ASCII.lastIndex = position + 1;
       const b = isBlank(source, position);
       let i = b
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : isAlphanumeric(char)
-          ? nonAlphanumeric.test(source)
-            ? nonAlphanumeric.lastIndex - 1
-            : source.length
-          : !isASCII(char)
-            ? ASCII.test(source)
-              ? ASCII.lastIndex - 1
-              : source.length
-            : position + 1;
+        : next(source, position, delimiter);
       assert(i > position);
       const lineend = 0
         || b && i === source.length
@@ -82,24 +70,99 @@ export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
 
+export function next(source: string, position: number, delimiter: RegExp): number {
+  delimiter.lastIndex = position + 1;
+  delimiter.test(source);
+  let index = delimiter.lastIndex;
+  if (index === 0) return source.length;
+  assert(index > position);
+  const char = source[index];
+  switch (char) {
+    case ':':
+      index = backToUrlHead(source, position, index);
+      break;
+    case '@':
+      index = backToEmailHead(source, position, index);
+      break;
+  }
+  if (index > position + 1) switch (char) {
+    case '*':
+    case '+':
+    case '~':
+    case '=':
+    case '/':
+    case '%':
+    case '|':
+      index -= /\s/.test(source[index - 1]) ? 1 : 0;
+  }
+  assert(index > position);
+  return index;
+}
+export function backToUrlHead(source: string, position: number, index: number): number {
+  const delim = index;
+  let state = false;
+  let offset = 0;
+  for (let i = index; --i > position;) {
+    index = i;
+    const char = source[i];
+    if (state) switch (char) {
+      case '.':
+      case '+':
+      case '-':
+        state = false;
+        offset = 1;
+        continue;
+    }
+    if (isAlphanumeric(char)) {
+      state = true;
+      offset = 0;
+      continue;
+    }
+    break;
+  }
+  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
+    return delim;
+  }
+  return index + offset;
+}
+export function backToEmailHead(source: string, position: number, index: number): number {
+  const delim = index;
+  let state = false;
+  let offset = 0;
+  for (let i = index; --i > position;) {
+    index = i;
+    const char = source[i];
+    if (state) switch (char) {
+      case '_':
+      case '.':
+      case '+':
+      case '-':
+        state = false;
+        offset = 1;
+        continue;
+    }
+    if (isAlphanumeric(char)) {
+      state = true;
+      offset = 0;
+      continue;
+    }
+    break;
+  }
+  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
+    return delim;
+  }
+  return index + offset;
+}
+
 const blank = /\s(?:$|\s|\\\n)/y;
 export function isBlank(source: string, position: number): boolean {
   blank.lastIndex = position;
   return blank.test(source);
 }
-
 export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9'
       || 'a' <= char && char <= 'z'
       || 'A' <= char && char <= 'Z';
-}
-
-export function isASCII(char: string): boolean {
-  assert(char.length === 1);
-  return char <= '\x7F'
-      || char === '（' || char === '）'
-      || char === '［' || char === '］'
-      || char === '｛' || char === '｝';
 }

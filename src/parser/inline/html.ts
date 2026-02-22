@@ -81,7 +81,7 @@ function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | st
     if (bs.length === 0) return ielem('content', `Missing the content`, context);
     if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
-  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -2 : as.length));
+  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)
   if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
   return h(tag as 'span', attrs, defrag(bs));
@@ -110,6 +110,7 @@ export function attributes(
   const attrs: Record<string, string | undefined> = {};
   for (let i = 0; i < params.length; ++i) {
     const param = params[i].trimStart();
+    if (param === '') continue;
     const name = param.split('=', 1)[0];
     const value = param !== name
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')

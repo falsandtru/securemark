@@ -1,8 +1,10 @@
 import { UnescapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { nonWhitespace, nonAlphanumeric, ASCII, isBlank, isAlphanumeric, isASCII } from './text';
+import { nonWhitespace, isBlank, next } from './text';
 import { html } from 'typed-dom/dom';
+
+export const delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
 
 export const unescsource: UnescapableSourceParser = ({ context }) => {
   const { source, position } = context;
@@ -25,23 +27,13 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
     default:
       assert(char !== '\n');
       if (context.sequential) return [[char]];
-      nonAlphanumeric.lastIndex = position + 1;
       nonWhitespace.lastIndex = position + 1;
-      ASCII.lastIndex = position + 1;
       const b = isBlank(source, position);
       let i = b
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : isAlphanumeric(char)
-          ? nonAlphanumeric.test(source)
-            ? nonAlphanumeric.lastIndex - 1
-            : source.length
-          : !isASCII(char)
-            ? ASCII.test(source)
-              ? ASCII.lastIndex - 1
-              : source.length
-            : position + 1;
+        : next(source, position, delimiter);
       assert(i > position);
       i -= position;
       consume(i - 1, context);

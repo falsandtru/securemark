@@ -23,7 +23,7 @@ export const autolink: AutolinkParser = lazy(() =>
     url,
     email,
     // Escape unmatched email-like strings.
-    str(/[0-9a-z]+(?:[_.+-][0-9a-z]+@?|@(?=@))*/yi),
+    str(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi),
     channel,
     account,
     // Escape unmatched account-like strings.
