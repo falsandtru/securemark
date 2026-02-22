@@ -179,13 +179,13 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
       return ({ context }) => {
         const { source, position } = context;
         pattern.lastIndex = position;
-        const m = pattern.exec(source);
-        if (m === null) return;
-        count && consume(m[0].length, context);
+        if (!pattern.test(source)) return;
+        const src = source.slice(position, pattern.lastIndex);
+        count && consume(src.length, context);
         if (advance) {
-          context.position += m[0].length;
+          context.position += src.length;
         }
-        return [[m[0]]];
+        return [[src]];
       };
   }
 }
