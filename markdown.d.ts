@@ -456,18 +456,22 @@ export namespace MarkdownParser {
           export interface HeadParser extends
             Block<'extension/table/cell/head'>,
             Parser<HTMLTableCellElement, Context, [
-              InlineParser.LinkParser.MediaLinkParser,
-              InlineParser.MediaParser,
-              InlineParser.ShortMediaParser.LineShortMediaParser,
+              Parser<HTMLElement, Context, [
+                InlineParser.LinkParser.MediaLinkParser,
+                InlineParser.MediaParser,
+                InlineParser.ShortMediaParser.LineShortMediaParser,
+              ]>,
               InlineParser,
             ]> {
           }
           export interface DataParser extends
             Block<'extension/table/cell/data'>,
             Parser<HTMLTableCellElement, Context, [
-              InlineParser.LinkParser.MediaLinkParser,
-              InlineParser.MediaParser,
-              InlineParser.ShortMediaParser.LineShortMediaParser,
+              Parser<HTMLElement, Context, [
+                InlineParser.LinkParser.MediaLinkParser,
+                InlineParser.MediaParser,
+                InlineParser.ShortMediaParser.LineShortMediaParser,
+              ]>,
               InlineParser,
             ]> {
           }

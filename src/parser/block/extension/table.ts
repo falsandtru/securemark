@@ -84,9 +84,14 @@ const head: CellParser.HeadParser = block(fmap(open(
       some(contentline, delimiter),
     ]),
     union([
-      block(surround(/[^\n]/y, medialink, /\s*$/y)),
-      block(surround(/[^\n]/y, media, /\s*$/y)),
-      block(surround(/[^\n]/y, lineshortmedia, /\s*$/y)),
+      block(surround(
+        /\s/y,
+        union([
+          medialink,
+          media,
+          lineshortmedia,
+        ]),
+        /\s*$/y)),
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
@@ -101,9 +106,14 @@ const data: CellParser.DataParser = block(fmap(open(
       some(contentline, delimiter),
     ]),
     union([
-      block(surround(/[^\n]/y, medialink, /\s*$/y)),
-      block(surround(/[^\n]/y, media, /\s*$/y)),
-      block(surround(/[^\n]/y, lineshortmedia, /\s*$/y)),
+      block(surround(
+        /\s/y,
+        union([
+          medialink,
+          media,
+          lineshortmedia,
+        ]),
+        /\s*$/y)),
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
