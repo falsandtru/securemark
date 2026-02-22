@@ -28,10 +28,10 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  link = 1 << 6,
-  ruby = 1 << 5,
-  doublebracket = 1 << 4,
-  bracket = 1 << 3,
+  bracket = 1 << 6,
+  doublebracket = 1 << 5,
+  link = 1 << 4,
+  ruby = 1 << 3,
   escbracket = 1 << 2,
   autolink = 0 << 2,
 }
