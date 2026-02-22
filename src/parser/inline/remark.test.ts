@@ -26,15 +26,15 @@ describe('Unit: parser/inline/remark', () => {
       assert.deepStrictEqual(inspect(parser('[% a [%'), ctx), [['[%', ' ', 'a', ' ', '[', '%'], '']);
       assert.deepStrictEqual(inspect(parser('[% a [% '), ctx), [['[%', ' ', 'a', ' ', '[%'], '']);
       assert.deepStrictEqual(inspect(parser('[% a [% b'), ctx), [['[%', ' ', 'a', ' ', '[%', ' ', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('[% a [%% b'), ctx), [['[%', ' ', 'a', ' ', '[%%', ' ', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% a [% b'), ctx), [['[%%', ' ', 'a', ' ', '[%', ' ', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('[% a [%% b'), ctx), [['[%', ' ', 'a', ' ', '<span class="invalid">[%%</span>', ' ', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('[%% a [% b'), ctx), [['<span class="invalid">[%%</span>'], ' a [% b']);
       assert.deepStrictEqual(inspect(parser('[%\\ a %]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[% a\\ %]'), ctx), [['[%', ' ', 'a', ' ', '%', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[% a%]'), ctx), [['[%', ' ', 'a', '%', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[% a %%]'), ctx), [['[%', ' ', 'a', ' ', '%', '%', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[% [%% %]'), ctx), [['[%', ' ', '[%%', ' ', '%', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% [% %%]'), ctx), [['[%%', ' ', '[%', ' ', '%', '%', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% a %]'), ctx), [['[%%', ' ', 'a', ' ', '%', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[% [%% %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% <span class="invalid">[%%</span> %]</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[%% [% %%]'), ctx), [['<span class="invalid">[%%</span>'], ' [% %%]']);
+      assert.deepStrictEqual(inspect(parser('[%% a %]'), ctx), [['<span class="invalid">[%%</span>'], ' a %]']);
       assert.deepStrictEqual(inspect(parser(' [% a %]'), ctx), undefined);
     });
 
@@ -49,10 +49,6 @@ describe('Unit: parser/inline/remark', () => {
       assert.deepStrictEqual(inspect(parser('[% a %] %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% a %]</span></span>'], ' %]']);
       assert.deepStrictEqual(inspect(parser('[% %%] %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% %%] %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% [% a %] %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% <span class="remark"><input type="checkbox"><span>[% a %]</span></span> %]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[% [%% a %%] %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% <span class="remark"><input type="checkbox"><span>[%% a %%]</span></span> %]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% a %%]'), ctx), [['<span class="remark"><input type="checkbox"><span>[%% a %%]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% %] %%]'), ctx), [['<span class="remark"><input type="checkbox"><span>[%% %] %%]</span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% [% a %] %%]'), ctx), [['<span class="remark"><input type="checkbox"><span>[%% <span class="remark"><input type="checkbox"><span>[% a %]</span></span> %%]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% a %]b'), ctx), [['<span class="remark"><input type="checkbox"><span>[% a %]</span></span>'], 'b']);
       assert.deepStrictEqual(inspect(parser('[%\na\n%]'), ctx), [['<span class="remark"><input type="checkbox"><span>[%<br>a<br>%]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[% &a; %]'), ctx), [['<span class="remark"><input type="checkbox"><span>[% <span class="invalid">&amp;a;</span> %]</span></span>'], '']);

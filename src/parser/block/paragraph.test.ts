@@ -67,7 +67,6 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('[% a %]'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('[% a %]b'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('[% a %]\nb'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[% a %]</span></span><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('[%% a %%]'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[%% a %%]</span></span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]a'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('[%\n<wbr>\n%]\na'), ctx), [['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>'], '']);
