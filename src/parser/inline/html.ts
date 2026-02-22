@@ -10,7 +10,7 @@ import { memoize } from 'spica/memoize';
 import { unshift, push, splice } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
-const tags = Object.freeze(['wbr', 'bdo', 'bdi']);
+const tags: readonly string[] = ['wbr', 'bdo', 'bdi'];
 const attrspecs = {
   wbr: {},
   bdo: {
@@ -132,7 +132,7 @@ export function attributes(
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
-const TAGS = Object.freeze([
+const TAGS: readonly string[] = [
   "html",
   "base",
   "head",
@@ -269,4 +269,4 @@ const TAGS = Object.freeze([
   "strike",
   "tt",
   "xmp",
-]);
+];
