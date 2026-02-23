@@ -12,12 +12,17 @@ describe('Unit: combinator/indent', () => {
       assert.deepStrictEqual(inspect(parser(input(' ', ctx)), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(input('  ', ctx)), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(input('a ', ctx)), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(input(' a\n', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a', ctx)), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser(input(' a ', ctx)), ctx), [['a '], '']);
+      assert.deepStrictEqual(inspect(parser(input(' a\n', ctx)), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser(input(' a \n', ctx)), ctx), [['a '], '']);
       assert.deepStrictEqual(inspect(parser(input('  a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('   a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('    a', ctx)), ctx), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('     a', ctx)), ctx), [[' a'], '']);
       assert.deepStrictEqual(inspect(parser(input(' a\n a', ctx)), ctx), [['a\na'], '']);
       assert.deepStrictEqual(inspect(parser(input(' a\n  a', ctx)), ctx), [['a\n a'], '']);
+      assert.deepStrictEqual(inspect(parser(input('    a\n        a', ctx)), ctx), [['a\n    a'], '']);
       assert.deepStrictEqual(inspect(parser(input('  a\n a', ctx)), ctx), [['a'], ' a']);
       assert.deepStrictEqual(inspect(parser(input(' \ta', ctx)), ctx), [['\ta'], '']);
       assert.deepStrictEqual(inspect(parser(input('\ta', ctx)), ctx), [['a'], '']);
