@@ -2,8 +2,9 @@ import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
 import { nonWhitespace, isBlank, next } from './text';
-import { delimiter } from './unescapable';
 import { html } from 'typed-dom/dom';
+
+const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s(?:\$)|:\/\/)/g;
 
 export const escsource: EscapableSourceParser = ({ context }) => {
   const { source, position } = context;
