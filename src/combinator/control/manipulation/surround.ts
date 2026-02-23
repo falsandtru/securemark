@@ -157,7 +157,8 @@ export function setBacktrack(
   position: number,
   length: number = 1,
 ): void {
-  const { source } = context;
+  const { source, state = 0 } = context;
+  if (state === 0) return;
   if (position === source.length) return;
   if (length === 0) return;
   for (const backtrack of backtracks) {
