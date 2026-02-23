@@ -196,7 +196,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('*a@b*'), ctx), [['<em><a class="email" href="mailto:a@b">a@b</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('(a@b)'), ctx), [['<span class="paren">(<a class="email" href="mailto:a@b">a@b</a>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser(' a@b'), ctx), [[' ', '<a class="email" href="mailto:a@b">a@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a++b@c++'), ctx), [['<ins>a</ins>', '<a class="email" href="mailto:b@c">b@c</a>', '+', '+'], '']);
+      assert.deepStrictEqual(inspect(parser('++a@b++'), ctx), [['<ins><a class="email" href="mailto:a@b">a@b</a></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++a++b@c++'), ctx), [['<ins>a</ins>', '<a class="email" href="mailto:b@c">b@c</a>', '++'], '']);
     });
 
     it('channel', () => {

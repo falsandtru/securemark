@@ -3,7 +3,7 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|+~=]|\s(?:\\?(?:$|\s)|[$*%|]|([+~=])\1)|\/{3}|:\/\/|\n)/g;
+export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$*%])|:\/\/|\n)/g;
 export const nonWhitespace = /[\S\r\n]/g;
 
 export const text: TextParser = input => {
