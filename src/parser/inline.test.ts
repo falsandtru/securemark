@@ -165,16 +165,16 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('"[% *"*"*'), ctx), [['"', '[%', ' ', '*', '"', '*', '"', '*'], '']);
       assert.deepStrictEqual(inspect(parser('"[% "*"* %]'), ctx), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('"{{""}}'), ctx), [['"', '{', '{', '"', '"', '}', '}'], '']);
-      assert.deepStrictEqual(inspect(parser('[#http://host/(<bdi>)]</bdi>'), ctx), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/(&lt;bdi&gt;)</a>', '<', '/bdi', '>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>'), ctx), [['<a class="index" href="#index::@a/http://host/(&lt;bdi&gt;)">@a/http://host/(&lt;bdi&gt;)</a>', '<', '/bdi', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#http://host/(<bdi>)]</bdi>'), ctx), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/(&lt;bdi&gt;)</a>', '</bdi', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#@a/http://host/(<bdi>)]</bdi>'), ctx), [['<a class="index" href="#index::@a/http://host/(&lt;bdi&gt;)">@a/http://host/(&lt;bdi&gt;)</a>', '</bdi', '>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|<bdi>]</bdi>'), ctx), [['[', '<a class="hashtag" href="/hashtags/a">#a</a>', '|', '<bdi>]</bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('[[#a|<bdi>]</bdi>'), ctx), [['[', '[', '<a class="hashtag" href="/hashtags/a">#a</a>', '|', '<bdi>]</bdi>'], '']);
     });
 
     it('uri', () => {
       assert.deepStrictEqual(inspect(parser('\nhttp://host'), ctx), [['<br>', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('0http://host'), ctx), [['0http:', '/', '/host'], '']);
-      assert.deepStrictEqual(inspect(parser('0aAhttp://host'), ctx), [['0aAhttp:', '/', '/host'], '']);
+      assert.deepStrictEqual(inspect(parser('0http://host'), ctx), [['0http:', '//host'], '']);
+      assert.deepStrictEqual(inspect(parser('0aAhttp://host'), ctx), [['0aAhttp:', '//host'], '']);
       assert.deepStrictEqual(inspect(parser('?http://host'), ctx), [['?', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('0!http://host'), ctx), [['0', '!', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('0?http://host'), ctx), [['0', '?', '<a class="url" href="http://host" target="_blank">http://host</a>'], '']);
@@ -209,7 +209,7 @@ describe('Unit: parser/inline', () => {
 
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@a'), ctx), [['<a class="account" href="/@a">@a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@http://host'), ctx), [['@http', ':', '/', '/host'], '']);
+      assert.deepStrictEqual(inspect(parser('@http://host'), ctx), [['@http', '://host'], '']);
       assert.deepStrictEqual(inspect(parser('_@a'), ctx), [['_', '<a class="account" href="/@a">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_@a_'), ctx), [['_', '<a class="account" href="/@a">@a</a>', '_'], '']);
       assert.deepStrictEqual(inspect(parser('*@a*'), ctx), [['<em><a class="account" href="/@a">@a</a></em>'], '']);
@@ -221,7 +221,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('#a#'), ctx), [['#a', '#'], '']);
       assert.deepStrictEqual(inspect(parser('#a#b'), ctx), [['#a', '#b'], '']);
       assert.deepStrictEqual(inspect(parser('#a'), ctx), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#http://host'), ctx), [['#http', ':', '/', '/host'], '']);
+      assert.deepStrictEqual(inspect(parser('#http://host'), ctx), [['#http', '://host'], '']);
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]'), ctx), [['<a class="hashtag" href="/hashtags/a">#a</a>', '<br>', 'b', '<br>', '<a class="hashtag" href="/hashtags/c">#c</a>', '<br>', '<a class="index" href="#index::d">d</a>'], '']);
       assert.deepStrictEqual(inspect(parser('##a'), ctx), [['##a'], '']);
       assert.deepStrictEqual(inspect(parser('_#a'), ctx), [['_', '<a class="hashtag" href="/hashtags/a">#a</a>'], '']);

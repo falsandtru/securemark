@@ -12,10 +12,10 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' http'), ctx), [[' http'], '']);
       assert.deepStrictEqual(inspect(parser(' ttp'), ctx), [[' ttp'], '']);
-      assert.deepStrictEqual(inspect(parser(' http://'), ctx), [[' ', 'http:', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser(' http://['), ctx), [[' ', 'http:', '/', '/', '['], '']);
-      assert.deepStrictEqual(inspect(parser(' http://]'), ctx), [[' ', 'http:', '/', '/', ']'], '']);
-      assert.deepStrictEqual(inspect(parser(' Http://host'), ctx), [[' ', 'Http:', '/', '/host'], '']);
+      assert.deepStrictEqual(inspect(parser(' http://'), ctx), [[' ', 'http:', '//'], '']);
+      assert.deepStrictEqual(inspect(parser(' http://['), ctx), [[' ', 'http:', '//', '['], '']);
+      assert.deepStrictEqual(inspect(parser(' http://]'), ctx), [[' ', 'http:', '//', ']'], '']);
+      assert.deepStrictEqual(inspect(parser(' Http://host'), ctx), [[' ', 'Http:', '//host'], '']);
       assert.deepStrictEqual(inspect(parser(' http://[::ffff:0:0%1]'), ctx), [[' ', '<a class="invalid">http://[::ffff:0:0%1]</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' http://[::ffff:0:0/96]'), ctx), [[' ', '<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
     });
@@ -59,7 +59,7 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser(' http://host^'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '^'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host_'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '_'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host/'), ctx), [[' ', '<a class="url" href="http://host/" target="_blank">http://host/</a>'], '']);
-      assert.deepStrictEqual(inspect(parser(' http://host//'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '/', '/'], '']);
+      assert.deepStrictEqual(inspect(parser(' http://host//'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '//'], '']);
       assert.deepStrictEqual(inspect(parser(` http://host'`), ctx), [[' ', '<a class="url" href="http://host\'" target="_blank">http://host\'</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host"'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '"'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host`'), ctx), [[' ', '<a class="url" href="http://host" target="_blank">http://host</a>', '`'], '']);

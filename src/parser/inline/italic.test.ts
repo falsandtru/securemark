@@ -11,14 +11,14 @@ describe('Unit: parser/inline/italic', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('///'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('///a'), ctx), [['///', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('///a ///'), ctx), [['///', 'a', ' ', '/', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser('///a  ///'), ctx), [['///', 'a', ' ', '/', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser('///a\n///'), ctx), [['///', 'a', '<br>', '/', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser('///a\\ ///'), ctx), [['///', 'a', ' ', '/', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser('///a\\\n///'), ctx), [['///', 'a', '<br>', '/', '/', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('///a ///'), ctx), [['///', 'a', ' ', '///'], '']);
+      assert.deepStrictEqual(inspect(parser('///a  ///'), ctx), [['///', 'a', ' ', '///'], '']);
+      assert.deepStrictEqual(inspect(parser('///a\n///'), ctx), [['///', 'a', '<br>', '///'], '']);
+      assert.deepStrictEqual(inspect(parser('///a\\ ///'), ctx), [['///', 'a', ' ', '///'], '']);
+      assert.deepStrictEqual(inspect(parser('///a\\\n///'), ctx), [['///', 'a', '<br>', '///'], '']);
       assert.deepStrictEqual(inspect(parser('///a/b'), ctx), [['///', 'a', '/b'], '']);
-      assert.deepStrictEqual(inspect(parser('///a//b'), ctx), [['///', 'a', '/', '/b'], '']);
-      assert.deepStrictEqual(inspect(parser('///a*b///'), ctx), [['///', 'a', '*', 'b', '/', '/', '/'], '']);
+      assert.deepStrictEqual(inspect(parser('///a//b'), ctx), [['///', 'a', '//b'], '']);
+      assert.deepStrictEqual(inspect(parser('///a*b///'), ctx), [['///', 'a', '*', 'b', '///'], '']);
       assert.deepStrictEqual(inspect(parser('/// ///'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('/// a///'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('/// a ///'), ctx), undefined);
@@ -53,8 +53,8 @@ describe('Unit: parser/inline/italic', () => {
       assert.deepStrictEqual(inspect(parser('//////a///b'), ctx), [['///', '<i>a</i>', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('//////a////'), ctx), [['///', '<i>a</i>', '/'], '']);
       assert.deepStrictEqual(inspect(parser('//////a////b'), ctx), [['///', '<i>a</i>', '/b'], '']);
-      assert.deepStrictEqual(inspect(parser('//////a/////'), ctx), [['///', '<i>a</i>', '/', '/'], '']);
-      assert.deepStrictEqual(inspect(parser('//////a/////b'), ctx), [['///', '<i>a</i>', '/', '/b'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a/////'), ctx), [['///', '<i>a</i>', '//'], '']);
+      assert.deepStrictEqual(inspect(parser('//////a/////b'), ctx), [['///', '<i>a</i>', '//b'], '']);
       assert.deepStrictEqual(inspect(parser('//////a//////'), ctx), [['<i><i>a</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('//////a///b///'), ctx), [['<i><i>a</i>b</i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a ///b//////'), ctx), [['<i>a <i>b</i></i>'], '']);
