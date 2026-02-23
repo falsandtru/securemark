@@ -3,7 +3,7 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$*%])|:\/\/|\n)/g;
+export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/|\n)/g;
 export const nonWhitespace = /[\S\r\n]/g;
 
 export const text: TextParser = input => {
@@ -84,16 +84,6 @@ export function next(source: string, position: number, delimiter: RegExp): numbe
     case '@':
       index = backToEmailHead(source, position, index);
       break;
-  }
-  if (index > position + 1) switch (char) {
-    case '*':
-    case '+':
-    case '~':
-    case '=':
-    case '/':
-    case '%':
-    case '|':
-      index -= /\s/.test(source[index - 1]) ? 1 : 0;
   }
   assert(index > position);
   return index;
