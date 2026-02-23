@@ -2906,7 +2906,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.rewrite = exports.focus = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
-function focus(scope, parser, cost = true) {
+function focus(scope, parser) {
   const match = (0, combinator_1.matcher)(scope, false);
   return (0, parser_1.failsafe)(({
     context
@@ -2920,7 +2920,6 @@ function focus(scope, parser, cost = true) {
       context
     }))?.[0] ?? '';
     if (src === '') return;
-    cost && (0, combinator_1.consume)(src.length, context);
     context.range = src.length;
     context.offset ??= 0;
     context.offset += position;
@@ -5543,13 +5542,13 @@ const autolink_1 = __webpack_require__(1671);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y, (0, combinator_1.union)([source]), false), ([el]) => [(0, dom_1.define)(el, {
+exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y, (0, combinator_1.union)([source])), ([el]) => [(0, dom_1.define)(el, {
   class: 'invalid',
   ...(0, util_1.invalid)('sidefence', 'syntax', 'Reserved syntax')
 })])));
 const opener = /(?=\|\|+(?:$|\s))/y;
 const unindent = source => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
-const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(1 /* Recursion.block */, (0, combinator_1.union)([(0, combinator_1.focus)(/(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/y, (0, combinator_1.convert)(unindent, source, false, true), false), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))]), false, true))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
+const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(1 /* Recursion.block */, (0, combinator_1.union)([(0, combinator_1.focus)(/(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/y, (0, combinator_1.convert)(unindent, source, false, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => [(0, dom_1.html)('pre', (0, dom_1.defrag)(ns))]), false, true))]))), ns => [(0, dom_1.html)('blockquote', ns)]));
 
 /***/ },
 
@@ -5584,11 +5583,11 @@ const align = (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_
   context: {
     source
   }
-}) => [[source.at(-1) === ':' ? 'center' : 'start']], false), (0, combinator_1.focus)(/-+:?/y, ({
+}) => [[source.at(-1) === ':' ? 'center' : 'start']]), (0, combinator_1.focus)(/-+:?/y, ({
   context: {
     source
   }
-}) => [[source.at(-1) === ':' ? 'end' : '']], false)])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
+}) => [[source.at(-1) === ':' ? 'end' : '']])])), ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
 const cell = (0, combinator_1.surround)(/\|\s*(?=\S)/y, (0, combinator_1.union)([(0, combinator_1.close)(inline_1.medialink, /\s*(?=\||$)/y), (0, combinator_1.close)(inline_1.media, /\s*(?=\||$)/y), (0, combinator_1.close)(inline_1.shortmedia, /\s*(?=\||$)/y), (0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline, /\|/y, [[/[|\\]?\s*$/y, 9]]))]), /[^|]*/y, true);
 const head = (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('th', (0, dom_1.defrag)(ns))]);
 const data = (0, combinator_1.fmap)(cell, ns => [(0, dom_1.html)('td', (0, dom_1.defrag)(ns))]);
@@ -7949,8 +7948,8 @@ Object.defineProperty(exports, "__esModule", ({
 exports.escsource = void 0;
 const combinator_1 = __webpack_require__(3484);
 const text_1 = __webpack_require__(5655);
-const unescapable_1 = __webpack_require__(8407);
 const dom_1 = __webpack_require__(394);
+const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s(?:\$)|:\/\/)/g;
 const escsource = ({
   context
 }) => {
@@ -7988,7 +7987,7 @@ const escsource = ({
       if (context.sequential) return [[char]];
       text_1.nonWhitespace.lastIndex = position + 1;
       const b = (0, text_1.isBlank)(source, position);
-      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, unescapable_1.delimiter);
+      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
@@ -8101,10 +8100,10 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isAlphanumeric = exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = exports.delimiter = void 0;
+exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = exports.delimiter = void 0;
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-exports.delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|+~=/]|\s(?:\\?(?:$|\s)|[$*%|]|([+~=])\1)|\/{3}|:\/\/|\n)/g;
+exports.delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 exports.nonWhitespace = /[\S\r\n]/g;
 const text = input => {
   const {
@@ -8169,16 +8168,6 @@ function next(source, position, delimiter) {
     case '@':
       index = backToEmailHead(source, position, index);
       break;
-  }
-  if (index > position + 1) switch (char) {
-    case '*':
-    case '+':
-    case '~':
-    case '=':
-    case '/':
-    case '%':
-    case '|':
-      index -= /\s/.test(source[index - 1]) ? 1 : 0;
   }
   return index;
 }
@@ -8250,7 +8239,6 @@ function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
 }
-exports.isAlphanumeric = isAlphanumeric;
 
 /***/ },
 
