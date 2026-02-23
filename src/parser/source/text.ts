@@ -3,7 +3,7 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/|\n)/g;
+export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 export const nonWhitespace = /[\S\r\n]/g;
 
 export const text: TextParser = input => {
@@ -149,7 +149,7 @@ export function isBlank(source: string, position: number): boolean {
   blank.lastIndex = position;
   return blank.test(source);
 }
-export function isAlphanumeric(char: string): boolean {
+function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9'
