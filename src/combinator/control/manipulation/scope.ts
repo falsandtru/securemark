@@ -1,8 +1,8 @@
 import { Parser, Context, input, eval, failsafe } from '../../data/parser';
-import { consume, matcher } from '../../../combinator';
+import { matcher } from '../../../combinator';
 
-export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, cost?: boolean): P;
-export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true): Parser<N> {
+export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;
+export function focus<N>(scope: string | RegExp, parser: Parser<N>): Parser<N> {
   assert(parser);
   const match = matcher(scope, false);
   return failsafe(({ context }) => {
@@ -11,7 +11,6 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, cost = true)
     const src = eval(match({ context }))?.[0] ?? '';
     assert(source.startsWith(src, position));
     if (src === '') return;
-    cost && consume(src.length, context);
     context.range = src.length;
     context.offset ??= 0;
     context.offset += position;

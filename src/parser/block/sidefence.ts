@@ -8,7 +8,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
   /(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y,
-  union([source]), false),
+  union([source])),
   ([el]) => [
     define(el, {
       class: 'invalid',
@@ -23,7 +23,7 @@ const source: SidefenceParser.SourceParser = lazy(() => fmap(
   some(recursion(Recursion.block, union([
     focus(
       /(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/y,
-      convert(unindent, source, false, true), false),
+      convert(unindent, source, false, true)),
     rewrite(
       some(contentline, opener),
       convert(unindent, fmap(autolink, ns => [html('pre', defrag(ns))]), false, true)),
