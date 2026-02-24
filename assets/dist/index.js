@@ -8032,7 +8032,7 @@ const escsource = ({
       if (context.sequential) return [[char]];
       text_1.nonWhitespace.lastIndex = position + 1;
       const b = (0, text_1.isBlank)(source, position);
-      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, delimiter);
+      let i = b ? source[position + 1] === '\n' ? position + 1 : text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
@@ -8145,10 +8145,10 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = exports.delimiter = void 0;
+exports.isWhitespace = exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = void 0;
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-exports.delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
+//const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 exports.nonWhitespace = /[\S\r\n]/g;
 const text = input => {
   const {
@@ -8185,7 +8185,7 @@ const text = input => {
       if (context.sequential) return [[char]];
       exports.nonWhitespace.lastIndex = position + 1;
       const b = isBlank(source, position);
-      let i = b ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position, exports.delimiter);
+      let i = b ? source[position + 1] === '\n' ? position + 1 : exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position);
       const lineend =  false || b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n';
       i -= position;
       i = lineend ? i : i - +b || 1;
@@ -8201,9 +8201,14 @@ exports.text = text;
 exports.txt = (0, combinator_1.union)([exports.text]);
 exports.linebreak = (0, combinator_1.focus)(/[\r\n]/y, (0, combinator_1.union)([exports.text]));
 function next(source, position, delimiter) {
-  delimiter.lastIndex = position + 1;
-  delimiter.test(source);
-  let index = delimiter.lastIndex;
+  let index;
+  if (delimiter) {
+    delimiter.lastIndex = position + 1;
+    delimiter.test(source);
+    index = delimiter.lastIndex;
+  } else {
+    index = seek(source, position);
+  }
   if (index === 0) return source.length;
   const char = source[index];
   switch (char) {
@@ -8274,16 +8279,157 @@ function backToEmailHead(source, position, index) {
   return index + offset;
 }
 exports.backToEmailHead = backToEmailHead;
-const blank = /\s(?:$|\s|\\\n)/y;
-function isBlank(source, position) {
-  blank.lastIndex = position;
-  return blank.test(source);
-}
-exports.isBlank = isBlank;
 function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
 }
+//const dict = new class {
+//  constructor() {
+//    [
+//      '\\',
+//      '!',
+//      '@',
+//      '#',
+//      '$',
+//      '&',
+//      '"',
+//      '`',
+//      '[',
+//      ']',
+//      '(',
+//      ')',
+//      '{',
+//      '}',
+//      '<',
+//      '>',
+//      '（',
+//      '）',
+//      '［',
+//      '］',
+//      '｛',
+//      '｝',
+//      '*',
+//      '%',
+//      '|',
+//      '\r',
+//      '\n',
+//    ].forEach(c =>
+//      this[c.charCodeAt(0)] = undefined);
+//  }
+//};
+const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
+function seek(source, position) {
+  for (let i = position + 1; i < source.length; ++i) {
+    const fst = source[i];
+    //if (fst.charCodeAt(0) in dict) return i;
+    switch (fst) {
+      case '\\':
+      case '!':
+      case '@':
+      case '#':
+      case '$':
+      case '&':
+      case '"':
+      case '`':
+      case '[':
+      case ']':
+      case '(':
+      case ')':
+      case '{':
+      case '}':
+      case '<':
+      case '>':
+      case '（':
+      case '）':
+      case '［':
+      case '］':
+      case '｛':
+      case '｝':
+      case '*':
+      case '%':
+      case '|':
+      case '\r':
+      case '\n':
+        return i;
+      case '+':
+      case '~':
+      case '=':
+        if (source[i + 1] === fst) return i;
+        continue;
+      case '/':
+        if (source[i + 1] === fst && source[i + 2] === fst) return i;
+        continue;
+      case ':':
+        if (source[i + 1] === '/' && source[i + 2] === '/') return i;
+        continue;
+      //case ' ':
+      //case '\t':
+      //case '　':
+      //  if (i + 1 === source.length) return i;
+      //  switch (source[i + 1]) {
+      //    case ' ':
+      //    case '\t':
+      //    case '\r':
+      //    case '\n':
+      //    case '　':
+      //    case '$':
+      //    case '%':
+      //      return i;
+      //    case '\\':
+      //      if (i + 2 === source.length) return i;
+      //      switch (source[i + 2]) {
+      //        case ' ':
+      //        case '\t':
+      //        case '\r':
+      //        case '\n':
+      //        case '　':
+      //          return i;
+      //      }
+      //  }
+      //  continue;
+      default:
+        delimiter.lastIndex = i;
+        if (delimiter.test(source)) return i;
+        continue;
+    }
+  }
+  return source.length;
+}
+const blank = /\s(?:$|\s|\\\n)/y;
+function isBlank(source, position) {
+  blank.lastIndex = position;
+  return blank.test(source);
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+}
+exports.isBlank = isBlank;
+const whitespace = /\s/;
+function isWhitespace(char) {
+  whitespace;
+  switch (char) {
+    case ' ':
+    case '\t':
+    case '\r':
+    case '\n':
+    case '　':
+      return true;
+    default:
+      return false;
+  }
+}
+exports.isWhitespace = isWhitespace;
 
 /***/ },
 
@@ -8327,7 +8473,7 @@ const unescsource = ({
       if (context.sequential) return [[char]];
       text_1.nonWhitespace.lastIndex = position + 1;
       const b = (0, text_1.isBlank)(source, position);
-      let i = b ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
+      let i = b ? source[position + 1] === '\n' ? position + 1 : text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
