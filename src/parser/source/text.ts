@@ -3,7 +3,7 @@ import { Command } from '../context';
 import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
+//const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 export const nonWhitespace = /[\S\r\n]/g;
 
 export const text: TextParser = input => {
@@ -40,10 +40,12 @@ export const text: TextParser = input => {
       nonWhitespace.lastIndex = position + 1;
       const b = isBlank(source, position);
       let i = b
-        ? nonWhitespace.test(source)
-          ? nonWhitespace.lastIndex - 1
-          : source.length
-        : next(source, position, delimiter);
+        ? source[position + 1] === '\n'
+          ? position + 1
+          : nonWhitespace.test(source)
+            ? nonWhitespace.lastIndex - 1
+            : source.length
+        : next(source, position);
       assert(i > position);
       const lineend = 0
         || b && i === source.length
@@ -70,10 +72,16 @@ export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
 
-export function next(source: string, position: number, delimiter: RegExp): number {
-  delimiter.lastIndex = position + 1;
-  delimiter.test(source);
-  let index = delimiter.lastIndex;
+export function next(source: string, position: number, delimiter?: RegExp): number {
+  let index: number;
+  if (delimiter) {
+    delimiter.lastIndex = position + 1;
+    delimiter.test(source);
+    index = delimiter.lastIndex;
+  }
+  else {
+    index = seek(source, position);
+  }
   if (index === 0) return source.length;
   assert(index > position);
   const char = source[index];
@@ -144,15 +152,154 @@ export function backToEmailHead(source: string, position: number, index: number)
   return index + offset;
 }
 
-const blank = /\s(?:$|\s|\\\n)/y;
-export function isBlank(source: string, position: number): boolean {
-  blank.lastIndex = position;
-  return blank.test(source);
-}
 function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9'
       || 'a' <= char && char <= 'z'
       || 'A' <= char && char <= 'Z';
+}
+
+//const dict = new class {
+//  constructor() {
+//    [
+//      '\\',
+//      '!',
+//      '@',
+//      '#',
+//      '$',
+//      '&',
+//      '"',
+//      '`',
+//      '[',
+//      ']',
+//      '(',
+//      ')',
+//      '{',
+//      '}',
+//      '<',
+//      '>',
+//      '（',
+//      '）',
+//      '［',
+//      '］',
+//      '｛',
+//      '｝',
+//      '*',
+//      '%',
+//      '|',
+//      '\r',
+//      '\n',
+//    ].forEach(c =>
+//      this[c.charCodeAt(0)] = undefined);
+//  }
+//};
+
+const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
+
+function seek(source: string, position: number): number {
+  for (let i = position + 1; i < source.length; ++i) {
+    const fst = source[i];
+    //if (fst.charCodeAt(0) in dict) return i;
+    switch (fst) {
+      case '\\':
+      case '!':
+      case '@':
+      case '#':
+      case '$':
+      case '&':
+      case '"':
+      case '`':
+      case '[':
+      case ']':
+      case '(':
+      case ')':
+      case '{':
+      case '}':
+      case '<':
+      case '>':
+      case '（':
+      case '）':
+      case '［':
+      case '］':
+      case '｛':
+      case '｝':
+      case '*':
+      case '%':
+      case '|':
+      case '\r':
+      case '\n':
+        return i;
+      case '+':
+      case '~':
+      case '=':
+        if (source[i + 1] === fst) return i;
+        continue;
+      case '/':
+        if (source[i + 1] === fst && source[i + 2] === fst) return i;
+        continue;
+      case ':':
+        if (source[i + 1] === '/' && source[i + 2] === '/') return i;
+        continue;
+      //case ' ':
+      //case '\t':
+      //case '　':
+      //  if (i + 1 === source.length) return i;
+      //  switch (source[i + 1]) {
+      //    case ' ':
+      //    case '\t':
+      //    case '\r':
+      //    case '\n':
+      //    case '　':
+      //    case '$':
+      //    case '%':
+      //      return i;
+      //    case '\\':
+      //      if (i + 2 === source.length) return i;
+      //      switch (source[i + 2]) {
+      //        case ' ':
+      //        case '\t':
+      //        case '\r':
+      //        case '\n':
+      //        case '　':
+      //          return i;
+      //      }
+      //  }
+      //  continue;
+      default:
+        delimiter.lastIndex = i;
+        if (delimiter.test(source)) return i;
+        continue;
+    }
+    assert(false);
+  }
+  return source.length;
+}
+
+const blank = /\s(?:$|\s|\\\n)/y;
+export function isBlank(source: string, position: number): boolean {
+  blank.lastIndex = position;
+  return blank.test(source);
+  assert(position < source.length);
+  if (!isWhitespace(source[position])) return false;
+  if (position + 1 === source.length) return true;
+  const snd = source[position + 1];
+  if (isWhitespace(snd)) return true;
+  if (position + 2 === source.length) return false;
+  if (snd === '\\' && source[position + 2] === '\n') return true;
+  return false;
+}
+const whitespace = /\s/;
+export function isWhitespace(char: string): boolean {
+  whitespace;
+  switch (char) {
+    case ' ':
+    case '\t':
+    case '\r':
+    case '\n':
+    case '　':
+      return true
+    default:
+      return false;
+  }
 }

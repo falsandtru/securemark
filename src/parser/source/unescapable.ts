@@ -30,9 +30,11 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
       nonWhitespace.lastIndex = position + 1;
       const b = isBlank(source, position);
       let i = b
-        ? nonWhitespace.test(source)
-          ? nonWhitespace.lastIndex - 1
-          : source.length
+        ? source[position + 1] === '\n'
+          ? position + 1
+          : nonWhitespace.test(source)
+            ? nonWhitespace.lastIndex - 1
+            : source.length
         : next(source, position, delimiter);
       assert(i > position);
       i -= position;
