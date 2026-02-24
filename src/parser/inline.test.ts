@@ -121,11 +121,11 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('{}'), ctx), [['{', '}'], '']);
       assert.deepStrictEqual(inspect(parser('{a}'), ctx), [['<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{{a}}'), ctx), [['<span class="template">{{a}}</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!{}'), ctx), [['!', '{', '}'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!{a}'), ctx), [['!', '<a class="url" href="a">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!{{a}}'), ctx), [['!', '<span class="template">{{a}}</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!{{{a}}}'), ctx), [['!', '<span class="template">{{{a}}}</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('\r!!{a}'), ctx), [['!', '!', '<a class="url" href="a">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{}'), ctx), [['!', '{', '}'], '']);
+      assert.deepStrictEqual(inspect(parser('!{a}'), ctx), [['!', '<a class="url" href="a">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{{a}}'), ctx), [['!', '<span class="template">{{a}}</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{{{a}}}'), ctx), [['!', '<span class="template">{{{a}}}</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('!!{a}'), ctx), [['!', '!', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('${a}'), ctx), [['$', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('${{a}}'), ctx), [['$', '<span class="template">{{a}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${{{a}}}'), ctx), [['$', '<span class="template">{{{a}}}</span>'], '']);
