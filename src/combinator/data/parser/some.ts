@@ -1,6 +1,5 @@
 import { Parser, eval } from '../parser';
 import { Delimiters } from './context/delimiter';
-import { unshift, push } from 'spica/array';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
 
@@ -31,9 +30,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes
-        ? nodes.length < eval(result).length / 8
-          ? unshift(nodes, eval(result))
-          : push(nodes, eval(result))
+        ? (nodes.push(...eval(result)), nodes)
         : eval(result);
       if (limit >= 0 && context.position - position > limit) break;
     }

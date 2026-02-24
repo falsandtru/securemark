@@ -16,8 +16,8 @@ const openers = {
 
 export const olist: OListParser = lazy(() => block(validate(
   new RegExp([
-    /([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*\. /y.source,
-    /\(([0-9]+|[a-z]+)\)(?:-[0-9]+)* /y.source,
+    /(?:[0-9]+)(?:-[0-9]+)*\. /y.source,
+    /\((?:[0-9]+)\)(?:-[0-9]+)* /y.source,
   ].join('|'), 'y'),
   olist_)));
 

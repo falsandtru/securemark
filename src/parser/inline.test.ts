@@ -22,7 +22,7 @@ describe('Unit: parser/inline', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('あ（Ａ）'), ctx), [['あ', '（', 'Ａ', '）'], '']);
       assert.deepStrictEqual(inspect(parser('あ（い）'), ctx), [['あ', '<span class="paren">（い）</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('* a*'), ctx), [['*', ' a', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('* a*'), ctx), [['* a', '*'], '']);
       assert.deepStrictEqual(inspect(parser('** a**'), ctx), [['**', ' a', '**'], '']);
       assert.deepStrictEqual(inspect(parser('*** a***'), ctx), [['***', ' a', '***'], '']);
       assert.deepStrictEqual(inspect(parser('**** a****'), ctx), [['****', ' a', '****'], '']);

@@ -58,51 +58,53 @@ export const block: BlockParser = reset(
     input => {
       const { context: { source, position } } = input;
       if (position === source.length) return;
-      switch (source.slice(position, position + 3)) {
-        case '===':
-          return pagebreak(input);
-        case '~~~':
-          return extension(input);
-        case '```':
-          return codeblock(input);
-      }
-      switch (source.slice(position, position + 2)) {
-        case '$$':
-          return mathblock(input);
-        case '[$':
-          return extension(input);
-        case '[!':
+      const fst = source[position];
+      switch (fst) {
+        case '=':
+          if (source.startsWith('===', position)) return pagebreak(input);
+          break;
+        case '`':
+          if (source.startsWith('```', position)) return codeblock(input);
+          break;
+        case '~':
+          if (source.startsWith('~~~', position)) return extension(input);
+          if (source[position + 1] === ' ') return dlist(input);
+          break;
+        case '-':
+          if (source[position + 1] === ' ') return ulist(input) || ilist(input);
+          break;
+        case '+':
+        case '*':
+          if (source[position + 1] === ' ') return ilist(input);
+          break;
+        case '[':
+          switch (source[position + 1]) {
+            case '$':
+              return extension(input);
+            case '!':
+              return mediablock(input);
+          }
+          break;
+        case '!':
+          if (source[position + 1] === '>') return blockquote(input);
           return mediablock(input);
-        case '!>':
+        case '>':
+          if (source[position + 1] === '>') return blockquote(input) || reply(input);
           return blockquote(input);
-        case '>>':
-          return blockquote(input)
-              || reply(input);
-        case '- ':
-          return ulist(input)
-              || ilist(input);
-        case '+ ':
-        case '* ':
-          return ilist(input);
-        case '~ ':
-          return dlist(input);
-      }
-      switch (source[position]) {
         case '#':
           return heading(input);
-        case '|':
-          return table(input)
-              || sidefence(input);
         case '$':
+          if (source[position + 1] === '$') return mathblock(input);
           return extension(input);
-        case '>':
-          return blockquote(input);
-        case '!':
-          return mediablock(input);
+        case '|':
+          return table(input) || sidefence(input);
+        case '(':
+          return olist(input);
+        default:
+          if ('0' <= fst && fst <= '9') return olist(input);
       }
     },
     emptyline,
-    olist,
     paragraph
   ]) as any));
 

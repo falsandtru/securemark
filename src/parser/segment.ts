@@ -17,19 +17,19 @@ const parser: SegmentParser = union([
   input => {
     const { context: { source, position } } = input;
     if (position === source.length) return;
-    switch (source.slice(position, position + 3)) {
-      case '~~~':
-        return extension(input);
-      case '```':
-        return codeblock(input);
-    }
-    switch (source.slice(position, position + 2)) {
-      case '$$':
-        return mathblock(input);
-      case '[$':
-        return extension(input);
-    }
     switch (source[position]) {
+      case '`':
+        if (source.startsWith('```', position)) return codeblock(input);
+        break;
+      case '~':
+        if (source.startsWith('~~~', position)) return extension(input);
+        break;
+      case '$':
+        if (source[position + 1] === '$') return mathblock(input);
+        break;
+      case '[':
+        if (source[position + 1] === '$') return extension(input);
+        break;
       case '#':
         return heading(input);
       case '$':

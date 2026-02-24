@@ -53,70 +53,69 @@ export const inline: InlineParser = lazy(() => union([
   input => {
     const { context: { source, position } } = input;
     if (position === source.length) return;
-    switch (source.slice(position, position + 2)) {
-      case '((':
-        return annotation(input)
-            || bracket(input);
-      case '[[':
-        return reference(input)
-            || textlink(input)
-            || bracket(input);
-      case '{{':
-        return template(input)
-            || bracket(input);
-      case '[%':
-        return remark(input)
-            || textlink(input)
-            || bracket(input);
-      case '[#':
-      case '[$':
-      case '[:':
-      case '[^':
-      case '[|':
-        return extension(input)
-            || textlink(input)
-            || bracket(input);
-      case '${':
-        return math(input);
-      case '++':
-        return insertion(input);
-      case '~~':
-        return deletion(input);
-      case '==':
-        return mark(input);
-      case '//':
-        return italic(input);
-      case '**':
-        return emstrong(input)
-            || strong(input)
-            || stars(input);
-    }
     switch (source[position]) {
+      case '(':
+        if (source[position + 1] === '(') return annotation(input) || bracket(input);
+        return bracket(input);
       case '[':
+        switch (source[position + 1]) {
+          case '[':
+            return reference(input)
+                || textlink(input)
+                || bracket(input);
+          case '%':
+            return remark(input)
+                || textlink(input)
+                || bracket(input);
+          case '#':
+          case '$':
+          case ':':
+          case '^':
+          case '|':
+            return extension(input)
+                || textlink(input)
+                || bracket(input);
+        }
         return textlink(input)
             || ruby(input)
             || bracket(input);
       case '{':
+        if (source[position + 1] === '{') return template(input) || bracket(input);
         return textlink(input)
             || bracket(input);
-      case '<':
-        return html(input);
-      case '$':
-        return extension(input)
-            || math(input);
-      case '`':
-        return code(input);
-      case '*':
-        return emphasis(input)
-            || stars(input);
-      case '&':
-        return htmlentity(input);
-      case '(':
+      case '"':
       case '（':
       case '［':
       case '｛':
-      case '"':
         return bracket(input);
+      case '<':
+        return html(input);
+      case '$':
+        if (source[position + 1] === '{') return math(input);
+        return extension(input)
+            || math(input);
+      case '+':
+        if (source[position + 1] === '+') return insertion(input);
+        break;
+      case '~':
+        if (source[position + 1] === '~') return deletion(input);
+        break;
+      case '=':
+        if (source[position + 1] === '=') return mark(input);
+        break;
+      case '/':
+        if (source[position + 1] === '/' && source[position + 2] === '/') return italic(input);
+        break;
+      case '*':
+        return source[position + 1] === '*'
+          ? source[position + 2] === '*'
+            ? emstrong(input) || stars(input)
+            : strong(input) || stars(input)
+          : emphasis(input);
+      case '`':
+        return code(input);
+      case '&':
+        return htmlentity(input);
     }
   },
   autolink,
