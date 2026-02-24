@@ -17,7 +17,7 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[]]]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[["]]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[[(]]'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('[[<bdi>]]'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('[[[%]]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[[ ]]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[[ [a'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('[[\n]]'), ctx), undefined);

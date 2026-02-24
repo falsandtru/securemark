@@ -11,14 +11,14 @@ export const math: MathParser = lazy(() => rewrite(
   union([
     surround(
       /\$(?={)/y,
-      precedence(5, bracket),
+      precedence(4, bracket),
       '$',
       false, undefined, undefined, [3 | Backtrack.bracket]),
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
         some(escsource, /\s?\$|[`"{}\n]/y),
-        precedence(5, bracket),
+        precedence(4, bracket),
       ]))),
       /\$(?![-0-9A-Za-z])/y,
       false, undefined, undefined, [3 | Backtrack.bracket]),

@@ -42,10 +42,14 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
             true,
             ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
             ([as, bs = []]) => [unshift(as, bs)]),
-          precedence(3, recursion(Recursion.inline,
+          // 不可視のHTML構造が可視構造を変化させるべきでない。
+          // 可視のHTMLは優先度変更を検討する。
+          // このため<>は将来的に共通構造を変化させる可能性があり
+          // 共通構造を変更させない非構造文字列としては依然としてエスケープを要する。
+          precedence(0, recursion(Recursion.inline,
           some(union([
-            some(inline, blankWith('\n', `</${tag}>`), [[blankWith('\n', `</${tag}>`), 3]]),
-            open('\n', some(inline, `</${tag}>`, [[`</${tag}>`, 3]]), true),
+            some(inline, blankWith('\n', `</${tag}>`)),
+            open('\n', some(inline, `</${tag}>`), true),
           ])))),
           str(`</${tag}>`),
           true,

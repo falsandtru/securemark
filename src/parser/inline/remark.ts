@@ -9,8 +9,8 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const remark: RemarkParser = lazy(() => fallback(surround(
   str(/\[%(?=\s)/y),
-  precedence(4, recursion(Recursion.inline,
-  some(union([inline]), /\s%\]/y, [[/\s%\]/y, 4]]))),
+  precedence(3, recursion(Recursion.inline,
+  some(union([inline]), /\s%\]/y, [[/\s%\]/y, 3]]))),
   close(text, str(`%]`)), true,
   ([as, bs = [], cs]) => [[
     html('span', { class: 'remark' }, [
