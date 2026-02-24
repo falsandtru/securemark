@@ -34,7 +34,7 @@ const bracket: TemplateParser.BracketParser = lazy(() => union([
     undefined, () => [[]], [3 | Backtrack.escbracket]),
   surround(
     str('"'),
-    precedence(2, recursion(Recursion.terminal, some(escsource, '"', [['"', 2, false]]))),
+    precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
     true,
     ([as, bs = [], cs], context) =>

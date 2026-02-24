@@ -67,7 +67,6 @@ Secure markdown renderer working on browsers for user input data.
 
 |P| Operators                              |
 |-|----------------------------------------|
-|9| \n                                     |
 |4| `, \${}$                               |
 |3| [% %]                                  |
 |2| $, "                                   |

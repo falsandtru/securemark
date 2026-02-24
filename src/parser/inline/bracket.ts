@@ -118,15 +118,12 @@ const c2 = lazy(() => surround(
   ([as, bs = []]) => [unshift(as, bs)],
   [2 | Backtrack.bracket]));
 
-// 同一行内でしか閉じない以外括弧と同じ挙動
 const d1 = lazy(() => surround(
   str('"'),
-  precedence(2, recursion(Recursion.bracket, some(inline, '"', [['"', 2, false]]))),
+  // 改行の優先度を構文ごとに変える場合シグネチャの優先度対応が必要
+  precedence(2, recursion(Recursion.bracket, some(inline, /["\n]/y, [['"', 2], ['\n', 3]]))),
   str('"'),
   true,
-  ([as, bs = [], cs], context) =>
-    context.linebreak === 0
-      ? [push(unshift(as, bs), cs)]
-      : (context.position -= 1, [unshift(as, bs)]),
+  undefined,
   ([as, bs = []]) => [unshift(as, bs)],
   [2 | Backtrack.bracket]));

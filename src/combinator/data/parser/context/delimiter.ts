@@ -7,26 +7,24 @@ interface Delimiter {
   readonly signature: number | string;
   readonly matcher: (input: Input) => boolean | undefined;
   readonly precedence: number;
-  readonly linebreakable: boolean;
   state: boolean;
 }
 
 export class Delimiters {
   // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
-  public static signature(pattern: string | RegExp | undefined, linebreakable: boolean): number | string {
+  public static signature(pattern: string | RegExp | undefined): number | string {
     switch (typeof pattern) {
       case 'undefined':
-        return +linebreakable;
+        return 1 << 7;
       case 'string':
         assert(pattern !== '\x00');
         if (pattern.length === 1) {
           const code = pattern.charCodeAt(0);
-          // 使用中のパターンの8ビット目が空いてるのでひとまずこうしとく
-          if ((code & 1 << 7) === 0) return code | +linebreakable << 7;
+          return code;
         }
-        return `s:${pattern}:${+linebreakable}`;
+        return `s:${pattern}`;
       case 'object':
-        return `r/${pattern.source}/${+linebreakable}`;
+        return `r/${pattern.source}`;
     }
   }
   public static matcher(pattern: string | RegExp | undefined): (input: Input<Ctx>) => true | undefined {
@@ -61,14 +59,13 @@ export class Delimiters {
       readonly signature: number | string;
       readonly matcher: (input: Input) => boolean | undefined;
       readonly precedence: number;
-      readonly linebreakable: boolean;
     }[]
   ): void {
     const { delimiters, stack } = this;
     // シグネチャ数以下
     assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
-      const { signature, matcher, precedence, linebreakable } = delims[i];
+      const { signature, matcher, precedence } = delims[i];
       const memory = this.registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
       assert(memory.length === 0 || precedence === delimiters[index].precedence);
@@ -79,7 +76,6 @@ export class Delimiters {
           signature,
           matcher,
           precedence,
-          linebreakable,
           state: true,
         };
         delimiters[index] = delimiter;
@@ -134,14 +130,13 @@ export class Delimiters {
     }
   }
   public match(input: Input): boolean {
-    const { precedence = 0, linebreak = 0 } = input.context;
+    const { precedence = 0 } = input.context;
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
       if (delimiter.precedence <= precedence || !delimiter.state) continue;
       switch (delimiter.matcher(input)) {
         case true:
-          if (!delimiter.linebreakable && linebreak > 0) return false;
           return true;
         case false:
           return false;
