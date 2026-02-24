@@ -87,7 +87,8 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
     el.setAttribute('alt', text);
     if (!sanitize(el, uri)) return [[el]];
     assert(!el.matches('.invalid'));
-    define(el, attributes('media', optspec, params));
+    const [attrs, linkparams] = attributes('media', optspec, params);
+    define(el, attrs);
     assert(el.matches('img') || !el.matches('.invalid'));
     // Awaiting the generic support for attr().
     if (el.hasAttribute('aspect-ratio')) {
@@ -103,7 +104,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
         context.position = position;
         return [define(link, { class: null, target: '_blank' }, [el])];
       })
-      (subinput(`{ ${INSECURE_URI}${params.join('')} }`, context));
+      (subinput(`{ ${INSECURE_URI}${linkparams.join('')} }`, context));
   })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([

@@ -7,7 +7,7 @@ import { str } from '../source';
 import { isLooseNodeStart, blankWith } from '../visibility';
 import { invalid } from '../util';
 import { memoize } from 'spica/memoize';
-import { unshift, push, splice } from 'spica/array';
+import { unshift, push } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
 const tags: readonly string[] = ['wbr', 'bdo', 'bdi'];
@@ -81,7 +81,7 @@ function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | st
     if (bs.length === 0) return ielem('content', `Missing the content`, context);
     if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
-  const attrs = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
+  const [attrs] = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)
   if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
   return h(tag as 'span', attrs, defrag(bs));
@@ -101,11 +101,12 @@ const requiredAttributes = memoize(
 export function attributes(
   syntax: string,
   spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
-  params: string[],
-): Record<string, string | undefined> {
+  params: readonly string[],
+): [Record<string, string | undefined>, string[]] {
   assert(spec instanceof Object === false);
   assert(!spec?.['__proto__']);
   assert(!spec?.toString);
+  const remains = [];
   let invalidation = false;
   const attrs: Record<string, string | undefined> = {};
   for (let i = 0; i < params.length; ++i) {
@@ -116,19 +117,25 @@ export function attributes(
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
     invalidation ||= name === '' || !spec || name in attrs;
-    if (name === '' || spec && name in spec && !spec[name]) continue;
-    spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined
-      ? attrs[name] = value ?? ''
-      : invalidation ||= !!spec;
+    if (name === '')continue;
+    if (spec && name in spec && !spec[name]) {
+      remains.push(params[i]);
+      continue;
+    }
+    if (spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined) {
+      attrs[name] = value ?? ''
+    }
+    else {
+      invalidation ||= !!spec;
+    }
     assert(!(name in {} && attrs.hasOwnProperty(name)));
-    splice(params, i--, 1);
   }
   invalidation ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalidation) {
     attrs['class'] = 'invalid';
     Object.assign(attrs, invalid(syntax, 'argument', 'Invalid argument'));
   }
-  return attrs;
+  return [attrs, remains];
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
