@@ -159,7 +159,7 @@ function elem(
           type = 'content';
           message = 'URI must not be contained';
           break;
-        case INSECURE_URI.slice(0, 2) === '^/'
+        case INSECURE_URI.startsWith('^/')
           && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
           type = 'argument';
           message = 'Dot-segments cannot be used in subresource paths';
@@ -223,7 +223,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
   assert(uri);
   assert(uri === uri.trim());
   switch (true) {
-    case uri.slice(0, 2) === '^/':
+    case uri.startsWith('^/'):
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
           // Exclude ISO 6709.
@@ -232,7 +232,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
         : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
     case host.origin === source.origin
       && host.pathname === source.pathname:
-    case uri.slice(0, 2) === '//':
+    case uri.startsWith('//'):
       return uri;
     default:
       const target = new ReadonlyURL(uri, source.href);
