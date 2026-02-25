@@ -15,6 +15,7 @@ describe('Unit: parser/source/escsource', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a'), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab'), ctx), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser('a b c'), ctx), [['a b c'], '']);
       assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09あいAZaz'], '']);
     });
 
