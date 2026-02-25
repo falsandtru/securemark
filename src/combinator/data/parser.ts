@@ -1,5 +1,4 @@
 import { Delimiters } from './parser/context/delimiter';
-import { MarkdownParser } from '../../../markdown';
 
 export type Parser<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
   = (input: Input<C & Ctx>) => Result<N, C, D>;
@@ -38,8 +37,6 @@ export type IntermediateParser<P extends Parser<unknown>> = Parser<SubNode<P>, C
 type ExtractSubNode<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
-export function input(source: string, context: CtxOptions): Input<Ctx>;
-export function input(source: string, context: MarkdownParser.Options): Input<MarkdownParser.Context>;
 export function input(source: string, context: CtxOptions): Input<Ctx> {
   // @ts-expect-error
   context.source = source;
