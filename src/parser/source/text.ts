@@ -70,6 +70,33 @@ export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
 
+//const blank = /\s(?:$|\s|\\\n)/y;
+export function isBlank(source: string, position: number): boolean {
+  //blank.lastIndex = position;
+  //return blank.test(source);
+  assert(position < source.length);
+  if (!isWhitespace(source[position])) return false;
+  if (position + 1 === source.length) return true;
+  const snd = source[position + 1];
+  if (isWhitespace(snd)) return true;
+  if (position + 2 === source.length) return false;
+  if (snd === '\\' && source[position + 2] === '\n') return true;
+  return false;
+}
+export function isWhitespace(char: string, linebreak = true): boolean {
+  switch (char) {
+    case ' ':
+    case '\t':
+    case '　':
+      return true;
+    case '\r':
+    case '\n':
+      return linebreak;
+    default:
+      return false;
+  }
+}
+
 export function next(source: string, position: number, delimiter?: RegExp): number {
   let index: number;
   if (delimiter) {
@@ -171,7 +198,6 @@ export function backToEmailHead(source: string, position: number, index: number)
   }
   return index + offset;
 }
-
 function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
   if (char < '0' || '\x7F' < char) return false;
@@ -294,31 +320,4 @@ function seek(source: string, position: number): number {
     assert(false);
   }
   return source.length;
-}
-
-//const blank = /\s(?:$|\s|\\\n)/y;
-export function isBlank(source: string, position: number): boolean {
-  //blank.lastIndex = position;
-  //return blank.test(source);
-  assert(position < source.length);
-  if (!isWhitespace(source[position])) return false;
-  if (position + 1 === source.length) return true;
-  const snd = source[position + 1];
-  if (isWhitespace(snd)) return true;
-  if (position + 2 === source.length) return false;
-  if (snd === '\\' && source[position + 2] === '\n') return true;
-  return false;
-}
-export function isWhitespace(char: string, linebreak = true): boolean {
-  switch (char) {
-    case ' ':
-    case '\t':
-    case '　':
-      return true;
-    case '\r':
-    case '\n':
-      return linebreak;
-    default:
-      return false;
-  }
 }
