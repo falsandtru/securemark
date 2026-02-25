@@ -241,8 +241,6 @@ function isAlphanumeric(char: string): boolean {
 //  }
 //};
 
-//const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
-
 function seek(source: string, position: number): number {
   for (let i = position + 1; i < source.length; ++i) {
     const fst = source[i];
@@ -313,8 +311,6 @@ function seek(source: string, position: number): number {
         }
         continue;
       default:
-        //delimiter.lastIndex = i;
-        //if (delimiter.test(source)) return i;
         continue;
     }
     assert(false);
