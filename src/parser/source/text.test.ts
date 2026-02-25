@@ -40,8 +40,8 @@ describe('Unit: parser/source/text', () => {
       assert.deepStrictEqual(inspect(parser('   '), ctx), [[], '']);
       assert.deepStrictEqual(inspect(parser(' \n'), ctx), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser('  \n'), ctx), [['<br>'], '']);
-      assert.deepStrictEqual(inspect(parser(' \\\n'), ctx), [['<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('  \\\n'), ctx), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser(' \\\n'), ctx), [[' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('  \\\n'), ctx), [[' ', ' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser(' a'), ctx), [[' a'], '']);
       assert.deepStrictEqual(inspect(parser('  a'), ctx), [[' ', ' a'], '']);
       assert.deepStrictEqual(inspect(parser('   a'), ctx), [['  ', ' a'], '']);
@@ -49,8 +49,8 @@ describe('Unit: parser/source/text', () => {
       assert.deepStrictEqual(inspect(parser('a  '), ctx), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('a \n'), ctx), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a  \n'), ctx), [['a', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('a \\\n'), ctx), [['a', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('a  \\\n'), ctx), [['a', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('a \\\n'), ctx), [['a', ' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('a  \\\n'), ctx), [['a', ' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a b'), ctx), [['a b'], '']);
       assert.deepStrictEqual(inspect(parser('a  b'), ctx), [['a', ' b'], '']);
       assert.deepStrictEqual(inspect(parser('a   b'), ctx), [['a', ' b'], '']);

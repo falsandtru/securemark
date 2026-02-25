@@ -38,25 +38,22 @@ export const text: TextParser = input => {
       assert(char !== '\n');
       if (context.sequential) return [[char]];
       nonWhitespace.lastIndex = position + 1;
-      const b = isBlank(source, position);
-      let i = b
-        ? source[position + 1] === '\n' || source[position + 1] === '\\'
-          ? position + 1
-          : nonWhitespace.test(source)
-            ? nonWhitespace.lastIndex - 1
-            : source.length
+      const s = canSkip(source, position);
+      let i = s
+        ? nonWhitespace.test(source)
+          ? nonWhitespace.lastIndex - 1
+          : source.length
         : next(source, position);
       assert(i > position);
       const lineend = 0
-        || b && i === source.length
-        || b && source[i] === '\n'
-        || b && source[i] === '\\' && source[i + 1] === '\n';
+        || s && i === source.length
+        || s && source[i] === '\n';
       i -= position;
-      i = lineend ? i : i - +b || 1;
+      i = lineend ? i : i - +s || 1;
       consume(i - 1, context);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      return position === context.position || b && !linestart || lineend
+      return position === context.position || s && !linestart || lineend
         ? [[]]
         : [[source.slice(position, context.position)]];
   }
@@ -70,20 +67,13 @@ export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
   text,
 ])) as LinebreakParser;
 
-//const blank = /\s(?:$|\s|\\\n)/y;
-export function isBlank(source: string, position: number): boolean {
-  //blank.lastIndex = position;
-  //return blank.test(source);
+export function canSkip(source: string, position: number): boolean {
   assert(position < source.length);
-  if (!isWhitespace(source[position])) return false;
+  if (!isWhitespace(source[position], false)) return false;
   if (position + 1 === source.length) return true;
-  const snd = source[position + 1];
-  if (isWhitespace(snd)) return true;
-  if (position + 2 === source.length) return false;
-  if (snd === '\\' && source[position + 2] === '\n') return true;
-  return false;
+  return isWhitespace(source[position + 1], true);
 }
-export function isWhitespace(char: string, linebreak = true): boolean {
+function isWhitespace(char: string, linebreak: boolean): boolean {
   switch (char) {
     case ' ':
     case '\t':
