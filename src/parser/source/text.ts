@@ -4,7 +4,7 @@ import { union, consume, focus } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 //const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
-export const nonWhitespace = /[\S\r\n]/g;
+export const nonWhitespace = /[^ \t　]/g;
 
 export const text: TextParser = input => {
   const { context } = input;
@@ -296,10 +296,10 @@ function seek(source: string, position: number): number {
   return source.length;
 }
 
-const blank = /\s(?:$|\s|\\\n)/y;
+//const blank = /\s(?:$|\s|\\\n)/y;
 export function isBlank(source: string, position: number): boolean {
-  blank.lastIndex = position;
-  return blank.test(source);
+  //blank.lastIndex = position;
+  //return blank.test(source);
   assert(position < source.length);
   if (!isWhitespace(source[position])) return false;
   if (position + 1 === source.length) return true;
@@ -309,9 +309,7 @@ export function isBlank(source: string, position: number): boolean {
   if (snd === '\\' && source[position + 2] === '\n') return true;
   return false;
 }
-const whitespace = /\s/;
 export function isWhitespace(char: string, linebreak = true): boolean {
-  whitespace;
   switch (char) {
     case ' ':
     case '\t':
