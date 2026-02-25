@@ -1,10 +1,10 @@
 import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { nonWhitespace, isBlank, next } from './text';
+import { next } from './text';
 import { html } from 'typed-dom/dom';
 
-const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s(?:\$)|:\/\/)/g;
+const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s\$|:\/\/)/g;
 
 export const escsource: EscapableSourceParser = ({ context }) => {
   const { source, position } = context;
@@ -38,15 +38,7 @@ export const escsource: EscapableSourceParser = ({ context }) => {
     default:
       assert(char !== '\n');
       if (context.sequential) return [[char]];
-      nonWhitespace.lastIndex = position + 1;
-      const b = isBlank(source, position);
-      let i = b
-        ? source[position + 1] === '\n' || source[position + 1] === '\\'
-          ? position + 1
-          : nonWhitespace.test(source)
-            ? nonWhitespace.lastIndex - 1
-            : source.length
-        : next(source, position, delimiter);
+      let i = next(source, position, delimiter);
       assert(i > position);
       i -= position;
       consume(i - 1, context);

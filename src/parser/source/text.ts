@@ -310,15 +310,16 @@ export function isBlank(source: string, position: number): boolean {
   return false;
 }
 const whitespace = /\s/;
-export function isWhitespace(char: string): boolean {
+export function isWhitespace(char: string, linebreak = true): boolean {
   whitespace;
   switch (char) {
     case ' ':
     case '\t':
+    case '　':
+      return true;
     case '\r':
     case '\n':
-    case '　':
-      return true
+      return linebreak;
     default:
       return false;
   }

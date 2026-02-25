@@ -1,7 +1,7 @@
 import { UnescapableSourceParser } from '../source';
 import { Command } from '../context';
 import { consume } from '../../combinator';
-import { nonWhitespace, isBlank, next } from './text';
+import { nonWhitespace, isWhitespace, next } from './text';
 import { html } from 'typed-dom/dom';
 
 export const delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
@@ -28,13 +28,10 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
       assert(char !== '\n');
       if (context.sequential) return [[char]];
       nonWhitespace.lastIndex = position + 1;
-      const b = isBlank(source, position);
-      let i = b
-        ? source[position + 1] === '\n' || source[position + 1] === '\\'
-          ? position + 1
-          : nonWhitespace.test(source)
-            ? nonWhitespace.lastIndex - 1
-            : source.length
+      let i = isWhitespace(char, false) && isWhitespace(source[position + 1], false)
+        ? nonWhitespace.test(source)
+          ? nonWhitespace.lastIndex - 1
+          : source.length
         : next(source, position, delimiter);
       assert(i > position);
       i -= position;
