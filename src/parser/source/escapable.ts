@@ -41,7 +41,7 @@ export const escsource: EscapableSourceParser = ({ context }) => {
       nonWhitespace.lastIndex = position + 1;
       const b = isBlank(source, position);
       let i = b
-        ? source[position + 1] === '\n'
+        ? source[position + 1] === '\n' || source[position + 1] === '\\'
           ? position + 1
           : nonWhitespace.test(source)
             ? nonWhitespace.lastIndex - 1
