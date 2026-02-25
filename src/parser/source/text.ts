@@ -86,8 +86,24 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
   assert(index > position);
   const char = source[index];
   switch (char) {
+    case '$':
+    case '%':
+    case '*':
+    case '+':
+    case '~':
+    case '=':
+    case '/':
+      index = backToWhitespace(source, position, index);
+      break;
+    case '[':
+      index = source[index + 1] === '|'
+        ? backToWhitespace(source, position, index)
+        : index;
+      break;
     case ':':
-      index = backToUrlHead(source, position, index);
+      index = source.startsWith('//', index + 1)
+        ? backToUrlHead(source, position, index)
+        : index;
       break;
     case '@':
       index = backToEmailHead(source, position, index);
@@ -95,6 +111,12 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
   }
   assert(index > position);
   return index;
+}
+export function backToWhitespace(source: string, position: number, index: number): number {
+  const prev = index - 1;
+  return prev > position && /\s/.test(source[prev])
+    ? prev
+    : index;
 }
 export function backToUrlHead(source: string, position: number, index: number): number {
   const delim = index;
@@ -195,7 +217,7 @@ function isAlphanumeric(char: string): boolean {
 //  }
 //};
 
-const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
+//const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
 
 function seek(source: string, position: number): number {
   for (let i = position + 1; i < source.length; ++i) {
@@ -225,7 +247,6 @@ function seek(source: string, position: number): number {
       case '｛':
       case '｝':
       case '*':
-      case '%':
       case '|':
       case '\r':
       case '\n':
@@ -238,37 +259,38 @@ function seek(source: string, position: number): number {
       case '/':
         if (source[i + 1] === fst && source[i + 2] === fst) return i;
         continue;
+      case '%':
+        if (source[i + 1] === ']') return i;
+        continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
         continue;
-      //case ' ':
-      //case '\t':
-      //case '　':
-      //  if (i + 1 === source.length) return i;
-      //  switch (source[i + 1]) {
-      //    case ' ':
-      //    case '\t':
-      //    case '\r':
-      //    case '\n':
-      //    case '　':
-      //    case '$':
-      //    case '%':
-      //      return i;
-      //    case '\\':
-      //      if (i + 2 === source.length) return i;
-      //      switch (source[i + 2]) {
-      //        case ' ':
-      //        case '\t':
-      //        case '\r':
-      //        case '\n':
-      //        case '　':
-      //          return i;
-      //      }
-      //  }
-      //  continue;
+      case ' ':
+      case '\t':
+      case '　':
+        if (i + 1 === source.length) return i;
+        switch (source[i + 1]) {
+          case ' ':
+          case '\t':
+          case '\r':
+          case '\n':
+          case '　':
+            return i;
+          case '\\':
+            if (i + 2 === source.length) return i;
+            switch (source[i + 2]) {
+              case ' ':
+              case '\t':
+              case '\r':
+              case '\n':
+              case '　':
+                return i;
+            }
+        }
+        continue;
       default:
-        delimiter.lastIndex = i;
-        if (delimiter.test(source)) return i;
+        //delimiter.lastIndex = i;
+        //if (delimiter.test(source)) return i;
         continue;
     }
     assert(false);

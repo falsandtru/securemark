@@ -79,6 +79,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a [|b] [|c]'), ctx), [['<h1 id="index::c">a <span class="invalid">[|b]</span><span class="indexer" data-index="c"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a  [|b] \n'), ctx), [['<h1 id="index::b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \\[|b]'), ctx), [['<h1 id="index::a_[|b]">a [|b]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# - [|b]'), ctx), [['<h1 id="index::b">-<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## a [|b] [|c]'), ctx), [['<h2 id="index::c">a <span class="invalid">[|b]</span><span class="indexer" data-index="c"></span></h2>'], '']);
     });
 

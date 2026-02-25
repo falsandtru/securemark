@@ -69,7 +69,7 @@ describe('Unit: parser/block/dlist', () => {
     it('indexer', () => {
       assert.deepStrictEqual(inspect(parser('~ a [|b]'), ctx), [['<dl><dt id="index::b">a<span class="indexer" data-index="b"></span></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a [|b]\\'), ctx), [['<dl><dt id="index::a_[|b]">a <span class="invalid">[|b]</span></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ A'), ctx), [['<dl><dt id="index::A">A</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ - [|b]'), ctx), [['<dl><dt id="index::b">-<span class="indexer" data-index="b"></span></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ *A*'), ctx), [['<dl><dt id="index::A"><em>A</em></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ `A`'), ctx), [['<dl><dt id="index::`A`"><code data-src="`A`">A</code></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ ${A}$'), ctx), [['<dl><dt id="index::${A}$"><span class="math" translate="no" data-src="${A}$">${A}$</span></dt><dd></dd></dl>'], '']);

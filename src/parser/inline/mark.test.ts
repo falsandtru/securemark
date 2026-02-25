@@ -39,6 +39,7 @@ describe('Unit: parser/inline/mark', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('==a ==b===='), ctx), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('==- ==b===='), ctx), [['<mark id="mark::-_b">- <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::-_b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a\\ ==b===='), ctx), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a&Tab;==b===='), ctx), [['<mark id="mark::a_b=33Mw2l">a\t<mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b=33Mw2l"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('==a<wbr>==b===='), ctx), [['<mark id="mark::ab">a<wbr><mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::ab"></a>'], '']);

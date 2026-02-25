@@ -58,6 +58,7 @@ describe('Unit: parser/inline/italic', () => {
       assert.deepStrictEqual(inspect(parser('//////a//////'), ctx), [['<i><i>a</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('//////a///b///'), ctx), [['<i><i>a</i>b</i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a ///b//////'), ctx), [['<i>a <i>b</i></i>'], '']);
+      assert.deepStrictEqual(inspect(parser('///- ///b//////'), ctx), [['<i>- <i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a\\ ///b//////'), ctx), [['<i>a <i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a //////b/////////'), ctx), [['<i>a <i><i>b</i></i></i>'], '']);
       assert.deepStrictEqual(inspect(parser('///a ///b///c///'), ctx), [['<i>a <i>b</i>c</i>'], '']);
