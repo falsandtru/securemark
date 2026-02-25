@@ -56,11 +56,9 @@ export const text: TextParser = input => {
       consume(i - 1, context);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      i = linestart && b && i >= 3 ? i - 3 : 0;
-      i += position;
-      return i === context.position || b && !linestart || lineend
+      return position === context.position || b && !linestart || lineend
         ? [[]]
-        : [[source.slice(i, context.position)]];
+        : [[source.slice(position, context.position)]];
   }
 };
 
