@@ -40,7 +40,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
     dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
-      /[^\S\n]*}/y,
+      / ?}/y,
       false,
       undefined,
       ([as, bs], context) => {
@@ -120,9 +120,9 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recur
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
   surround(
-    open(/[^\S\n]+/y, str(/[1-9][0-9]*/y)),
+    open(/ /y, str(/[1-9][0-9]*/y)),
     str(/[x:]/y),
-    str(/[1-9][0-9]*(?=[^\S\n]|})/y),
+    str(/[1-9][0-9]*(?=[ }])/y),
     false,
     ([[a], [b], [c]]) => [
       b === 'x'

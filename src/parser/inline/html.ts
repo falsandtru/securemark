@@ -20,13 +20,13 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
+export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
   union([
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/yi),
+      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/yi),
       some(union([attribute])),
-      open(str(/[^\S\n]*/y), str('>'), true),
+      open(str(/ ?/y), str('>'), true),
       true,
       ([as, bs = [], cs], context) =>
         [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
@@ -38,14 +38,14 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(
-            str(`<${tag}`), some(attribute), open(str(/[^\S\n]*/y), str('>'), true),
+            str(`<${tag}`), some(attribute), open(str(/ ?/y), str('>'), true),
             true,
             ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
             ([as, bs = []]) => [unshift(as, bs)]),
           // 不可視のHTML構造が可視構造を変化させるべきでない。
           // 可視のHTMLは優先度変更を検討する。
           // このため<>は将来的に共通構造を変化させる可能性があり
-          // 共通構造を変更させない非構造文字列としては依然としてエスケープを要する。
+          // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
           precedence(0, recursion(Recursion.inline,
           some(union([
             some(inline, blankWith('\n', `</${tag}>`)),
@@ -61,9 +61,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
       new Map())),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/<[a-z]+(?=[^\S\n]|>)/yi),
+      str(/<[a-z]+(?=[ >])/yi),
       some(union([attribute])),
-      open(str(/[^\S\n]*/y), str('>'), true),
+      open(str(/ ?/y), str('>'), true),
       true,
       ([as, bs = [], cs], context) =>
         [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
@@ -72,8 +72,8 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[^\S\n]|>)/yi,
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
-  str(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/yi),
-  str(/[^\S\n]+[^\s<>]+/y),
+  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi),
+  str(/ [^\s<>]+/y),
 ]);
 
 function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[], context: Ctx): HTMLElement {

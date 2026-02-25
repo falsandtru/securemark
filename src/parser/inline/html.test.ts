@@ -67,7 +67,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<wbr >'), ctx), [['<wbr>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>a'), ctx), [['<wbr>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<bdi >a</bdi>'), ctx), [['<bdi>a</bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdi  >a</bdi>'), ctx), [['<bdi>a</bdi>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdi  >a</bdi>'), ctx), [['<span class="invalid">&lt;bdi  &gt;a&lt;/bdi&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi> a</bdi>'), ctx), [['<bdi> a</bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi> a </bdi>'), ctx), [['<bdi> a </bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>  a  </bdi>'), ctx), [['<bdi> a </bdi>'], '']);
@@ -122,8 +122,8 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<bdo diR="rtl">a</bdo>'), ctx), [['<span class="invalid">&lt;bdo diR="rtl"&gt;a&lt;/bdo&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl">a</bdo>'), ctx), [['<bdo dir="rtl">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl" >a</bdo>'), ctx), [['<bdo dir="rtl">a</bdo>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl"  >a</bdo>'), ctx), [['<bdo dir="rtl">a</bdo>'], '']);
-      assert.deepStrictEqual(inspect(parser('<bdo  dir="rtl">a</bdo>'), ctx), [['<bdo dir="rtl">a</bdo>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl"  >a</bdo>'), ctx), [['<span class="invalid">&lt;bdo dir="rtl"  &gt;a&lt;/bdo&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo  dir="rtl">a</bdo>'), ctx), [['<span class="invalid">&lt;bdo  dir="rtl"&gt;a&lt;/bdo&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr\n>'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('<wbr \n>'), ctx), [['<span class="invalid">&lt;wbr </span>'], '\n>']);
       assert.deepStrictEqual(inspect(parser('<wbr constructor>'), ctx), [['<span class="invalid">&lt;wbr constructor&gt;</span>'], '']);

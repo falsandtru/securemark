@@ -35,7 +35,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
-      /[^\S\n]*}/y,
+      / ?}/y,
       false,
       undefined,
       ([as, bs], context) => {
@@ -82,7 +82,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
       '[',
       union([media, shortmedia]),
       ']')),
-    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), /[^\S\n]*}/y)),
+    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ])),
   ([params, content = []]: [string[], (HTMLElement | string)[]], context) =>
     [[parse(defrag(content), params, context)]]))))));
@@ -94,20 +94,20 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
       '[',
       some(union([unescsource]), ']'),
       ']')),
-    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), /[^\S\n]*}/y)),
+    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ])),
   ([params, content = []], context) =>
     [[parse(defrag(content), params, context)]])));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
-  open(/[^\S\n]+/y, str(/\S+/y)),
+  open(/ /y, str(/\S+/y)),
   str(/[^\s{}]+/y),
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
-  fmap(str(/[^\S\n]+nofollow(?=[^\S\n]|})/y), () => [` rel="nofollow"`]),
-  str(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/yi),
-  str(/[^\S\n]+[^\s{}]+/y),
+  fmap(str(/ nofollow(?=[ }])/y), () => [` rel="nofollow"`]),
+  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi),
+  str(/ [^\s{}]+/y),
 ]);
 
 function parse(

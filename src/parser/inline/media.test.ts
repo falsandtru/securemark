@@ -27,8 +27,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]{}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ }'), ctx), [['<span class="invalid">![]{ }</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  }'), ctx), [['<span class="invalid">![]{  }</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{   }'), ctx), [['<span class="invalid">![]{   }</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{  }'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('![]{   }'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]]{/}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]{{}'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]{}}'), ctx), undefined);
@@ -66,12 +66,11 @@ describe('Unit: parser/inline/media', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('![]{b}'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{b }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{b  }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{b  }'), ctx), [['<span class="invalid">![]{b</span>'], '  }']);
       assert.deepStrictEqual(inspect(parser('![]{ b }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{ b  }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b  }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{  b   }'), ctx), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{ b  }'), ctx), [['<span class="invalid">![]{ b</span>'], '  }']);
+      assert.deepStrictEqual(inspect(parser('![]{  b }'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('![]{  b  }'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('![]{"}'), ctx), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt="&quot;"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{"}"}'), ctx), [['<a href="&quot;" target="_blank"><img class="media" data-src="&quot;" alt="&quot;"></a>'], '"}']);
       assert.deepStrictEqual(inspect(parser('![]{\\}'), ctx), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt="\\"></a>'], '']);
