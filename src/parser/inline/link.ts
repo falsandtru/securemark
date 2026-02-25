@@ -155,7 +155,7 @@ function elem(
     case 'https:':
       assert(uri.host);
       switch (true) {
-        case /[a-z][0-9]*:\/{0,2}\S/i.test(stringify(content)):
+        case /[0-9a-z]:\S/i.test(stringify(content)):
           type = 'content';
           message = 'URI must not be contained';
           break;
@@ -243,13 +243,13 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
 }
 
 export function decode(uri: string): string {
-  const origin = uri.match(/[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/yi)?.[0] ?? '';
+  const head = /^[a-z]+(?:[.+-][0-9a-z]+)*:\/*[^/?#\s]+/i;
+  const origin = uri.match(head)?.[0] ?? '';
   try {
-    let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/yi.test(path)) {
-      path = uri.slice(origin.length);
-    }
-    uri = origin + path;
+    const path = decodeURI(uri.slice(origin.length));
+    uri = !origin && head.test(path)
+      ? uri.slice(origin.length)
+      : origin + path;
   }
   finally {
     return uri.replace(/\s+/g, encodeURI);
