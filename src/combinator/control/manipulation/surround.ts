@@ -157,8 +157,8 @@ export function setBacktrack(
   position: number,
   length: number = 1,
 ): void {
-  const { source, state = 0 } = context;
-  if (state === 0) return;
+  // 以降バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
+  const { source } = context;
   if (position === source.length) return;
   if (length === 0) return;
   for (const backtrack of backtracks) {
