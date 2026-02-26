@@ -6737,17 +6737,17 @@ const attrspecs = {
 };
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
-exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[^\S\n]|>)/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
+exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[ >])/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[^\S\n]|>)/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/[^\S\n]*/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs], context) => [[elem(as[0].slice(1), false, (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [], context)]], ([as, bs = []], context) => [[elem(as[0].slice(1), false, (0, array_1.unshift)(as, bs), [], [], context)]]), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/[^\S\n]*/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs]) => [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)], ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]),
+(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs], context) => [[elem(as[0].slice(1), false, (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [], context)]], ([as, bs = []], context) => [[elem(as[0].slice(1), false, (0, array_1.unshift)(as, bs), [], [], context)]]), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs]) => [(0, array_1.push)((0, array_1.unshift)(as, bs), cs)], ([as, bs = []]) => [(0, array_1.unshift)(as, bs)]),
 // 不可視のHTML構造が可視構造を変化させるべきでない。
 // 可視のHTMLは優先度変更を検討する。
 // このため<>は将来的に共通構造を変化させる可能性があり
-// 共通構造を変更させない非構造文字列としては依然としてエスケープを要する。
+// 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
 (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`)), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)])))), (0, source_1.str)(`</${tag}>`), true, ([as, bs = [], cs], context) => [[elem(tag, true, as, bs, cs, context)]], ([as, bs = []], context) => [[elem(tag, true, as, bs, [], context)]]), ([, tag]) => tag, new Map())), (0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<[a-z]+(?=[^\S\n]|>)/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/[^\S\n]*/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs], context) => [[elem(as[0].slice(1), false, (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [], context)]], ([as, bs = []], context) => [[elem(as[0].slice(1), false, (0, array_1.unshift)(as, bs), [], [], context)]])])));
-exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|>)/yi), (0, source_1.str)(/[^\S\n]+[^\s<>]+/y)]);
+(0, source_1.str)(/<[a-z]+(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = [], cs], context) => [[elem(as[0].slice(1), false, (0, array_1.push)((0, array_1.unshift)(as, bs), cs), [], [], context)]], ([as, bs = []], context) => [[elem(as[0].slice(1), false, (0, array_1.unshift)(as, bs), [], [], context)]])])));
+exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi), (0, source_1.str)(/ [^\s<>]+/y)]);
 function elem(tag, content, as, bs, cs, context) {
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
   if (content) {
@@ -6916,7 +6916,7 @@ Object.setPrototypeOf(optspec, null);
 exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.creation)(10, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [(0, array_1.push)(ns, ["\u001F" /* Command.Separator */])] : undefined, undefined, [3 | 64 /* Backtrack.bracket */, 3 | 16 /* Backtrack.link */, 2 | 8 /* Backtrack.ruby */])),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
-(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y, false, undefined, ([as, bs], context) => {
+(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y, false, undefined, ([as, bs], context) => {
   if (!bs) return;
   const head = context.position - context.range;
   (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
@@ -6942,10 +6942,10 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
   return [[parse((0, dom_1.defrag)(content), params, context)]];
 }))))));
-exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.validate)(/[[{]/y, (0, combinator_1.creation)(10, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]]))))));
-exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), /[^\S\n]*}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]])));
-exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/[^\S\n]+/y, (0, source_1.str)(/\S+/y)), (0, source_1.str)(/[^\s{}]+/y)]);
-exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/[^\S\n]+nofollow(?=[^\S\n]|})/y), () => [` rel="nofollow"`]), (0, source_1.str)(/[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[^\S\n]|})/yi), (0, source_1.str)(/[^\S\n]+[^\s{}]+/y)]);
+exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.validate)(/[[{]/y, (0, combinator_1.creation)(10, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]]))))));
+exports.unsafelink = (0, combinator_1.lazy)(() => (0, combinator_1.creation)(10, (0, combinator_1.bind)((0, combinator_1.reverse)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.some)((0, combinator_1.union)([source_1.unescsource]), ']'), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y))])), ([params, content = []], context) => [[parse((0, dom_1.defrag)(content), params, context)]])));
+exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/ /y, (0, source_1.str)(/\S+/y)), (0, source_1.str)(/[^\s{}]+/y)]);
+exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/ nofollow(?=[ }])/y), () => [` rel="nofollow"`]), (0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi), (0, source_1.str)(/ [^\s{}]+/y)]);
 function parse(content, params, context) {
   const INSECURE_URI = params.shift();
   let uri;
@@ -6966,11 +6966,11 @@ function elem(INSECURE_URI, content, uri, origin) {
     case 'http:':
     case 'https:':
       switch (true) {
-        case /[a-z][0-9]*:\/{0,2}\S/i.test((0, util_1.stringify)(content)):
+        case /[0-9a-z]:\S/i.test((0, util_1.stringify)(content)):
           type = 'content';
           message = 'URI must not be contained';
           break;
-        case INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
+        case INSECURE_URI.startsWith('^/') && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/))):
           type = 'argument';
           message = 'Dot-segments cannot be used in subresource paths';
           break;
@@ -7007,13 +7007,13 @@ function elem(INSECURE_URI, content, uri, origin) {
 }
 function resolve(uri, host, source) {
   switch (true) {
-    case uri.slice(0, 2) === '^/':
+    case uri.startsWith('^/'):
       const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return last.includes('.') // isFile
       // Exclude ISO 6709.
       && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1)) ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}` : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
     case host.origin === source.origin && host.pathname === source.pathname:
-    case uri.slice(0, 2) === '//':
+    case uri.startsWith('//'):
       return uri;
     default:
       const target = new url_1.ReadonlyURL(uri, source.href);
@@ -7022,13 +7022,11 @@ function resolve(uri, host, source) {
 }
 exports.resolve = resolve;
 function decode(uri) {
-  const origin = uri.match(/[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:(?:\/{0,2}[^/?#\s]+|\/\/(?=[/]))/yi)?.[0] ?? '';
+  const head = /^[a-z]+(?:[.+-][0-9a-z]+)*:\/*[^/?#\s]+/i;
+  const origin = uri.match(head)?.[0] ?? '';
   try {
-    let path = decodeURI(uri.slice(origin.length));
-    if (!origin && /[a-z](?:[-.](?=[0-9a-z])|[0-9a-z])*:\/{0,2}\S/yi.test(path)) {
-      path = uri.slice(origin.length);
-    }
-    uri = origin + path;
+    const path = decodeURI(uri.slice(origin.length));
+    uri = !origin && head.test(path) ? uri.slice(origin.length) : origin + path;
   } finally {
     return uri.replace(/\s+/g, encodeURI);
   }
@@ -7134,7 +7132,7 @@ const optspec = {
   rel: undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [ns] : undefined, undefined, [3 | 4 /* Backtrack.escbracket */])), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), /[^\S\n]*}/y, false, undefined, ([as, bs], context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.creation)(10, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, ([, ns = []], context) => context.linebreak === 0 ? [ns] : undefined, undefined, [3 | 4 /* Backtrack.escbracket */])), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, undefined, ([as, bs], context) => {
   if (!bs) return;
   const head = context.position - context.range;
   (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.link */], head);
@@ -7183,7 +7181,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
   })((0, parser_1.subinput)(`{ ${INSECURE_URI}${linkparams.join('')} }`, context));
 })))));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, undefined, () => [[]], [3 | 4 /* Backtrack.escbracket */])])));
-const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, combinator_1.open)(/[^\S\n]+/y, (0, source_1.str)(/[1-9][0-9]*/y)), (0, source_1.str)(/[x:]/y), (0, source_1.str)(/[1-9][0-9]*(?=[^\S\n]|})/y), false, ([[a], [b], [c]]) => [b === 'x' ? [`width="${a}"`, `height="${c}"`] : [`aspect-ratio="${a}/${c}"`]]), link_1.option]));
+const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, combinator_1.open)(/ /y, (0, source_1.str)(/[1-9][0-9]*/y)), (0, source_1.str)(/[x:]/y), (0, source_1.str)(/[1-9][0-9]*(?=[ }])/y), false, ([[a], [b], [c]]) => [b === 'x' ? [`width="${a}"`, `height="${c}"`] : [`aspect-ratio="${a}/${c}"`]]), link_1.option]));
 function sanitize(target, uri) {
   let type;
   let message;
@@ -7994,7 +7992,7 @@ exports.escsource = void 0;
 const combinator_1 = __webpack_require__(3484);
 const text_1 = __webpack_require__(5655);
 const dom_1 = __webpack_require__(394);
-const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s(?:\$)|:\/\/)/g;
+const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s\$|:\/\/)/g;
 const escsource = ({
   context
 }) => {
@@ -8030,9 +8028,7 @@ const escsource = ({
       return [[(0, dom_1.html)('br')]];
     default:
       if (context.sequential) return [[char]];
-      text_1.nonWhitespace.lastIndex = position + 1;
-      const b = (0, text_1.isBlank)(source, position);
-      let i = b ? source[position + 1] === '\n' ? position + 1 : text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, delimiter);
+      let i = (0, text_1.next)(source, position, delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
@@ -8145,11 +8141,11 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isWhitespace = exports.isBlank = exports.backToEmailHead = exports.backToUrlHead = exports.next = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = void 0;
+exports.backToEmailHead = exports.backToUrlHead = exports.backToWhitespace = exports.next = exports.canSkip = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = void 0;
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
 //const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
-exports.nonWhitespace = /[\S\r\n]/g;
+exports.nonWhitespace = /[^ \t　]/g;
 const text = input => {
   const {
     context
@@ -8184,22 +8180,39 @@ const text = input => {
     default:
       if (context.sequential) return [[char]];
       exports.nonWhitespace.lastIndex = position + 1;
-      const b = isBlank(source, position);
-      let i = b ? source[position + 1] === '\n' ? position + 1 : exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position);
-      const lineend =  false || b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n';
+      const s = canSkip(source, position);
+      let i = s ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position);
+      const lineend =  false || s && i === source.length || s && source[i] === '\n';
       i -= position;
-      i = lineend ? i : i - +b || 1;
+      i = lineend ? i : i - +s || 1;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      i = linestart && b && i >= 3 ? i - 3 : 0;
-      i += position;
-      return i === context.position || b && !linestart || lineend ? [[]] : [[source.slice(i, context.position)]];
+      return position === context.position || s && !linestart || lineend ? [[]] : [[source.slice(position, context.position)]];
   }
 };
 exports.text = text;
 exports.txt = (0, combinator_1.union)([exports.text]);
 exports.linebreak = (0, combinator_1.focus)(/[\r\n]/y, (0, combinator_1.union)([exports.text]));
+function canSkip(source, position) {
+  if (!isWhitespace(source[position], false)) return false;
+  if (position + 1 === source.length) return true;
+  return isWhitespace(source[position + 1], true);
+}
+exports.canSkip = canSkip;
+function isWhitespace(char, linebreak) {
+  switch (char) {
+    case ' ':
+    case '\t':
+    case '　':
+      return true;
+    case '\r':
+    case '\n':
+      return linebreak;
+    default:
+      return false;
+  }
+}
 function next(source, position, delimiter) {
   let index;
   if (delimiter) {
@@ -8212,8 +8225,20 @@ function next(source, position, delimiter) {
   if (index === 0) return source.length;
   const char = source[index];
   switch (char) {
+    case '$':
+    case '%':
+    case '*':
+    case '+':
+    case '~':
+    case '=':
+    case '/':
+      index = backToWhitespace(source, position, index);
+      break;
+    case '[':
+      index = source[index + 1] === '|' ? backToWhitespace(source, position, index) : index;
+      break;
     case ':':
-      index = backToUrlHead(source, position, index);
+      index = source.startsWith('//', index + 1) ? backToUrlHead(source, position, index) : index;
       break;
     case '@':
       index = backToEmailHead(source, position, index);
@@ -8222,6 +8247,11 @@ function next(source, position, delimiter) {
   return index;
 }
 exports.next = next;
+function backToWhitespace(source, position, index) {
+  const prev = index - 1;
+  return prev > position && /\s/.test(source[prev]) ? prev : index;
+}
+exports.backToWhitespace = backToWhitespace;
 function backToUrlHead(source, position, index) {
   const delim = index;
   let state = false;
@@ -8317,7 +8347,6 @@ function isAlphanumeric(char) {
 //      this[c.charCodeAt(0)] = undefined);
 //  }
 //};
-const delimiter = /\s(?:\\?(?:$|\s)|[$%])/y;
 function seek(source, position) {
   for (let i = position + 1; i < source.length; ++i) {
     const fst = source[i];
@@ -8346,7 +8375,6 @@ function seek(source, position) {
       case '｛':
       case '｝':
       case '*':
-      case '%':
       case '|':
       case '\r':
       case '\n':
@@ -8359,77 +8387,41 @@ function seek(source, position) {
       case '/':
         if (source[i + 1] === fst && source[i + 2] === fst) return i;
         continue;
+      case '%':
+        if (source[i + 1] === ']') return i;
+        continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
         continue;
-      //case ' ':
-      //case '\t':
-      //case '　':
-      //  if (i + 1 === source.length) return i;
-      //  switch (source[i + 1]) {
-      //    case ' ':
-      //    case '\t':
-      //    case '\r':
-      //    case '\n':
-      //    case '　':
-      //    case '$':
-      //    case '%':
-      //      return i;
-      //    case '\\':
-      //      if (i + 2 === source.length) return i;
-      //      switch (source[i + 2]) {
-      //        case ' ':
-      //        case '\t':
-      //        case '\r':
-      //        case '\n':
-      //        case '　':
-      //          return i;
-      //      }
-      //  }
-      //  continue;
+      case ' ':
+      case '\t':
+      case '　':
+        if (i + 1 === source.length) return i;
+        switch (source[i + 1]) {
+          case ' ':
+          case '\t':
+          case '\r':
+          case '\n':
+          case '　':
+            return i;
+          case '\\':
+            if (i + 2 === source.length) return i;
+            switch (source[i + 2]) {
+              case ' ':
+              case '\t':
+              case '\r':
+              case '\n':
+              case '　':
+                return i;
+            }
+        }
+        continue;
       default:
-        delimiter.lastIndex = i;
-        if (delimiter.test(source)) return i;
         continue;
     }
   }
   return source.length;
 }
-const blank = /\s(?:$|\s|\\\n)/y;
-function isBlank(source, position) {
-  blank.lastIndex = position;
-  return blank.test(source);
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-  // removed by dead control flow
-
-}
-exports.isBlank = isBlank;
-const whitespace = /\s/;
-function isWhitespace(char) {
-  whitespace;
-  switch (char) {
-    case ' ':
-    case '\t':
-    case '\r':
-    case '\n':
-    case '　':
-      return true;
-    default:
-      return false;
-  }
-}
-exports.isWhitespace = isWhitespace;
 
 /***/ },
 
@@ -8472,8 +8464,7 @@ const unescsource = ({
     default:
       if (context.sequential) return [[char]];
       text_1.nonWhitespace.lastIndex = position + 1;
-      const b = (0, text_1.isBlank)(source, position);
-      let i = b ? source[position + 1] === '\n' ? position + 1 : text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
+      let i = (0, text_1.canSkip)(source, position) ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
