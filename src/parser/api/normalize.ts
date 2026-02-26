@@ -63,9 +63,7 @@ const unreadableEscapableCharacters = unreadableHTMLEntityNames
   .map(name => eval(unsafehtmlentity(input(`&${name};`, {})))![0]);
 assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
 assert(unreadableEscapableCharacters.every(c => c.length === 1));
-const unreadableEscapableCharacter = new RegExp(`[${
-  [...new Set<string>(unreadableEscapableCharacters)].join('')
-}]`, 'g');
+const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');
 assert(!unreadableEscapableCharacter.source.includes('&'));
 
 // https://www.pandanoir.info/entry/2018/03/11/193000
