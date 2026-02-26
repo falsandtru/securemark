@@ -3073,11 +3073,10 @@ function isBacktrack(context, backtracks, position = context.position, length = 
 }
 exports.isBacktrack = isBacktrack;
 function setBacktrack(context, backtracks, position, length = 1) {
+  // 以降バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
   const {
-    source,
-    state = 0
+    source
   } = context;
-  if (state === 0) return;
   if (position === source.length) return;
   if (length === 0) return;
   for (const backtrack of backtracks) {
@@ -3250,7 +3249,11 @@ function reset(base, parser) {
   const values = Array(changes.length);
   return ({
     context
-  }) => apply(parser, context, changes, values, true);
+  }) =>
+  // 大域離脱時の汚染回避のため複製
+  apply(parser, {
+    ...context
+  }, changes, values, true);
 }
 exports.reset = reset;
 function context(base, parser) {
@@ -3917,7 +3920,7 @@ function bind(target, settings) {
   function* parse(source) {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-    source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1));
+    source = (0, normalize_1.normalize)(source);
     // Change the object identity.
     context = {
       ...context,
@@ -4165,7 +4168,7 @@ function sanitize(source) {
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
 const unreadableHTMLEntityNames = exports.invisibleHTMLEntityNames.slice(2);
 const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {})))[0]);
-const unreadableEscapableCharacter = new RegExp(`[${[...new Set(unreadableEscapableCharacters)].join('')}]`, 'g');
+const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
 // http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
@@ -5447,11 +5450,14 @@ const cite_1 = __webpack_require__(1200);
 const quote_1 = __webpack_require__(4847);
 const inline_1 = __webpack_require__(7973);
 const source_1 = __webpack_require__(8745);
-const util_1 = __webpack_require__(4992);
 const visibility_1 = __webpack_require__(6364);
+const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const delimiter = new RegExp(`${cite_1.syntax.source}|${quote_1.syntax.source}`, 'y');
-exports.reply = (0, combinator_1.block)((0, combinator_1.validate)(cite_1.syntax, (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([cite_1.cite, quote_1.quote, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, delimiter), (0, visibility_1.visualize)((0, util_1.linearize)((0, combinator_1.some)(inline_1.inline), 1)))])), ns => [(0, dom_1.html)('p', (0, visibility_1.trimBlankNodeEnd)((0, dom_1.defrag)(ns)))])));
+exports.reply = (0, combinator_1.block)((0, combinator_1.validate)(cite_1.syntax, (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([cite_1.cite, quote_1.quote, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, delimiter), (0, visibility_1.visualize)((0, combinator_1.fmap)((0, combinator_1.some)(inline_1.inline), (ns, {
+  source,
+  position
+}) => source[position - 1] === '\n' ? ns : (0, array_1.push)(ns, [(0, dom_1.html)('br')]))))])), ns => [(0, dom_1.html)('p', (0, visibility_1.trimBlankNodeEnd)((0, dom_1.defrag)(ns)))])));
 
 /***/ },
 
@@ -5517,14 +5523,18 @@ const combinator_1 = __webpack_require__(3484);
 const math_1 = __webpack_require__(2962);
 const autolink_1 = __webpack_require__(8072);
 const source_1 = __webpack_require__(8745);
-const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.syntax = />+[^\S\n]/y;
-exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.anyline)), (0, util_1.linearize)((0, combinator_1.convert)(source => source.replace(/(?<=^>+[^\S\n])/mg, '\r'), (0, combinator_1.some)((0, combinator_1.union)([
+exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.anyline)), (0, combinator_1.convert)(
+// TODO: インデント数を渡してインデント数前の行頭確認を行う実装に置き換える
+source => source.replace(/(?<=^>+[^\S\n])/mg, '\r'), (0, combinator_1.some)((0, combinator_1.union)([
 // quote補助関数が残した数式をパースする。
-math_1.math, autolink_1.autolink, source_1.linebreak, source_1.unescsource])), false), -1)), ns => [(0, dom_1.html)('span', {
+math_1.math, autolink_1.autolink, source_1.linebreak, source_1.unescsource])), false)), (ns, {
+  source,
+  position
+}) => [source[position - 1] === '\n' ? ns.pop() : (0, dom_1.html)('br'), (0, dom_1.html)('span', {
   class: 'quote'
-}, (0, dom_1.defrag)(ns)), (0, dom_1.html)('br')]), false));
+}, (0, dom_1.defrag)(ns))].reverse()), false));
 
 /***/ },
 
@@ -5665,7 +5675,7 @@ const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const normalize_1 = __webpack_require__(4490);
 const dom_1 = __webpack_require__(394);
-exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/y, (0, combinator_1.inits)([(0, combinator_1.rewrite)(({
+exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/---+[^\S\v\f\r\n]*\r?\n(?=\S)/y, (0, combinator_1.inits)([(0, combinator_1.rewrite)(({
   context
 }) => {
   const {
@@ -5679,7 +5689,7 @@ exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/---+[^
   return [[]];
 }, (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.validate)(({
   context
-}) => context.header ?? true, (0, combinator_1.focus)(/---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/y, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, dom_1.html)('aside', {
+}) => context.header ?? true, (0, combinator_1.focus)(/(---+)[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}\1[^\S\v\f\r\n]*(?:$|\r?\n)/y, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), es => [(0, dom_1.html)('aside', {
   class: 'header'
 }, [(0, dom_1.html)('details', {
   open: ''
@@ -8255,37 +8265,29 @@ exports.backToWhitespace = backToWhitespace;
 function backToUrlHead(source, position, index) {
   const delim = index;
   let state = false;
-  let offset = 0;
-  for (let i = index; --i > position;) {
-    index = i;
+  for (let i = index - 1; i >= position; --i) {
     const char = source[i];
     if (state) switch (char) {
       case '.':
       case '+':
       case '-':
         state = false;
-        offset = 1;
         continue;
     }
     if (isAlphanumeric(char)) {
       state = true;
-      offset = 0;
+      index = i;
       continue;
     }
     break;
   }
-  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
-    return delim;
-  }
-  return index + offset;
+  return index === position ? delim : index;
 }
 exports.backToUrlHead = backToUrlHead;
 function backToEmailHead(source, position, index) {
   const delim = index;
   let state = false;
-  let offset = 0;
-  for (let i = index; --i > position;) {
-    index = i;
+  for (let i = index - 1; i >= position; --i) {
     const char = source[i];
     if (state) switch (char) {
       case '_':
@@ -8293,20 +8295,16 @@ function backToEmailHead(source, position, index) {
       case '+':
       case '-':
         state = false;
-        offset = 1;
         continue;
     }
     if (isAlphanumeric(char)) {
       state = true;
-      offset = 0;
+      index = i;
       continue;
     }
     break;
   }
-  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
-    return delim;
-  }
-  return index + offset;
+  return index === position ? delim : index;
 }
 exports.backToEmailHead = backToEmailHead;
 function isAlphanumeric(char) {
@@ -8484,15 +8482,10 @@ exports.unescsource = unescsource;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.linearize = void 0;
+exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = void 0;
 const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
-const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-function linearize(parser, trim = 0) {
-  return (0, combinator_1.convert)(source => `${trim === 0 ? source : trim > 0 ? source.at(-1) === '\n' ? source : source + '\n' : source.at(-1) === '\n' ? source.slice(0, -1) : source}`, parser, trim === 0);
-}
-exports.linearize = linearize;
 function repeat(symbol, parser, cons, termination = (nodes, context, prefix, postfix) => {
   const acc = [];
   if (prefix > 0) {
