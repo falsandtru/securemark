@@ -9,7 +9,8 @@ export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   const changes = Object.entries(base);
   const values = Array(changes.length);
   return ({ context }) =>
-    apply(parser, context, changes, values, true);
+    // 大域離脱時の汚染回避のため複製
+    apply(parser, { ...context }, changes, values, true);
 }
 
 export function context<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;

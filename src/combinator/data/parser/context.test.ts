@@ -22,16 +22,16 @@ describe('Unit: combinator/data/parser/context', () => {
       assert(base.resources?.clock === 3);
       assert(ctx.resources?.clock === undefined);
       assert.throws(() => reset(base, parser)(input('1234', ctx)));
-      assert(ctx.resources?.clock === 0);
+      assert(ctx.resources?.clock === undefined);
     });
 
     it('node', () => {
       const base: Context = { resources: { clock: 3, recursions: [1] } };
-      const ctx: Context = { resources: { clock: 1, recursions: [1] } };
-      assert.deepStrictEqual(reset(base, parser)(input('1', ctx)), [[1]]);
+      const ctx: Context = { resources: { clock: 2, recursions: [1] } };
+      assert.deepStrictEqual(reset(base, parser)(input('1', ctx)), [[2]]);
       assert(base.resources?.clock === 3);
-      assert(ctx.resources?.clock === 0);
-      assert.throws(() => reset(base, parser)(input('1', ctx)));
+      assert(ctx.resources?.clock === 1);
+      assert.throws(() => reset(base, parser)(input('12', ctx)));
       assert(ctx.resources?.clock === 0);
     });
 
@@ -46,11 +46,12 @@ describe('Unit: combinator/data/parser/context', () => {
 
     it('', () => {
       const base: Context = { status: true };
-      const ctx: Context = { resources: { clock: 3, recursions: [1] } };
-      assert.deepStrictEqual(context(base, parser)(input('123', ctx)), [[true, true, true]]);
-      assert(ctx.resources?.clock === 0);
+      const ctx: Context = { resources: { clock: 2, recursions: [1] } };
+      assert.deepStrictEqual(context(base, parser)(input('1', ctx)), [[true]]);
+      assert(base.resources?.clock === undefined);
+      assert(ctx.resources?.clock === 1);
       assert(ctx.status === undefined);
-      assert.throws(() => reset(base, parser)(input('1', ctx)));
+      assert.throws(() => context(base, parser)(input('12', ctx)));
       assert(ctx.resources?.clock === 0);
       assert(ctx.status === true);
     });
