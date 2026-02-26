@@ -23,7 +23,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
       block(
         union([
           validate(({ context }) => context.header ?? true,
-          focus(/---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/y,
+          focus(/(---+)[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}\1[^\S\v\f\r\n]*(?:$|\r?\n)/y,
           convert(source =>
             normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
             fmap(

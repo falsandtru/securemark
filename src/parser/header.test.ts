@@ -21,7 +21,8 @@ describe('Unit: parser/header', () => {
       assert.deepStrictEqual(inspect(parser('---\n\n---'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('---\n \n---'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('---\n-\n---'), ctx), [['<pre class="invalid" translate="no">---\n-\n---</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('----\na: b\n----'), ctx), [['<pre class="invalid" translate="no">----\na: b\n----</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n----'), ctx), [['<pre class="invalid" translate="no">---\na: b\n----</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('----\na: b\n---'), ctx), [['<pre class="invalid" translate="no">----\na: b\n---</pre>'], '']);
       assert.deepStrictEqual(inspect(parser(`---\n${'a: b\n'.repeat(101)}---`), ctx), [[`<pre class="invalid" translate="no">---\n${'a: b\n'.repeat(101)}---</pre>`], '']);
     });
 
@@ -30,6 +31,7 @@ describe('Unit: parser/header', () => {
       assert.deepStrictEqual(inspect(parser('---\na: b\n---\n'), ctx), [['<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="a" data-value="b"><span class="field-name">a</span>: <span class="field-value">b</span>\n</span></details></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\nC: D e\n---\n'), ctx), [['<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="a" data-value="b"><span class="field-name">a</span>: <span class="field-value">b</span>\n</span><span class="field" data-name="c" data-value="D e"><span class="field-name">C</span>: <span class="field-value">D e</span>\n</span></details></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('--- \r\na: b \r\n--- \r\n \r\n \r\na'), ctx), [['<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="a" data-value="b"><span class="field-name">a</span>: <span class="field-value">b</span>\n</span></details></aside>'], ' \r\na']);
+      assert.deepStrictEqual(inspect(parser('----\na: b\n----'), ctx), [['<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="a" data-value="b"><span class="field-name">a</span>: <span class="field-value">b</span>\n</span></details></aside>'], '']);
     });
 
   });
