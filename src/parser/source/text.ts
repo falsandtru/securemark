@@ -136,36 +136,30 @@ export function backToWhitespace(source: string, position: number, index: number
 export function backToUrlHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
-  let offset = 0;
-  for (let i = index; --i > position;) {
-    index = i;
+  for (let i = index - 1; i >= position; --i) {
     const char = source[i];
     if (state) switch (char) {
       case '.':
       case '+':
       case '-':
         state = false;
-        offset = 1;
         continue;
     }
     if (isAlphanumeric(char)) {
       state = true;
-      offset = 0;
+      index = i;
       continue;
     }
     break;
   }
-  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
-    return delim;
-  }
-  return index + offset;
+  return index === position
+    ? delim
+    : index;
 }
 export function backToEmailHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
-  let offset = 0;
-  for (let i = index; --i > position;) {
-    index = i;
+  for (let i = index - 1; i >= position; --i) {
     const char = source[i];
     if (state) switch (char) {
       case '_':
@@ -173,20 +167,18 @@ export function backToEmailHead(source: string, position: number, index: number)
       case '+':
       case '-':
         state = false;
-        offset = 1;
         continue;
     }
     if (isAlphanumeric(char)) {
       state = true;
-      offset = 0;
+      index = i;
       continue;
     }
     break;
   }
-  if (index === position + 1 && offset === 0 && isAlphanumeric(source[index - 1])) {
-    return delim;
-  }
-  return index + offset;
+  return index === position
+    ? delim
+    : index;
 }
 function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
