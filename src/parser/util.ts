@@ -2,26 +2,7 @@ import { min } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
 import { Parser, Result, Ctx, Node, Context, eval, failsafe } from '../combinator/data/parser';
-import { convert } from '../combinator';
 import { define } from 'typed-dom/dom';
-
-export function linearize<P extends Parser<HTMLElement | string>>(parser: P, trim?: 0 | 1 | -1): P;
-export function linearize<N extends HTMLElement | string>(parser: Parser<N>, trim = 0): Parser<N> {
-  return convert(
-    source => `${
-      trim === 0
-        ? source
-        : trim > 0
-          ? source.at(-1) === '\n'
-            ? source
-            : source + '\n'
-          : source.at(-1) === '\n'
-            ? source.slice(0, -1)
-            : source
-    }`,
-    parser,
-    trim === 0);
-}
 
 export function repeat<P extends Parser<HTMLElement |  string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: Node<P>[], context: Context<P>) => Node<P>[], termination?: (acc: Node<P>[], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
 export function repeat<N extends HTMLElement |  string>(symbol: string, parser: Parser<N>, cons: (nodes: N[], context: MarkdownParser.Context) => N[], termination: (acc: N[], context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {

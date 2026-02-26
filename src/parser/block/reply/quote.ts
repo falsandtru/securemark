@@ -3,7 +3,6 @@ import { union, some, block, validate, rewrite, convert, lazy, fmap } from '../.
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
 import { linebreak, unescsource, anyline } from '../../source';
-import { linearize } from '../../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const syntax = />+[^\S\n]/y;
@@ -11,7 +10,8 @@ export const syntax = />+[^\S\n]/y;
 export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
   rewrite(
     some(validate(syntax, anyline)),
-    linearize(convert(
+    convert(
+      // TODO: インデント数を渡してインデント数前の行頭確認を行う実装に置き換える
       source => source.replace(/(?<=^>+[^\S\n])/mg, '\r'),
       some(union([
         // quote補助関数が残した数式をパースする。
@@ -20,9 +20,9 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
         linebreak,
         unescsource,
       ])),
-      false), -1)),
-  (ns: [string, ...(string | HTMLElement)[]]) => [
+      false)),
+  (ns: [string, ...(string | HTMLElement)[]], { source, position }) => [
+    source[position - 1] === '\n' ? ns.pop() as HTMLBRElement : html('br'),
     html('span', { class: 'quote' }, defrag(ns)),
-    html('br'),
-  ]),
+  ].reverse()),
   false));
