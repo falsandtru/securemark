@@ -840,41 +840,71 @@ class List {
     if (this.length === 0) return;
     return this.delete(this.head.prev);
   }
+  import(list, before) {
+    if (list.length === 0) return this;
+    if (this.length === 0) {
+      this.head = list.head;
+      this.length += list.length;
+      list.head = undefined;
+      list.length = 0;
+      return this;
+    }
+    const head = list.head;
+    const last = list.last;
+    const next = last.next = before ?? this.head;
+    const prev = head.prev = next.prev;
+    next.prev = last;
+    prev.next = head;
+    this.length += list.length;
+    list.length = 0;
+    list.head = undefined;
+    return this;
+  }
   clear() {
     this.length = 0;
     this.head = undefined;
   }
   *[Symbol.iterator]() {
-    for (let node = this.head; node !== undefined;) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
       yield node;
-      node = node.next;
+      node = next;
       if (node === this.head) break;
     }
   }
   flatMap(f) {
-    const acc = [];
-    for (let node = this.head; node !== undefined;) {
-      const as = f(node);
-      switch (as.length) {
-        case 0:
-          break;
-        case 1:
-          acc.push(as[0]);
-          break;
-        default:
-          for (let len = as.length, i = 0; i < len; ++i) {
-            acc.push(as[i]);
-          }
-      }
-      node = node.next;
+    const acc = new List();
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
+      acc.import(f(node));
+      node = next;
       if (node === this.head) break;
     }
     return acc;
   }
+  foldl(f, acc) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
+      acc = f(acc, node);
+      node = next;
+      if (node === this.head) break;
+    }
+    return acc;
+  }
+  foldr(f, acc) {
+    for (let node = this.head?.prev; node && this.head;) {
+      const prev = node.prev;
+      acc = f(node, acc);
+      if (node === this.head) break;
+      node = prev;
+    }
+    return acc;
+  }
   find(f) {
-    for (let node = this.head; node !== undefined;) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
       if (f(node)) return node;
-      node = node.next;
+      node = next;
       if (node === this.head) break;
     }
   }
@@ -959,36 +989,67 @@ class List {
     if (this.length === 0) return;
     return this.delete(this.last);
   }
+  import(list, before) {
+    if (list.length === 0) return this;
+    if (this.length === 0) {
+      this.head = list.head;
+      this.length += list.length;
+      list.head = undefined;
+      list.length = 0;
+      return this;
+    }
+    const head = list.head;
+    const last = list.last;
+    const next = last.next = before ?? this.head;
+    const prev = head.prev = next.prev;
+    next.prev = last;
+    prev.next = head;
+    this.length += list.length;
+    list.length = 0;
+    list.head = undefined;
+    return this;
+  }
   clear() {
     this.length = 0;
     this.head = this.last = undefined;
   }
   *[Symbol.iterator]() {
-    for (let node = this.head; node !== undefined; node = node.next) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
       yield node;
+      node = next;
     }
   }
   flatMap(f) {
-    const acc = [];
-    for (let node = this.head; node !== undefined; node = node.next) {
-      const as = f(node);
-      switch (as.length) {
-        case 0:
-          break;
-        case 1:
-          acc.push(as[0]);
-          break;
-        default:
-          for (let len = as.length, i = 0; i < len; ++i) {
-            acc.push(as[i]);
-          }
-      }
+    const acc = new List();
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
+      acc.import(f(node));
+      node = next;
+    }
+    return acc;
+  }
+  foldl(f, acc) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
+      acc = f(acc, node);
+      node = next;
+    }
+    return acc;
+  }
+  foldr(f, acc) {
+    for (let node = this.head?.prev; node && this.head;) {
+      const prev = node.prev;
+      acc = f(node, acc);
+      node = prev;
     }
     return acc;
   }
   find(f) {
-    for (let node = this.head; node !== undefined; node = node.next) {
+    for (let node = this.head; node && this.head;) {
+      const next = node.next;
       if (f(node)) return node;
+      node = next;
     }
   }
 }
@@ -1036,6 +1097,7 @@ exports.memoize = memoize;
 function memoizeArray(f, identify, memory) {
   return (...as) => {
     const b = identify(...as);
+    if (!(b >= 0)) return f(...as);
     let z = memory[b];
     if (z !== undefined) return z;
     z = f(...as);
@@ -1047,6 +1109,7 @@ function memoizeObject(f, identify, memory) {
   let nullable = false;
   return (...as) => {
     const b = identify(...as);
+    if (!(b >= 0)) return f(...as);
     let z = memory[b];
     if (z !== undefined || nullable && b in memory) return z;
     z = f(...as);
@@ -2527,7 +2590,7 @@ function verify(parser, cond) {
     } = context;
     if (position === source.length) return;
     const result = parser(input);
-    if (result && !cond((0, parser_1.eval)(result), context)) return;
+    if (result && !cond(result, context)) return;
     return result;
   });
 }
@@ -2566,7 +2629,7 @@ function line(parser) {
     if (result === undefined) return;
     if (!isBlank(source.slice(context.position, position + line.length))) return;
     context.position = position + line.length;
-    return (0, parser_1.eval)(result);
+    return result;
   });
 }
 exports.line = line;
@@ -2783,9 +2846,8 @@ function indent(opener, parser = false, separation = false) {
     } = context;
     context.position = source.length;
     return new parser_1.List([new parser_1.Data(source.slice(position))]);
-  }))), ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation), (lines, context) => {
-    const result = parser((0, parser_1.subinput)(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
-    return result ? (0, parser_1.eval)(result) : undefined;
+  }))), ([indent]) => indent.length <= 16 ? indent.length * 2 + +(indent[0] === ' ') : -1, [])), separation), (lines, context) => {
+    return parser((0, parser_1.subinput)(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
   }));
 }
 exports.indent = indent;
@@ -2921,9 +2983,9 @@ function focus(scope, parser) {
       position
     } = context;
     if (position === source.length) return;
-    const src = (0, parser_1.eval)(match({
+    const src = match({
       context
-    }))?.head?.value ?? '';
+    })?.head?.value ?? '';
     if (src === '') return;
     context.range = src.length;
     context.offset ??= 0;
@@ -2933,8 +2995,7 @@ function focus(scope, parser) {
     context.position += result && context.position === position ? src.length : 0;
     context.source = source;
     context.offset -= position;
-    if (result === undefined) return;
-    return (0, parser_1.eval)(result);
+    return result;
   });
 }
 exports.focus = focus;
@@ -2959,8 +3020,7 @@ function rewrite(scope, parser) {
     context.position += res2 && context.position === position ? src.length : 0;
     context.source = source;
     context.offset -= position;
-    if (res2 === undefined) return;
-    return (0, parser_1.eval)(res2);
+    return res2;
   });
 }
 exports.rewrite = rewrite;
@@ -3003,26 +3063,23 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
       linebreak
     } = context;
     context.linebreak = 0;
-    const resultO = opener(input);
-    const nodesO = (0, parser_1.eval)(resultO);
+    const nodesO = opener(input);
     if (!nodesO) {
       return void revert(context, linebreak);
     }
     if (isBacktrack(context, backtracks, position, context.position - position || 1)) {
       return void revert(context, linebreak);
     }
-    const resultM = context.position < source.length ? parser(input) : undefined;
+    const nodesM = context.position < source.length ? parser(input) : undefined;
     context.range = context.position - position;
-    const nodesM = (0, parser_1.eval)(resultM);
-    if (!resultM && !optional) {
+    if (!nodesM && !optional) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
       revert(context, linebreak);
       return result;
     }
-    const resultC = resultM || optional ? closer(input) : undefined;
+    const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
-    const nodesC = (0, parser_1.eval)(resultC);
     if (!nodesC) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
@@ -3138,8 +3195,7 @@ function bind(parser, f) {
     const res1 = parser(input);
     if (res1 === undefined) return;
     context.range = context.position - position;
-    const res2 = f((0, parser_1.eval)(res1), context);
-    if (res2 === undefined) return;
+    const res2 = f(res1, context);
     return context.position > position ? res2 : undefined;
   });
 }
@@ -3171,7 +3227,6 @@ exports.fmap = fmap;
 "use strict";
 
 
-// Memory-efficient flexible list.
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
@@ -3320,7 +3375,7 @@ exports.List = List;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.failsafe = exports.eval = exports.clean = exports.subinput = exports.input = exports.Data = exports.List = void 0;
+exports.failsafe = exports.clean = exports.subinput = exports.input = exports.Data = exports.List = void 0;
 const data_1 = __webpack_require__(3602);
 Object.defineProperty(exports, "List", ({
   enumerable: true,
@@ -3372,25 +3427,10 @@ function clean(context) {
   return context;
 }
 exports.clean = clean;
-function eval_(result, default_) {
-  return result ? result : default_;
-}
-exports.eval = eval_;
 function failsafe(parser) {
   return input => {
-    const {
-      context
-    } = input;
-    const {
-      source,
-      position
-    } = context;
-    const result = parser(input);
-    if (result === undefined) {
-      context.source = source;
-      context.position = position;
-    }
-    return result;
+    const position = input.context.position;
+    return parser(input) ?? (input.context.position = position, undefined);
   };
 }
 exports.failsafe = failsafe;
@@ -3763,7 +3803,7 @@ exports.Delimiters = Delimiters;
 /***/ },
 
 /***/ 2861
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 "use strict";
 
@@ -3772,7 +3812,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.inits = void 0;
-const parser_1 = __webpack_require__(605);
 function inits(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return input => {
@@ -3789,10 +3828,10 @@ function inits(parsers, resume) {
       if (context.delimiters?.match(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
-      nodes = nodes ? nodes.import((0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
-      if (resume?.((0, parser_1.eval)(result)) === false) break;
+      nodes = nodes?.import(result) ?? result;
+      if (resume?.(result) === false) break;
     }
-    return nodes && context.position > position ? nodes : undefined;
+    return context.position > position ? nodes : undefined;
   };
 }
 exports.inits = inits;
@@ -3800,7 +3839,7 @@ exports.inits = inits;
 /***/ },
 
 /***/ 3989
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 "use strict";
 
@@ -3809,7 +3848,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sequence = void 0;
-const parser_1 = __webpack_require__(605);
 function sequence(parsers, resume) {
   if (parsers.length === 1) return parsers[0];
   return input => {
@@ -3826,10 +3864,10 @@ function sequence(parsers, resume) {
       if (context.delimiters?.match(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
-      nodes = nodes ? nodes.import((0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
-      if (resume?.((0, parser_1.eval)(result)) === false) return;
+      nodes = nodes?.import(result) ?? result;
+      if (resume?.(result) === false) return;
     }
-    return nodes && context.position > position ? nodes : undefined;
+    return context.position > position ? nodes : undefined;
   };
 }
 exports.sequence = sequence;
@@ -3846,7 +3884,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.some = void 0;
-const parser_1 = __webpack_require__(605);
 const delimiter_1 = __webpack_require__(5691);
 function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
@@ -3870,19 +3907,19 @@ function some(parser, end, delimiters = [], limit = -1) {
       context.delimiters ??= new delimiter_1.Delimiters();
       context.delimiters.push(delims);
     }
-    while (true) {
-      if (context.position === source.length) break;
+    // whileは数倍遅い
+    for (; context.position < source.length;) {
       if (match(input)) break;
       if (context.delimiters?.match(input)) break;
       const result = parser(input);
       if (result === undefined) break;
-      nodes = nodes ? nodes.import((0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
+      nodes = nodes?.import(result) ?? result;
       if (limit >= 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
       context.delimiters.pop(delims.length);
     }
-    return nodes && context.position > position ? nodes : undefined;
+    return context.position > position ? nodes : undefined;
   };
 }
 exports.some = some;
@@ -4112,7 +4149,7 @@ function bind(target, settings) {
     let index = head;
     for (; index < sourceSegments.length - last; ++index) {
       const seg = sourceSegments[index];
-      const es = (0, parser_1.eval)((0, header_1.header)((0, parser_1.input)(seg, {
+      const es = ((0, header_1.header)((0, parser_1.input)(seg, {
         header: index === 0
       })) || (0, block_1.block)((0, parser_1.input)(seg, context)))?.foldl((acc, {
         value
@@ -4123,7 +4160,7 @@ function bind(target, settings) {
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       (0, array_1.push)(adds, es.map(el => [el, base]));
       adds.reverse();
-      while (adds.length > 0) {
+      for (; adds.length > 0;) {
         const [el, base] = adds.pop();
         target.insertBefore(el, base);
         yield {
@@ -4141,7 +4178,7 @@ function bind(target, settings) {
       (0, array_1.push)(dels, es.map(el => [el]));
     }
     adds.reverse();
-    while (adds.length > 0) {
+    for (; adds.length > 0;) {
       const [el, base] = adds.pop();
       target.insertBefore(el, base);
       yield {
@@ -4153,7 +4190,7 @@ function bind(target, settings) {
       };
     }
     dels.reverse();
-    while (dels.length > 0) {
+    for (; dels.length > 0;) {
       const [el] = dels.pop();
       el.parentNode?.removeChild(el);
       yield {
@@ -4297,7 +4334,7 @@ exports.headers = headers;
 function parse(source) {
   const i = (0, parser_1.input)(source, {});
   const result = (0, header_1.header)(i);
-  const el = (0, parser_1.eval)(result)?.head?.value;
+  const el = result?.head?.value;
   return el?.tagName === 'ASIDE' ? [el, i.context.position] : [];
 }
 
@@ -4330,7 +4367,7 @@ function sanitize(source) {
 // https://en.wikipedia.org/wiki/Whitespace_character
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
 const unreadableHTMLEntityNames = exports.invisibleHTMLEntityNames.slice(2);
-const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {}))).head.value);
+const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {})).head.value);
 const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
@@ -4407,7 +4444,7 @@ function parse(source, opts = {}, context) {
   const node = (0, dom_1.frag)();
   let index = 0;
   for (const seg of (0, segment_1.segment)(source)) {
-    node.append(...((0, parser_1.eval)((0, header_1.header)((0, parser_1.input)(seg, {
+    node.append(...(((0, header_1.header)((0, parser_1.input)(seg, {
       header: index++ === 0
     })) || (0, block_1.block)((0, parser_1.input)(seg, context)))?.foldl((acc, {
       value
@@ -4487,6 +4524,9 @@ exports.block = (0, combinator_1.reset)({
   if (position === source.length) return;
   const fst = source[position];
   switch (fst) {
+    case '\n':
+      input.context.position = source.length;
+      return new parser_1.List();
     case '=':
       if (source.startsWith('===', position)) return (0, pagebreak_1.pagebreak)(input);
       break;
@@ -4655,7 +4695,7 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinato
     'data-lang': params.lang || undefined,
     'data-line': params.line || undefined,
     'data-path': params.path || undefined
-  }, params.lang ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes || body.slice(0, -1) || undefined : (0, dom_1.defrag)((0, util_1.unwrap)((0, parser_1.eval)((0, autolink_1.autolink)((0, parser_1.subinput)(body.slice(0, -1), context)), new parser_1.List()))));
+  }, params.lang ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes || body.slice(0, -1) || undefined : (0, dom_1.defrag)((0, util_1.unwrap)((0, autolink_1.autolink)((0, parser_1.subinput)(body.slice(0, -1), context)))));
   return new parser_1.List([new parser_1.Data(el)]);
 }));
 
@@ -4812,7 +4852,7 @@ exports.example = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combi
         'data-type': 'math'
       }, [(0, dom_1.html)('pre', {
         translate: 'no'
-      }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, parser_1.eval)((0, mathblock_1.mathblock)((0, parser_1.subinput)(`$$\n${body}$$`, context))).head.value]))]);
+      }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, mathblock_1.mathblock)((0, parser_1.subinput)(`$$\n${body}$$`, context)).head.value]))]);
     default:
       return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
         class: 'invalid',
@@ -4916,7 +4956,7 @@ const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/(~{3,})(?:figure[^\S\n])?(?=\[?\$)/y, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`${fence}[^\S\n]*(?:$|\n)`, 'y')) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([
 // All parsers which can include closing terms.
-(0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length, {})));
+(0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length <= 16 ? fence.length : -1, [])));
 exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/(?=\s).*\n/y)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.lineshortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))))])]), false), nodes => {
   const [label, param, content, ...caption] = (0, util_1.unwrap)(nodes);
   return new parser_1.List([new parser_1.Data((0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
@@ -5024,7 +5064,7 @@ exports.message = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_
   return new parser_1.List([new parser_1.Data((0, dom_1.html)('section', {
     class: `message`,
     'data-type': type
-  }, [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, util_1.unwrap)((0, parser_1.eval)(content((0, parser_1.subinput)(seg, context))))), [(0, dom_1.html)('h1', title(type))])))]);
+  }, [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, util_1.unwrap)(content((0, parser_1.subinput)(seg, context)))), [(0, dom_1.html)('h1', title(type))])))]);
 }));
 function title(type) {
   switch (type) {
@@ -5103,7 +5143,7 @@ exports.table = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.
   switch (type) {
     case 'grid':
     case undefined:
-      return ((0, parser_1.eval)(parser((0, parser_1.subinput)(body, context))) ?? new parser_1.List([new parser_1.Data((0, dom_1.html)('table'))])).foldl((acc, {
+      return (parser((0, parser_1.subinput)(body, context)) ?? new parser_1.List([new parser_1.Data((0, dom_1.html)('table'))])).foldl((acc, {
         value
       }) => acc.push(new parser_1.Data((0, dom_1.define)(value, {
         'data-type': type
@@ -6630,7 +6670,7 @@ nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.h
       case 0:
         break;
       case 1:
-        nodes = (0, parser_1.eval)((0, combinator_1.bind)(subemphasis, ds => {
+        nodes = (0, combinator_1.bind)(subemphasis, ds => {
           const {
             source
           } = context;
@@ -6642,11 +6682,11 @@ nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.h
           }
         })({
           context
-        })) ?? prepend('*', nodes);
+        }) ?? prepend('*', nodes);
         prefix -= 1;
         break;
       case 2:
-        nodes = (0, parser_1.eval)((0, combinator_1.bind)(substrong, ds => {
+        nodes = (0, combinator_1.bind)(substrong, ds => {
           const {
             source
           } = context;
@@ -6658,7 +6698,7 @@ nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.h
           }
         })({
           context
-        })) ?? prepend('**', nodes);
+        }) ?? prepend('**', nodes);
         prefix -= 2;
         break;
     }
@@ -7601,7 +7641,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
         context
       });
       if (state & 128 /* State.annotation */ && next) {
-        return as.import(bs).import((0, parser_1.eval)(result)).import((0, parser_1.eval)(next));
+        return as.import(bs).import(result).import(next);
       }
     }
     context.position = position;
@@ -7744,7 +7784,7 @@ const text = input => {
       case '&':
         {
           const result = (0, htmlentity_1.unsafehtmlentity)(input) ?? (0, source_1.txt)(input);
-          acc.last.value += (0, parser_1.eval)(result).head.value;
+          acc.last.value += result.head.value;
           continue;
         }
       default:
@@ -7756,7 +7796,7 @@ const text = input => {
             continue;
           }
           const result = (0, source_1.txt)(input);
-          acc.last.value += (0, parser_1.eval)(result).head?.value ?? '';
+          acc.last.value += result.head?.value ?? '';
           continue;
         }
     }
@@ -7768,7 +7808,7 @@ const text = input => {
 function* zip(a, b) {
   const ia = a[Symbol.iterator]();
   const ib = b[Symbol.iterator]();
-  while (true) {
+  for (;;) {
     const ra = ia.next();
     const rb = ib.next();
     if (ra.done) break;
@@ -8128,7 +8168,7 @@ function* proc(defs, note) {
   I: for (const [key, def] of defs) {
     defs.delete(key);
     ++count;
-    while (length > size) {
+    for (; length > size;) {
       const node = children[count - 1];
       if (equal(node, def)) continue I;
       yield note.removeChild(node);
@@ -8139,7 +8179,7 @@ function* proc(defs, note) {
     yield note.insertBefore(def, node);
     ++length;
   }
-  while (length > size) {
+  for (; length > size;) {
     yield note.removeChild(children[size]);
     --length;
   }
@@ -8205,12 +8245,12 @@ function* segment(source) {
   const input = {
     context
   };
-  while (context.position < source.length) {
+  for (; context.position < source.length;) {
     const {
       position
     } = context;
     const result = parser(input);
-    const segs = (0, parser_1.eval)(result).length > 0 ? (0, parser_1.eval)(result).foldl((acc, {
+    const segs = result.length > 0 ? result.foldl((acc, {
       value
     }) => void acc.push(value) || acc, []) : [source.slice(position, context.position)];
     for (let i = 0; i < segs.length; ++i) {
@@ -8386,6 +8426,7 @@ const anyline = input => {
     source,
     position
   } = context;
+  if (position === source.length) return;
   context.position = source.indexOf('\n', position) + 1 || source.length;
   return new parser_1.List();
 };
@@ -8399,6 +8440,8 @@ const emptyline = input => {
     source,
     position
   } = context;
+  if (position === source.length) return;
+  if (source[position] === '\n') return ++context.position, new parser_1.List();
   regEmptyline.lastIndex = position;
   regEmptyline.test(source);
   const i = regEmptyline.lastIndex;
@@ -8416,6 +8459,8 @@ const contentline = input => {
     source,
     position
   } = context;
+  if (position === source.length) return;
+  if (source[position] === '\n') return;
   regContentline.lastIndex = position;
   regContentline.test(source);
   const i = regContentline.lastIndex;
@@ -8451,7 +8496,7 @@ function strs(pattern) {
       source
     } = context;
     let acc = '';
-    while (context.position < source.length && source.startsWith(pattern, context.position)) {
+    for (; context.position < source.length && source.startsWith(pattern, context.position);) {
       acc += pattern;
       context.position += pattern.length;
     }
@@ -8809,7 +8854,7 @@ const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
-  for (const node of nodes) {
+  for (const node of nodes ?? []) {
     yield node.value;
   }
 }
@@ -8840,7 +8885,7 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
     } = context;
     let nodes = new parser_1.List();
     let i = symbol.length;
-    while (source[context.position + i] === source[context.position]) ++i;
+    for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
@@ -8854,7 +8899,7 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
       const result = parser(input);
       context.buffer = buf;
       if (result === undefined) break;
-      nodes = (0, parser_1.eval)(result);
+      nodes = result;
       switch (nodes.last?.value) {
         case "\u0018" /* Command.Cancel */:
           nodes.pop();
@@ -8983,7 +9028,7 @@ function isTightStart(input, except) {
       return source[position + 1]?.trimStart() !== '';
     case '&':
       switch (true) {
-        case source.length - position > 2 && source[position + 1] !== ' ' && (0, parser_1.eval)((0, htmlentity_1.unsafehtmlentity)(input))?.head?.value.trimStart() === '':
+        case source.length - position > 2 && source[position + 1] !== ' ' && (0, htmlentity_1.unsafehtmlentity)(input)?.head?.value.trimStart() === '':
           context.position = position;
           return false;
       }
