@@ -103,7 +103,7 @@ const text: RubyParser.TextParser = input => {
 function* zip<N extends List.Node>(a: List<N>, b: List<N>): Iterable<[N | undefined, N | undefined]> {
   const ia = a[Symbol.iterator]();
   const ib = b[Symbol.iterator]();
-  while (true) {
+  for (; ;) {
     const ra = ia.next();
     const rb = ib.next();
     if (ra.done) break;

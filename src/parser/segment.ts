@@ -48,7 +48,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
     position: 0,
   };
   const input = { context };
-  while (context.position < source.length) {
+  for (; context.position < source.length;) {
     const { position } = context;
     const result = parser(input)!;
     assert(result);

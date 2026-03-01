@@ -30,7 +30,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     assert(source.startsWith(symbol, context.position));
     let nodes = new List<Data<N>>();
     let i = symbol.length;
-    while (source[context.position + i] === source[context.position]) ++i;
+    for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {

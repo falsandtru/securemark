@@ -13,7 +13,7 @@ export function strs(pattern: string): Parser<string> {
   return ({ context }) => {
     const { source } = context;
     let acc = '';
-    while (context.position < source.length && source.startsWith(pattern, context.position)) {
+    for (; context.position < source.length && source.startsWith(pattern, context.position);) {
       acc += pattern;
       context.position += pattern.length;
     }

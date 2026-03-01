@@ -23,8 +23,8 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
       context.delimiters ??= new Delimiters();
       context.delimiters.push(delims);
     }
-    while (true) {
-      if (context.position === source.length) break;
+    // whileは数倍遅い
+    for (; context.position < source.length;) {
       if (match(input)) break;
       if (context.delimiters?.match(input)) break;
       const result = parser(input);

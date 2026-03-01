@@ -83,7 +83,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       push(adds, es.map(el => [el, base] as const));
       adds.reverse();
-      while (adds.length > 0) {
+      for (; adds.length > 0;) {
         assert(rev === revision);
         const [el, base] = adds.pop()!;
         target.insertBefore(el, base);
@@ -100,7 +100,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     assert(blocks.length === sourceSegments.length);
     adds.reverse();
-    while (adds.length > 0) {
+    for (; adds.length > 0;) {
       assert(rev === revision);
       const [el, base] = adds.pop()!;
       target.insertBefore(el, base);
@@ -109,7 +109,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       if (rev !== revision) return yield { type: 'cancel' };
     }
     dels.reverse();
-    while (dels.length > 0) {
+    for (; dels.length > 0;) {
       assert(rev === revision);
       const [el] = dels.pop()!;
       el.parentNode?.removeChild(el);

@@ -191,7 +191,7 @@ function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Genera
   for (const [key, def] of defs) {
     defs.delete(key);
     ++count;
-    while (length > size) {
+    for (; length > size;) {
       const node = children[count - 1] as HTMLLIElement;
       if (equal(node, def)) continue I;
       yield note.removeChild(node);
@@ -207,7 +207,7 @@ function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Genera
     ++length;
     assert(children.length === length);
   }
-  while (length > size) {
+  for (; length > size;) {
     yield note.removeChild(children[size] as HTMLLIElement);
     --length;
     assert(children.length === length);
