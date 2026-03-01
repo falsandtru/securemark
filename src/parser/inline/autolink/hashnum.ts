@@ -23,5 +23,5 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
       unsafelink,
       false),
       ([{ value }]) => new List([new Data(define(value, { class: 'hashnum', href: null }))])))),
-    ({ context: { source } }) => [new List([new Data(source)])],
+    ({ context: { source } }) => new List([new Data(source)]),
   ])));

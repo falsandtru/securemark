@@ -34,11 +34,11 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   ]))));
 
 export const ilistitem = rewrite(
-  inits([contentline, indent<Parser<string>>(({ context: { source } }) => [new List([new Data(source)])])]),
-  ({ context: { source } }) => [new List([
+  inits([contentline, indent<Parser<string>>(({ context: { source } }) => new List([new Data(source)]))]),
+  ({ context: { source } }) => new List([
     new Data(''),
     new Data(html('span', {
       class: 'invalid',
       ...invalid('list', 'syntax', 'Fix the indent or the head of the list item'),
     }, source.replace('\n', '')))
-  ])]);
+  ]));

@@ -15,9 +15,9 @@ export const cite: ReplyParser.CiteParser = line(fmap(
       anchor,
       // Subject page representation.
       // リンクの実装は後で検討
-      focus(/>>#\S*(?=\s*$)/y, ({ context: { source } }) => [new List([new Data(html('a', { class: 'anchor' }, source))])]),
-      focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ context: { source } }) => [new List([new Data(html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source))])]),
-      focus(/>>.+(?=\s*$)/y, ({ context: { source } }) => [new List([new Data(source)])]),
+      focus(/>>#\S*(?=\s*$)/y, ({ context: { source } }) => new List([new Data(html('a', { class: 'anchor' }, source))])),
+      focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ context: { source } }) => new List([new Data(html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source))])),
+      focus(/>>.+(?=\s*$)/y, ({ context: { source } }) => new List([new Data(source)])),
     ])),
   nodes => {
     const quotes = nodes.head!.value as string;

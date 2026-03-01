@@ -22,7 +22,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     acc.push(new Data(source.slice(position, position + postfix)));
     context.position += postfix;
   }
-  return [acc];
+  return acc;
 }): Parser<string | N, MarkdownParser.Context> {
   return failsafe(input => {
     const { context } = input;

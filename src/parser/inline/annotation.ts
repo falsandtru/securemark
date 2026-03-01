@@ -15,7 +15,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   false,
   ([, ns], context) =>
     context.linebreak === 0
-      ? [new List([new Data(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])]
+      ? new List([new Data(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])
       : undefined,
   undefined,
   [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));

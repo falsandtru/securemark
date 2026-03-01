@@ -16,10 +16,10 @@ export const mediablock: MediaBlockParser = block(fmap(
       medialink,
       media,
       lineshortmedia,
-    ]), ({ context: { source } }) => [new List([
+    ]), ({ context: { source } }) => new List([
       new Data(html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
     }, source.replace('\n', '')))
-    ])])))]),
+    ]))))]),
   ns => new List([new Data(html('div', unwrap(ns)))])));

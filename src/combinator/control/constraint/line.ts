@@ -18,7 +18,7 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     if (result === undefined) return;
     if (!isBlank(source.slice(context.position, position + line.length))) return;
     context.position = position + line.length;
-    return [eval(result)];
+    return eval(result);
   });
 }
 

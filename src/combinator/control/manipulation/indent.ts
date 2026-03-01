@@ -24,7 +24,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
       some(line(open(indent, ({ context }) => {
         const { source, position } = context;
         context.position = source.length;
-        return [new List([new Data(source.slice(position))])];
+        return new List([new Data(source.slice(position))]);
       }))),
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation),
     (lines, context) => {
@@ -32,7 +32,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
       const result = parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
       assert(result);
       return result
-        ? [eval(result)]
+        ? eval(result)
         : undefined;
     }));
 }

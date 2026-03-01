@@ -20,7 +20,7 @@ export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: Lis
     }
     assert(context.position >= position);
     return nodes && context.position > position
-      ? [nodes]
+      ? nodes
       : undefined;
   };
 }

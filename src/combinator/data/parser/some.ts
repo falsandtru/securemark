@@ -39,7 +39,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
     }
     assert(context.position >= position);
     return nodes && context.position > position
-      ? [nodes]
+      ? nodes
       : undefined;
   };
 }

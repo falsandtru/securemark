@@ -14,6 +14,6 @@ export const indexer: ExtensionParser.IndexerParser = surround(
   /\s\[(?=\|\S)/y,
   union([
     signature,
-    focus(/\|(?=\])/y, () => [new List([new Data(html('span', { class: 'indexer', 'data-index': '' }))])]),
+    focus(/\|(?=\])/y, () => new List([new Data(html('span', { class: 'indexer', 'data-index': '' }))])),
   ]),
   /\]\s*$/y);

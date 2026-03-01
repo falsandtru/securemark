@@ -26,7 +26,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       true,
       ([, ns = new List()], context) =>
         context.linebreak === 0
-          ? [ns.push(new Data(Command.Separator)) && ns]
+          ? ns.push(new Data(Command.Separator)) && ns
           : undefined,
       undefined,
       [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby])),
@@ -42,7 +42,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
         if (!bs) return;
         const head = context.position - context.range!;
         setBacktrack(context, [2 | Backtrack.link], head);
-        return [as.import(bs).push(new Data(Command.Cancel)) && as];
+        return as.import(bs).push(new Data(Command.Cancel)) && as;
       },
       [3 | Backtrack.link])),
   ]),
@@ -60,19 +60,19 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     }
     if (params.last!.value === Command.Cancel) {
       params.pop();
-      return [new List([
+      return new List([
         new Data(html('span',
           {
             class: 'invalid',
             ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
           },
           context.source.slice(context.position - context.range!, context.position)))
-      ])];
+      ]);
     }
     assert(!html('div', unwrap(content)).querySelector('a, .media, .annotation, .reference'));
     assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
-    return [new List([new Data(parse(content, params as List<Data<string>>, context))])];
+    return new List([new Data(parse(content, params as List<Data<string>>, context))]);
   }))))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, validate(/[[{]/y, creation(10,
@@ -85,7 +85,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ]),
   ([{ value: content }, { value: params }], context) =>
-    [new List([new Data(parse(content, params as List<Data<string>>, context))])]))))));
+    new List([new Data(parse(content, params as List<Data<string>>, context))])))))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10,
@@ -97,7 +97,7 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ])),
   ([{ value: params }, { value: content } = new Data(new List<Data<string>>())], context) =>
-    [new List([new Data(parse(content, params, context))])])));
+    new List([new Data(parse(content, params, context))]))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/ /y, str(/\S+/y)),

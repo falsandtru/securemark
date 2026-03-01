@@ -173,7 +173,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
         if (advance) {
           context.position += pattern.length;
         }
-        return [new List([new Data(pattern)])];
+        return new List([new Data(pattern)]);
       };
     case 'object':
       assert(pattern.sticky);
@@ -186,7 +186,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
         if (advance) {
           context.position += src.length;
         }
-        return [new List([new Data(src)])];
+        return new List([new Data(src)]);
       };
   }
 }

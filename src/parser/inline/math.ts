@@ -24,7 +24,7 @@ export const math: MathParser = lazy(() => rewrite(
       /\$(?![-0-9A-Za-z])/y,
       false, undefined, undefined, [3 | Backtrack.bracket]),
   ]),
-  ({ context: { source, caches: { math: cache } = {} } }) => [new List([
+  ({ context: { source, caches: { math: cache } = {} } }) => new List([
     new Data(cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)
@@ -36,7 +36,7 @@ export const math: MathParser = lazy(() => rewrite(
               `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
       source))
-  ])]));
+  ])));
 
 const bracket: MathParser.BracketParser = lazy(() => surround(
   str('{'),

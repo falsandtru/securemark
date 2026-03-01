@@ -18,26 +18,26 @@ export const text: TextParser = input => {
     case '\r':
       assert(!source.includes('\r', position + 1));
       consume(-1, context);
-      return [new List()];
+      return new List();
     case Command.Escape:
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return [new List()];
+          return new List();
         case '\n':
           assert(char !== Command.Escape);
-          return [new List()];
+          return new List();
         default:
           consume(1, context);
           context.position += 1;
-          return [new List([new Data(source.slice(position + 1, context.position))])];
+          return new List([new Data(source.slice(position + 1, context.position))]);
       }
     case '\n':
       context.linebreak ||= source.length - position;
-      return [new List([new Data(html('br'))])];
+      return new List([new Data(html('br'))]);
     default:
       assert(char !== '\n');
-      if (context.sequential) return [new List([new Data(char)])];
+      if (context.sequential) return new List([new Data(char)]);
       nonWhitespace.lastIndex = position + 1;
       const s = canSkip(source, position);
       let i = s
@@ -55,8 +55,8 @@ export const text: TextParser = input => {
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
       return position === context.position || s && !linestart || lineend
-        ? [new List()]
-        : [new List([new Data(source.slice(position, context.position))])];
+        ? new List()
+        : new List([new Data(source.slice(position, context.position))]);
   }
 };
 

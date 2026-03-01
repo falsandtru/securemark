@@ -12,13 +12,13 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
   precedence(3, recursion(Recursion.inline,
   some(union([inline]), /\s%\]/y, [[/\s%\]/y, 3]]))),
   close(text, str(`%]`)), true,
-  ([as, bs = new List(), cs]) => [new List([
+  ([as, bs = new List(), cs]) => new List([
     new Data(html('span', { class: 'remark' }, [
       html('input', { type: 'checkbox' }),
       html('span', defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))),
     ])),
-  ])],
-  ([as, bs]) => bs && [as.import(bs as List<Data<string>>)]),
-  focus(/\[%+(?=\s)/y, ({ context: { source } }) => [new List([
+  ]),
+  ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
+  focus(/\[%+(?=\s)/y, ({ context: { source } }) => new List([
     new Data(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
-  ])])));
+  ]))));

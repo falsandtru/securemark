@@ -11,8 +11,8 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = focus(
     const { source } = context;
     context.position += source.length;
     return source.length > 1 && source.at(-1) === ';'
-      ? [new List([new Data(parser(source) ?? source)])]
-      : [new List([new Data(source)])];
+      ? new List([new Data(parser(source) ?? source)])
+      : new List([new Data(source)]);
   });
 
 export const htmlentity: HTMLEntityParser = fmap(

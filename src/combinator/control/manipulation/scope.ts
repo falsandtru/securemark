@@ -21,7 +21,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>): Parser<N> {
     context.source = source;
     context.offset -= position;
     if (result === undefined) return;
-    return [eval(result)];
+    return eval(result);
   });
 }
 
@@ -48,6 +48,6 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
     context.source = source;
     context.offset -= position;
     if (res2 === undefined) return;
-    return [eval(res2)];
+    return eval(res2);
   });
 }

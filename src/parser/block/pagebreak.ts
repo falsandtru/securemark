@@ -5,4 +5,4 @@ import { html } from 'typed-dom/dom';
 
 export const pagebreak: PagebreakParser = block(line(focus(
   /={3,}[^\S\n]*(?:$|\n)/y,
-  () => [new List([new Data(html('hr'))])])));
+  () => new List([new Data(html('hr'))]))));

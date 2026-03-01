@@ -21,7 +21,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ([, ns], context) => {
     const { position, range = 0, linebreak = 0 } = context;
     if (linebreak === 0) {
-      return [new List([new Data(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])];
+      return new List([new Data(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
     }
     else {
       const head = position - range;
@@ -47,7 +47,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       let result: ReturnType<typeof textlink>;
       if (source[context.position] !== '{') {
         setBacktrack(context, [2 | Backtrack.link], head + 1);
-        result = [new List()];
+        result = new List();
       }
       else {
         result = !isBacktrack(context, [1 | Backtrack.link])
@@ -56,7 +56,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
         context.range = range;
         if (!result) {
           setBacktrack(context, [2 | Backtrack.link], head + 1);
-          result = [new List()];
+          result = new List();
         }
       }
       assert(result);
@@ -71,20 +71,20 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
           str(']'),
           true,
           ([, cs = new List(), ds]) =>
-            [cs.import(ds)],
+            cs.import(ds),
           ([, cs = new List()]) => {
             setBacktrack(context, [2 | Backtrack.link], head);
-            return [cs];
+            return cs;
           })
           ({ context });
         if (state & State.annotation && next) {
-          return [(as as List<Data<string | HTMLElement>>).import(bs).import(eval(result!)).import(eval(next))];
+          return (as as List<Data<string | HTMLElement>>).import(bs).import(eval(result!)).import(eval(next));
         }
       }
       context.position = position;
     }
     return state & State.annotation
-      ? [as.import(bs as List<Data<string>>)]
+      ? as.import(bs as List<Data<string>>)
       : undefined;
   },
   [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));
@@ -97,13 +97,13 @@ const abbr: ReferenceParser.AbbrParser = surround(
   true,
   ([, ns], context) => {
     const { source, position, range = 0 } = context;
-    if (!ns) return [new List([new Data(''), new Data(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))])];
+    if (!ns) return new List([new Data(''), new Data(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);
     context.position += source[position] === ' ' ? 1 : 0;
-    return [new List([new Data(Command.Separator), new Data(ns.head!.value.trimEnd())])];
+    return new List([new Data(Command.Separator), new Data(ns.head!.value.trimEnd())]);
   },
   (_, context) => {
     context.position -= context.range!;
-    return [new List([new Data('')])];
+    return new List([new Data('')]);
   });
 
 function attributes(ns: List<Data<string | HTMLElement>>): Record<string, string | undefined> {

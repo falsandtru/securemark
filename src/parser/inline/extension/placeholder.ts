@@ -18,13 +18,13 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'), false,
-  (_, context) => [new List([
+  (_, context) => new List([
     new Data(html('span',
       {
         class: 'invalid',
         ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
       },
       context.source.slice(context.position - context.range!, context.position)))
-  ])],
-  ([as, bs]) => bs && [as.import(bs as List<Data<string>>)],
+  ]),
+  ([as, bs]) => bs && as.import(bs as List<Data<string>>),
   [3 | Backtrack.bracket]));

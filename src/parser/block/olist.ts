@@ -53,14 +53,14 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    ({ context: { source } }) => [new List([
+    ({ context: { source } }) => new List([
       new Data(source.trimEnd().split('.', 1)[0] + '.')
-    ])]),
+    ])),
   '(': focus(
     openers['('],
-    ({ context: { source } }) => [new List([
+    ({ context: { source } }) => new List([
       new Data(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))
-    ])]),
+    ])),
 } as const;
 
 function idx(value: string): number {

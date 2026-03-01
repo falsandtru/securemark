@@ -87,7 +87,7 @@ export function surround<N>(
     context.range = context.position - position;
     const result = f
       ? f([nodesO, nodesM!, nodesC], context)
-      : [nodesO.import(nodesM ?? new List()).import(nodesC)] as const;
+      : nodesO.import(nodesM ?? new List()).import(nodesC);
     if (result) {
       context.linebreak ||= linebreak;
     }

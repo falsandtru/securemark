@@ -11,13 +11,13 @@ export const code: CodeParser = open(
     /(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y,
     ([whole, opener, body, closer]) => () =>
       closer
-        ? [new List([new Data(html('code', { 'data-src': whole }, format(body)))])]
+        ? new List([new Data(html('code', { 'data-src': whole }, format(body)))])
         : body
-          ? [new List([new Data(html('code', {
+          ? new List([new Data(html('code', {
               class: 'invalid',
               ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
-            }, whole))])]
-          : [new List([new Data(opener)])],
+            }, whole))])
+          : new List([new Data(opener)]),
     true),
   false,
   [3 | Backtrack.bracket]);

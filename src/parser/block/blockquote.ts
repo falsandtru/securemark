@@ -50,7 +50,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
           },
         }, context);
         context.position = source.length;
-        return [new List([new Data(html('section', [document, html('h2', 'References'), references]))])];
+        return new List([new Data(html('section', [document, html('h2', 'References'), references]))]);
       }, false, true))),
   ]))),
   ns => new List([new Data(html('blockquote', unwrap(ns)))])));

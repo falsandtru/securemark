@@ -15,7 +15,7 @@ export const ruby: RubyParser = lazy(() => bind(
       false,
       ([, ns]) => {
         ns && ns.last?.value === '' && ns.pop();
-        return isTightNodeStart(ns) ? [ns] : undefined;
+        return isTightNodeStart(ns) ? ns : undefined;
       },
       undefined,
       [1 | Backtrack.bracket, 3 | Backtrack.ruby])),
@@ -31,7 +31,7 @@ export const ruby: RubyParser = lazy(() => bind(
     }
     switch (true) {
       case texts.length >= rubies.length:
-        return [new List([
+        return new List([
           new Data(html('ruby', defrag(unwrap([...zip(texts, rubies)]
             .reduce((acc, [{ value: text = '' } = {}, { value: ruby = '' } = {}]) =>
               acc.import(
@@ -39,9 +39,9 @@ export const ruby: RubyParser = lazy(() => bind(
                   ? new List([new Data(text), new Data(html('rp', '(')), new Data(html('rt', ruby)), new Data(html('rp', ')'))])
                   : new List([new Data(text), new Data(html('rt'))]))
             , new List<Data<string | HTMLElement>>()))))),
-        ])];
+        ]);
       case texts.length === 1 && [...texts.head!.value].length >= rubies.length:
-        return [new List([
+        return new List([
           new Data(html('ruby', defrag(unwrap([...zip(new List([...texts.head!.value].map(char => new Data(char))), rubies)]
             .reduce((acc, [{ value: text = '' } = {}, { value: ruby = '' } = {}]) =>
               acc.import(
@@ -49,17 +49,17 @@ export const ruby: RubyParser = lazy(() => bind(
                   ? new List([new Data(text), new Data(html('rp', '(')), new Data(html('rt', ruby)), new Data(html('rp', ')'))])
                   : new List([new Data(text), new Data(html('rt'))]))
             , new List<Data<string | HTMLElement>>()))))),
-        ])];
+        ]);
       default:
         assert(rubies.length > 0);
-        return [new List([
+        return new List([
           new Data(html('ruby', defrag(unwrap(new List<Data<string | HTMLElement>>([
             new Data(texts.foldr(({ value }, acc) => value + ' ' + acc, '').slice(0, -1)),
             new Data(html('rp', '(')),
             new Data(html('rt', rubies.foldr(({ value }, acc) => value + ' ' + acc, '').trim())),
             new Data(html('rp', ')')),
           ]))))),
-        ])];
+        ]);
     }
   }));
 
@@ -96,7 +96,7 @@ const text: RubyParser.TextParser = input => {
   context.sequential = false;
   state ||= acc.last!.value.trimStart() !== '';
   return state
-    ? [acc]
+    ? acc
     : undefined;
 };
 

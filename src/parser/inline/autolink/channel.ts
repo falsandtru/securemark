@@ -44,5 +44,5 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
         const url = `${el.getAttribute('href')}?ch=${src.slice(src.indexOf('#') + 1).replace(/#/g, '+')}`;
         return new List([new Data(define(el, { class: 'channel', href: url }, src))]);
       }))),
-    ({ context: { source } }) => [new List([new Data(source)])],
+    ({ context: { source } }) => new List([new Data(source)]),
   ])));

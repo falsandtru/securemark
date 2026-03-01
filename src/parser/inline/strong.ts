@@ -18,5 +18,5 @@ export const strong: StrongParser = lazy(() => surround(
     open(some(inline, '*'), inline),
   ]))))),
   str('**'), false,
-  ([, bs]) => [new List([new Data(html('strong', defrag(unwrap(bs))))])],
-  ([as, bs]) => bs && [as.import(bs as List<Data<string>>)]));
+  ([, bs]) => new List([new Data(html('strong', defrag(unwrap(bs))))]),
+  ([as, bs]) => bs && as.import(bs as List<Data<string>>)));

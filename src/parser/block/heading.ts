@@ -10,7 +10,7 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   /#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/y,
-  some(line(({ context: { source } }) => [new List([new Data(source)])])))));
+  some(line(({ context: { source } }) => new List([new Data(source)]))))));
 
 export const heading: HeadingParser = block(rewrite(segment,
   // その他の表示制御は各所のCSSで行う。

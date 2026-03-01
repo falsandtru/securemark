@@ -171,7 +171,7 @@ export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
     reg.test(source);
     context.position = reg.lastIndex || position;
     return context.position === source.length
-      ? [new List()]
+      ? new List()
       : parser(input);
   });
 }

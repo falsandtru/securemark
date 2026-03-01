@@ -28,9 +28,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       open(str(/ ?/y), str('>'), true),
       true,
       ([as, bs = new List(), cs], context) =>
-        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))])],
+        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
-        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])]),
+        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
     match(
       new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'),
       memoize(
@@ -39,8 +39,8 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
           surround(
             str(`<${tag}`), some(attribute), open(str(/ ?/y), str('>'), true),
             true,
-            ([as, bs = new List(), cs]) => [as.import(bs).import(cs)],
-            ([as, bs = new List()]) => [as.import(bs)]),
+            ([as, bs = new List(), cs]) => as.import(bs).import(cs),
+            ([as, bs = new List()]) => as.import(bs)),
           // 不可視のHTML構造が可視構造を変化させるべきでない。
           // 可視のHTMLは優先度変更を検討する。
           // このため<>は将来的に共通構造を変化させる可能性があり
@@ -53,9 +53,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
           str(`</${tag}>`),
           true,
           ([as, bs = new List(), cs], context) =>
-            [new List([new Data(elem(tag, true, [...unwrap(as)], bs, cs, context))])],
+            new List([new Data(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
           ([as, bs = new List()], context) =>
-            [new List([new Data(elem(tag, true, [...unwrap(as)], bs, new List(), context))])]),
+            new List([new Data(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
       ([, tag]) => tag,
       new Map())),
     surround(
@@ -65,9 +65,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       open(str(/ ?/y), str('>'), true),
       true,
       ([as, bs = new List(), cs], context) =>
-        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))])],
+        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
-        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])]),
+        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([

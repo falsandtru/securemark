@@ -20,7 +20,7 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
     }
     assert(context.position >= position);
     return nodes && context.position > position
-      ? [nodes]
+      ? nodes
       : undefined;
   };
 }

@@ -114,7 +114,7 @@ function error(parser: BlockParser): BlockParser {
   return recover<BlockParser>(fallback(
     open(Command.Error, ({ context: { source, position } }) => { throw new Error(source.slice(position).split('\n', 1)[0]); }),
     parser),
-    ({ context: { source, position, id } }, reason) => [new List([
+    ({ context: { source, position, id } }, reason) => new List([
       new Data(html('h1',
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
@@ -132,5 +132,5 @@ function error(parser: BlockParser): BlockParser {
           .replace(reg, '')
           .slice(0, 1001)
           .replace(/^(.{997}).{4}$/s, '$1...') || undefined)),
-    ])]);
+    ]));
 }

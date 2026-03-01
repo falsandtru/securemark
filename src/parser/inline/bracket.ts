@@ -42,10 +42,10 @@ const p1 = lazy(() => surround(
   ([as, bs = new List(), cs], { source, position, range = 0 }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
-      ? [new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])]
-      : [new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))])];
+      ? new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])
+      : new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const p2 = lazy(() => surround(
@@ -56,10 +56,10 @@ const p2 = lazy(() => surround(
   ([as, bs = [], cs], { source, position, range = 0 }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexF.test(str)
-      ? [new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])]
-      : [new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))])];
+      ? new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])
+      : new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const s1 = lazy(() => surround(
@@ -87,9 +87,9 @@ const s1 = lazy(() => surround(
         context.range = range;
       }
     }
-    return [as.import(bs as List<Data<string>>).import(cs)];
+    return as.import(bs as List<Data<string>>).import(cs);
   },
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const s2 = lazy(() => surround(
@@ -98,7 +98,7 @@ const s2 = lazy(() => surround(
   str('］'),
   true,
   undefined,
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const c1 = lazy(() => surround(
@@ -107,7 +107,7 @@ const c1 = lazy(() => surround(
   str('}'),
   true,
   undefined,
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const c2 = lazy(() => surround(
@@ -116,7 +116,7 @@ const c2 = lazy(() => surround(
   str('｝'),
   true,
   undefined,
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));
 
 const d1 = lazy(() => surround(
@@ -126,5 +126,5 @@ const d1 = lazy(() => surround(
   str('"'),
   true,
   undefined,
-  ([as, bs = new List()]) => [as.import(bs as List<Data<string>>)],
+  ([as, bs = new List()]) => as.import(bs as List<Data<string>>),
   [2 | Backtrack.bracket]));

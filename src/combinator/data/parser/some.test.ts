@@ -7,12 +7,12 @@ describe('Unit: combinator/data/parser/some', () => {
   describe('some', () => {
     const a: Parser<string> = ({ context }) => {
       return context.source[context.position] === 'a'
-        ? void ++context.position || [new List([new Data('A')])]
+        ? void ++context.position || new List([new Data('A')])
         : undefined;
     };
     const b: Parser<string> = ({ context }) => {
       return context.source[context.position] === 'b'
-        ? void ++context.position || [new List([new Data('B')])]
+        ? void ++context.position || new List([new Data('B')])
         : undefined;
     };
     const ab = union<Parser<string, {}, [typeof a, typeof b]>>([a, b]);

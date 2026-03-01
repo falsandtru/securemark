@@ -12,7 +12,7 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<number> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return [new List([new Data(context.resources?.clock ?? NaN)])];
+        return new List([new Data(context.resources?.clock ?? NaN)]);
       }));
 
     it('root', () => {
@@ -41,7 +41,7 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<boolean, Context & Ctx> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return [new List([new Data(context.status!)])];
+        return new List([new Data(context.status!)]);
       }));
 
     it('', () => {

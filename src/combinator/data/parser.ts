@@ -7,8 +7,8 @@ export interface Input<C extends CtxOptions = CtxOptions> {
   readonly context: C & Ctx;
 }
 export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = readonly [List<Data<N>>, C, D]
-  | readonly [List<Data<N>>]
+  = readonly [never, C, D]
+  | List<Data<N>>
   | undefined;
 export { List };
 export class Data<N> implements List.Node {
@@ -83,8 +83,9 @@ function eval_<N>(result: NonNullable<Result<N>>, default_?: List<Data<N>>): Lis
 function eval_<N>(result: Result<N>, default_: List<Data<N>>): List<Data<N>>;
 function eval_<N>(result: Result<N>, default_?: undefined): List<Data<N>> | undefined;
 function eval_<N>(result: Result<N>, default_?: List<Data<N>>): List<Data<N>> | undefined {
+  assert(!Array.isArray(result));
   return result
-    ? result[0]
+    ? result as List<Data<N>>
     : default_;
 }
 

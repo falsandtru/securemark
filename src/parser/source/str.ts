@@ -17,6 +17,6 @@ export function strs(pattern: string): Parser<string> {
       acc += pattern;
       context.position += pattern.length;
     }
-    return [new List([new Data(acc)])];
+    return new List([new Data(acc)]);
   };
 }

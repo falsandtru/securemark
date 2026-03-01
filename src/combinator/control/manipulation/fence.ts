@@ -47,6 +47,6 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
       }
       context.position += line.length;
     }
-    return [new List(push([block, overflow, closer], matches).map(str => new Data(str)))];
+    return new List(push([block, overflow, closer], matches).map(str => new Data(str)));
   });
 }

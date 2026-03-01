@@ -11,7 +11,7 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
     if (src === '') {
       if (!empty) return;
       context.position = source.length;
-      return [new List()];
+      return new List();
     }
     assert(source.endsWith(src) || src.endsWith(source, position) || !continuous);
     if (continuous) {

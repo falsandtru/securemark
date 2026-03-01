@@ -32,7 +32,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
       true,
       ([, ns = new List()], context) =>
         context.linebreak === 0
-          ? [ns]
+          ? ns
           : undefined,
       undefined,
       [3 | Backtrack.escbracket])),
@@ -46,7 +46,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
         if (!bs) return;
         const head = context.position - context.range!;
         setBacktrack(context, [2 | Backtrack.link], head);
-        return [as.import(bs).push(new Data(Command.Cancel)) && as];
+        return as.import(bs).push(new Data(Command.Cancel)) && as;
       },
       [3 | Backtrack.link])),
   ]),
@@ -59,14 +59,14 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
     text = text.trim();
     if (params.last!.value === Command.Cancel) {
       params.pop();
-      return [new List([
+      return new List([
         new Data(html('span',
           {
             class: 'invalid',
             ...invalid('media', 'syntax', 'Missing the closing symbol "}"')
           },
           '!' + context.source.slice(context.position - context.range!, context.position)))
-      ])];
+      ]);
     }
     const INSECURE_URI = params.shift()!.value;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -87,7 +87,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
       || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
     el.setAttribute('alt', text);
-    if (!sanitize(el, uri)) return [new List([new Data(el)])];
+    if (!sanitize(el, uri)) return new List([new Data(el)]);
     assert(!el.matches('.invalid'));
     const [attrs, linkparams] = attributes('media', optspec, unwrap(params));
     define(el, attrs);
@@ -96,8 +96,8 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state! & State.link) return [new List([new Data(el)])];
-    if (cache && cache.tagName !== 'IMG') return [new List([new Data(el)])];
+    if (context.state! & State.link) return new List([new Data(el)]);
+    if (cache && cache.tagName !== 'IMG') return new List([new Data(el)]);
     const { source, position } = context;
     return fmap(
       unsafelink as MediaParser,
@@ -111,13 +111,13 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, () => [new List()], [3 | Backtrack.escbracket]),
+    undefined, () => new List(), [3 | Backtrack.escbracket]),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, () => [new List()], [3 | Backtrack.escbracket]),
+    undefined, () => new List(), [3 | Backtrack.escbracket]),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, () => [new List()], [3 | Backtrack.escbracket]),
+    undefined, () => new List(), [3 | Backtrack.escbracket]),
   surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
-    undefined, () => [new List()], [3 | Backtrack.escbracket]),
+    undefined, () => new List(), [3 | Backtrack.escbracket]),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
@@ -126,11 +126,10 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
     str(/[x:]/y),
     str(/[1-9][0-9]*(?=[ }])/y),
     false,
-    ([[{ value: a }], [{ value: b }], [{ value: c }]]) => [
+    ([[{ value: a }], [{ value: b }], [{ value: c }]]) =>
       b === 'x'
         ? new List([new Data(`width="${a}"`), new Data(`height="${c}"`)])
-        : new List([new Data(`aspect-ratio="${a}/${c}"`)]),
-    ]),
+        : new List([new Data(`aspect-ratio="${a}/${c}"`)])),
   linkoption,
 ]));
 

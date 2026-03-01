@@ -31,9 +31,9 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
 
 export const checkbox = focus(
   /\[[xX ]\](?=$|[ \n])/y,
-  ({ context: { source } }) => [new List([
+  ({ context: { source } }) => new List([
     new Data(html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐')),
-  ])]);
+  ]));
 
 export function fillFirstLine(nodes: List<Data<string | HTMLElement>>): List<Data<string | HTMLElement>> {
   const node = nodes.head?.value;
