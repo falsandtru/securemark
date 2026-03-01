@@ -5,7 +5,8 @@ import { Parser, Result, List, Data, Ctx, Node, Context, failsafe } from '../com
 import { define } from 'typed-dom/dom';
 
 export function* unwrap<N>(nodes: List<Data<N>> | undefined): Iterable<N> {
-  for (const node of nodes ?? []) {
+  if (nodes === undefined) return;
+  for (const node of nodes) {
     yield node.value;
   }
 }
