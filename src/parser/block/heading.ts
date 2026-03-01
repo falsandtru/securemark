@@ -1,15 +1,16 @@
 import { HeadingParser } from '../block';
 import { State } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, state, block, line, validate, focus, rewrite, open, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
 import { visualize, trimBlank } from '../visibility';
-import { invalid } from '../util';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   /#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/y,
-  some(line(({ context: { source } }) => [[source]])))));
+  some(line(({ context: { source } }) => [new List([new Data(source)])])))));
 
 export const heading: HeadingParser = block(rewrite(segment,
   // その他の表示制御は各所のCSSで行う。
@@ -23,11 +24,14 @@ export const heading: HeadingParser = block(rewrite(segment,
       state(State.linkers,
       visualize(trimBlank(some(union([indexer, inline]))))), true),
   ]),
-  ([h, ...ns]: [string, ...(HTMLElement | string)[]], context) => [
-    h.length <= 6
-      ? html(`h${h.length as 1}`, { 'data-index': dataindex(ns) }, defrag(ns))
-      : html(`h6`, {
+  (nodes, context) => {
+    const [h, ...ns] = unwrap(nodes) as [string, ...(HTMLElement | string)[]];
+    return new List([
+      h.length <= 6
+        ? new Data(html(`h${h.length as 1}`, { 'data-index': dataindex(nodes) }, defrag(ns)))
+        : new Data(html(`h6`, {
           class: 'invalid',
           ...invalid('heading', 'syntax', 'Heading level must be up to 6'),
-        }, context.source.slice(context.position - context.range!, context.position))
-  ]))))));
+        }, context.source.slice(context.position - context.range!, context.position)))
+    ]);
+  }))))));

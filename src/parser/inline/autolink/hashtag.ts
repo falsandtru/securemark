@@ -1,5 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, state, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
@@ -19,7 +20,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       str(new RegExp([
         /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
       ].join('').replace(/emoji/g, emoji), 'yu')),
-      ([source]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(source)),
+      ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)),
     false,
     [3 | Backtrack.autolink]),
   union([
@@ -27,6 +28,6 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
       unsafelink,
       false),
-      ([el]) => [define(el, { class: 'hashtag' })]))),
-    ({ context: { source } }) => [[source]],
+      ([{ value }]) => new List([new Data(define(value, { class: 'hashtag' }))])))),
+    ({ context: { source } }) => [new List([new Data(source)])],
   ])));

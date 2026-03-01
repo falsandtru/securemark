@@ -53,7 +53,9 @@ export function* segment(source: string): Generator<string, undefined, undefined
     const result = parser(input)!;
     assert(result);
     assert(context.position > position);
-    const segs = eval(result).length ? eval(result) : [source.slice(position, context.position)];
+    const segs = eval(result).length > 0
+      ? eval(result).foldl<string[]>((acc, { value }) => void acc.push(value) || acc, [])
+      : [source.slice(position, context.position)];
     assert(segs.join('') === source.slice(position, context.position));
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];

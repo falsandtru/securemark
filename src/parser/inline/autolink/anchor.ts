@@ -1,5 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, state, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { str } from '../../source';
@@ -30,6 +31,6 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => rewrite(
         } }`,
       unsafelink,
       false),
-      ([el]) => [define(el, { class: 'anchor' })]))),
-    ({ context: { source } }) => [[source]],
+      ([{ value }]) => new List([new Data(define(value, { class: 'anchor' }))])))),
+    ({ context: { source } }) => [new List([new Data(source)])],
   ])));

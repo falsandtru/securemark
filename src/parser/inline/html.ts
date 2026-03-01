@@ -1,13 +1,12 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
-import { Ctx } from '../../combinator/data/parser';
+import { List, Data, Ctx } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isLooseNodeStart, blankWith } from '../visibility';
-import { invalid } from '../util';
+import { invalid, unwrap } from '../util';
 import { memoize } from 'spica/memoize';
-import { unshift, push } from 'spica/array';
 import { html as h, defrag } from 'typed-dom/dom';
 
 const tags: readonly string[] = ['wbr', 'bdo', 'bdi'];
@@ -28,10 +27,10 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       some(union([attribute])),
       open(str(/ ?/y), str('>'), true),
       true,
-      ([as, bs = [], cs], context) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
-      ([as, bs = []], context) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [], context)]]),
+      ([as, bs = new List(), cs], context) =>
+        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))])],
+      ([as, bs = new List()], context) =>
+        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])]),
     match(
       new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'),
       memoize(
@@ -40,8 +39,8 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
           surround(
             str(`<${tag}`), some(attribute), open(str(/ ?/y), str('>'), true),
             true,
-            ([as, bs = [], cs]) => [push(unshift(as, bs), cs)],
-            ([as, bs = []]) => [unshift(as, bs)]),
+            ([as, bs = new List(), cs]) => [as.import(bs).import(cs)],
+            ([as, bs = new List()]) => [as.import(bs)]),
           // 不可視のHTML構造が可視構造を変化させるべきでない。
           // 可視のHTMLは優先度変更を検討する。
           // このため<>は将来的に共通構造を変化させる可能性があり
@@ -53,10 +52,10 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
           ])))),
           str(`</${tag}>`),
           true,
-          ([as, bs = [], cs], context) =>
-            [[elem(tag, true, as, bs, cs, context)]],
-          ([as, bs = []], context) =>
-            [[elem(tag, true, as, bs, [], context)]]),
+          ([as, bs = new List(), cs], context) =>
+            [new List([new Data(elem(tag, true, [...unwrap(as)], bs, cs, context))])],
+          ([as, bs = new List()], context) =>
+            [new List([new Data(elem(tag, true, [...unwrap(as)], bs, new List(), context))])]),
       ([, tag]) => tag,
       new Map())),
     surround(
@@ -65,10 +64,10 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       some(union([attribute])),
       open(str(/ ?/y), str('>'), true),
       true,
-      ([as, bs = [], cs], context) =>
-        [[elem(as[0].slice(1), false, push(unshift(as, bs), cs), [], [], context)]],
-      ([as, bs = []], context) =>
-        [[elem(as[0].slice(1), false, unshift(as, bs), [], [], context)]]),
+      ([as, bs = new List(), cs], context) =>
+        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))])],
+      ([as, bs = new List()], context) =>
+        [new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])]),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
@@ -76,7 +75,7 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/ [^\s<>]+/y),
 ]);
 
-function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | string)[], cs: string[], context: Ctx): HTMLElement {
+function elem(tag: string, content: boolean, as: readonly string[], bs: List<Data<HTMLElement | string>>, cs: List<Data<string>>, context: Ctx): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<');
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
@@ -88,7 +87,7 @@ function elem(tag: string, content: boolean, as: string[], bs: (HTMLElement | st
   const [attrs] = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)
   if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
-  return h(tag as 'span', attrs, defrag(bs));
+  return h(tag as 'span', attrs, defrag(unwrap(bs)));
 }
 
 function ielem(type: string, message: string, context: Ctx): HTMLElement {
@@ -105,7 +104,7 @@ const requiredAttributes = memoize(
 export function attributes(
   syntax: string,
   spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
-  params: readonly string[],
+  params: Iterable<string>,
 ): [Record<string, string | undefined>, string[]] {
   assert(spec instanceof Object === false);
   assert(!spec?.['__proto__']);
@@ -113,17 +112,17 @@ export function attributes(
   const remains = [];
   let invalidation = false;
   const attrs: Record<string, string | undefined> = {};
-  for (let i = 0; i < params.length; ++i) {
-    const param = params[i].trimStart();
-    if (param === '') continue;
-    const name = param.split('=', 1)[0];
-    const value = param !== name
-      ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
+  for (const param of params) {
+    const attr = param.trimStart();
+    if (attr === '') continue;
+    const name = attr.split('=', 1)[0];
+    const value = attr !== name
+      ? attr.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
     invalidation ||= name === '' || !spec || name in attrs;
-    if (name === '')continue;
+    if (name === '') continue;
     if (spec && name in spec && !spec[name]) {
-      remains.push(params[i]);
+      remains.push(param);
       continue;
     }
     if (spec?.[name]?.includes(value) || spec?.[name]?.length === 0 && value !== undefined) {

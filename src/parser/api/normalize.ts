@@ -60,7 +60,7 @@ export const invisibleHTMLEntityNames = [
 ] as const;
 const unreadableHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames.slice(2);
 const unreadableEscapableCharacters = unreadableHTMLEntityNames
-  .map(name => eval(unsafehtmlentity(input(`&${name};`, {})))![0]);
+  .map(name => eval(unsafehtmlentity(input(`&${name};`, {})))!.head!.value);
 assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
 assert(unreadableEscapableCharacters.every(c => c.length === 1));
 const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');

@@ -1,8 +1,9 @@
 import { MarkdownParser } from '../../markdown';
+import { List, Data } from '../combinator/data/parser';
 import { union, inits, some, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
 import { segment } from './segment';
 import { str } from './source';
-import { invalid } from './util';
+import { unwrap, invalid } from './util';
 import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -18,7 +19,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
         else {
           context.position = source.length;
         }
-        return [[]];
+        return [new List()];
       },
       block(
         union([
@@ -28,24 +29,23 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
             normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
             fmap(
               some(union([field])),
-              es => [
-                html('aside', { class: 'header' }, [
-                  html('details', { open: '' }, defrag([
-                    html('summary', 'Header'),
-                    ...es,
-                  ])),
-                ]),
-              ]), false))),
+              ns => new List([
+                new Data(html('aside', { class: 'header' }, [
+                  html('details',
+                    { open: '' },
+                    defrag(unwrap(ns.unshift(new Data(html('summary', 'Header'))) && ns))),
+                ])),
+              ])), false))),
           ({ context }) => {
             const { source, position } = context;
             context.position += source.length;
-            return [[
-              html('pre', {
+            return [new List([
+              new Data(html('pre', {
                 class: 'invalid',
                 translate: 'no',
                 ...invalid('header', 'syntax', 'Invalid syntax'),
-              }, normalize(source.slice(position))),
-            ]];
+              }, normalize(source.slice(position)))),
+            ])];
           },
         ]))),
     clear(str(/[^\S\v\f\r\n]*\r?\n/y)),
@@ -54,12 +54,12 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
 const field: MarkdownParser.HeaderParser.FieldParser = line(({ context: { source, position } }) => {
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
-  return [[
-    html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
+  return [new List([
+    new Data(html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
       ': ',
       html('span', { class: 'field-value' }, value),
       '\n',
-    ]),
-  ]];
+    ])),
+  ])];
 });

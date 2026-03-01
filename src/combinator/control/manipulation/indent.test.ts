@@ -1,5 +1,5 @@
 import { indent } from './indent';
-import { input } from '../../data/parser';
+import { List, Data, input } from '../../data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/indent', () => {
@@ -7,7 +7,7 @@ describe('Unit: combinator/indent', () => {
     const { context: ctx } = input('', {});
 
     it('valid', () => {
-      const parser = indent(({ context }) => { context.position = context.source.length; return [[context.source]]; });
+      const parser = indent(({ context }) => { context.position = context.source.length; return [new List([new Data(context.source)])]; });
       assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(input(' ', ctx)), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(input('  ', ctx)), ctx), undefined);

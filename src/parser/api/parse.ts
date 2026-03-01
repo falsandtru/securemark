@@ -34,7 +34,9 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   const node = frag();
   let index = 0;
   for (const seg of segment(source)) {
-    node.append(...eval(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)), []));
+    node.append(
+      ...eval(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)))
+        ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;

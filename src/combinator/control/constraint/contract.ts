@@ -1,4 +1,4 @@
-import { Parser, Input, Ctx, Node, Context, eval, failsafe } from '../../data/parser';
+import { Parser, Input, List, Data, Ctx, Node, Context, eval, failsafe } from '../../data/parser';
 import { matcher } from '../../../combinator';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
@@ -28,8 +28,8 @@ function guard<N>(f: (input: Input<Ctx>) => boolean, parser: Parser<N>): Parser<
       : undefined;
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: readonly Node<P>[], context: Context<P>) => boolean): P;
-export function verify<N>(parser: Parser<N>, cond: (nodes: readonly N[], context: Ctx) => boolean): Parser<N> {
+export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: List<Data<Node<P>>>, context: Context<P>) => boolean): P;
+export function verify<N>(parser: Parser<N>, cond: (nodes: List<Data<N>>, context: Ctx) => boolean): Parser<N> {
   assert(parser);
   return failsafe(input => {
     const { context } = input;

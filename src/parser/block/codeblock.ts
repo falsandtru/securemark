@@ -1,8 +1,8 @@
 import { CodeBlockParser } from '../block';
-import { input, eval } from '../../combinator/data/parser';
+import { List, Data, subinput, eval } from '../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
-import { invalid } from '../util';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const opener = /(`{3,})(?!`)([^\n]*)(?:$|\n)/y;
@@ -17,7 +17,8 @@ export const segment_: CodeBlockParser.SegmentParser = block(
 export const codeblock: CodeBlockParser = block(fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, param]: string[], context) => {
+  (nodes, context) => {
+    const [body, overflow, closer, opener, delim, param] = unwrap<string>(nodes);
     const params = param.match(/(?:\\.?|\S)+/g)?.reduce<{
       lang?: string;
       path?: string;
@@ -49,7 +50,7 @@ export const codeblock: CodeBlockParser = block(fmap(
         : params[name] = value;
       return params;
     }, {}) ?? {};
-    if (!closer || overflow || params.invalid) return [html('pre', {
+    if (!closer || overflow || params.invalid) return new List([new Data(html('pre', {
       class: 'invalid',
       translate: 'no',
       ...invalid(
@@ -60,7 +61,7 @@ export const codeblock: CodeBlockParser = block(fmap(
           : overflow
             ? `Invalid trailing line after the closing delimiter "${delim}"`
             : params.invalid!),
-    }, `${opener}${body}${overflow || closer}`)];
+    }, `${opener}${body}${overflow || closer}`))]);
     const el = html('pre',
       {
         class: params.lang ? `code language-${params.lang}` : 'text',
@@ -72,6 +73,6 @@ export const codeblock: CodeBlockParser = block(fmap(
       params.lang
         ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
           body.slice(0, -1) || undefined
-        : defrag(eval(autolink(input(body.slice(0, -1), { ...context })), [])));
-    return [el];
+        : defrag(unwrap(eval(autolink(subinput(body.slice(0, -1), context)), new List()))));
+    return new List([new Data(el)]);
   }));

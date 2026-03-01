@@ -1,4 +1,5 @@
 import { ExtensionParser } from '../../inline';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, focus, surround } from '../../../combinator';
 import { signature } from './index';
 import { html } from 'typed-dom/dom';
@@ -13,6 +14,6 @@ export const indexer: ExtensionParser.IndexerParser = surround(
   /\s\[(?=\|\S)/y,
   union([
     signature,
-    focus(/\|(?=\])/y, () => [[html('span', { class: 'indexer', 'data-index': '' })]]),
+    focus(/\|(?=\])/y, () => [new List([new Data(html('span', { class: 'indexer', 'data-index': '' }))])]),
   ]),
   /\]\s*$/y);

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { input, eval } from '../../../combinator/data/parser';
+import { List, Data, subinput, eval } from '../../../combinator/data/parser';
 import { union, block, fence, fmap } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
@@ -13,8 +13,8 @@ import { sidefence } from '../sidefence';
 import { blockquote } from '../blockquote';
 import { mediablock } from '../mediablock';
 import { paragraph } from '../paragraph';
-import { invalid } from '../../util';
-import { unshift, push } from 'spica/array';
+import { unwrap, invalid } from '../../util';
+import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
 import MessageParser = ExtensionParser.MessageParser;
@@ -22,34 +22,45 @@ import MessageParser = ExtensionParser.MessageParser;
 export const message: MessageParser = block(fmap(
   fence(/(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
-    if (!closer || overflow || param.trimStart()) return [html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid(
-        'message',
-        !closer || overflow ? 'fence' : 'argument',
-        !closer ? `Missing the closing delimiter "${delim}"` :
-          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-            'Invalid argument'),
-    }, `${opener}${body}${overflow || closer}`)];
+  (nodes: List<Data<string>>, context) => {
+    const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
+    if (!closer || overflow || param.trimStart()) return new List([
+      new Data(html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        ...invalid(
+          'message',
+          !closer || overflow ? 'fence' : 'argument',
+          !closer ? `Missing the closing delimiter "${delim}"` :
+            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+              'Invalid argument'),
+      }, `${opener}${body}${overflow || closer}`))
+    ]);
     switch (type) {
       case 'note':
       case 'caution':
       case 'warning':
         break;
       default:
-        return [html('pre', {
-          class: 'invalid',
-          translate: 'no',
-          ...invalid('message', 'type', 'Invalid message type'),
-        }, `${opener}${body}${closer}`)];
+        return new List([
+          new Data(html('pre', {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid('message', 'type', 'Invalid message type'),
+          }, `${opener}${body}${closer}`))
+        ]);
     }
-    return [
-      html('section', { class: `message`, 'data-type': type }, unshift(
-        [html('h1', title(type))],
-        [...segment(body)].reduce((acc, seg) => push(acc, eval(content(input(seg, { ...context })), [])), []))),
-    ];
+    return new List([
+      new Data(html('section',
+        {
+          class: `message`,
+          'data-type': type,
+        },
+        [...segment(body)].reduce(
+          (acc, seg) =>
+            push(acc, unwrap(eval(content(subinput(seg, context)))!)),
+          [html('h1', title(type))])))
+    ]);
   }));
 
 function title(type: string): string {

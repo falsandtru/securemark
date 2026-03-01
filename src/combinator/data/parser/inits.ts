@@ -1,21 +1,20 @@
-import { Parser, CtxOptions, Node, Context, SubParsers, SubNode, eval, Ctx } from '../parser';
-import { push } from 'spica/array';
+import { Parser, List, Data, CtxOptions, Node, Context, SubParsers, SubNode, eval, Ctx } from '../parser';
 
-export function inits<P extends Parser<unknown, Ctx>>(parsers: SubParsers<P>, resume?: (nodes: SubNode<P>[]) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
-export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: N[]) => boolean): Parser<N, CtxOptions, D> {
+export function inits<P extends Parser<unknown, Ctx>>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: List<Data<N>>) => boolean): Parser<N, CtxOptions, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return input => {
     const { context } = input;
     const { source, position } = context;
-    let nodes: N[] | undefined;
+    let nodes: List<Data<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) break;
       if (context.delimiters?.match(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes
-        ? push(nodes, eval(result))
+        ? nodes.import(eval(result))
         : eval(result);
       if (resume?.(eval(result)) === false) break;
     }

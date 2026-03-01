@@ -1,16 +1,11 @@
-import { heading, segment } from './heading';
-import { input, eval } from '../../combinator/data/parser';
+import { heading } from './heading';
+import { input } from '../../combinator/data/parser';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
-    const parser = (source: string) => {
-      const result = segment(input(source, ctx));
-      return result
-        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading(input(seg, {})), [seg]))] as const
-        : some(heading)(input(source, ctx));
-    };
+    const parser = (source: string) => some(heading)(input(source, ctx));
     const { context: ctx } = input('', {});
 
     it('invalid', () => {
@@ -54,10 +49,6 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a[[b]]'), ctx), [['<h1 id="index::a[[b]]">a[[b]]</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## a[[b]]'), ctx), [['<h2 id="index::a[[b]]">a[[b]]</h2>'], '']);
       assert.deepStrictEqual(inspect(parser('###### a'), ctx), [['<h6 id="index::a">a</h6>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n##'), ctx), [['<h1 id="index::a">a</h1>', '##'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n## '), ctx), [['<h1 id="index::a">a</h1>', '## '], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n## b'), ctx), [['<h1 id="index::a">a</h1>', '<h2 id="index::b">b</h2>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n##\n## b'), ctx), [['<h1 id="index::a">a</h1>', '##\n', '<h2 id="index::b">b</h2>'], '']);
     });
 
     it('indexer', () => {

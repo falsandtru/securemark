@@ -1,4 +1,5 @@
 import { CodeParser } from '../inline';
+import { List, Data } from '../../combinator/data/parser';
 import { open, match } from '../../combinator';
 import { Backtrack } from '../context';
 import { invalid } from '../util';
@@ -10,13 +11,13 @@ export const code: CodeParser = open(
     /(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y,
     ([whole, opener, body, closer]) => () =>
       closer
-        ? [[html('code', { 'data-src': whole }, format(body))]]
+        ? [new List([new Data(html('code', { 'data-src': whole }, format(body)))])]
         : body
-          ? [[html('code', {
+          ? [new List([new Data(html('code', {
               class: 'invalid',
               ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
-            }, whole)]]
-          : [[opener]],
+            }, whole))])]
+          : [new List([new Data(opener)])],
     true),
   false,
   [3 | Backtrack.bracket]);

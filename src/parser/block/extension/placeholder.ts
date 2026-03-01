@@ -1,6 +1,7 @@
 import { ExtensionParser } from '../../block';
+import { List, Data } from '../../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../../combinator';
-import { invalid } from '../../util';
+import { unwrap, invalid } from '../../util';
 import { html } from 'typed-dom/dom';
 
 const opener = /(~{3,})(?!~)[^\n]*(?:$|\n)/y;
@@ -13,15 +14,18 @@ export const segment_: ExtensionParser.PlaceholderParser.SegmentParser = block(
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(fmap(
   fence(opener, Infinity),
-  ([body, overflow, closer, opener, delim]) => [
-    html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid(
-        'extension',
-        'fence',
-        !closer ? `Missing the closing delimiter "${delim}"` :
-          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-            'Invalid argument'),
-    }, `${opener}${body}${overflow || closer}`),
-  ]));
+  nodes => {
+    const [body, overflow, closer, opener, delim] = unwrap(nodes);
+    return new List([
+      new Data(html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        ...invalid(
+          'extension',
+          'fence',
+          !closer ? `Missing the closing delimiter "${delim}"` :
+            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+              'Invalid argument'),
+      }, `${opener}${body}${overflow || closer}`)),
+    ]);
+  }));

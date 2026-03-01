@@ -1,14 +1,13 @@
 import { ReferenceParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
-import { eval } from '../../combinator/data/parser';
+import { List, Data, eval } from '../../combinator/data/parser';
 import { union, subsequence, some, precedence, state, constraint, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
-import { unshift, push } from 'spica/array';
-import { invalid } from '../util';
 
 export const reference: ReferenceParser = lazy(() => constraint(State.reference, surround(
   str('[['),
@@ -22,7 +21,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ([, ns], context) => {
     const { position, range = 0, linebreak = 0 } = context;
     if (linebreak === 0) {
-      return [[html('sup', attributes(ns), [html('span', defrag(trimBlankNodeEnd(ns)))])]];
+      return [new List([new Data(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])];
     }
     else {
       const head = position - range;
@@ -42,13 +41,13 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     else {
       assert(source[position] === ']');
       if (state & State.annotation) {
-        push(bs, [source[position]]);
+        bs.push(new Data(source[position]));
       }
       context.position += 1;
       let result: ReturnType<typeof textlink>;
       if (source[context.position] !== '{') {
         setBacktrack(context, [2 | Backtrack.link], head + 1);
-        result = [[]];
+        result = [new List()];
       }
       else {
         result = !isBacktrack(context, [1 | Backtrack.link])
@@ -57,7 +56,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
         context.range = range;
         if (!result) {
           setBacktrack(context, [2 | Backtrack.link], head + 1);
-          result = [[]];
+          result = [new List()];
         }
       }
       assert(result);
@@ -71,21 +70,21 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
           some(inline, ']', [[']', 1]]),
           str(']'),
           true,
-          ([, cs = [], ds]) =>
-            [push(cs, ds)],
-          ([, cs = []]) => {
+          ([, cs = new List(), ds]) =>
+            [cs.import(ds)],
+          ([, cs = new List()]) => {
             setBacktrack(context, [2 | Backtrack.link], head);
             return [cs];
           })
           ({ context });
         if (state & State.annotation && next) {
-          return [push(push(unshift(as, bs), eval(result)), eval(next))];
+          return [(as as List<Data<string | HTMLElement>>).import(bs).import(eval(result!)).import(eval(next))];
         }
       }
       context.position = position;
     }
     return state & State.annotation
-      ? [unshift(as, bs)]
+      ? [as.import(bs as List<Data<string>>)]
       : undefined;
   },
   [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));
@@ -98,22 +97,22 @@ const abbr: ReferenceParser.AbbrParser = surround(
   true,
   ([, ns], context) => {
     const { source, position, range = 0 } = context;
-    if (!ns) return [['', source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)]];
+    if (!ns) return [new List([new Data(''), new Data(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))])];
     context.position += source[position] === ' ' ? 1 : 0;
-    return [[Command.Separator, ns[0].trimEnd()]];
+    return [new List([new Data(Command.Separator), new Data(ns.head!.value.trimEnd())])];
   },
   (_, context) => {
     context.position -= context.range!;
-    return [['']];
+    return [new List([new Data('')])];
   });
 
-function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
-  switch (ns[0]) {
+function attributes(ns: List<Data<string | HTMLElement>>): Record<string, string | undefined> {
+  switch (ns.head!.value) {
     case '':
       return { class: 'invalid', ...invalid('reference', 'syntax', 'Invalid abbreviation') };
     case Command.Separator:
-      const abbr = ns[1] as string;
-      ns[0] = ns[1] = '';
+      const abbr = ns.head!.next!.value as string;
+      ns.head!.value = ns.head!.next!.value = '';
       return { class: 'reference', 'data-abbr': abbr };
     default:
       return { class: 'reference' };

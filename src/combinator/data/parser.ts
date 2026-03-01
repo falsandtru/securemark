@@ -1,3 +1,4 @@
+import { List } from './data';
 import { Delimiters } from './parser/context/delimiter';
 
 export type Parser<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
@@ -6,9 +7,16 @@ export interface Input<C extends CtxOptions = CtxOptions> {
   readonly context: C & Ctx;
 }
 export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = readonly [N[], C, D]
-  | readonly [N[]]
+  = readonly [List<Data<N>>, C, D]
+  | readonly [List<Data<N>>]
   | undefined;
+export { List };
+export class Data<N> implements List.Node {
+  constructor(public value: N) {
+  }
+  public next?: this = undefined;
+  public prev?: this = undefined;
+}
 export interface Ctx extends CtxOptions {
   source: string;
   position: number;
@@ -71,10 +79,10 @@ export function clean<C extends Ctx>(context: C): C {
 }
 
 export { eval_ as eval };
-function eval_<N>(result: NonNullable<Result<N>>, default_?: N[]): N[];
-function eval_<N>(result: Result<N>, default_: N[]): N[];
-function eval_<N>(result: Result<N>, default_?: undefined): N[] | undefined;
-function eval_<N>(result: Result<N>, default_?: N[]): N[] | undefined {
+function eval_<N>(result: NonNullable<Result<N>>, default_?: List<Data<N>>): List<Data<N>>;
+function eval_<N>(result: Result<N>, default_: List<Data<N>>): List<Data<N>>;
+function eval_<N>(result: Result<N>, default_?: undefined): List<Data<N>> | undefined;
+function eval_<N>(result: Result<N>, default_?: List<Data<N>>): List<Data<N>> | undefined {
   return result
     ? result[0]
     : default_;

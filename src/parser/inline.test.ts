@@ -56,9 +56,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('**a*b***'), ctx), [['<strong>a<em>b</em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a*b***c'), ctx), [['<strong>a<em>b</em></strong>', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('**a**b****'), ctx), [['<strong>a</strong>', 'b', '****'], '']);
-      assert.deepStrictEqual(inspect(parser('**a**b****c'), ctx), [['<strong>a</strong>', 'b', '****', 'c'], '']);
+      assert.deepStrictEqual(inspect(parser('**a**b****c'), ctx), [['<strong>a</strong>', 'b', '****c'], '']);
       assert.deepStrictEqual(inspect(parser('**a***b*****'), ctx), [['<strong>a</strong>', '<em>b</em>', '****'], '']);
-      assert.deepStrictEqual(inspect(parser('**a***b*****c'), ctx), [['<strong>a</strong>', '<em>b</em>', '****', 'c'], '']);
+      assert.deepStrictEqual(inspect(parser('**a***b*****c'), ctx), [['<strong>a</strong>', '<em>b</em>', '****c'], '']);
       assert.deepStrictEqual(inspect(parser('**a *b***'), ctx), [['<strong>a <em>b</em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a *b***c'), ctx), [['<strong>a <em>b</em></strong>', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('**a **b****'), ctx), [['<strong>a <strong>b</strong></strong>'], '']);
@@ -68,7 +68,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('***a*'), ctx), [['**', '<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b'), ctx), [['**', '<em>a</em>', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b*'), ctx), [['**', '<em>a</em>', 'b', '*'], '']);
-      assert.deepStrictEqual(inspect(parser('***a*b*c'), ctx), [['**', '<em>a</em>', 'b*c'], '']);
+      assert.deepStrictEqual(inspect(parser('***a*b*c'), ctx), [['**', '<em>a</em>', 'b', '*', 'c'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b*c*'), ctx), [['**', '<em>a</em>', 'b', '<em>c</em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b*c**'), ctx), [['**', '<em>a</em>', 'b', '<em>c</em>', '*'], '']);
       assert.deepStrictEqual(inspect(parser('***a*b*c***'), ctx), [['<strong><em>a</em>b<em>c</em></strong>'], '']);

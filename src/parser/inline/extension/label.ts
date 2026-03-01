@@ -1,5 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, constraint, clear, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
@@ -16,9 +17,12 @@ export const label: ExtensionParser.LabelParser = constraint(State.label, fmap(
     surround('[', body, ']', false, undefined, undefined, [1 | Backtrack.bracket, 1]),
     body,
   ]),
-  ([text]) => [
-    html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text),
-  ]));
+  ([{ value }]) => new List([
+    new Data(html('a', {
+      class: 'label',
+      'data-label': value.slice(value[1] === '-' ? 0 : 1).toLowerCase(),
+    }, value)),
+  ])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

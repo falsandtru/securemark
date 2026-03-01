@@ -1,12 +1,12 @@
-import { max, min, isArray } from 'spica/alias';
+import { max, min } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { Node, eval, input } from '../../../combinator/data/parser';
+import { List, Data, subinput, eval } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { invalid } from '../../util';
+import { unwrap, invalid } from '../../util';
 import { visualize, trimBlank, trimBlankEnd } from '../../visibility';
-import { unshift, splice } from 'spica/array';
+import { splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import TableParser = ExtensionParser.TableParser;
@@ -25,40 +25,49 @@ export const segment_: TableParser.SegmentParser = block(
 export const table: TableParser = block(fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, type, param]: string[], context) => {
-    if (!closer || overflow || param.trimStart()) return [html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid(
-        'table',
-        !closer || overflow ? 'fence' : 'argument',
-        !closer ? `Missing the closing delimiter "${delim}"` :
-          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-            'Invalid argument'),
-    }, `${opener}${body}${overflow || closer}`)];
+  (nodes: List<Data<string>>, context) => {
+    const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
+    if (!closer || overflow || param.trimStart()) return new List([
+      new Data(html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        ...invalid(
+          'table',
+          !closer || overflow ? 'fence' : 'argument',
+          !closer ? `Missing the closing delimiter "${delim}"` :
+            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+              'Invalid argument'),
+      }, `${opener}${body}${overflow || closer}`))
+    ]);
     switch (type) {
       case 'grid':
       case undefined:
-        return (eval(parser(input(body, { ...context }))) ?? [html('table')])
-          .map(el => define(el, { 'data-type': type }));
+        return (eval(parser(subinput(body, context))) ?? new List([new Data(html('table'))]))
+          .foldl(
+            (acc, { value }) => acc.push(new Data(define(value, { 'data-type': type }))) && acc,
+            new List());
       default:
-        return [html('pre', {
-          class: 'invalid',
-          translate: 'no',
-          ...invalid('table', 'argument', 'Invalid table type'),
-        }, `${opener}${body}${closer}`)];
+        return new List([
+          new Data(html('pre', {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid('table', 'argument', 'Invalid table type'),
+          }, `${opener}${body}${closer}`))
+        ]);
     }
   }));
 
 const parser: TableParser = lazy(() => block(fmap(
   some(union([row])),
-  rows => [html('table', format(rows))])));
+  rows => new List([
+    new Data(html('table', format([...unwrap(rows)])))
+  ]))));
 
 const row: RowParser = lazy(() => dup(fmap(
   subsequence([
-    dup(union([
+    union([
       align,
-    ])),
+    ]),
     some(union([
       head,
       data,
@@ -66,13 +75,13 @@ const row: RowParser = lazy(() => dup(fmap(
       emptyline,
     ])),
   ]),
-  ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
+  ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Data([[]])) && ns)));
 
 const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
-  ([s]) => s.split('/').map(s => s.split(''))));
+  ([{ value }]) => new List([new Data(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
 
 const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y;
 
@@ -91,11 +100,11 @@ const head: CellParser.HeadParser = block(fmap(open(
           media,
           lineshortmedia,
         ]),
-        /\s*$/y)),
+        /[^\S\n]*(?:$|\n)/y)),
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
-  ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
+  ns => new List([new Data(html('th', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
@@ -113,11 +122,11 @@ const data: CellParser.DataParser = block(fmap(open(
           media,
           lineshortmedia,
         ]),
-        /\s*$/y)),
+        /[^\S\n]*(?:$|\n)/y)),
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
-  ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
+  ns => new List([new Data(html('td', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
   false);
 
 const dataline: CellParser.DatalineParser = line(
@@ -157,7 +166,7 @@ function attributes(source: string): Record<string, string | undefined> {
   };
 }
 
-function format(rows: Node<RowParser>[]): HTMLTableSectionElement[] {
+function format(rows: List<Data<[string[], string[]?] | HTMLTableCellElement>>[]): HTMLTableSectionElement[] {
   const thead = html('thead');
   const tbody = html('tbody');
   const tfoot = html('tfoot');
@@ -167,13 +176,11 @@ function format(rows: Node<RowParser>[]): HTMLTableSectionElement[] {
   let ranges: Record<number, Record<number, HTMLTableCellElement>> = {};
   let verticalHighlightExtensions = 0n;
   let verticalHighlightLevels: string[] = [];
-  ROW:
-  for (let i = 0; i < rows.length; ++i) {
+
+  let cnt = 0;
+  for (const list of rows) ROW: for (let i = cnt++; i < cnt; ++i) {
     // Copy to make them retryable.
-    const [[[...as], [...vs] = []], ...cells] = rows[i];
-    assert(as !== rows[i][0]?.[0]);
-    assert(vs !== rows[i][0]?.[1]);
-    assert(cells !== rows[i]);
+    const [{ value: [[...as], [...vs] = []] }, ...cells] = list as any as [Data<[string[], string[]?]>, ...Data<HTMLTableCellElement>[]];
     let isBody = target === tfoot
       ? false
       : undefined;
@@ -248,7 +255,7 @@ function format(rows: Node<RowParser>[]): HTMLTableSectionElement[] {
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual
         ? splice(cells, j, 0, undefined) && ranges[i][j]
-        : cells[j];
+        : cells[j].value;
       const isHeadCell = cell.tagName === 'TH';
       heads |= isHeadCell ? 1n << jn : 0n;
       highlights |= cell.className === 'highlight' ? 1n << jn : 0n;
@@ -326,7 +333,7 @@ function format(rows: Node<RowParser>[]): HTMLTableSectionElement[] {
         const lHighlight = ~lHeadCellIndex && horizontalHighlights & 1n << lHeadCellIndex;
         const rHighlight = ~rHeadCellIndex && horizontalHighlights & 1n << rHeadCellIndex;
         for (let i = 0, m = 1n; i < cells.length; ++i, m <<= 1n) {
-          const cell = cells[i];
+          const cell = cells[i]?.value;
           if (!cell) continue;
           if (heads & m) continue;
           assert(cell.tagName === 'TD');

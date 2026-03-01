@@ -1,7 +1,8 @@
 import { MediaBlockParser } from '../block';
+import { List, Data } from '../../combinator/data/parser';
 import { union, inits, some, block, line, fallback, fmap } from '../../combinator';
 import { medialink, media, lineshortmedia } from '../inline';
-import { invalid } from '../util';
+import { unwrap, invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const mediablock: MediaBlockParser = block(fmap(
@@ -15,9 +16,10 @@ export const mediablock: MediaBlockParser = block(fmap(
       medialink,
       media,
       lineshortmedia,
-    ]), ({ context: { source } }) => [[html('span', {
+    ]), ({ context: { source } }) => [new List([
+      new Data(html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
-    }, source.replace('\n', ''))]]))),
-  ]),
-  ns => [html('div', ns)]));
+    }, source.replace('\n', '')))
+    ])])))]),
+  ns => new List([new Data(html('div', unwrap(ns)))])));

@@ -1,10 +1,11 @@
 import { DListParser } from '../block';
 import { State } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, inits, some, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
 import { visualize, trimBlank, trimBlankEnd } from '../visibility';
-import { push } from 'spica/array';
+import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
@@ -14,13 +15,13 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
     some(term)),
     some(desc),
   ]))),
-  es => [html('dl', fillTrailingDescription(es))])));
+  ns => new List([new Data(html('dl', unwrap(fillTrailingDescription(ns))))]))));
 
 const term: DListParser.TermParser = line(indexee(fmap(open(
   /~[^\S\n]+(?=\S)/y,
   visualize(trimBlank(some(union([indexer, inline])))),
   true),
-  ns => [html('dt', { 'data-index': dataindex(ns) }, defrag(ns))])));
+  ns => new List([new Data(html('dt', { 'data-index': dataindex(ns) }, defrag(unwrap(ns))))]))));
 
 const desc: DListParser.DescriptionParser = block(fmap(open(
   /:[^\S\n]+(?=\S)|/y,
@@ -28,11 +29,11 @@ const desc: DListParser.DescriptionParser = block(fmap(open(
     some(anyline, /[~:][^\S\n]+\S/y),
     visualize(trimBlankEnd(some(union([inline]))))),
   true),
-  ns => [html('dd', defrag(ns))]),
+  ns => new List([new Data(html('dd', defrag(unwrap(ns))))])),
   false);
 
-function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
-  return es.length > 0 && es.at(-1)!.tagName === 'DT'
-    ? push(es, [html('dd')])
-    : es;
+function fillTrailingDescription(nodes: List<Data<HTMLElement>>): List<Data<HTMLElement>> {
+  return nodes.last?.value.tagName === 'DT'
+    ? nodes.push(new Data(html('dd'))) && nodes
+    : nodes;
 }

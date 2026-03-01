@@ -1,5 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, tails, sequence, some, state, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { emoji } from './hashtag';
@@ -24,7 +25,7 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
         str(new RegExp([
           /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
         ].join('').replace(/emoji/g, emoji), 'yu')),
-        ([source]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(source)),
+        ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)),
       false,
       [3 | Backtrack.autolink])),
   ]),
@@ -38,10 +39,10 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
         } }`,
       unsafelink,
       false),
-      ([el], { source, position, range = 0 }) => {
+      ([{ value: el }], { source, position, range = 0 }) => {
         const src = source.slice(position - range, position);
         const url = `${el.getAttribute('href')}?ch=${src.slice(src.indexOf('#') + 1).replace(/#/g, '+')}`;
-        return [define(el, { class: 'channel', href: url }, src)];
+        return new List([new Data(define(el, { class: 'channel', href: url }, src))]);
       }))),
-    ({ context: { source } }) => [[source]],
+    ({ context: { source } }) => [new List([new Data(source)])],
   ])));

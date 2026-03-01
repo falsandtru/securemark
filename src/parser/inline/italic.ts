@@ -1,10 +1,10 @@
 import { ItalicParser } from '../inline';
 import { Recursion, Command } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { tightStart, blankWith } from '../visibility';
-import { repeat } from '../util';
-import { push } from 'spica/array';
+import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 // 可読性のため実際にはオブリーク体を指定する。
@@ -19,6 +19,6 @@ export const italic: ItalicParser = lazy(() => validate('///',
       open(some(inline, '/'), inline),
     ])))),
     '///', false,
-    ([, bs], { buffer }) => [push(buffer!, bs)],
-    ([, bs], { buffer }) => bs && [push(push(buffer!, bs), [Command.Cancel])]),
-    nodes => [html('i', defrag(nodes))]))));
+    ([, bs], { buffer }) => [buffer!.import(bs)],
+    ([, bs], { buffer }) => bs && [buffer!.import(bs).push(new Data(Command.Cancel)) && buffer!]),
+    nodes => new List([new Data(html('i', defrag(unwrap(nodes))))])))));

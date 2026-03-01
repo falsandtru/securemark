@@ -1,8 +1,10 @@
 import { AnnotationParser } from '../inline';
 import { State, Backtrack } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
@@ -13,7 +15,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   false,
   ([, ns], context) =>
     context.linebreak === 0
-      ? [[html('sup', { class: 'annotation' }, [html('span', defrag(trimBlankNodeEnd(ns)))])]]
+      ? [new List([new Data(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])]
       : undefined,
   undefined,
   [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));

@@ -36,7 +36,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
   },
   union([figure]),
   false),
-  ([el]) => el.tagName === 'FIGURE')));
+  ([{ value: el }]) => el.tagName === 'FIGURE')));
 
 const parser = sequence([
   line(close(seg_label, /(?=\s).*\n/y)),

@@ -2,11 +2,12 @@ import { Result, Ctx, eval } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
-export function inspect(result: Result<HTMLElement | string>, ctx: Ctx, until: number | string = Infinity): [string[], string] | undefined {
+export function inspect(result: Result<DocumentFragment | HTMLElement | string>, ctx: Ctx, until: number | string = Infinity): [string[], string] | undefined {
   return result && [
-    eval(result).map(node => {
+    eval(result).foldl<string[]>((acc, { value: node }) => {
       assert(node);
-      if (typeof node === 'string') return node;
+      if (typeof node === 'string') return acc.push(node), acc;
+      if (node instanceof DocumentFragment) return acc.push(html('div', [node]).innerHTML), acc;
       node = node.cloneNode(true);
       assert(!querySelectorWith(node, '.invalid[data-invalid-message$="."]'));
       querySelectorAllWith(node, '.invalid').forEach(el => {
@@ -31,8 +32,8 @@ export function inspect(result: Result<HTMLElement | string>, ctx: Ctx, until: n
       else {
         assert(el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
       }
-      return normalize(node.outerHTML.slice(0, until));
-    }),
+      return acc.push(normalize(node.outerHTML.slice(0, until))), acc;
+    }, []),
     ctx.source.slice(ctx.position),
   ];
 }

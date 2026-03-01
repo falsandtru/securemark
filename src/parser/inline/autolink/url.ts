@@ -1,5 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, tails, some, recursion, precedence, state, constraint, verify, focus, rewrite, convert, surround, open, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { unescsource, str } from '../../source';
@@ -18,7 +19,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
       url => `{ ${url} }`,
       unsafelink,
       false))),
-    ({ context: { source } }) => [[source]],
+    ({ context: { source } }) => [new List([new Data(source)])],
   ])));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
@@ -30,17 +31,17 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
         url => `{ ${url} }`,
         unsafelink,
         false))),
-      ({ context: { source } }) => [[source]],
+      ({ context: { source } }) => [new List([new Data(source)])],
     ]),
   ])));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'), true,
-    undefined, () => [[]], [3 | Backtrack.autolink]),
+    undefined, () => [new List()], [3 | Backtrack.autolink]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'), true,
-    undefined, () => [[]], [3 | Backtrack.autolink]),
+    undefined, () => [new List()], [3 | Backtrack.autolink]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'), true,
-    undefined, () => [[]], [3 | Backtrack.autolink]),
+    undefined, () => [new List()], [3 | Backtrack.autolink]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'), true,
-    undefined, () => [[]], [3 | Backtrack.autolink]),
+    undefined, () => [new List()], [3 | Backtrack.autolink]),
 ]));

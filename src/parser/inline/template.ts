@@ -1,9 +1,9 @@
 import { TemplateParser } from '../inline';
 import { Recursion, Backtrack } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { invalid } from '../util';
-import { unshift, push } from 'spica/array';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const template: TemplateParser = lazy(() => surround(
@@ -12,35 +12,36 @@ export const template: TemplateParser = lazy(() => surround(
   some(union([bracket, escsource]), '}')),
   str('}}'),
   true,
-  ([as, bs = [], cs]) =>
-    [[html('span', { class: 'template' }, defrag(push(unshift(as, bs), cs)))]],
+  ([as, bs = new List(), cs]) => [new List([
+    new Data(html('span', { class: 'template' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))
+  ])],
   ([, bs], context) =>
-    bs && [[
-      html('span',
+    bs && [new List([
+      new Data(html('span',
         {
           class: 'invalid',
           ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
         },
-        context.source.slice(context.position - context.range!, context.position))
-    ]],
+        context.source.slice(context.position - context.range!, context.position)))
+    ])],
   [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket]));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => [[]], [3 | Backtrack.escbracket]),
+    undefined, () => [new List()], [3 | Backtrack.escbracket]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => [[]], [3 | Backtrack.escbracket]),
+    undefined, () => [new List()], [3 | Backtrack.escbracket]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => [[]], [3 | Backtrack.escbracket]),
+    undefined, () => [new List()], [3 | Backtrack.escbracket]),
   surround(
     str('"'),
     precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
     true,
-    ([as, bs = [], cs], context) =>
+    ([as, bs = new List(), cs], context) =>
       context.linebreak === 0
-        ? [push(unshift(as, bs), cs)]
-        : (context.position -= 1, [unshift(as, bs)]),
-    ([as, bs]) => bs && [unshift(as, bs)],
+        ? [as.import(bs as List<Data<string>>).import(cs)]
+        : (context.position -= 1, [as.import(bs as List<Data<string>>)]),
+    ([as, bs]) => bs && [as.import(bs as List<Data<string>>)],
     [3 | Backtrack.escbracket]),
 ]));

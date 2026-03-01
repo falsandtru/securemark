@@ -1,7 +1,7 @@
-import { Parser, Ctx, CtxOptions, input } from '../parser';
+import { Parser, List, Data, Ctx, CtxOptions, input, eval } from '../parser';
 import { some } from './some';
-import { reset, context } from './context';
-import { creation } from './context';
+import { reset, context, creation } from './context';
+import { unwrap } from '../../../parser/util';
 
 describe('Unit: combinator/data/parser/context', () => {
   interface Context extends CtxOptions {
@@ -12,13 +12,13 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<number> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return [[context.resources?.clock ?? NaN]];
+        return [new List([new Data(context.resources?.clock ?? NaN)])];
       }));
 
     it('root', () => {
       const base: Context = { resources: { clock: 3, recursions: [1] } };
       const ctx: Context = {};
-      assert.deepStrictEqual(reset(base, parser)(input('123', ctx)), [[3, 2, 1]]);
+      assert.deepStrictEqual([...unwrap(eval(reset(base, parser)(input('123', ctx)))!)], [3, 2, 1]);
       assert(base.resources?.clock === 3);
       assert(ctx.resources?.clock === undefined);
       assert.throws(() => reset(base, parser)(input('1234', ctx)));
@@ -28,7 +28,7 @@ describe('Unit: combinator/data/parser/context', () => {
     it('node', () => {
       const base: Context = { resources: { clock: 3, recursions: [1] } };
       const ctx: Context = { resources: { clock: 2, recursions: [1] } };
-      assert.deepStrictEqual(reset(base, parser)(input('1', ctx)), [[2]]);
+      assert.deepStrictEqual([...unwrap(eval(reset(base, parser)(input('1', ctx)))!)], [2]);
       assert(base.resources?.clock === 3);
       assert(ctx.resources?.clock === 1);
       assert.throws(() => reset(base, parser)(input('12', ctx)));
@@ -41,13 +41,13 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<boolean, Context & Ctx> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return [[context.status!]];
+        return [new List([new Data(context.status!)])];
       }));
 
     it('', () => {
       const base: Context = { status: true };
       const ctx: Context = { resources: { clock: 2, recursions: [1] } };
-      assert.deepStrictEqual(context(base, parser)(input('1', ctx)), [[true]]);
+      assert.deepStrictEqual([...unwrap(eval(context(base, parser)(input('1', ctx)))!)], [true]);
       assert(base.resources?.clock === undefined);
       assert(ctx.resources?.clock === 1);
       assert(ctx.status === undefined);

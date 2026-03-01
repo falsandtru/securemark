@@ -1,14 +1,14 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, inits, tails, sequence, subsequence, some, creation, precedence, state, constraint, validate, surround, open, setBacktrack, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { unescsource, str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
-import { invalid, stringify } from '../util';
+import { unwrap, invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
-import { unshift, push } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const optspec = {
@@ -24,9 +24,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       trimBlankStart(some(union([inline]), ']', [[']', 1]])),
       ']',
       true,
-      ([, ns = []], context) =>
+      ([, ns = new List()], context) =>
         context.linebreak === 0
-          ? [push(ns, [Command.Separator])]
+          ? [ns.push(new Data(Command.Separator)) && ns]
           : undefined,
       undefined,
       [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby])),
@@ -42,12 +42,12 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
         if (!bs) return;
         const head = context.position - context.range!;
         setBacktrack(context, [2 | Backtrack.link], head);
-        return [push(unshift(as, bs), [Command.Cancel])];
+        return [as.import(bs).push(new Data(Command.Cancel)) && as];
       },
       [3 | Backtrack.link])),
   ]),
-  ([content, params]: [(HTMLElement | string)[], string[]], context) => {
-    if (content.at(-1) === Command.Separator) {
+  ([{ value: content }, { value: params = undefined } = {}], context) => {
+    if (content.last!.value === Command.Separator) {
       content.pop();
       if (params === undefined) {
         const head = context.position - context.range!;
@@ -55,37 +55,37 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       }
     }
     else {
-      params = content as string[];
-      content = [];
+      params = content as List<Data<string>>;
+      content = new List();
     }
-    if (params.at(-1) === Command.Cancel) {
+    if (params.last!.value === Command.Cancel) {
       params.pop();
-      return [[
-        html('span',
+      return [new List([
+        new Data(html('span',
           {
             class: 'invalid',
             ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
           },
-          context.source.slice(context.position - context.range!, context.position))
-      ]];
+          context.source.slice(context.position - context.range!, context.position)))
+      ])];
     }
-    assert(!html('div', content).querySelector('a, .media, .annotation, .reference'));
-    assert(content[0] !== '');
+    assert(!html('div', unwrap(content)).querySelector('a, .media, .annotation, .reference'));
+    assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
-    return [[parse(defrag(content), params, context)]];
+    return [new List([new Data(parse(content, params as List<Data<string>>, context))])];
   }))))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, validate(/[[{]/y, creation(10,
   state(State.linkers,
-  bind(reverse(sequence([
+  bind(sequence([
     dup(surround(
       '[',
       union([media, shortmedia]),
       ']')),
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
-  ])),
-  ([params, content = []]: [string[], (HTMLElement | string)[]], context) =>
-    [[parse(defrag(content), params, context)]]))))));
+  ]),
+  ([{ value: content }, { value: params }], context) =>
+    [new List([new Data(parse(content, params as List<Data<string>>, context))])]))))));
 
 export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
   creation(10,
@@ -96,8 +96,8 @@ export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
       ']')),
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ])),
-  ([params, content = []], context) =>
-    [[parse(defrag(content), params, context)]])));
+  ([{ value: params }, { value: content } = new Data(new List<Data<string>>())], context) =>
+    [new List([new Data(parse(content, params, context))])])));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/ /y, str(/\S+/y)),
@@ -105,19 +105,18 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
-  fmap(str(/ nofollow(?=[ }])/y), () => [` rel="nofollow"`]),
+  fmap(str(/ nofollow(?=[ }])/y), () => new List([new Data(' rel="nofollow"')])),
   str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi),
   str(/ [^\s{}]+/y),
 ]);
 
 function parse(
-  content: readonly (string | HTMLElement)[],
-  params: string[],
+  content: List<Data<string | HTMLElement>>,
+  params: List<Data<string>>,
   context: MarkdownParser.Context,
 ): HTMLAnchorElement {
   assert(params.length > 0);
-  assert(params.every(p => typeof p === 'string'));
-  const INSECURE_URI = params.shift()!;
+  const INSECURE_URI = params.shift()!.value;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
   let uri: ReadonlyURL | undefined;
@@ -135,12 +134,12 @@ function parse(
     context.host?.origin || location.origin);
   return el.classList.contains('invalid')
     ? el
-    : define(el, attributes('link', optspec, params)[0]);
+    : define(el, attributes('link', optspec, unwrap(params))[0]);
 }
 
 function elem(
   INSECURE_URI: string,
-  content: readonly (string | HTMLElement)[],
+  content: List<Data<string | HTMLElement>>,
   uri: ReadonlyURL | undefined,
   origin: string,
 ): HTMLAnchorElement {
@@ -155,7 +154,7 @@ function elem(
     case 'https:':
       assert(uri.host);
       switch (true) {
-        case /[0-9a-z]:\S/i.test(stringify(content)):
+        case /[0-9a-z]:\S/i.test(stringify(unwrap(content))):
           type = 'content';
           message = 'URI must not be contained';
           break;
@@ -171,20 +170,19 @@ function elem(
               href: uri.source,
               target: undefined
                 || uri.origin !== origin
-                || typeof content[0] === 'object' && content[0].classList.contains('media')
+                || typeof content.head?.value === 'object' && content.head!.value.classList.contains('media')
                   ? '_blank'
                   : undefined,
             },
             content.length === 0
               ? decode(INSECURE_URI)
-              : content);
+              : defrag(unwrap(content)));
       }
       break;
     case 'tel:':
-      assert(content.length <= 1);
       const tel = content.length === 0
         ? INSECURE_URI
-        : content[0];
+        : stringify(unwrap(content));
       const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
       switch (true) {
         case content.length <= 1
@@ -198,8 +196,8 @@ function elem(
               href: uri.source,
             },
             content.length === 0
-              ? [INSECURE_URI]
-              : content);
+              ? INSECURE_URI
+              : defrag(unwrap(content)));
         default:
           type = 'content';
           message = 'Invalid content';
@@ -216,7 +214,7 @@ function elem(
     },
     content.length === 0
       ? INSECURE_URI
-      : content);
+      : defrag(unwrap(content)));
 }
 
 export function resolve(uri: string, host: URL | Location, source: URL | Location): string {

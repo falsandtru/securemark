@@ -1,20 +1,21 @@
 import { SidefenceParser } from '../block';
 import { Recursion } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
-import { invalid } from '../util';
+import { unwrap, invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
   /(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y,
   union([source])),
-  ([el]) => [
-    define(el, {
+  ([{ value }]) => new List([
+    new Data(define(value, {
       class: 'invalid',
       ...invalid('sidefence', 'syntax', 'Reserved syntax'),
-    }),
-  ])));
+    })),
+  ]))));
 
 const opener = /(?=\|\|+(?:$|\s))/y;
 const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
@@ -26,6 +27,6 @@ const source: SidefenceParser.SourceParser = lazy(() => fmap(
       convert(unindent, source, false, true)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => [html('pre', defrag(ns))]), false, true)),
+      convert(unindent, fmap(autolink, ns => new List([new Data(html('pre', defrag(unwrap(ns))))])), false, true)),
   ]))),
-  ns => [html('blockquote', ns)]));
+  ns => new List([new Data(html('blockquote', unwrap(ns)))])));

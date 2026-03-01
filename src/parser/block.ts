@@ -1,5 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Recursion, Command } from './context';
+import { List, Data } from '../combinator/data/parser';
 import { union, reset, open, fallback, recover } from '../combinator';
 import { MAX_SEGMENT_SIZE } from './segment';
 import { emptyline } from './source';
@@ -113,16 +114,16 @@ function error(parser: BlockParser): BlockParser {
   return recover<BlockParser>(fallback(
     open(Command.Error, ({ context: { source, position } }) => { throw new Error(source.slice(position).split('\n', 1)[0]); }),
     parser),
-    ({ context: { source, position, id } }, reason) => [[
-      html('h1',
+    ({ context: { source, position, id } }, reason) => [new List([
+      new Data(html('h1',
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
           class: 'error',
         },
         reason instanceof Error
           ? `${reason.name}: ${reason.message}`
-          : `UnknownError: ${reason}`),
-      html('pre',
+          : `UnknownError: ${reason}`)),
+      new Data(html('pre',
         {
           class: 'error',
           translate: 'no',
@@ -130,6 +131,6 @@ function error(parser: BlockParser): BlockParser {
         source.slice(position)
           .replace(reg, '')
           .slice(0, 1001)
-          .replace(/^(.{997}).{4}$/s, '$1...') || undefined),
-    ]]);
+          .replace(/^(.{997}).{4}$/s, '$1...') || undefined)),
+    ])]);
 }

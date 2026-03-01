@@ -1,5 +1,5 @@
 import { min } from 'spica/alias';
-import { Parser, Result, Ctx, CtxOptions, Node, Context } from '../../data/parser';
+import { Parser, Result, List, Data, Ctx, CtxOptions, Node, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
 export function reset<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
@@ -173,7 +173,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
         if (advance) {
           context.position += pattern.length;
         }
-        return [[pattern]];
+        return [new List([new Data(pattern)])];
       };
     case 'object':
       assert(pattern.sticky);
@@ -186,7 +186,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
         if (advance) {
           context.position += src.length;
         }
-        return [[src]];
+        return [new List([new Data(src)])];
       };
   }
 }

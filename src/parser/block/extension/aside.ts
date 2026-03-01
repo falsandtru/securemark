@@ -1,25 +1,29 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
-import { invalid } from '../../util';
+import { unwrap, invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
 export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(fmap(
   fence(/(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, overflow, closer, opener, delim, param]: string[], context) => {
-    if (!closer || overflow || param.trimStart()) return [html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid(
-        'aside',
-        !closer || overflow ? 'fence' : 'argument',
-        !closer ? `Missing the closing delimiter "${delim}"` :
-          overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-            'Invalid argument'),
-    }, `${opener}${body}${overflow || closer}`)];
+  (nodes: List<Data<string>>, context) => {
+    const [body, overflow, closer, opener, delim, param] = unwrap(nodes);
+    if (!closer || overflow || param.trimStart()) return new List([
+      new Data(html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        ...invalid(
+          'aside',
+          !closer || overflow ? 'fence' : 'argument',
+          !closer ? `Missing the closing delimiter "${delim}"` :
+            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+              'Invalid argument'),
+      }, `${opener}${body}${overflow || closer}`))
+    ]);
     const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
       id: '',
@@ -29,17 +33,19 @@ export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, blo
     }, context);
     assert(!document.querySelector('[id]'));
     const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName!) && document.firstElementChild as HTMLHeadingElement;
-    if (!heading) return [html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid('aside', 'content', 'Missing the title at the first line'),
-    }, `${opener}${body}${closer}`)];
+    if (!heading) return new List([
+      new Data(html('pre', {
+        class: 'invalid',
+        translate: 'no',
+        ...invalid('aside', 'content', 'Missing the title at the first line'),
+      }, `${opener}${body}${closer}`))
+    ]);
     assert(identity('index', context.id, heading));
-    return [
-      html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
+    return new List([
+      new Data(html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
         document,
         html('h2', 'References'),
         references,
-      ]),
-    ];
+      ]))
+    ]);
   })));

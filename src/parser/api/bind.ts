@@ -45,11 +45,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = normalize(source);
-    // Change the object identity.
-    context = {
-      ...context,
-      url: url ? new ReadonlyURL(url as ':') : undefined,
-    };
+    // @ts-expect-error
+    context.url = url ? new ReadonlyURL(url as ':') : undefined;
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {
@@ -78,7 +75,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(header(input(seg, { header: index === 0 } as MarkdownParser.Context)) || block(input(seg, context)), []);
+      const es = eval(header(input(seg, { header: index === 0 } as MarkdownParser.Options)) || block(input(seg, context)))
+        ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.

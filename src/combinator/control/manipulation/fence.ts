@@ -1,4 +1,4 @@
-import { Parser, Ctx, failsafe } from '../../data/parser';
+import { Parser, List, Data, Ctx, failsafe } from '../../data/parser';
 import { firstline, isBlank } from '../constraint/line';
 import { push } from 'spica/array';
 
@@ -47,6 +47,6 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
       }
       context.position += line.length;
     }
-    return [push([block, overflow, closer], matches)];
+    return [new List(push([block, overflow, closer], matches).map(str => new Data(str)))];
   });
 }

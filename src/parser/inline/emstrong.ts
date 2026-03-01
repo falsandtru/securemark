@@ -1,14 +1,13 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { Result, Node, Context, IntermediateParser } from '../../combinator/data/parser';
+import { Result, List, Data, Node, Context, IntermediateParser, eval } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
 import { tightStart, blankWith } from '../visibility';
-import { repeat } from '../util';
-import { unshift, push } from 'spica/array';
+import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
@@ -36,8 +35,8 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
     str(/\*{1,3}/y), false,
     ([, bs, cs], context): Result<Node<EmStrongParser>, Context<EmStrongParser>> => {
       assert(cs.length === 1);
-      const { buffer } = context;
-      switch (cs[0]) {
+      const { buffer = new List() } = context;
+      switch (cs.head!.value) {
         case '***':
           return [bs];
         case '**':
@@ -47,13 +46,18 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
               const { source } = context;
               if (source.startsWith('*', context.position)) {
                 context.position += 1;
-                return [[html('em', push(push(buffer!, [html('strong', defrag(bs))]), defrag(ds))), Command.Separator]];
+                buffer.push(new Data(html('strong', defrag(unwrap(bs)))));
+                buffer.import(ds);
+                return [new List([new Data(html('em', defrag(unwrap(buffer)))), new Data(Command.Separator)])];
               }
               else {
-                return [prepend('*', push(push(push(buffer!, [html('strong', defrag(bs))]), defrag(ds)), [Command.Separator]))];
+                buffer.push(new Data(html('strong', defrag(unwrap(bs)))));
+                buffer.import(ds);
+                buffer.push(new Data(Command.Separator));
+                return [prepend('*', buffer)];
               }
             })
-            ({ context }) ?? [prepend('*', push(push(buffer!, [html('strong', defrag(bs))]), [Command.Separator]))];
+            ({ context }) ?? [prepend('*', buffer.import(new List([new Data(html('strong', defrag(unwrap(bs)))), new Data(Command.Separator)])))];
         case '*':
           return bind<StrongParser>(
             substrong,
@@ -61,19 +65,24 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
               const { source } = context;
               if (source.startsWith('**', context.position)) {
                 context.position += 2;
-                return [[html('strong', push(push(buffer!, [html('em', defrag(bs))]), defrag(ds))), Command.Separator]];
+                buffer.push(new Data(html('em', defrag(unwrap(bs)))));
+                buffer.import(ds);
+                return [new List([new Data(html('strong', defrag(unwrap(buffer)))), new Data(Command.Separator)])];
               }
               else {
-                return [prepend('**', push(push(push(buffer!, [html('em', defrag(bs))]), defrag(ds)), [Command.Separator]))];
+                buffer.push(new Data(html('em', defrag(unwrap(bs)))));
+                buffer.import(ds);
+                buffer.push(new Data(Command.Separator));
+                return [prepend('**', buffer)];
               }
             })
-            ({ context }) ?? [prepend('**', push(push(buffer!, [html('em', defrag(bs))]), [Command.Separator]))];
+            ({ context }) ?? [prepend('**', buffer.import(new List([new Data(html('em', defrag(unwrap(bs)))), new Data(Command.Separator)])))];
       }
       assert(false);
     },
-    ([, bs], { buffer }) => bs && [push(push(buffer!, bs), [Command.Cancel])]),
+    ([, bs], { buffer }) => bs && [buffer!.import(bs) && buffer!.push(new Data(Command.Cancel)) && buffer!]),
     // 3以上の`*`に対してemの適用を保証する
-    nodes => [html('em', [html('strong', defrag(nodes))])],
+    nodes => new List([new Data(html('em', [html('strong', defrag(unwrap(nodes)))]))]),
     (nodes, context, prefix, postfix, state) => {
       context.position += postfix;
       assert(postfix < 3);
@@ -82,10 +91,10 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
           case 0:
             break;
           case 1:
-            nodes = [html('em', defrag(nodes))];
+            nodes = new List([new Data(html('em', defrag(unwrap(nodes))))]);
             break;
           case 2:
-            nodes = [html('strong', defrag(nodes))];
+            nodes = new List([new Data(html('strong', defrag(unwrap(nodes))))]);
             break;
           default:
             assert(false);
@@ -96,51 +105,51 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
           case 0:
             break;
           case 1:
-            nodes = bind<EmphasisParser>(
+            nodes = eval(bind<EmphasisParser>(
               subemphasis,
               ds => {
                 const { source } = context;
                 if (source.startsWith('*', context.position)) {
                   context.position += 1;
-                  return [[html('em', push(nodes, defrag(ds)))]];
+                  return [new List([new Data(html('em', defrag(unwrap(nodes.import(ds)))))])];
                 }
                 else {
-                  return [prepend('*', push(nodes, defrag(ds)))];
+                  return [prepend('*', nodes.import(ds))];
                 }
               })
-              ({ context })?.[0] ?? prepend('*', nodes);
+              ({ context })) ?? prepend('*', nodes);
             prefix -= 1;
             break;
           case 2:
-            nodes = bind<StrongParser>(
+            nodes = eval(bind<StrongParser>(
               substrong,
               ds => {
                 const { source } = context;
                 if (source.startsWith('**', context.position)) {
                   context.position += 2;
-                  return [[html('strong', push(nodes, defrag(ds)))]];
+                  return [new List([new Data(html('strong', defrag(unwrap(nodes.import(ds)))))])];
                 }
                 else {
-                  return [prepend('**', push(nodes, defrag(ds)))];
+                  return [prepend('**', nodes.import(ds))];
                 }
               })
-              ({ context })?.[0] ?? prepend('**', nodes);
+              ({ context })) ?? prepend('**', nodes);
             prefix -= 2;
             break;
         }
       }
       if (prefix > postfix) {
-        nodes = push(['*'.repeat(prefix - postfix)], nodes);
+        nodes = prepend('*'.repeat(prefix - postfix), nodes);
       }
       return [nodes];
     }))));
 
-function prepend<N>(prefix: string, nodes: N[]): N[] {
-  if (typeof nodes[0] === 'string') {
-    nodes[0] = prefix + nodes[0] as N;
+function prepend<N>(prefix: string, nodes: List<Data<N>>): List<Data<N>> {
+  if (typeof nodes.head?.value === 'string') {
+    nodes.head.value = prefix + nodes.head.value as N;
   }
   else {
-    unshift([prefix], nodes);
+    nodes.unshift(new Data(prefix as N));
   }
   return nodes;
 }

@@ -1,11 +1,12 @@
 import { ReplyParser } from '../block';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, block, validate, rewrite, fmap } from '../../combinator';
 import { cite, syntax as csyntax } from './reply/cite';
 import { quote, syntax as qsyntax } from './reply/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { visualize, trimBlankNodeEnd } from '../visibility';
-import { push } from 'spica/array';
+import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const delimiter = new RegExp(`${csyntax.source}|${qsyntax.source}`, 'y');
@@ -17,6 +18,8 @@ export const reply: ReplyParser = block(validate(csyntax, fmap(
     rewrite(
       some(anyline, delimiter),
       visualize(fmap(some(inline), (ns, { source, position }) =>
-        source[position - 1] === '\n' ? ns : push(ns, [html('br')])))),
+        source[position - 1] === '\n'
+          ? ns
+          : ns.push(new Data(html('br'))) && ns)))
   ])),
-  ns => [html('p', trimBlankNodeEnd(defrag(ns)))])));
+  ns => new List([new Data(html('p', defrag(unwrap(trimBlankNodeEnd(ns)))))]))));

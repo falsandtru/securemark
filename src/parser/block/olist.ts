@@ -1,10 +1,11 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, fillFirstLine } from './ulist';
 import { ilist_, ilistitem } from './ilist';
 import { inline, indexee, indexer, dataindex } from '../inline';
-import { invalid } from '../util';
+import { invalid, unwrap } from '../util';
 import { visualize, trimBlank } from '../visibility';
 import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -40,17 +41,26 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
-      ns => [html('li', { 'data-index': dataindex(ns), 'data-marker': ns.shift() as string || undefined }, defrag(fillFirstLine(ns)))])),
+      ns => new List([
+        new Data(html('li', {
+          'data-index': dataindex(ns),
+          'data-marker': ns.shift()?.value as string || undefined,
+        }, defrag(unwrap(fillFirstLine(ns)))))
+      ]))),
   ]))),
-  es => [format(html('ol', es), type, form)]);
+  ns => new List([new Data(format(html('ol', unwrap(ns)), type, form))]));
 
 const heads = {
   '.': focus(
     openers['.'],
-    ({ context: { source } }) => [[source.trimEnd().split('.', 1)[0] + '.']]),
+    ({ context: { source } }) => [new List([
+      new Data(source.trimEnd().split('.', 1)[0] + '.')
+    ])]),
   '(': focus(
     openers['('],
-    ({ context: { source } }) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')]]),
+    ({ context: { source } }) => [new List([
+      new Data(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))
+    ])]),
 } as const;
 
 function idx(value: string): number {

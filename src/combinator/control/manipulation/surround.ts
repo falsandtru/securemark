@@ -1,40 +1,39 @@
-import { Parser, Result, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
+import { Parser, Result, List, Data, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
 import { matcher, clear } from '../../../combinator';
-import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  f?: (rss: [S[], SubNode<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [List<Data<S>>, List<Data<SubNode<P>>>, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  f?: (rss: [S[], SubNode<P>[] | undefined, S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], SubNode<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  f?: (rss: [S[], Node<P>[], S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [List<Data<S>>, List<Data<Node<P>>>, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  f?: (rss: [S[], Node<P>[] | undefined, S[]], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
-  g?: (rss: [S[], Node<P>[] | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  f?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
+  g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   backtracks?: readonly number[],
 ): P;
 export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
-  f?: (rss: [N[], N[], N[]], context: Ctx) => Result<N>,
-  g?: (rss: [N[], N[] | undefined], context: Ctx) => Result<N>,
+  f?: (rss: [List<Data<N>>, List<Data<N>>, List<Data<N>>], context: Ctx) => Result<N>,
+  g?: (rss: [List<Data<N>>, List<Data<N>> | undefined], context: Ctx) => Result<N>,
   backtracks: readonly number[] = [],
 ): Parser<N> {
   switch (typeof opener) {
@@ -88,7 +87,7 @@ export function surround<N>(
     context.range = context.position - position;
     const result = f
       ? f([nodesO, nodesM!, nodesC], context)
-      : [push(nodesM ? unshift(nodesO, nodesM) : nodesO, nodesC)] satisfies [N[]];
+      : [nodesO.import(nodesM ?? new List()).import(nodesC)] as const;
     if (result) {
       context.linebreak ||= linebreak;
     }

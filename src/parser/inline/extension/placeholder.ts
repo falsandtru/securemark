@@ -1,11 +1,11 @@
 import { ExtensionParser } from '../../inline';
 import { Recursion, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
 import { tightStart } from '../../visibility';
 import { invalid } from '../../util';
-import { unshift } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
 // Don't use the symbols already used: !#$%@&*+~=|
@@ -18,13 +18,13 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'), false,
-  (_, context) => [[
-    html('span',
+  (_, context) => [new List([
+    new Data(html('span',
       {
         class: 'invalid',
         ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
       },
-      context.source.slice(context.position - context.range!, context.position))
-  ]],
-  ([as, bs]) => bs && [unshift(as, bs)],
+      context.source.slice(context.position - context.range!, context.position)))
+  ])],
+  ([as, bs]) => bs && [as.import(bs as List<Data<string>>)],
   [3 | Backtrack.bracket]));

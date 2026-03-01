@@ -1,10 +1,9 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Input, eval, failsafe } from '../combinator/data/parser';
+import { Parser, Input, List, Data, eval, failsafe } from '../combinator/data/parser';
 import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
-import { push } from 'spica/array';
 
 export namespace blank {
   export const line = new RegExp(
@@ -94,7 +93,7 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
       switch (true) {
         case source.length - position > 2
           && source[position + 1] !== ' '
-          && eval(unsafehtmlentity(input))?.[0]?.trimStart() === '':
+          && eval(unsafehtmlentity(input))?.head?.value.trimStart() === '':
           context.position = position;
           return false;
       }
@@ -114,18 +113,17 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
   }
 }
 
-export function isLooseNodeStart(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isLooseNodeStart(nodes: List<Data<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
-  for (let i = 0; i < nodes.length; ++i) {
-    const node = nodes[i];
+  for (const { value: node } of nodes) {
     if (isVisible(node)) return true;
     if (typeof node === 'object' && node.tagName === 'BR') break;
   }
   return false;
 }
-export function isTightNodeStart(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isTightNodeStart(nodes: List<Data<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
-  return isVisible(nodes[0], 0);
+  return isVisible(nodes.head!.value, 0);
 }
 //export function isTightNodeEnd(nodes: readonly (HTMLElement | string)[]): boolean {
 //  if (nodes.length === 0) return true;
@@ -173,12 +171,12 @@ export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
     reg.test(source);
     context.position = reg.lastIndex || position;
     return context.position === source.length
-      ? [[]]
+      ? [new List()]
       : parser(input);
   });
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function trimBlankEnd<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
+export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<string | N> {
   return fmap(parser, trimBlankNodeEnd);
 }
 //export function trimBlankNode<N extends HTMLElement | string>(nodes: N[]): N[] {
@@ -200,21 +198,22 @@ export function trimBlankEnd<N extends HTMLElement | string>(parser: Parser<N>):
 //  }
 //  return nodes;
 //}
-export function trimBlankNodeEnd<N extends HTMLElement | string>(nodes: N[]): N[] {
+export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Data<string | N>>): List<Data<string | N>> {
   const skip = nodes.length > 0 &&
-    typeof nodes.at(-1) === 'object' &&
-    nodes.at(-1)!['className'] === 'indexer'
-    ? [nodes.pop()!]
-    : [];
-  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes.at(-1)!, -1);) {
-    if (typeof node === 'string') {
-      const str = node.trimEnd();
+    typeof nodes.last?.value === 'object' &&
+    nodes.last.value.className === 'indexer'
+    ? nodes.pop()
+    : undefined;
+  for (let node = nodes.last; nodes.length > 0 && !isVisible((node = nodes.last!).value, -1);) {
+    if (typeof node.value === 'string') {
+      const str = node.value.trimEnd();
       if (str.length > 0) {
-        nodes[nodes.length - 1] = str as N;
+        node.value = str;
         break;
       }
     }
     nodes.pop();
   }
-  return push(nodes, skip);
+  skip && nodes.push(skip);
+  return nodes;
 }

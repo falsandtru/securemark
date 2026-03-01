@@ -1,9 +1,10 @@
 import { TableParser } from '../block';
+import { List, Data } from '../../combinator/data/parser';
 import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
 import { trimBlank } from '../visibility';
-import { invalid } from '../util';
+import { unwrap, invalid } from '../util';
 import { duffReduce } from 'spica/duff';
 import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom/dom';
@@ -19,32 +20,32 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     row(some(align), false),
     some(row(some(data), true)),
   ])),
-  rows => [
-    html('table', [
-      html('thead', [rows.shift()!]),
-      html('tbody', format(rows)),
-    ]),
-  ])));
+  rows => new List([
+    new Data(html('table', [
+      html('thead', [rows.shift()!.value]),
+      html('tbody', unwrap(format(rows))),
+    ])),
+  ]))));
 
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
   line(surround(/(?=\|)/y, some(union([parser])), /[|\\]?\s*$/y, optional)),
-  es => [html('tr', es)]),
-  rewrite(contentline, ({ context: { source } }) => [[
-    html('tr', {
+  ns => new List([new Data(html('tr', unwrap(ns)))])),
+  rewrite(contentline, ({ context: { source } }) => [new List([
+    new Data(html('tr', {
       class: 'invalid',
       ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
-    }, [html('td', source.replace('\n', ''))])
-  ]]));
+    }, [html('td', source.replace('\n', ''))]))
+  ])]));
 
 const align: AlignParser = fmap(open(
   '|',
   union([
     focus(/:-+:?/y, ({ context: { source } }) =>
-      [[source.at(-1) === ':' ? 'center' : 'start']]),
+      [new List([new Data(source.at(-1) === ':' ? 'center' : 'start')])]),
     focus(/-+:?/y, ({ context: { source } }) =>
-      [[source.at(-1) === ':' ? 'end' : '']]),
+      [new List([new Data(source.at(-1) === ':' ? 'end' : '')])]),
   ])),
-  ns => [html('td', defrag(ns))]);
+  ns => new List([new Data(html('td', defrag(unwrap(ns))))]));
 
 const cell: CellParser = surround(
   /\|\s*(?=\S)/y,
@@ -58,18 +59,18 @@ const cell: CellParser = surround(
 
 const head: CellParser.HeadParser = fmap(
   cell,
-  ns => [html('th', defrag(ns))]);
+  ns => new List([new Data(html('th', defrag(unwrap(ns))))]));
 
 const data: CellParser.DataParser = fmap(
   cell,
-  ns => [html('td', defrag(ns))]);
+  ns => new List([new Data(html('td', defrag(unwrap(ns))))]));
 
-function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
-  const aligns = rows[0].className === 'invalid'
+function format(rows: List<Data<HTMLTableRowElement>>): List<Data<HTMLTableRowElement>> {
+  const aligns = rows.head!.value.className === 'invalid'
     ? []
-    : duffReduce(rows.shift()!.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);
-  for (let i = 0; i < rows.length; ++i) {
-    for (let cols = rows[i].children, len = cols.length, j = 0; j < len; ++j) {
+    : duffReduce(rows.shift()!.value.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);
+  for (const { value: row } of rows) {
+    for (let cols = row.children, len = cols.length, j = 0; j < len; ++j) {
       if (j > 0 && !aligns[j]) {
         aligns[j] = aligns[j - 1];
       }

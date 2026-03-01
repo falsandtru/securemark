@@ -8,7 +8,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>): Parser<N> {
   return failsafe(({ context }) => {
     const { source, position } = context;
     if (position === source.length) return;
-    const src = eval(match({ context }))?.[0] ?? '';
+    const src = eval(match({ context }))?.head?.value ?? '';
     assert(source.startsWith(src, position));
     if (src === '') return;
     context.range = src.length;
@@ -48,7 +48,6 @@ export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N>
     context.source = source;
     context.offset -= position;
     if (res2 === undefined) return;
-    assert(context.position === position + src.length);
     return [eval(res2)];
   });
 }

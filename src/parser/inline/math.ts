@@ -1,5 +1,6 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { invalid } from '../util';
@@ -23,8 +24,8 @@ export const math: MathParser = lazy(() => rewrite(
       /\$(?![-0-9A-Za-z])/y,
       false, undefined, undefined, [3 | Backtrack.bracket]),
   ]),
-  ({ context: { source, caches: { math: cache } = {} } }) => [[
-    cache?.get(source)?.cloneNode(true) ||
+  ({ context: { source, caches: { math: cache } = {} } }) => [new List([
+    new Data(cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)
         ? { class: 'math', translate: 'no', 'data-src': source }
@@ -34,8 +35,8 @@ export const math: MathParser = lazy(() => rewrite(
             ...invalid('math', 'content',
               `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
-      source)
-  ]]));
+      source))
+  ])]));
 
 const bracket: MathParser.BracketParser = lazy(() => surround(
   str('{'),

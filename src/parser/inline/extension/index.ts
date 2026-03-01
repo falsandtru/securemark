@@ -1,12 +1,13 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
+import { List, Data } from '../../../combinator/data/parser';
 import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
 import { txt, str } from '../../source';
 import { tightStart, trimBlankNodeEnd } from '../../visibility';
-import { unshift } from 'spica/array';
+import { unwrap } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
@@ -23,23 +24,23 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   false,
   ([, bs], context) =>
     context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0
-      ? [[html('a', { 'data-index': dataindex(bs) }, defrag(bs))]]
+      ? [new List([new Data(html('a', { 'data-index': dataindex(bs) }, defrag(unwrap(bs))))])]
       : undefined,
   undefined,
   [3 | Backtrack.bracket])),
   ns => {
     if (ns.length === 1) {
-      const el = ns[0] as HTMLElement;
-      return [
-        define(el, {
+      const el = ns.head!.value as HTMLElement;
+      return new List([
+        new Data(define(el, {
           id: el.id ? null : undefined,
           class: 'index',
           href: el.id ? `#${el.id}` : undefined,
-        })
-      ];
+        }))
+      ]);
     }
     else {
-      assert(ns.at(-1) === '');
+      assert(ns.last?.value === '');
       ns.pop();
       return ns;
     }
@@ -54,21 +55,23 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   /(?=])/y,
   false,
   ([, ns], context) => {
-    const index = identity('index', undefined, ns.join(''))?.slice(7);
+    const index = identity('index', undefined, ns.foldl((acc, { value }) => acc + value, ''))?.slice(7);
     return index && context.linebreak === 0
-      ? [[html('span', { class: 'indexer', 'data-index': index })]]
+      ? [new List([new Data(html('span', { class: 'indexer', 'data-index': index }))])]
       : undefined;
   },
-  ([as, bs]) => bs && [unshift(as, bs)],
+  ([as, bs]) => bs && [as.import(bs)],
   [3 | Backtrack.bracket])));
 
-export function dataindex(ns: readonly (string | HTMLElement)[]): string | undefined {
-  if (ns.length === 0) return;
-  for (let i = ns.length; i--;) {
-    const node = ns[i];
-    if (typeof node === 'string') return;
-    if (i === ns.length - 1 && ['UL', 'OL'].includes(node.tagName)) continue;
-    if (!node.classList.contains('indexer')) return;
-    return node.getAttribute('data-index') ?? undefined;
+export function dataindex(nodes: List<Data<string | HTMLElement>>): string | undefined {
+  let node = nodes.last;
+  if (typeof node?.value !== 'object') return;
+  switch (node.value.tagName) {
+    case 'UL':
+    case 'OL':
+      node = node.prev;
+      if (typeof node?.value !== 'object') return;
   }
+  if (!node.value.classList.contains('indexer')) return;
+  return node.value.getAttribute('data-index') ?? undefined;
 }

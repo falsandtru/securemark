@@ -1,10 +1,10 @@
 import { RemarkParser } from '../inline';
 import { Recursion } from '../context';
+import { List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, focus, surround, close, fallback, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
-import { invalid } from '../util';
-import { unshift, push } from 'spica/array';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const remark: RemarkParser = lazy(() => fallback(surround(
@@ -12,13 +12,13 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
   precedence(3, recursion(Recursion.inline,
   some(union([inline]), /\s%\]/y, [[/\s%\]/y, 3]]))),
   close(text, str(`%]`)), true,
-  ([as, bs = [], cs]) => [[
-    html('span', { class: 'remark' }, [
+  ([as, bs = new List(), cs]) => [new List([
+    new Data(html('span', { class: 'remark' }, [
       html('input', { type: 'checkbox' }),
-      html('span', defrag(push(unshift(as, bs), cs))),
-    ]),
-  ]],
-  ([as, bs]) => bs && [unshift(as, bs)]),
-  focus(/\[%+(?=\s)/y, ({ context: { source } }) => [[
-    html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source)
-  ]])));
+      html('span', defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))),
+    ])),
+  ])],
+  ([as, bs]) => bs && [as.import(bs as List<Data<string>>)]),
+  focus(/\[%+(?=\s)/y, ({ context: { source } }) => [new List([
+    new Data(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
+  ])])));

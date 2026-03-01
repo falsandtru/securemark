@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { input } from '../../../combinator/data/parser';
+import { List, Data, subinput } from '../../../combinator/data/parser';
 import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
@@ -14,7 +14,7 @@ import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, lineshortmedia } from '../../inline';
 import { visualize, trimBlank } from '../../visibility';
-import { invalid } from '../../util';
+import { unwrap, invalid } from '../../util';
 import { memoize } from 'spica/memoize';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -68,20 +68,24 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       block(visualize(trimBlank(some(inline)))),
     ]),
   ]), false),
-  ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [
-    html('figure',
-      attributes(label.getAttribute('data-label')!, param, content, caption),
-      [
-        html('figcaption', [
-          html('span', { class: 'figindex' }),
-          html('span', { class: 'figtext' }, defrag(caption)),
-        ]),
-        html('div', [content]),
-      ])
-  ])),
+  nodes => {
+    const [label, param, content, ...caption] = unwrap(nodes) as [HTMLAnchorElement, string, ...HTMLElement[]];
+    return new List([
+      new Data(html('figure',
+        attributes(label.getAttribute('data-label')!, param, content, caption),
+        [
+          html('figcaption', [
+            html('span', { class: 'figindex' }),
+            html('span', { class: 'figtext' }, defrag(caption)),
+          ]),
+          html('div', [content]),
+        ]))
+    ]);
+  })),
   fmap(
     fence(/(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/y, 300),
-    ([body, overflow, closer, opener, delim]: string[], context) => {
+    (nodes, context) => {
+      const [body, overflow, closer, opener, delim] = unwrap<string>(nodes);
       const violation =
         !closer && [
           'fence',
@@ -91,7 +95,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'fence',
           `Invalid trailing line after the closing delimiter "${delim}"`,
         ] ||
-        !seg_label(input(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', { ...context })) && [
+        !seg_label(subinput(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context)) && [
           'label',
           'Invalid label',
         ] ||
@@ -103,13 +107,13 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'content',
           'Invalid content',
         ];
-      return [
-        html('pre', {
+      return new List([
+        new Data(html('pre', {
           class: 'invalid',
           translate: 'no',
           ...invalid('figure', violation[0], violation[1]),
-        }, `${opener}${body}${overflow || closer}`),
-      ];
+        }, `${opener}${body}${overflow || closer}`)),
+      ]);
     })));
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {

@@ -14,7 +14,7 @@ export function headers(source: string): string[] {
 function parse(source: string): [HTMLElement, number] | [] {
   const i = input(source, {});
   const result = h(i);
-  const [el] = eval(result, []);
+  const el = eval(result)?.head?.value;
   return el?.tagName === 'ASIDE'
     ? [el, i.context.position]
     : [];
