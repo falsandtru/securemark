@@ -61,6 +61,10 @@ export const block: BlockParser = reset(
       if (position === source.length) return;
       const fst = source[position];
       switch (fst) {
+        case '\n':
+          assert(source.trim() === '');
+          input.context.position = source.length;
+          return new List();
         case '=':
           if (source.startsWith('===', position)) return pagebreak(input);
           break;

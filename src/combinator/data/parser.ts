@@ -81,13 +81,7 @@ export function failsafe<P extends Parser<unknown>>(parser: P): P;
 export function failsafe<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
   return input => {
-    const { context } = input;
-    const { source, position } = context;
-    const result = parser(input);
-    if (result === undefined) {
-      context.source = source;
-      context.position = position;
-    }
-    return result;
+    const position = input.context.position;
+    return parser(input) ?? (input.context.position = position, undefined);
   };
 }
