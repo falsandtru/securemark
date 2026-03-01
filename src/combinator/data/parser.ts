@@ -67,16 +67,6 @@ export function subinput<C extends Ctx>(source: string, context: C): Input<C> {
   };
 }
 
-export function clean<C extends Ctx>(context: C): C {
-  const { source, position } = context;
-  for (const p of Object.keys(context)) {
-    context[p] = undefined;
-  }
-  context.source = source;
-  context.position = position;
-  return context;
-}
-
 export function failsafe<P extends Parser<unknown>>(parser: P): P;
 export function failsafe<N>(parser: Parser<N>): Parser<N> {
   assert(parser);

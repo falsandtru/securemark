@@ -1,6 +1,5 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { clean } from '../combinator/data/parser';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
@@ -43,14 +42,9 @@ const parser: SegmentParser = union([
 export function* segment(source: string): Generator<string, undefined, undefined> {
   if (!validate(source, MAX_INPUT_SIZE)) return yield `${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
-  const context = {
-    source,
-    position: 0,
-  };
-  const input = { context };
-  for (; context.position < source.length;) {
-    const { position } = context;
-    const result = parser(input)!;
+  for (let position = 0; position < source.length;) {
+    const context = { source, position };
+    const result = parser({ context })!;
     assert(result);
     assert(context.position > position);
     const segs = result.length > 0
@@ -63,7 +57,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
         ? yield seg
         : yield `${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`
     }
-    clean(context);
+    position = context.position;
   }
 }
 
