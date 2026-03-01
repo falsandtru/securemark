@@ -9,47 +9,55 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
   }
   public length = 0;
   public head?: N = undefined;
+  public last?: N = undefined;
   public get tail(): N | undefined {
     return this.head?.next;
   }
-  public get last(): N | undefined {
-    return this.head?.prev;
-  }
   public insert(node: N, before?: N): N {
-    assert(!node.next);
+    assert(!node.next && !node.prev);
+    if (before === undefined) return this.push(node);
+    if (before === this.head) return this.unshift(node);
     if (++this.length === 1) {
-      return this.head = node.next = node.prev = node;
+      return this.head = this.last = node;
     }
     assert(node !== before);
-    const next = node.next = before ?? this.head!;
+    const next = node.next = before;
     const prev = node.prev = next.prev!;
     return next.prev = prev.next = node;
   }
   public delete(node: N): N {
-    assert(node.next);
+    assert(node.next || node.prev || this.head === this.last);
     assert(this.length > 0);
     if (--this.length === 0) {
-      this.head = undefined;
+      this.head = this.last = undefined;
     }
     else {
       const { next, prev } = node;
-      if (node === this.head) {
-        this.head = next;
-      }
-      // Error if not used.
-      prev!.next = next;
-      next!.prev = prev;
+      prev === undefined
+        ? this.head = next
+        : prev.next = next;
+      next === undefined
+        ? this.last = prev
+        : next.prev = prev;
     }
     node.next = node.prev = undefined;
     return node;
   }
   public unshift(node: N): N {
-    assert(!node.next);
-    return this.head = this.insert(node, this.head);
+    assert(!node.next && !node.prev);
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.next = this.head;
+    return this.head = this.head!.prev = node;
   }
   public push(node: N): N {
-    assert(!node.next);
-    return this.insert(node, this.head);
+    assert(!node.next && !node.prev);
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.prev = this.last;
+    return this.last = this.last!.next = node;
   }
   public shift(): N | undefined {
     if (this.length === 0) return;
@@ -57,22 +65,25 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
   }
   public pop(): N | undefined {
     if (this.length === 0) return;
-    return this.delete(this.head!.prev!);
+    return this.delete(this.last!);
   }
   public import(list: List<N>, before?: N): this {
     assert(list !== this);
     if (list.length === 0) return this;
     if (this.length === 0) {
       this.head = list.head;
-      this.length += list.length;
+      this.last = list.last;
+      this.length = list.length;
       list.clear();
       return this;
     }
     const head = list.head!;
     const last = list.last!;
-    const next = last.next = before ?? this.head!;
-    const prev = head.prev = next.prev!;
-    next.prev = last;
+    const next = last.next = before;
+    const prev = head.prev = before?.prev ?? this.last!;
+    next === undefined
+      ? this.last = last
+      : next.prev = last;
     prev.next = head;
     this.length += list.length;
     list.clear();
@@ -80,14 +91,13 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
   }
   public clear(): void {
     this.length = 0;
-    this.head = undefined;
+    this.head = this.last = undefined;
   }
   public *[Symbol.iterator](): Iterator<N, undefined, undefined> {
     for (let node = this.head; node && this.head;) {
       const next = node.next;
       yield node;
       node = next;
-      if (node === this.head) break;
     }
   }
   public flatMap<T extends List.Node>(f: (node: N) => List<T>): List<T> {
@@ -96,7 +106,6 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
       const next = node.next;
       acc.import(f(node));
       node = next;
-      if (node === this.head) break;
     }
     return acc;
   }
@@ -105,15 +114,13 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
       const next = node.next;
       acc = f(acc, node);
       node = next;
-      if (node === this.head) break;
     }
     return acc;
   }
   public foldr<T>(f: (node: N, acc: T) => T, acc: T): T {
-    for (let node = this.head?.prev; node && this.head;) {
+    for (let node = this.last; node && this.head;) {
       const prev = node.prev;
       acc = f(node, acc);
-      if (node === this.head) break;
       node = prev;
     }
     return acc;
@@ -123,7 +130,6 @@ export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOpt
       const next = node.next;
       if (f(node)) return node;
       node = next;
-      if (node === this.head) break;
     }
   }
 }
