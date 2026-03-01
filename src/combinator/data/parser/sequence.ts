@@ -13,13 +13,11 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
       if (context.delimiters?.match(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
-      nodes = nodes
-        ? nodes.import(eval(result))
-        : eval(result);
+      nodes = nodes?.import(eval(result)) ?? eval(result);
       if (resume?.(eval(result)) === false) return;
     }
     assert(context.position >= position);
-    return nodes && context.position > position
+    return context.position > position
       ? nodes
       : undefined;
   };

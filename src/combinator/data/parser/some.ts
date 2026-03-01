@@ -29,16 +29,14 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
       if (context.delimiters?.match(input)) break;
       const result = parser(input);
       if (result === undefined) break;
-      nodes = nodes
-        ? nodes.import(eval(result))
-        : eval(result);
+      nodes = nodes?.import(eval(result)) ?? eval(result);
       if (limit >= 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
       context.delimiters!.pop(delims.length);
     }
     assert(context.position >= position);
-    return nodes && context.position > position
+    return context.position > position
       ? nodes
       : undefined;
   };

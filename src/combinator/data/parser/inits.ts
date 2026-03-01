@@ -13,13 +13,11 @@ export function inits<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: Lis
       if (context.delimiters?.match(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
-      nodes = nodes
-        ? nodes.import(eval(result))
-        : eval(result);
+      nodes = nodes?.import(eval(result)) ?? eval(result);
       if (resume?.(eval(result)) === false) break;
     }
     assert(context.position >= position);
-    return nodes && context.position > position
+    return context.position > position
       ? nodes
       : undefined;
   };

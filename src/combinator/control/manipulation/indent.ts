@@ -29,11 +29,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
     ([indent]) => indent.length * 2 + +(indent[0] === ' '), {})), separation),
     (lines, context) => {
       assert(parser = parser as Parser<N>);
-      const result = parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
-      assert(result);
-      return result
-        ? eval(result)
-        : undefined;
+      return eval(parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context)));
     }));
 }
 

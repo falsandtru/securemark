@@ -7,7 +7,7 @@ export interface Input<C extends CtxOptions = CtxOptions> {
   readonly context: C & Ctx;
 }
 export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = readonly [never, C, D]
+  = readonly [never, C & Ctx, D]
   | List<Data<N>>
   | undefined;
 export { List };
@@ -84,9 +84,7 @@ function eval_<N>(result: Result<N>, default_: List<Data<N>>): List<Data<N>>;
 function eval_<N>(result: Result<N>, default_?: undefined): List<Data<N>> | undefined;
 function eval_<N>(result: Result<N>, default_?: List<Data<N>>): List<Data<N>> | undefined {
   assert(!Array.isArray(result));
-  return result
-    ? result as List<Data<N>>
-    : default_;
+  return result as List<Data<N>> ?? default_;
 }
 
 export function failsafe<P extends Parser<unknown>>(parser: P): P;
