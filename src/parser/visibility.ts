@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Input, List, Data, eval, failsafe } from '../combinator/data/parser';
+import { Parser, Input, List, Data, failsafe } from '../combinator/data/parser';
 import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
@@ -93,7 +93,7 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
       switch (true) {
         case source.length - position > 2
           && source[position + 1] !== ' '
-          && eval(unsafehtmlentity(input))?.head?.value.trimStart() === '':
+          && unsafehtmlentity(input)?.head?.value.trimStart() === '':
           context.position = position;
           return false;
       }

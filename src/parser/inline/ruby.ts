@@ -1,6 +1,6 @@
 import { RubyParser } from '../inline';
 import { Backtrack } from '../context';
-import { List, Data, eval } from '../../combinator/data/parser';
+import { List, Data } from '../../combinator/data/parser';
 import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { txt } from '../source';
@@ -76,7 +76,7 @@ const text: RubyParser.TextParser = input => {
       case '&': {
         const result = unsafehtmlentity(input) ?? txt(input)!;
         assert(result);
-        acc.last!.value += eval(result).head!.value;
+        acc.last!.value += result.head!.value;
         continue;
       }
       default: {
@@ -88,7 +88,7 @@ const text: RubyParser.TextParser = input => {
         }
         const result = txt(input)!;
         assert(result);
-        acc.last!.value += eval(result).head?.value ?? '';
+        acc.last!.value += result.head?.value ?? '';
         continue;
       }
     }

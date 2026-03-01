@@ -1,11 +1,11 @@
 import { min } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Result, List, Data, Ctx, Node, Context, eval, failsafe } from '../combinator/data/parser';
+import { Parser, Result, List, Data, Ctx, Node, Context, failsafe } from '../combinator/data/parser';
 import { define } from 'typed-dom/dom';
 
-export function* unwrap<N>(nodes: List<Data<N>>): Iterable<N> {
-  for (const node of nodes) {
+export function* unwrap<N>(nodes: List<Data<N>> | undefined): Iterable<N> {
+  for (const node of nodes ?? []) {
     yield node.value;
   }
 }
@@ -44,7 +44,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
       const result = parser(input);
       context.buffer = buf;
       if (result === undefined) break;
-      nodes = eval(result);
+      nodes = result;
       switch (nodes.last?.value) {
         case Command.Cancel:
           assert(!source.startsWith(symbol, context.position));

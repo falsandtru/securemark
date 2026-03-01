@@ -1,4 +1,4 @@
-import { input, eval } from '../../combinator/data/parser';
+import { input } from '../../combinator/data/parser';
 import { unsafehtmlentity } from '../inline/htmlentity';
 
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
@@ -60,7 +60,7 @@ export const invisibleHTMLEntityNames = [
 ] as const;
 const unreadableHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames.slice(2);
 const unreadableEscapableCharacters = unreadableHTMLEntityNames
-  .map(name => eval(unsafehtmlentity(input(`&${name};`, {})))!.head!.value);
+  .map(name => unsafehtmlentity(input(`&${name};`, {}))!.head!.value);
 assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
 assert(unreadableEscapableCharacters.every(c => c.length === 1));
 const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');

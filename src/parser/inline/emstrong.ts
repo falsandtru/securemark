@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { Result, List, Data, Node, Context, IntermediateParser, eval } from '../../combinator/data/parser';
+import { Result, List, Data, Node, Context, IntermediateParser } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
@@ -105,7 +105,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
           case 0:
             break;
           case 1:
-            nodes = eval(bind<EmphasisParser>(
+            nodes = bind<EmphasisParser>(
               subemphasis,
               ds => {
                 const { source } = context;
@@ -117,11 +117,11 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
                   return prepend('*', nodes.import(ds));
                 }
               })
-              ({ context })) ?? prepend('*', nodes);
+              ({ context }) ?? prepend('*', nodes);
             prefix -= 1;
             break;
           case 2:
-            nodes = eval(bind<StrongParser>(
+            nodes = bind<StrongParser>(
               substrong,
               ds => {
                 const { source } = context;
@@ -133,7 +133,7 @@ export const emstrong: EmStrongParser = lazy(() => validate('***',
                   return prepend('**', nodes.import(ds));
                 }
               })
-              ({ context })) ?? prepend('**', nodes);
+              ({ context }) ?? prepend('**', nodes);
             prefix -= 2;
             break;
         }

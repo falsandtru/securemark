@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
-import { input, eval } from '../../combinator/data/parser';
+import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -75,7 +75,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(header(input(seg, { header: index === 0 } as MarkdownParser.Options)) || block(input(seg, context)))
+      const es = (header(input(seg, { header: index === 0 } as MarkdownParser.Options)) || block(input(seg, context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;

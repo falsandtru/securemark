@@ -1,4 +1,4 @@
-import { Parser, List, Data, CtxOptions, Node, Context, SubParsers, SubNode, eval } from '../parser';
+import { Parser, List, Data, CtxOptions, Node, Context, SubParsers, SubNode } from '../parser';
 
 export function sequence<P extends Parser<unknown>>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
 export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: List<Data<N>>) => boolean): Parser<N, CtxOptions, D> {
@@ -13,8 +13,8 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
       if (context.delimiters?.match(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
-      nodes = nodes?.import(eval(result)) ?? eval(result);
-      if (resume?.(eval(result)) === false) return;
+      nodes = nodes?.import(result) ?? result;
+      if (resume?.(result) === false) return;
     }
     assert(context.position >= position);
     return context.position > position

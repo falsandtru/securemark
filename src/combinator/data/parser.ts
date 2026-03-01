@@ -7,8 +7,7 @@ export interface Input<C extends CtxOptions = CtxOptions> {
   readonly context: C & Ctx;
 }
 export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = readonly [never, C & Ctx, D]
-  | List<Data<N>>
+  = List<Data<N>, C, D>
   | undefined;
 export { List };
 export class Data<N> implements List.Node {
@@ -76,15 +75,6 @@ export function clean<C extends Ctx>(context: C): C {
   context.source = source;
   context.position = position;
   return context;
-}
-
-export { eval_ as eval };
-function eval_<N>(result: NonNullable<Result<N>>, default_?: List<Data<N>>): List<Data<N>>;
-function eval_<N>(result: Result<N>, default_: List<Data<N>>): List<Data<N>>;
-function eval_<N>(result: Result<N>, default_?: undefined): List<Data<N>> | undefined;
-function eval_<N>(result: Result<N>, default_?: List<Data<N>>): List<Data<N>> | undefined {
-  assert(!Array.isArray(result));
-  return result as List<Data<N>> ?? default_;
 }
 
 export function failsafe<P extends Parser<unknown>>(parser: P): P;

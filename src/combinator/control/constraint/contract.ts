@@ -1,4 +1,4 @@
-import { Parser, Input, List, Data, Ctx, Node, Context, eval, failsafe } from '../../data/parser';
+import { Parser, Input, List, Data, Ctx, Node, Context, failsafe } from '../../data/parser';
 import { matcher } from '../../../combinator';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
@@ -37,7 +37,7 @@ export function verify<N>(parser: Parser<N>, cond: (nodes: List<Data<N>>, contex
     if (position === source.length) return;
     const result = parser(input);
     assert(context.position > position || !result);
-    if (result && !cond(eval(result), context)) return;
+    if (result && !cond(result, context)) return;
     return result;
   });
 }

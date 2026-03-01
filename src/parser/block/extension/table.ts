@@ -1,6 +1,6 @@
 import { max, min } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { List, Data, subinput, eval } from '../../../combinator/data/parser';
+import { List, Data, subinput } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
@@ -42,7 +42,7 @@ export const table: TableParser = block(fmap(
     switch (type) {
       case 'grid':
       case undefined:
-        return (eval(parser(subinput(body, context))) ?? new List([new Data(html('table'))]))
+        return (parser(subinput(body, context)) ?? new List([new Data(html('table'))]))
           .foldl(
             (acc, { value }) => acc.push(new Data(define(value, { 'data-type': type }))) && acc,
             new List());

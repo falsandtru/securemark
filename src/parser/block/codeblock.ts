@@ -1,5 +1,5 @@
 import { CodeBlockParser } from '../block';
-import { List, Data, subinput, eval } from '../../combinator/data/parser';
+import { List, Data, subinput } from '../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { unwrap, invalid } from '../util';
@@ -73,6 +73,6 @@ export const codeblock: CodeBlockParser = block(fmap(
       params.lang
         ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
           body.slice(0, -1) || undefined
-        : defrag(unwrap(eval(autolink(subinput(body.slice(0, -1), context)), new List()))));
+        : defrag(unwrap(autolink(subinput(body.slice(0, -1), context)))));
     return new List([new Data(el)]);
   }));

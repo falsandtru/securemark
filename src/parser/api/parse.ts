@@ -1,6 +1,6 @@
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
-import { input, eval } from '../../combinator/data/parser';
+import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
@@ -35,7 +35,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   let index = 0;
   for (const seg of segment(source)) {
     node.append(
-      ...eval(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)))
+      ...(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));

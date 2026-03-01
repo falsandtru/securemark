@@ -1,6 +1,6 @@
-// Memory-efficient flexible list.
+import { CtxOptions, Parser } from './parser';
 
-export class List<N extends List.Node = List.Node> {
+export class List<N extends List.Node = List.Node, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any> {
   constructor(nodes?: ArrayLike<N>) {
     if (nodes === undefined) return;
     for (let i = 0; i < nodes.length; ++i) {

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { List, Data, subinput, eval } from '../../../combinator/data/parser';
+import { List, Data, subinput } from '../../../combinator/data/parser';
 import { union, block, fence, fmap } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
@@ -58,7 +58,7 @@ export const message: MessageParser = block(fmap(
         },
         [...segment(body)].reduce(
           (acc, seg) =>
-            push(acc, unwrap(eval(content(subinput(seg, context)))!)),
+            push(acc, unwrap(content(subinput(seg, context)))),
           [html('h1', title(type))])))
     ]);
   }));

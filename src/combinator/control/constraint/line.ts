@@ -1,4 +1,4 @@
-import { Parser, input, eval, failsafe } from '../../data/parser';
+import { Parser, input, failsafe } from '../../data/parser';
 
 export function line<P extends Parser<unknown>>(parser: P): P;
 export function line<N>(parser: Parser<N>): Parser<N> {
@@ -18,7 +18,7 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     if (result === undefined) return;
     if (!isBlank(source.slice(context.position, position + line.length))) return;
     context.position = position + line.length;
-    return eval(result);
+    return result;
   });
 }
 

@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
-import { List, Data, eval } from '../../combinator/data/parser';
+import { List, Data } from '../../combinator/data/parser';
 import { union, subsequence, some, precedence, state, constraint, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
@@ -78,7 +78,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
           })
           ({ context });
         if (state & State.annotation && next) {
-          return (as as List<Data<string | HTMLElement>>).import(bs).import(eval(result!)).import(eval(next));
+          return (as as List<Data<string | HTMLElement>>).import(bs).import(result).import(next);
         }
       }
       context.position = position;

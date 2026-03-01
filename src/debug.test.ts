@@ -1,10 +1,10 @@
-import { Result, Ctx, eval } from './combinator/data/parser';
+import { Result, Ctx } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
 export function inspect(result: Result<DocumentFragment | HTMLElement | string>, ctx: Ctx, until: number | string = Infinity): [string[], string] | undefined {
   return result && [
-    eval(result).foldl<string[]>((acc, { value: node }) => {
+    result.foldl<string[]>((acc, { value: node }) => {
       assert(node);
       if (typeof node === 'string') return acc.push(node), acc;
       if (node instanceof DocumentFragment) return acc.push(html('div', [node]).innerHTML), acc;

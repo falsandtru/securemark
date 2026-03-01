@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { clean, eval } from '../combinator/data/parser';
+import { clean } from '../combinator/data/parser';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
@@ -53,8 +53,8 @@ export function* segment(source: string): Generator<string, undefined, undefined
     const result = parser(input)!;
     assert(result);
     assert(context.position > position);
-    const segs = eval(result).length > 0
-      ? eval(result).foldl<string[]>((acc, { value }) => void acc.push(value) || acc, [])
+    const segs = result.length > 0
+      ? result.foldl<string[]>((acc, { value }) => void acc.push(value) || acc, [])
       : [source.slice(position, context.position)];
     assert(segs.join('') === source.slice(position, context.position));
     for (let i = 0; i < segs.length; ++i) {

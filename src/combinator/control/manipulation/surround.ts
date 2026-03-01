@@ -1,4 +1,4 @@
-import { Parser, Result, List, Data, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
+import { Parser, Result, List, Data, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, failsafe } from '../../data/parser';
 import { matcher, clear } from '../../../combinator';
 
 export function surround<P extends Parser<unknown>, S = string>(
@@ -52,29 +52,26 @@ export function surround<N>(
     if (position === source.length) return;
     const { linebreak } = context;
     context.linebreak = 0;
-    const resultO = opener(input);
+    const nodesO = opener(input);
     assert(context.position >= position);
-    const nodesO = eval(resultO);
     if (!nodesO) {
       return void revert(context, linebreak);
     }
     if (isBacktrack(context, backtracks, position, context.position - position || 1)) {
       return void revert(context, linebreak);
     }
-    const resultM = context.position < source.length ? parser(input) : undefined;
+    const nodesM = context.position < source.length ? parser(input) : undefined;
     assert(context.position >= position);
     context.range = context.position - position;
-    const nodesM = eval(resultM);
-    if (!resultM && !optional) {
+    if (!nodesM && !optional) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
       revert(context, linebreak);
       return result;
     }
-    const resultC = resultM || optional ? closer(input) : undefined;
+    const nodesC = nodesM || optional ? closer(input) : undefined;
     assert(context.position >= position);
     context.range = context.position - position;
-    const nodesC = eval(resultC);
     if (!nodesC) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);

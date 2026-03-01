@@ -1,4 +1,4 @@
-import { Parser, Result, List, Data, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, eval, failsafe } from '../../data/parser';
+import { Parser, Result, List, Data, Ctx, Node, Context, SubParsers, SubNode, IntermediateParser, failsafe } from '../../data/parser';
 
 export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: List<Data<SubNode<P>>>, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>): P;
 export function bind<P extends Parser<unknown>>(parser: P, f: (nodes: List<Data<Node<P>>>, context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>): P;
@@ -14,9 +14,8 @@ export function bind<N, U>(parser: Parser<N>, f: (nodes: List<Data<N>>, context:
     assert(context.position > position || !res1);
     if (res1 === undefined) return;
     context.range = context.position - position;
-    const res2 = f(eval(res1), context);
+    const res2 = f(res1, context);
     assert(context.position > position || !res2);
-    if (res2 === undefined) return;
     return context.position > position
       ? res2
       : undefined;
