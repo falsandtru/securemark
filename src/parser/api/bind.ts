@@ -19,7 +19,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  let context: MarkdownParser.Options = {
+  const context: MarkdownParser.Options = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
   };

@@ -15,13 +15,13 @@ interface Options extends ParserOptions {
   readonly test?: boolean;
 }
 
-export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Options | MarkdownParser.Context): DocumentFragment {
+export function parse(source: string, options: Options = {}, context?: MarkdownParser.Options): DocumentFragment {
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
   context = {
-    host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
+    host: options.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
     url: url ? new ReadonlyURL(url as ':') : context?.url,
-    id: opts.id ?? context?.id,
+    id: options.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources,
   };
@@ -38,11 +38,11 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
       ...(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
   }
-  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  if (opts.test) return node;
-  for (const _ of figure(node, opts.notes, context));
-  for (const _ of note(node, opts.notes, context));
-  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  assert(opts.id !== '' || !opts.notes?.references.querySelector('[id], .index[href], .label[href]'));
+  assert(options.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
+  if (options.test) return node;
+  for (const _ of figure(node, options.notes, context));
+  for (const _ of note(node, options.notes, context));
+  assert(options.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
+  assert(options.id !== '' || !options.notes?.references.querySelector('[id], .index[href], .label[href]'));
   return node;
 }

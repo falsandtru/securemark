@@ -69,7 +69,7 @@ export type IntermediateParser<P extends Parser<unknown>> = Parser<SubNode<P>, C
 type ExtractSubNode<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
-export function input(source: string, context: CtxOptions): Input<Ctx> {
+export function input<C extends CtxOptions>(source: string, context: C): Input<C & Ctx> {
   // @ts-expect-error
   context.source = source;
   // @ts-expect-error
