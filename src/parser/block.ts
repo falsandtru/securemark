@@ -56,6 +56,7 @@ export const block: BlockParser = reset(
     backtracks: {},
   },
   error(union([
+    emptyline,
     input => {
       const { context: { source, position } } = input;
       if (position === source.length) return;
@@ -109,7 +110,6 @@ export const block: BlockParser = reset(
           if ('0' <= fst && fst <= '9') return olist(input);
       }
     },
-    emptyline,
     paragraph
   ]) as any));
 
