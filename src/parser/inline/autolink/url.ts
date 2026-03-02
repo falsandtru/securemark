@@ -7,10 +7,10 @@ import { unescsource, str } from '../../source';
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   open(
-    /(?<![0-9a-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y,
-    precedence(1, some(union([
-      verify(bracket, ns => ns.length > 0),
-      some(unescsource, /([-+*=~^_/])\1|[,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y),
+    /(?<![0-9A-Za-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y,
+    precedence(0, some(union([
+      some(unescsource, /(?<![-+*=~^_,.;:!?])[-+*=~^_,.;:!?]*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y),
+      precedence(1, verify(bracket, ns => ns.length > 0)),
     ]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
     [3 | Backtrack.autolink]),
