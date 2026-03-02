@@ -2869,7 +2869,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.lazy = void 0;
 function lazy(builder) {
   let parser;
-  return input => parser !== undefined ? parser(input) : (parser = builder())(input);
+  return input => (parser ??= builder())(input);
 }
 exports.lazy = lazy;
 
@@ -3235,6 +3235,7 @@ class List {
   constructor(nodes) {
     this.length = 0;
     this.head = undefined;
+    this.last = undefined;
     if (nodes === undefined) return;
     for (let i = 0; i < nodes.length; ++i) {
       this.push(nodes[i]);
@@ -3243,40 +3244,43 @@ class List {
   get tail() {
     return this.head?.next;
   }
-  get last() {
-    return this.head?.prev;
-  }
   insert(node, before) {
+    if (before === undefined) return this.push(node);
+    if (before === this.head) return this.unshift(node);
     if (++this.length === 1) {
-      return this.head = node.next = node.prev = node;
+      return this.head = this.last = node;
     }
-    const next = node.next = before ?? this.head;
+    const next = node.next = before;
     const prev = node.prev = next.prev;
     return next.prev = prev.next = node;
   }
   delete(node) {
     if (--this.length === 0) {
-      this.head = undefined;
+      this.head = this.last = undefined;
     } else {
       const {
         next,
         prev
       } = node;
-      if (node === this.head) {
-        this.head = next;
-      }
-      // Error if not used.
-      prev.next = next;
-      next.prev = prev;
+      prev === undefined ? this.head = next : prev.next = next;
+      next === undefined ? this.last = prev : next.prev = prev;
     }
     node.next = node.prev = undefined;
     return node;
   }
   unshift(node) {
-    return this.head = this.insert(node, this.head);
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.next = this.head;
+    return this.head = this.head.prev = node;
   }
   push(node) {
-    return this.insert(node, this.head);
+    if (++this.length === 1) {
+      return this.head = this.last = node;
+    }
+    node.prev = this.last;
+    return this.last = this.last.next = node;
   }
   shift() {
     if (this.length === 0) return;
@@ -3284,21 +3288,22 @@ class List {
   }
   pop() {
     if (this.length === 0) return;
-    return this.delete(this.head.prev);
+    return this.delete(this.last);
   }
   import(list, before) {
     if (list.length === 0) return this;
     if (this.length === 0) {
       this.head = list.head;
-      this.length += list.length;
+      this.last = list.last;
+      this.length = list.length;
       list.clear();
       return this;
     }
     const head = list.head;
     const last = list.last;
-    const next = last.next = before ?? this.head;
-    const prev = head.prev = next.prev;
-    next.prev = last;
+    const next = last.next = before;
+    const prev = head.prev = before?.prev ?? this.last;
+    next === undefined ? this.last = last : next.prev = last;
     prev.next = head;
     this.length += list.length;
     list.clear();
@@ -3306,14 +3311,13 @@ class List {
   }
   clear() {
     this.length = 0;
-    this.head = undefined;
+    this.head = this.last = undefined;
   }
   *[Symbol.iterator]() {
     for (let node = this.head; node && this.head;) {
       const next = node.next;
       yield node;
       node = next;
-      if (node === this.head) break;
     }
   }
   flatMap(f) {
@@ -3322,7 +3326,6 @@ class List {
       const next = node.next;
       acc.import(f(node));
       node = next;
-      if (node === this.head) break;
     }
     return acc;
   }
@@ -3331,15 +3334,13 @@ class List {
       const next = node.next;
       acc = f(acc, node);
       node = next;
-      if (node === this.head) break;
     }
     return acc;
   }
   foldr(f, acc) {
-    for (let node = this.head?.prev; node && this.head;) {
+    for (let node = this.last; node && this.head;) {
       const prev = node.prev;
       acc = f(node, acc);
-      if (node === this.head) break;
       node = prev;
     }
     return acc;
@@ -3349,7 +3350,6 @@ class List {
       const next = node.next;
       if (f(node)) return node;
       node = next;
-      if (node === this.head) break;
     }
   }
 }
@@ -3375,7 +3375,7 @@ exports.List = List;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.failsafe = exports.clean = exports.subinput = exports.input = exports.Data = exports.List = void 0;
+exports.failsafe = exports.subinput = exports.input = exports.Data = exports.List = void 0;
 const data_1 = __webpack_require__(3602);
 Object.defineProperty(exports, "List", ({
   enumerable: true,
@@ -3414,19 +3414,6 @@ function subinput(source, context) {
   };
 }
 exports.subinput = subinput;
-function clean(context) {
-  const {
-    source,
-    position
-  } = context;
-  for (const p of Object.keys(context)) {
-    context[p] = undefined;
-  }
-  context.source = source;
-  context.position = position;
-  return context;
-}
-exports.clean = clean;
 function failsafe(parser) {
   return input => {
     const position = input.context.position;
@@ -4102,7 +4089,7 @@ const note_1 = __webpack_require__(165);
 const url_1 = __webpack_require__(1904);
 const array_1 = __webpack_require__(6876);
 function bind(target, settings) {
-  let context = {
+  const context = {
     ...settings,
     host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin)
   };
@@ -4429,13 +4416,13 @@ const figure_1 = __webpack_require__(1657);
 const note_1 = __webpack_require__(165);
 const url_1 = __webpack_require__(1904);
 const dom_1 = __webpack_require__(394);
-function parse(source, opts = {}, context) {
+function parse(source, options = {}, context) {
   const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
   context = {
-    host: opts.host ?? context?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
+    host: options.host ?? context?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     url: url ? new url_1.ReadonlyURL(url) : context?.url,
-    id: opts.id ?? context?.id,
+    id: options.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources
   };
@@ -4450,9 +4437,9 @@ function parse(source, opts = {}, context) {
       value
     }) => void acc.push(value) || acc, []) ?? []));
   }
-  if (opts.test) return node;
-  for (const _ of (0, figure_1.figure)(node, opts.notes, context));
-  for (const _ of (0, note_1.note)(node, opts.notes, context));
+  if (options.test) return node;
+  for (const _ of (0, figure_1.figure)(node, options.notes, context));
+  for (const _ of (0, note_1.note)(node, options.notes, context));
   return node;
 }
 exports.parse = parse;
@@ -4514,7 +4501,7 @@ exports.block = (0, combinator_1.reset)({
     recursions: [10 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
   },
   backtracks: {}
-}, error((0, combinator_1.union)([input => {
+}, error((0, combinator_1.union)([source_1.emptyline, input => {
   const {
     context: {
       source,
@@ -4570,7 +4557,7 @@ exports.block = (0, combinator_1.reset)({
     default:
       if ('0' <= fst && fst <= '9') return (0, olist_1.olist)(input);
   }
-}, source_1.emptyline, paragraph_1.paragraph])));
+}, paragraph_1.paragraph])));
 function error(parser) {
   const reg = new RegExp(String.raw`^${"\u0007" /* Command.Error */}.*\n`);
   return (0, combinator_1.recover)((0, combinator_1.fallback)((0, combinator_1.open)("\u0007" /* Command.Error */, ({
@@ -6393,7 +6380,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.verify)(bracket, ns => ns.length > 0), (0, combinator_1.some)(source_1.unescsource, /([-+*=~^_/])\1|[,.;:!?]{2}|[-+*=~^_,.;:!?]?(?=[\\"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y)]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?])[-+*=~^_,.;:!?]*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
   context: {
     source
   }
@@ -8200,7 +8187,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
-const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const heading_1 = __webpack_require__(2778);
 const codeblock_1 = __webpack_require__(9194);
@@ -8238,18 +8224,14 @@ const parser = (0, combinator_1.union)([input => {
 }, (0, combinator_1.some)(source_1.contentline, exports.MAX_SEGMENT_SIZE + 1), (0, combinator_1.some)(source_1.emptyline, exports.MAX_SEGMENT_SIZE + 1)]);
 function* segment(source) {
   if (!validate(source, exports.MAX_INPUT_SIZE)) return yield `${"\u0007" /* Command.Error */}Too large input over ${exports.MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
-  const context = {
-    source,
-    position: 0
-  };
-  const input = {
-    context
-  };
-  for (; context.position < source.length;) {
-    const {
+  for (let position = 0; position < source.length;) {
+    const context = {
+      source,
       position
-    } = context;
-    const result = parser(input);
+    };
+    const result = parser({
+      context
+    });
     const segs = result.length > 0 ? result.foldl((acc, {
       value
     }) => void acc.push(value) || acc, []) : [source.slice(position, context.position)];
@@ -8257,7 +8239,7 @@ function* segment(source) {
       const seg = segs[i];
       validate(seg, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `${"\u0007" /* Command.Error */}Too large segment over ${exports.MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`;
     }
-    (0, parser_1.clean)(context);
+    position = context.position;
   }
 }
 exports.segment = segment;
@@ -8854,7 +8836,8 @@ const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
-  for (const node of nodes ?? []) {
+  if (nodes === undefined) return;
+  for (const node of nodes) {
     yield node.value;
   }
 }
