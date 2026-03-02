@@ -1,12 +1,12 @@
 import { List } from './data';
 import { Delimiters } from './parser/context/delimiter';
 
-export type Parser<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
-  = (input: Input<C & Ctx>) => Result<N, C, D>;
-export interface Input<C extends CtxOptions = CtxOptions> {
-  readonly context: C & Ctx;
+export type Parser<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+  = (input: Input<C>) => Result<N, C, D>;
+export interface Input<C extends Ctx = Ctx> {
+  readonly context: C;
 }
-export type Result<N, C extends CtxOptions = CtxOptions, D extends Parser<unknown, C>[] = any>
+export type Result<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = List<Data<N>, C, D>
   | undefined;
 export { List };
@@ -62,8 +62,8 @@ export interface CtxOptions {
   range?: number;
 }
 export type Node<P extends Parser<unknown>> = P extends Parser<infer N> ? N : never;
-export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, CtxOptions, infer D> ? D : never;
-export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C & Ctx : never;
+export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
+export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C : never;
 export type SubNode<P extends Parser<unknown>> = ExtractSubNode<SubParsers<P>>;
 export type IntermediateParser<P extends Parser<unknown>> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
 type ExtractSubNode<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;

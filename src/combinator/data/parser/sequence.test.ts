@@ -1,4 +1,4 @@
-import { Parser, List, Data, input } from '../parser';
+import { Parser, List, Data, Ctx, input } from '../parser';
 import { sequence } from './sequence';
 import { inspect } from '../../../debug.test';
 
@@ -14,7 +14,7 @@ describe('Unit: combinator/data/parser/sequence', () => {
         ? void ++context.position || new List([new Data('B')])
         : undefined;
     };
-    const ab = sequence<Parser<string, {}, [typeof a, typeof b]>>([a, b]);
+    const ab = sequence<Parser<string, Ctx, [typeof a, typeof b]>>([a, b]);
     const { context: ctx } = input('', {});
 
     it('basic', () => {
