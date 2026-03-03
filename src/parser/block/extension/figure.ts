@@ -21,7 +21,7 @@ import { html, defrag } from 'typed-dom/dom';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /(~{3,})(?:figure[^\S\n])?(?=\[?\$)/y,
+  /(~{3,})(?:figure )?(?=\[?\$)/y,
   memoize(
   ([, fence], closer = new RegExp(String.raw`${fence}[^\S\n]*(?:$|\n)`, 'y')) => close(
     sequence([
@@ -49,7 +49,7 @@ export const segment: FigureParser.SegmentParser = block(match(
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(sequence([label, str(/(?=\s).*\n/y)])),
+    line(sequence([label, str(/(?!\S).*\n/y)])),
     inits([
       block(union([
         ulist,
@@ -83,7 +83,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
     ]);
   })),
   fmap(
-    fence(/(~{3,})(?:figure|\[?\$\S*)(?!\S)[^\n]*(?:$|\n)/y, 300),
+    fence(/(~{3,})(?:figure(?=$|[ \n])|\[?\$)[^\n]*(?:$|\n)/y, 300),
     (nodes, context) => {
       const [body, overflow, closer, opener, delim] = unwrap<string>(nodes);
       const violation =
@@ -95,11 +95,11 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'fence',
           `Invalid trailing line after the closing delimiter "${delim}"`,
         ] ||
-        !seg_label(subinput(opener.match(/^~+(?:figure[^\S\n]+)?(\[?\$\S+)/)?.[1] ?? '', context)) && [
+        !seg_label(subinput(opener.match(/^~+(?:figure )?(\[?\$\S+)/)?.[1] ?? '', context)) && [
           'label',
           'Invalid label',
         ] ||
-        /^~+(?:figure[^\S\n]+)?(\[?\$\S+)[^\S\n]+\S/.test(opener) && [
+        /^~+(?:figure )?(\[?\$\S+)[^\S\n]+\S/.test(opener) && [
           'argument',
           'Invalid argument',
         ] ||

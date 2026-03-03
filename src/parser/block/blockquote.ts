@@ -9,7 +9,7 @@ import { parse } from '../api/parse';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([
-  validate(/!?>+(?=[^\S\n]|\n[^\S\n]*\S)/y, some(contentline)),
+  validate(/!?>+ /y, some(contentline)),
 ]));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
@@ -17,9 +17,9 @@ export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, un
   open(/!(?=>)/y, markdown),
 ]))));
 
-const opener = /(?=>>+(?:$|\s))/y;
-const indent = block(open(opener, some(contentline, />(?:$|\s)/y)), false);
-const unindent = (source: string) => source.replace(/(?<=^|\n)>(?:[^\S\n]|(?=>*(?:$|\s)))|\n$/g, '');
+const opener = /(?=>>+(?:$|[ \n]))/y;
+const indent = block(open(opener, some(contentline, />(?:$|[ \n])/y)), false);
+const unindent = (source: string) => source.replace(/(?<=^|\n)>(?: |(?=>*(?:$|[ \n])))|\n$/g, '');
 
 const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   some(recursion(Recursion.blockquote, union([

@@ -8,7 +8,7 @@ import { unwrap, invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
-  /(?=\|+(?:[^\S\n]|\n\|))(?:\|+(?:[^\S\n][^\n]*)?(?:$|\n))+$/y,
+  /\|+ [^\n]*(?:\n\|+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
   union([source])),
   ([{ value }]) => new List([
     new Data(define(value, {
@@ -17,13 +17,13 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
     })),
   ]))));
 
-const opener = /(?=\|\|+(?:$|\s))/y;
-const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?:[^\S\n]|(?=\|*(?:$|\s)))|\n$/g, '');
+const opener = /(?=\|\|+(?:$|[ \n]))/y;
+const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \n])))|\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   some(recursion(Recursion.block, union([
     focus(
-      /(?:\|\|+(?:[^\S\n][^\n]*)?(?:$|\n))+/y,
+      /(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y,
       convert(unindent, source, false, true)),
     rewrite(
       some(contentline, opener),

@@ -103,7 +103,6 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
   const char = source[index];
   switch (char) {
     case '$':
-    case '%':
     case '*':
     case '+':
     case '~':
@@ -111,10 +110,15 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
     case '/':
       index = backToWhitespace(source, position, index);
       break;
+    case '%':
+      index += index - 1 > position && source.startsWith(' %]', index - 1)
+        ? -1
+        : 0;
+      break;
     case '[':
-      index = source[index + 1] === '|'
-        ? backToWhitespace(source, position, index)
-        : index;
+      index += index - 1 > position && source.startsWith(' [|', index - 1)
+        ? -1
+        : 0;
       break;
     case ':':
       index = source.startsWith('//', index + 1)

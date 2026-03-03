@@ -9,7 +9,7 @@ import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
-  /~[^\S\n]+(?=\S)/y,
+  /~ +(?=\S)/y,
   some(inits([
     state(State.annotation | State.reference | State.index | State.label | State.link,
     some(term)),
@@ -18,15 +18,15 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   ns => new List([new Data(html('dl', unwrap(fillTrailingDescription(ns))))]))));
 
 const term: DListParser.TermParser = line(indexee(fmap(open(
-  /~[^\S\n]+(?=\S)/y,
+  /~ +(?=\S)/y,
   visualize(trimBlank(some(union([indexer, inline])))),
   true),
   ns => new List([new Data(html('dt', { 'data-index': dataindex(ns) }, defrag(unwrap(ns))))]))));
 
 const desc: DListParser.DescriptionParser = block(fmap(open(
-  /:[^\S\n]+(?=\S)|/y,
+  /: +(?=\S)|/y,
   rewrite(
-    some(anyline, /[~:][^\S\n]+\S/y),
+    some(anyline, /[~:] +(?=\S)/y),
     visualize(trimBlankEnd(some(union([inline]))))),
   true),
   ns => new List([new Data(html('dd', defrag(unwrap(ns))))])),

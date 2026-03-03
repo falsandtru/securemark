@@ -39,9 +39,7 @@ describe('Unit: parser/block/sidefence', () => {
       assert.deepStrictEqual(inspect(parser('|  a '), ctx), [['<blockquote class="invalid"><pre> a </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('| \na'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('|\na'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('|\n a'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('|\n|'), ctx), [['<blockquote class="invalid"><pre><br></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|\n| a'), ctx), [['<blockquote class="invalid"><pre><br>a</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('|\n| a'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('| http://host'), ctx), [['<blockquote class="invalid"><pre><a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('| http://host)'), ctx), [['<blockquote class="invalid"><pre><a class="url" href="http://host)" target="_blank">http://host)</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('| !http://host'), ctx), [['<blockquote class="invalid"><pre>!<a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);

@@ -14,6 +14,9 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('>'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('>a'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('>\n'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('>\na'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('!>\n'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('!>\na'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' > '), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('>>'), ctx), undefined);
     });
@@ -38,10 +41,6 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('> a\\\nb'), ctx), [['<blockquote><pre>a\\<br>b</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>  a '), ctx), [['<blockquote><pre> a </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> \na'), ctx), [['<blockquote><pre><br>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\na'), ctx), [['<blockquote><pre><br>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\n a'), ctx), [['<blockquote><pre><br> a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\n>'), ctx), [['<blockquote><pre><br></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\n> a'), ctx), [['<blockquote><pre><br>a</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> http://host'), ctx), [['<blockquote><pre><a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> http://host)'), ctx), [['<blockquote><pre><a class="url" href="http://host)" target="_blank">http://host)</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> !http://host'), ctx), [['<blockquote><pre>!<a class="url" href="http://host" target="_blank">http://host</a></pre></blockquote>'], '']);
@@ -92,11 +91,6 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('!>> > a\n> b'), ctx), [['<blockquote><blockquote><section><blockquote><pre>a</pre></blockquote><h2>References</h2><ol class="references"></ol></section></blockquote><section><p>b</p><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> !> a'), ctx), [['<blockquote><section><blockquote><section><p>a</p><h2>References</h2><ol class="references"></ol></section></blockquote><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> \na'), ctx), [['<blockquote><section><p>a</p><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!>\n'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('!>\na'), ctx), [['<blockquote><section><p>a</p><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!>\n a'), ctx), [['<blockquote><section><p> a</p><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!>\n>'), ctx), [['<blockquote><section><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!>\n> a'), ctx), [['<blockquote><section><p>a</p><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> ## a\n> ## a'), ctx), [['<blockquote><blockquote><section><h2>a</h2><h2>References</h2><ol class="references"></ol></section></blockquote><section><h2>a</h2><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> ~ a\n> ~ a'), ctx), [['<blockquote><blockquote><section><dl><dt>a</dt><dd></dd></dl><h2>References</h2><ol class="references"></ol></section></blockquote><section><dl><dt>a</dt><dd></dd></dl><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> ~~~figure $test-a\n>> > \n>>\n~~~\n> ~~~figure $test-a\n> > \n>\n[#a]\n~~~'), ctx), [['<blockquote><blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"><a class="index">a</a></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote>'], '']);

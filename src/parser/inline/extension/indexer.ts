@@ -11,7 +11,7 @@ import { html } from 'typed-dom/dom';
 // 継続的編集において最も簡便となる。
 
 export const indexer: ExtensionParser.IndexerParser = surround(
-  /\s\[(?=\|\S)/y,
+  / \[(?=\|\S)/y,
   union([
     signature,
     focus(/\|(?=\])/y, () => new List([new Data(html('span', { class: 'indexer', 'data-index': '' }))])),

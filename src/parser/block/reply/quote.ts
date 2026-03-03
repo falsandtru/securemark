@@ -7,14 +7,14 @@ import { linebreak, unescsource, anyline } from '../../source';
 import { unwrap } from '../../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const syntax = />+[^\S\n]/y;
+export const syntax = />+ /y;
 
 export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
   rewrite(
     some(validate(syntax, anyline)),
     convert(
       // TODO: インデント数を渡してインデント数前の行頭確認を行う実装に置き換える
-      source => source.replace(/(?<=^>+[^\S\n])/mg, '\r'),
+      source => source.replace(/(?<=^>+ )/mg, '\r'),
       some(union([
         // quote補助関数が残した数式をパースする。
         math,

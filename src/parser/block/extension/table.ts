@@ -83,10 +83,10 @@ const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([{ value }]) => new List([new Data(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
 
-const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y;
+const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y;
 
 const head: CellParser.HeadParser = block(fmap(open(
-  str(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y),
+  str(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y),
   rewrite(
     inits([
       anyline,
@@ -108,7 +108,7 @@ const head: CellParser.HeadParser = block(fmap(open(
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
-  str(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=\s)/y),
+  str(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y),
   rewrite(
     inits([
       anyline,
@@ -133,7 +133,7 @@ const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
-      validate(/!+\s/y, convert(source => `:${source}`, data, false)),
+      validate(/!+ /y, convert(source => `:${source}`, data, false)),
       convert(source => `: ${source}`, data, false),
     ])));
 

@@ -14,7 +14,7 @@ import FigParser = ExtensionParser.FigParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
-    line(close(seg_label, /(?=\s).*\n/y)),
+    line(close(seg_label, /(?!\S).*\n/y)),
     union([
       seg_code,
       seg_math,
@@ -28,7 +28,7 @@ export const segment: FigParser.SegmentParser = block(
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {
     // Bug: TypeScript
-    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) as string[] || [])
+    const fence = (/^[^\n]*\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return parser({ context })
       ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
@@ -39,7 +39,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
   ([{ value: el }]) => el.tagName === 'FIGURE')));
 
 const parser = sequence([
-  line(close(seg_label, /(?=\s).*\n/y)),
+  line(close(seg_label, /(?!\S).*\n/y)),
   line(union([
     media,
     lineshortmedia,
