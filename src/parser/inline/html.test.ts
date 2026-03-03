@@ -65,6 +65,7 @@ describe('Unit: parser/inline/html', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('<wbr>'), ctx), [['<wbr>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr >'), ctx), [['<wbr>'], '']);
+      assert.deepStrictEqual(inspect(parser('<wbr  >'), ctx), [['<span class="invalid">&lt;wbr </span>'], ' >']);
       assert.deepStrictEqual(inspect(parser('<wbr>a'), ctx), [['<wbr>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<bdi >a</bdi>'), ctx), [['<bdi>a</bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi  >a</bdi>'), ctx), [['<span class="invalid">&lt;bdi  &gt;a&lt;/bdi&gt;</span>'], '']);
