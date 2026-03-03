@@ -10,24 +10,24 @@ describe('Unit: parser/inline/autolink/account', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('@'), ctx), [['@'], '']);
-      assert.deepStrictEqual(inspect(parser('@+'), ctx), [['@'], '+']);
-      assert.deepStrictEqual(inspect(parser('@_'), ctx), [['@'], '_']);
-      assert.deepStrictEqual(inspect(parser('@-'), ctx), [['@'], '-']);
-      assert.deepStrictEqual(inspect(parser('@.'), ctx), [['@'], '.']);
-      assert.deepStrictEqual(inspect(parser('@0'), ctx), [['@0'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@'), ctx), [['@a'], '@']);
-      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), [['@a'], '@b']);
-      assert.deepStrictEqual(inspect(parser('@a@b@c'), ctx), [['@a'], '@b@c']);
-      assert.deepStrictEqual(inspect(parser('@ab@'), ctx), [['@ab'], '@']);
-      assert.deepStrictEqual(inspect(parser('@@'), ctx), [['@@'], '']);
-      assert.deepStrictEqual(inspect(parser('@@a'), ctx), [['@@a'], '']);
-      assert.deepStrictEqual(inspect(parser('@@@a'), ctx), [['@@@a'], '']);
-      assert.deepStrictEqual(inspect(parser('@#'), ctx), [['@', '#'], '']);
-      assert.deepStrictEqual(inspect(parser('@#a'), ctx), [['@', '<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a.b:c'), ctx), [['@a.b'], ':c']);
-      assert.deepStrictEqual(inspect(parser('@a.domain.com:b'), ctx), [['@a.domain.com'], ':b']);
-      assert.deepStrictEqual(inspect(parser('@http://host'), ctx), [['@http'], '://host']);
+      assert.deepStrictEqual(inspect(parser('@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@+'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@_'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@-'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@.'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@0'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a@b@c'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@ab@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@@a'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@@@a'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@#'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@#a'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a.b:c'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a.domain.com:b'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@http://host'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' @a'), ctx), undefined);
     });
 

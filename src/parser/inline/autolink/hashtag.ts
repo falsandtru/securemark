@@ -23,11 +23,8 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)),
     false,
     [3 | Backtrack.autolink]),
-  union([
-    constraint(State.autolink, state(State.autolink, fmap(convert(
-      source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
-      unsafelink,
-      false),
-      ([{ value }]) => new List([new Data(define(value, { class: 'hashtag' }))])))),
-    ({ context: { source } }) => new List([new Data(source)]),
-  ])));
+  constraint(State.autolink, state(State.autolink, fmap(convert(
+    source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
+    union([unsafelink]),
+    false),
+    ([{ value }]) => new List([new Data(define(value, { class: 'hashtag' }))]))))));

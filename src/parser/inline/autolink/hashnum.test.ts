@@ -10,27 +10,27 @@ describe('Unit: parser/inline/autolink/hashnum', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('#'), ctx), [['#'], '']);
-      assert.deepStrictEqual(inspect(parser('# '), ctx), [['#'], ' ']);
-      assert.deepStrictEqual(inspect(parser('#1#'), ctx), [['#1'], '#']);
-      assert.deepStrictEqual(inspect(parser('#1#2'), ctx), [['#1'], '#2']);
-      assert.deepStrictEqual(inspect(parser('#1#2#3'), ctx), [['#1'], '#2#3']);
-      assert.deepStrictEqual(inspect(parser('#1@2'), ctx), [['#1'], '@2']);
-      assert.deepStrictEqual(inspect(parser('#\\'), ctx), [['#'], '\\']);
-      assert.deepStrictEqual(inspect(parser('#\\ '), ctx), [['#'], '\\ ']);
-      assert.deepStrictEqual(inspect(parser('#\\\n'), ctx), [['#'], '\\\n']);
-      assert.deepStrictEqual(inspect(parser('##'), ctx), [['##'], '']);
-      assert.deepStrictEqual(inspect(parser('##1'), ctx), [['##1'], '']);
-      assert.deepStrictEqual(inspect(parser('###1'), ctx), [['###1'], '']);
-      assert.deepStrictEqual(inspect(parser('#{}'), ctx), [['#'], '{}']);
-      assert.deepStrictEqual(inspect(parser('#{{}'), ctx), [['#'], '{{}']);
-      assert.deepStrictEqual(inspect(parser('#{}}'), ctx), [['#'], '{}}']);
-      assert.deepStrictEqual(inspect(parser('#{#}'), ctx), [['#'], '{#}']);
-      assert.deepStrictEqual(inspect(parser('#{1}'), ctx), [['#'], '{1}']);
-      assert.deepStrictEqual(inspect(parser('#　'), ctx), [['#'], '　']);
+      assert.deepStrictEqual(inspect(parser('#'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('# '), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#1#'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#1#2'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#1#2#3'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#1@2'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#\\'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#\\ '), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#\\\n'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('##'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('##1'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('###1'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#{}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#{{}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#{}}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#{#}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#{1}'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(10)}`), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(10)}a`), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('#　'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' #1'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(10)}`), ctx), [[`#${'1'.repeat(10)}`], '']);
-      assert.deepStrictEqual(inspect(parser(`#${'1'.repeat(10)}a`), ctx), [[`#${'1'.repeat(10)}a`], '']);
     });
 
     it('valid', () => {

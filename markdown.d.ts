@@ -1096,13 +1096,10 @@ export namespace MarkdownParser {
         AutolinkParser.UrlParser.LineUrlParser,
         AutolinkParser.UrlParser,
         AutolinkParser.EmailParser,
-        SourceParser.StrParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
-        SourceParser.StrParser,
         AutolinkParser.HashtagParser,
         AutolinkParser.HashnumParser,
-        SourceParser.StrParser,
         AutolinkParser.AnchorParser,
       ]> {
     }
@@ -1110,9 +1107,9 @@ export namespace MarkdownParser {
       export interface UrlParser extends
         // https://host
         Inline<'url'>,
-        Parser<string | HTMLAnchorElement, Context, [
+        Parser<string | HTMLElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
+          InlineParser,
         ]> {
       }
       export namespace UrlParser {
@@ -1122,7 +1119,7 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
             Parser<string | HTMLElement, Context, [
               InlineParser.LinkParser.UnsafeLinkParser,
-              Parser<string, Context, []>,
+              InlineParser,
             ]>,
           ]> {
         }
@@ -1150,7 +1147,6 @@ export namespace MarkdownParser {
         Inline<'email'>,
         Parser<string | HTMLAnchorElement, Context, [
           Parser<HTMLAnchorElement, Context, []>,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface ChannelParser extends
@@ -1158,7 +1154,6 @@ export namespace MarkdownParser {
         Inline<'channel'>,
         Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface AccountParser extends
@@ -1166,7 +1161,6 @@ export namespace MarkdownParser {
         Inline<'account'>,
         Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface HashtagParser extends
@@ -1174,7 +1168,6 @@ export namespace MarkdownParser {
         Inline<'hashtag'>,
         Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface HashnumParser extends
@@ -1182,7 +1175,6 @@ export namespace MarkdownParser {
         Inline<'hashnum'>,
         Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
       export interface AnchorParser extends
@@ -1190,7 +1182,6 @@ export namespace MarkdownParser {
         Inline<'anchor'>,
         Parser<string | HTMLAnchorElement, Context, [
           LinkParser.UnsafeLinkParser,
-          Parser<string, Context, []>,
         ]> {
       }
     }

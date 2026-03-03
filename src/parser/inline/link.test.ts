@@ -180,7 +180,6 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[[![]{a}]{b}]{b}'), ctx), [['<a class="link" href="b">[![]{a}]{b}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[((a))]{b}'), ctx), [['<a class="link" href="b"><span class="paren">((a))</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]{b}'), ctx), [['<a class="link" href="b">[[a]]</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[!http://host]{/}'), ctx), [['<a class="link" href="/" target="_blank"><img class="media" data-src="http://host" alt="http://host"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a]{b}'), ctx), [['<a class="link" href="b">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]{b}'), ctx), [['<a class="link" href="b">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[@a@b]{c}'), ctx), [['<a class="link" href="c">@a@b</a>'], '']);

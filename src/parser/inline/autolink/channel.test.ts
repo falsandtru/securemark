@@ -10,12 +10,12 @@ describe('Unit: parser/inline/autolink/channel', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('@a@'), ctx), [['@a'], '@']);
-      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), [['@a'], '@b']);
-      assert.deepStrictEqual(inspect(parser('@a#'), ctx), [['@a'], '#']);
-      assert.deepStrictEqual(inspect(parser('@a#1'), ctx), [['@a'], '#1']);
-      assert.deepStrictEqual(inspect(parser('@a#b@'), ctx), [['@a'], '#b@']);
-      assert.deepStrictEqual(inspect(parser('@a#1@b'), ctx), [['@a'], '#1@b']);
+      assert.deepStrictEqual(inspect(parser('@a@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a@b'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#1'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#b@'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#1@b'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' @a#b'), ctx), undefined);
     });
 

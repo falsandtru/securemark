@@ -17,11 +17,9 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
     ].join('').replace(/emoji/g, emoji), 'yu')),
     false,
     [1 | Backtrack.autolink]),
-  union([
-    constraint(State.autolink, state(State.autolink, fmap(convert(
-      source => `[${source}]{ ${source.slice(1)} }`,
-      unsafelink,
-      false),
-      ([{ value }]) => new List([new Data(define(value, { class: 'hashnum', href: null }))])))),
-    ({ context: { source } }) => new List([new Data(source)]),
-  ])));
+  constraint(State.autolink, state(State.autolink, fmap(convert(
+    source => `[${source}]{ ${source.slice(1)} }`,
+    union([unsafelink]),
+    false),
+    ([{ value }]) => new List([new Data(define(value, { class: 'hashnum', href: null }))])))),
+  ));

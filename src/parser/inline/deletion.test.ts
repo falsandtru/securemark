@@ -13,7 +13,7 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('~~'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('~~a'), ctx), [['~~', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('~~a~'), ctx), [['~~', 'a', '~'], '']);
+      assert.deepStrictEqual(inspect(parser('~~a~'), ctx), [['~~', 'a~'], '']);
       assert.deepStrictEqual(inspect(parser(' ~~a~~'), ctx), undefined);
     });
 

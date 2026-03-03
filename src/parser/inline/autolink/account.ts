@@ -17,16 +17,12 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
     ]),
     false,
     [3 | Backtrack.autolink]),
-  union([
-    constraint(State.autolink, state(State.autolink, fmap(convert(
-      source =>
-        `[${source}]{ ${
-          source.includes('/')
-            ? `https://${source.slice(1).replace('/', '/@')}`
-            : `/${source}`
-        } }`,
-      unsafelink,
-      false),
-      ([{ value }]) => new List([new Data(define(value, { class: 'account' }))])))),
-    ({ context: { source } }) => new List([new Data(source)]),
-  ])));
+  constraint(State.autolink, state(State.autolink, fmap(convert(
+    source =>
+      `[${source}]{ ${source.includes('/')
+        ? `https://${source.slice(1).replace('/', '/@')}`
+        : `/${source}`
+      } }`,
+    union([unsafelink]),
+    false),
+    ([{ value }]) => new List([new Data(define(value, { class: 'account' }))]))))));

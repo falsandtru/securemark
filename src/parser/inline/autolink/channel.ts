@@ -29,20 +29,16 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
       false,
       [3 | Backtrack.autolink])),
   ]),
-  union([
-    constraint(State.autolink, state(State.autolink, fmap(convert(
-      source =>
-        `[${source}]{ ${
-          source.includes('/')
-            ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}`
-            : `/${source.slice(0, source.indexOf('#'))}`
-        } }`,
-      unsafelink,
-      false),
-      ([{ value: el }], { source, position, range = 0 }) => {
-        const src = source.slice(position - range, position);
-        const url = `${el.getAttribute('href')}?ch=${src.slice(src.indexOf('#') + 1).replace(/#/g, '+')}`;
-        return new List([new Data(define(el, { class: 'channel', href: url }, src))]);
-      }))),
-    ({ context: { source } }) => new List([new Data(source)]),
-  ])));
+  constraint(State.autolink, state(State.autolink, fmap(convert(
+    source =>
+      `[${source}]{ ${source.includes('/')
+        ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}`
+        : `/${source.slice(0, source.indexOf('#'))}`
+      } }`,
+    union([unsafelink]),
+    false),
+    ([{ value: el }], { source, position, range = 0 }) => {
+      const src = source.slice(position - range, position);
+      const url = `${el.getAttribute('href')}?ch=${src.slice(src.indexOf('#') + 1).replace(/#/g, '+')}`;
+      return new List([new Data(define(el, { class: 'channel', href: url }, src))]);
+    })))));

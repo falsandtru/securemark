@@ -22,15 +22,12 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => rewrite(
     str(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi),
     false,
     [3 | Backtrack.autolink]),
-  union([
-    constraint(State.autolink, state(State.autolink, fmap(convert(
-      source =>
-        `[${source}]{ ${source.includes('/')
-          ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
-          : `?at=${source.slice(2)}`
-        } }`,
-      unsafelink,
-      false),
-      ([{ value }]) => new List([new Data(define(value, { class: 'anchor' }))])))),
-    ({ context: { source } }) => new List([new Data(source)]),
-  ])));
+  constraint(State.autolink, state(State.autolink, fmap(convert(
+    source =>
+      `[${source}]{ ${source.includes('/')
+        ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
+        : `?at=${source.slice(2)}`
+      } }`,
+    union([unsafelink]),
+    false),
+    ([{ value }]) => new List([new Data(define(value, { class: 'anchor' }))]))))));
