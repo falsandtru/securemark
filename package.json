@@ -42,7 +42,7 @@
     "babel-plugin-unassert": "^3.2.0",
     "concurrently": "^8.2.2",
     "eslint": "^9.8.0",
-    "eslint-plugin-redos": "^4.4.5",
+    "eslint-plugin-redos": "^4.5.0",
     "eslint-webpack-plugin": "^4.2.0",
     "glob": "^11.0.0",
     "karma": "^6.4.4",
