@@ -28,7 +28,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   ]))));
 
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
-  line(surround(/(?=\|)/y, some(union([parser])), /[|\\]?\s*$/y, optional)),
+  line(surround(/(?=\|)/y, some(union([parser])), /\|?\s*$/y, optional)),
   ns => new List([new Data(html('tr', unwrap(ns)))])),
   rewrite(contentline, ({ context: { source } }) => new List([
     new Data(html('tr', {
@@ -53,7 +53,7 @@ const cell: CellParser = surround(
     close(medialink, /\s*(?=\||$)/y),
     close(media, /\s*(?=\||$)/y),
     close(shortmedia, /\s*(?=\||$)/y),
-    trimBlank(some(inline, /\|/y, [[/[|\\]?\s*$/y, 9]])),
+    trimBlank(some(inline, /\|/y, [[/\|?\s*$/y, 9]])),
   ]),
   /[^|]*/y, true);
 
