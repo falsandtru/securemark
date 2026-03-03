@@ -32,7 +32,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       ([as, bs = new List()], context) =>
         new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
     match(
-      new RegExp(String.raw`<(${TAGS.join('|')})(?=[^\S\n]|>)`, 'y'),
+      new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'),
       memoize(
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
