@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, some, block, line, validate, verify, rewrite, close, convert } from '../../../combinator';
+import { union, sequence, some, block, line, verify, rewrite, close, convert } from '../../../combinator';
 import { contentline } from '../../source';
 import { figure } from './figure';
 import { segment as seg_label } from '../../inline/extension/label';
@@ -12,7 +12,7 @@ import { media, lineshortmedia } from '../../inline';
 
 import FigParser = ExtensionParser.FigParser;
 
-export const segment: FigParser.SegmentParser = block(validate(/\[?\$/y,
+export const segment: FigParser.SegmentParser = block(
   sequence([
     line(close(seg_label, /(?=\s).*\n/y)),
     union([
@@ -23,7 +23,7 @@ export const segment: FigParser.SegmentParser = block(validate(/\[?\$/y,
       seg_placeholder,
       some(contentline),
     ]),
-  ])));
+  ]));
 
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {

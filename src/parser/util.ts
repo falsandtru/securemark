@@ -28,7 +28,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
-    assert(source.startsWith(symbol, context.position));
+    if (!source.startsWith(symbol, context.position)) return;
     let nodes = new List<Data<N>>();
     let i = symbol.length;
     for (; source[context.position + i] === source[context.position];) ++i;

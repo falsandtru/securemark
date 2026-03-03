@@ -1,16 +1,16 @@
 import { HeadingParser } from '../block';
 import { State } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, some, state, block, line, validate, focus, rewrite, open, fmap } from '../../combinator';
+import { union, some, state, block, line, focus, rewrite, open, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
 import { visualize, trimBlank } from '../visibility';
 import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
+export const segment: HeadingParser.SegmentParser = block(focus(
   /#+[^\S\n]+\S[^\n]*(?:\n#+(?!\S)[^\n]*)*(?:$|\n)/y,
-  some(line(({ context: { source } }) => new List([new Data(source)]))))));
+  some(line(({ context: { source } }) => new List([new Data(source)])))));
 
 export const heading: HeadingParser = block(rewrite(segment,
   // その他の表示制御は各所のCSSで行う。

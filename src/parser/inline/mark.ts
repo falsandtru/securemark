@@ -1,14 +1,14 @@
 import { MarkParser } from '../inline';
 import { State, Recursion, Command } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, state, constraint, validate, surround, open, lazy } from '../../combinator';
+import { union, some, recursion, precedence, state, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
 import { tightStart, blankWith } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark, validate('==',
+export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mark,
   precedence(0, state(State.mark, repeat('==', surround(
     '',
     recursion(Recursion.inline,
@@ -25,4 +25,4 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
       return el.id
         ? new List([new Data(el), new Data(html('a', { href: `#${el.id}` }))])
         : new List([new Data(el)]);
-    }))))));
+    })))));
