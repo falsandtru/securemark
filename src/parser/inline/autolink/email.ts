@@ -10,7 +10,7 @@ import { html } from 'typed-dom/dom';
 export const email: AutolinkParser.EmailParser = rewrite(
   open(/(?<![0-9a-z][_.+-]?)(?=[0-9a-z])/yi,
     verify(
-      str(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z@#]|>>|:\S)/yi),
+      str(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![.-]?[0-9a-z@#]|>>|:\S)/yi),
       ([{ value }]) => value.length <= 255),
     false,
     [3 | Backtrack.autolink]),

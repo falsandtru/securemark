@@ -19,7 +19,7 @@ import { define } from 'typed-dom/dom';
 export const anchor: AutolinkParser.AnchorParser = lazy(() => rewrite(
   open(
     /(?<![0-9a-z])>>/yi,
-    str(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#]|>>|:\S)/yi),
+    str(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi),
     false,
     [3 | Backtrack.autolink]),
   union([

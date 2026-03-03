@@ -15,7 +15,7 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
       /(?<![0-9a-z])@/yi,
       tails([
         str(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi),
-        str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![0-9a-z@]|>>|:\S)/yi),
+        str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
       ]),
       false,
       [3 | Backtrack.autolink]),
