@@ -8,11 +8,11 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 export namespace blank {
   export const line = new RegExp(
     // TODO: 行全体をエスケープ
-    /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/mg.source
+    /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   export const start = new RegExp(
-    /(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/y.source
+    /(?:\\?[^\S\r\n]|&IHN;|<wbr ?>)+/y.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`), 'y');
 }
 
@@ -46,7 +46,7 @@ export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp
 export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
   if (delimiter === undefined) return blankWith('', starts);
   return new RegExp(String.raw
-    `(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
+    `(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)${
       // 空行除去
       // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
       starts && '+'
@@ -75,7 +75,6 @@ export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
       ? parser(input)
       : undefined;
 }
-const wbr = /<wbr[^\S\n]*>/y;
 function isTightStart(input: Input<MarkdownParser.Context>, except?: string): boolean {
   const { context } = input;
   const { source, position } = context;
@@ -100,11 +99,10 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
       context.position = position;
       return true;
     case '<':
-      wbr.lastIndex = position;
       switch (true) {
         case source.length - position >= 5
           && source.startsWith('<wbr', position)
-          && (source[position + 5] === '>' || wbr.test(source)):
+          && (source[position + 4] === '>' || source.startsWith(' >', position + 4)):
           return false;
       }
       return true;
