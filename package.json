@@ -28,7 +28,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "spica": "0.0.809"
+    "spica": "0.0.810"
   },
   "devDependencies": {
     "@types/dompurify": "3.0.5",
