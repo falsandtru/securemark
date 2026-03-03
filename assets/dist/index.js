@@ -5705,7 +5705,7 @@ const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.syntax = />*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/y;
-exports.cite = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(exports.syntax), (0, combinator_1.union)([anchor_1.anchor,
+exports.cite = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(exports.syntax), (0, combinator_1.union)([(0, combinator_1.line)(anchor_1.anchor),
 // Subject page representation.
 // リンクの実装は後で検討
 (0, combinator_1.focus)(/>>#\S*(?=\s*$)/y, ({
@@ -6160,14 +6160,16 @@ const account_1 = __webpack_require__(4107);
 const hashtag_1 = __webpack_require__(5764);
 const hashnum_1 = __webpack_require__(8684);
 const anchor_1 = __webpack_require__(8535);
-const source_1 = __webpack_require__(8745);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?)!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
 // Escape unmatched email-like strings.
-(0, source_1.str)(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi), channel_1.channel, account_1.account,
+//str(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi),
+channel_1.channel, account_1.account,
 // Escape unmatched account-like strings.
-(0, source_1.str)(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi), hashtag_1.hashtag, hashnum_1.hashnum,
+//str(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi),
+hashtag_1.hashtag, hashnum_1.hashnum,
 // Escape unmatched hashtag-like strings.
-(0, source_1.str)(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, hashtag_1.emoji), 'yu')), anchor_1.anchor]))));
+//str(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, emoji), 'yu')),
+anchor_1.anchor]))));
 
 /***/ },
 
@@ -6187,15 +6189,11 @@ const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![0-9a-z@#]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, link_1.unsafelink, false), ([{
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@#]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'account'
-}))])))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
+}))]))))));
 
 /***/ },
 
@@ -6221,15 +6219,11 @@ const dom_1 = __webpack_require__(394);
 // cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9a-z@#]|>>|:\S)/yi), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, link_1.unsafelink, false), ([{
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'anchor'
-}))])))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
+}))]))))));
 
 /***/ },
 
@@ -6250,9 +6244,9 @@ const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![0-9a-z@]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.open)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), ([{
+exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.open)(/(?<![0-9a-z])@/yi, (0, combinator_1.tails)([(0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi)]), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.open)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), ([{
   value
-}]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), false, [3 | 0 /* Backtrack.autolink */]))]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}` : `/${source.slice(0, source.indexOf('#'))}`} }`, link_1.unsafelink, false), ([{
+}]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), false, [3 | 0 /* Backtrack.autolink */]))]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}` : `/${source.slice(0, source.indexOf('#'))}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value: el
 }], {
   source,
@@ -6265,11 +6259,7 @@ exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, com
     class: 'channel',
     href: url
   }, src))]);
-}))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
+})))));
 
 /***/ },
 
@@ -6288,20 +6278,16 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://html.spec.whatwg.org/multipage/input.html
-exports.email = (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z][_.+-]?)(?=[0-9a-z])/yi, (0, combinator_1.verify)((0, source_1.str)(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![0-9a-z@#]|>>|:\S)/yi), ([{
+exports.email = (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z][_.+-]?|[@#])(?=[0-9a-z])/yi, (0, combinator_1.verify)((0, source_1.str)(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,255}@[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*(?![.-]?[0-9a-z@#]|>>|:\S)/yi), ([{
   value
-}]) => value.length <= 255), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
+}]) => value.length <= 255), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.union)([({
   context: {
     source
   }
 }) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
   class: 'email',
   href: `mailto:${source}`
-}, source))]))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])]));
+}, source))])]))));
 
 /***/ },
 
@@ -6321,16 +6307,12 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, link_1.unsafelink, false), ([{
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'hashnum',
   href: null
-}))])))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
+}))]))))));
 
 /***/ },
 
@@ -6354,15 +6336,11 @@ const dom_1 = __webpack_require__(394);
 exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
 exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, exports.emoji), 'yu'), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, exports.emoji), 'yu')), ([{
   value
-}]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, link_1.unsafelink, false), ([{
+}]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'hashtag'
-}))])))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
+}))]))))));
 
 /***/ },
 
@@ -6378,18 +6356,11 @@ Object.defineProperty(exports, "__esModule", ({
 exports.lineurl = exports.url = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
+const inline_1 = __webpack_require__(7973);
 const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?)https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])));
-exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), ({
-  context: {
-    source
-  }
-}) => new parser_1.List([new parser_1.Data(source)])])])));
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), (0, combinator_1.open)((0, source_1.str)(/[^:]+/y), (0, combinator_1.some)(inline_1.inline))])));
+exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.convert)(url => `{ ${url} }`, link_1.unsafelink, false))), (0, combinator_1.open)((0, source_1.str)(/[^:]+/y), (0, combinator_1.some)(inline_1.inline))])])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, undefined, () => new parser_1.List(), [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, undefined, () => new parser_1.List(), [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, undefined, () => new parser_1.List(), [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, undefined, () => new parser_1.List(), [3 | 0 /* Backtrack.autolink */])]));
 
 /***/ },
@@ -8971,8 +8942,8 @@ var blank;
 (function (blank) {
   blank.line = new RegExp(
   // TODO: 行全体をエスケープ
-  /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>|\\$)+$/mg.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
-  blank.start = new RegExp(/(?:\\?[^\S\r\n]|&IHN;|<wbr[^\S\n]*>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
+  /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'gm');
+  blank.start = new RegExp(/(?:\\?[^\S\r\n]|&IHN;|<wbr ?>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
 })(blank || (exports.blank = blank = {}));
 function visualize(parser) {
   return (0, combinator_1.convert)(source => source.replace(blank.line, `${"\u001B" /* Command.Escape */}$1`), parser, false);
@@ -8980,7 +8951,7 @@ function visualize(parser) {
 exports.visualize = visualize;
 function blankWith(starts, delimiter) {
   if (delimiter === undefined) return blankWith('', starts);
-  return new RegExp(String.raw`(?:(?=${starts})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr[^\S\n]*>)${
+  return new RegExp(String.raw`(?:(?=${starts})(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr ?>)${
   // 空行除去
   // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
   starts && '+'})?${typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source}`, 'y');
@@ -8990,7 +8961,6 @@ function tightStart(parser, except) {
   return input => isTightStart(input, except) ? parser(input) : undefined;
 }
 exports.tightStart = tightStart;
-const wbr = /<wbr[^\S\n]*>/y;
 function isTightStart(input, except) {
   const {
     context
@@ -9018,9 +8988,8 @@ function isTightStart(input, except) {
       context.position = position;
       return true;
     case '<':
-      wbr.lastIndex = position;
       switch (true) {
-        case source.length - position >= 5 && source.startsWith('<wbr', position) && (source[position + 5] === '>' || wbr.test(source)):
+        case source.length - position >= 5 && source.startsWith('<wbr', position) && (source[position + 4] === '>' || source.startsWith(' >', position + 4)):
           return false;
       }
       return true;
