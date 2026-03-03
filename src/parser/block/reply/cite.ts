@@ -12,7 +12,7 @@ export const cite: ReplyParser.CiteParser = line(fmap(
   open(
     str(syntax),
     union([
-      anchor,
+      line(anchor),
       // Subject page representation.
       // リンクの実装は後で検討
       focus(/>>#\S*(?=\s*$)/y, ({ context: { source } }) => new List([new Data(html('a', { class: 'anchor' }, source))])),
