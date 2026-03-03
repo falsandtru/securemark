@@ -44,7 +44,7 @@ export const segment: FigureParser.SegmentParser = block(match(
       ]),
     ]),
     closer),
-  ([, fence]) => fence.length <= 16 ? fence.length : -1, [])));
+  ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)));
 
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),

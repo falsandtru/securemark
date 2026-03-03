@@ -26,7 +26,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
         context.position = source.length;
         return new List([new Data(source.slice(position))]);
       }))),
-    ([indent]) => indent.length <= 16 ? indent.length * 2 + +(indent[0] === ' ') : -1, [])), separation),
+    ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation),
     (lines, context) => {
       assert(parser = parser as Parser<N>);
       return parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
