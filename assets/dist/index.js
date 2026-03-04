@@ -4397,14 +4397,14 @@ function format(source) {
   return source.replace(/\r\n?/g, '\n');
 }
 function sanitize(source) {
-  return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
+  return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
 }
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
-const unreadableHTMLEntityNames = exports.invisibleHTMLEntityNames.slice(2);
-const unreadableEscapableCharacters = unreadableHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {})).head.value);
-const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');
+const unreadableEscapeHTMLEntityNames = exports.invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
+const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {})).head.value);
+const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
 // http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
@@ -4416,7 +4416,7 @@ const unreadableSpecialCharacters = (/* unused pure expression or super */ null 
 // ZERO WIDTH NON-JOINER
 '\u200C',
 // ZERO WIDTH JOINER
-'\u200D',
+//'\u200D',
 // LEFT-TO-RIGHT MARK
 '\u200E',
 // RIGHT-TO-LEFT MARK
@@ -4439,7 +4439,7 @@ const unreadableSpecialCharacters = (/* unused pure expression or super */ null 
 '\uFEFF']));
 // 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
 function escape(source) {
-  return source.replace(unreadableEscapableCharacter, char => `&${unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)]};`);
+  return source.replace(unreadableEscapeCharacter, char => `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
 }
 exports.escape = escape;
 
@@ -6208,7 +6208,7 @@ const account_1 = __webpack_require__(4107);
 const hashtag_1 = __webpack_require__(5764);
 const hashnum_1 = __webpack_require__(8684);
 const anchor_1 = __webpack_require__(8535);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
 // Escape unmatched email-like strings.
 //str(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi),
 channel_1.channel, account_1.account,
@@ -6292,7 +6292,7 @@ const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi), true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.surround)('#', (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
+exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi), true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.surround)('#', (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
   value
 }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)))]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}` : `/${source.slice(0, source.indexOf('#'))}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value: el
@@ -6355,7 +6355,7 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'hashnum',
@@ -6381,8 +6381,8 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
-exports.emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.verify)((0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, exports.emoji), 'yu'), (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, exports.emoji), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, exports.emoji), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
+exports.emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.verify)((0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
   value
 }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
@@ -7140,19 +7140,10 @@ Object.defineProperty(exports, "__esModule", ({
 exports.htmlentity = exports.unsafehtmlentity = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
+const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.focus)(/&(?:[0-9A-Za-z]+;?)?/y,
-//({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
-({
-  context
-}) => {
-  const {
-    source
-  } = context;
-  context.position += source.length;
-  return source.length > 1 && source.at(-1) === ';' ? new parser_1.List([new parser_1.Data(parser(source) ?? source)]) : new parser_1.List([new parser_1.Data(source)]);
-});
+exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, ([as, bs, cs]) => new parser_1.List([new parser_1.Data(parser(as.head.value + bs.head.value + cs.head.value))]), ([as, bs]) => new parser_1.List([new parser_1.Data(as.head.value + (bs?.head?.value ?? ''))]), [3 | 64 /* Backtrack.bracket */]);
 exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([{
   value
 }]) => new parser_1.List([length === 1 || value.at(-1) !== ';' ? new parser_1.Data(value) : new parser_1.Data((0, dom_1.html)('span', {
@@ -7162,8 +7153,7 @@ exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.uns
 const parser = (el => entity => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
-  const text = el.textContent;
-  return entity === text ? undefined : text;
+  return el.textContent;
 })((0, dom_1.html)('span'));
 
 /***/ },
@@ -7772,6 +7762,7 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinato
       }, acc) => value + ' ' + acc, '').trim())), new parser_1.Data((0, dom_1.html)('rp', ')'))])))))]);
   }
 }));
+const delimiter = /[$"`\[\](){}<>（）［］｛｝]|\\?\n/y;
 const text = input => {
   const {
     context
@@ -7785,11 +7776,12 @@ const text = input => {
   for (let {
     position
   } = context; position < source.length; position = context.position) {
-    if (/[$"`\[\](){}<>（）［］｛｝]|\\?\n/yi.test(source.slice(position, position + 2))) break;
+    delimiter.lastIndex = position;
+    if (delimiter.test(source)) break;
     switch (source[position]) {
       case '&':
         {
-          const result = (0, htmlentity_1.unsafehtmlentity)(input) ?? (0, source_1.txt)(input);
+          const result = source[position + 1] !== ' ' ? (0, htmlentity_1.unsafehtmlentity)(input) ?? (0, source_1.txt)(input) : (0, source_1.txt)(input);
           acc.last.value += result.head.value;
           continue;
         }
@@ -8724,7 +8716,6 @@ function seek(source, position) {
       case '@':
       case '#':
       case '$':
-      case '&':
       case '"':
       case '`':
       case '[':
@@ -8759,6 +8750,9 @@ function seek(source, position) {
         continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
+        continue;
+      case '&':
+        if (source[i + 1] !== ' ') return i;
         continue;
       case ' ':
       case '\t':
