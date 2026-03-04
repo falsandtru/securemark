@@ -67,12 +67,20 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\x01---\na: b\x01\n---\n\n!> \x01---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---\n\n!> \uFFFD---\na: b\uFFFD\n---');
     });
 
+    it('emoji', () => {
+      assert(normalize('😀') === '😀');
+      assert(normalize('🤚🏽') === '🤚🏽');
+      assert(normalize('👨‍👩‍👧') === '👨‍👩‍👧');
+      assert(normalize('🇺🇳') === '🇺🇳');
+      assert(normalize('#️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣') === '#️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣');
+    });
+
   });
 
   describe('escape', () => {
     it('', () => {
       assert(escape('\u200B') === '&ZeroWidthSpace;');
-      assert(escape('\u200D') === '&zwj;');
+      assert(escape('\u200F') === '&rlm;');
     });
 
   });

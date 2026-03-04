@@ -9,19 +9,19 @@ import { define } from 'typed-dom/dom';
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
-export const emoji = String.raw`\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F`;
+export const emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
 
 export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
   verify(surround(
     new RegExp([
       /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
-    ].join('').replace(/emoji/g, emoji), 'yu'),
+    ].join('').replace(/emoji/g, emoji.source), 'yu'),
     str(new RegExp([
       /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source,
-    ].join('').replace(/emoji/g, emoji), 'yu')),
+    ].join('').replace(/emoji/g, emoji.source), 'yu')),
     str(new RegExp([
       /(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
-    ].join('').replace(/emoji/g, emoji), 'yu')),
+    ].join('').replace(/emoji/g, emoji.source), 'yu')),
     false, undefined, undefined,
     [3 | Backtrack.autolink]),
     ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)),

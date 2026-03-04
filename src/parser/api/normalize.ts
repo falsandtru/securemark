@@ -15,7 +15,7 @@ function format(source: string): string {
 
 function sanitize(source: string): string {
   return source
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER)
     .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char =>
       char.length === 1
         ? UNICODE_REPLACEMENT_CHARACTER
@@ -58,13 +58,20 @@ export const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ] as const;
-const unreadableHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames.slice(2);
-const unreadableEscapableCharacters = unreadableHTMLEntityNames
+const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => ![
+  'Tab',
+  'NewLine',
+  'NonBreakingSpace',
+  'nbsp',
+  'zwj',
+  'zwnj',
+].includes(name));
+const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames
   .map(name => unsafehtmlentity(input(`&${name};`, {}))!.head!.value);
-assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
-assert(unreadableEscapableCharacters.every(c => c.length === 1));
-const unreadableEscapableCharacter = new RegExp(`[${unreadableEscapableCharacters.join('')}]`, 'g');
-assert(!unreadableEscapableCharacter.source.includes('&'));
+assert(unreadableEscapeCharacters.length === unreadableEscapeHTMLEntityNames.length);
+assert(unreadableEscapeCharacters.every(c => c.length === 1));
+const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
+assert(!unreadableEscapeCharacter.source.includes('&'));
 
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
@@ -77,7 +84,7 @@ const unreadableSpecialCharacters = [
   // ZERO WIDTH NON-JOINER
   '\u200C',
   // ZERO WIDTH JOINER
-  '\u200D',
+  //'\u200D',
   // LEFT-TO-RIGHT MARK
   '\u200E',
   // RIGHT-TO-LEFT MARK
@@ -104,6 +111,6 @@ assert(unreadableSpecialCharacters.every(c => sanitize(c) === UNICODE_REPLACEMEN
 // 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
 export function escape(source: string): string {
   return source
-    .replace(unreadableEscapableCharacter, char =>
-      `&${unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)]};`);
+    .replace(unreadableEscapeCharacter, char =>
+      `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
 }

@@ -21,10 +21,10 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
       '#',
       str(new RegExp([
         /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source,
-      ].join('').replace(/emoji/g, emoji), 'yu')),
+      ].join('').replace(/emoji/g, emoji.source), 'yu')),
       str(new RegExp([
         /(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
-      ].join('').replace(/emoji/g, emoji), 'yu')),
+      ].join('').replace(/emoji/g, emoji.source), 'yu')),
       false, undefined, undefined,
       [3 | Backtrack.autolink]),
       ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value as string))),

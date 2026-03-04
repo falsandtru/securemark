@@ -15,7 +15,7 @@ export const autolink: AutolinkParser = lazy(() =>
     /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
     /(?<![0-9a-z])>>/yi.source,
     /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source,
-  ].join('|').replace(/emoji/g, emoji), 'yiu'),
+  ].join('|').replace(/emoji/g, emoji.source), 'yiu'),
   state(~State.autolink,
   union([
     lineurl,

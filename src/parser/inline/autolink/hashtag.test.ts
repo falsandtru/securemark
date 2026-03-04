@@ -54,10 +54,14 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a_b'), ctx), [['<a class="hashtag" href="/hashtags/a_b">#a_b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#a__b'), ctx), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '__b']);
       assert.deepStrictEqual(inspect(parser('#あ'), ctx), [['<a class="hashtag" href="/hashtags/あ">#あ</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#👩'), ctx), [['<a class="hashtag" href="/hashtags/👩">#👩</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#😀'), ctx), [['<a class="hashtag" href="/hashtags/😀">#😀</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#🤚🏽'), ctx), [['<a class="hashtag" href="/hashtags/🤚🏽">#🤚🏽</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#👨‍👩‍👧'), ctx), [['<a class="hashtag" href="/hashtags/👨‍👩‍👧">#👨‍👩‍👧</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#🇺🇳'), ctx), [['<a class="hashtag" href="/hashtags/🇺🇳">#🇺🇳</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('##️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣'), ctx), [['<a class="hashtag" href="/hashtags/#️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣">##️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1a'), ctx), [['<a class="hashtag" href="/hashtags/1a">#1a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1あ'), ctx), [['<a class="hashtag" href="/hashtags/1あ">#1あ</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#1👩'), ctx), [['<a class="hashtag" href="/hashtags/1👩">#1👩</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#1😀'), ctx), [['<a class="hashtag" href="/hashtags/1😀">#1😀</a>'], '']);
       assert.deepStrictEqual(inspect(parser(`#a'`), ctx), [[`<a class="hashtag" href="/hashtags/a">#a</a>`], `'`]);
       assert.deepStrictEqual(inspect(parser(`#a''`), ctx), [[`<a class="hashtag" href="/hashtags/a">#a</a>`], `''`]);
       assert.deepStrictEqual(inspect(parser(`#a'b`), ctx), [[`<a class="hashtag" href="/hashtags/a'b">#a'b</a>`], '']);
