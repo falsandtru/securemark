@@ -66,6 +66,7 @@ export const inline: InlineParser = lazy(() => union([
           case '%':
             return remark(input)
                 || textlink(input)
+                || ruby(input)
                 || bracket(input);
           case '#':
           case '$':
@@ -74,6 +75,7 @@ export const inline: InlineParser = lazy(() => union([
           case '|':
             return extension(input)
                 || textlink(input)
+                || ruby(input)
                 || bracket(input);
         }
         return textlink(input)
