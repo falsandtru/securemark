@@ -1057,7 +1057,9 @@ export namespace MarkdownParser {
     export interface UnsafeHTMLEntityParser extends
       // &copy;
       Inline<'unsafehtmlentity'>,
-      Parser<string, Context, []> {
+      Parser<string, Context, [
+        SourceParser.StrParser,
+      ]> {
     }
     export interface ShortMediaParser extends
       // !https://host

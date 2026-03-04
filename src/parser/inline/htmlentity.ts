@@ -1,19 +1,19 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
+import { Backtrack } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, focus, fmap } from '../../combinator';
+import { union, surround, fmap } from '../../combinator';
+import { str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-export const unsafehtmlentity: UnsafeHTMLEntityParser = focus(
-  /&(?:[0-9A-Za-z]+;?)?/y,
-  //({ source }) => [[parser(source) ?? `${Command.Error}${source}`], '']));
-  ({ context }) => {
-    const { source } = context;
-    context.position += source.length;
-    return source.length > 1 && source.at(-1) === ';'
-      ? new List([new Data(parser(source) ?? source)])
-      : new List([new Data(source)]);
-  });
+export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
+  str('&'), str(/[0-9A-Za-z]+/y), str(';'),
+  false,
+  ([as, bs, cs]) =>
+    new List([new Data(parser(as.head!.value + bs.head!.value + cs.head!.value))]),
+  ([as, bs]) =>
+    new List([new Data(as.head!.value + (bs?.head?.value ?? ''))]),
+  [3 | Backtrack.bracket]);
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
@@ -26,11 +26,8 @@ export const htmlentity: HTMLEntityParser = fmap(
       }, value))
   ]));
 
-const parser = (el => (entity: string): string | undefined => {
+const parser = (el => (entity: string): string => {
   if (entity === '&NewLine;') return ' ';
   el.innerHTML = entity;
-  const text = el.textContent!;
-  return entity === text
-    ? undefined
-    : text;
+  return el.textContent!;
 })(html('span'));
