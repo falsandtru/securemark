@@ -63,6 +63,8 @@ export const ruby: RubyParser = lazy(() => bind(
     }
   }));
 
+const delimiter = /[$"`\[\](){}<>（）［］｛｝]|\\?\n/y;
+
 const text: RubyParser.TextParser = input => {
   const { context } = input;
   const { source } = context;
@@ -70,7 +72,8 @@ const text: RubyParser.TextParser = input => {
   let state = false;
   context.sequential = true;
   for (let { position } = context; position < source.length; position = context.position) {
-    if (/[$"`\[\](){}<>（）［］｛｝]|\\?\n/yi.test(source.slice(position, position + 2))) break;
+    delimiter.lastIndex = position;
+    if (delimiter.test(source)) break;
     assert(source[position] !== '\n');
     switch (source[position]) {
       case '&': {
