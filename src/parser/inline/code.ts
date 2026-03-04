@@ -1,26 +1,20 @@
 import { CodeParser } from '../inline';
 import { List, Data } from '../../combinator/data/parser';
-import { open, match } from '../../combinator';
-import { Backtrack } from '../context';
+import { match } from '../../combinator';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-export const code: CodeParser = open(
-  /(?=`)/y,
-  match(
-    /(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y,
-    ([whole, opener, body, closer]) => () =>
-      closer
-        ? new List([new Data(html('code', { 'data-src': whole }, format(body)))])
-        : body
-          ? new List([new Data(html('code', {
-              class: 'invalid',
-              ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
-            }, whole))])
-          : new List([new Data(opener)]),
-    true),
-  false,
-  [3 | Backtrack.bracket]);
+export const code: CodeParser = match(
+  /(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y,
+  ([whole, opener, body, closer]) => () =>
+    closer
+      ? new List([new Data(html('code', { 'data-src': whole }, format(body)))])
+      : body
+        ? new List([new Data(html('code', {
+            class: 'invalid',
+            ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
+          }, whole))])
+        : new List([new Data(opener)]));
 
 function format(text: string): string {
   return text.length > 2

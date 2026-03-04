@@ -1,4 +1,5 @@
 import { Parser, List, Data, Ctx, failsafe } from '../../data/parser';
+import { consume } from '../../../combinator';
 import { firstline, isBlank } from '../constraint/line';
 import { push } from 'spica/array';
 
@@ -12,6 +13,7 @@ export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: Reg
     const matches = opener.exec(source);
     if (!matches) return;
     assert(matches[0] === firstline(source, position));
+    consume(matches[0].length, context);
     const delim = matches[1];
     assert(delim && delim === delim.trim());
     if (matches[0].includes(delim, delim.length)) return;
