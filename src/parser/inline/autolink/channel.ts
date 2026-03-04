@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
 import { List, Data } from '../../../combinator/data/parser';
-import { union, tails, sequence, some, state, constraint, verify, rewrite, open, convert, fmap, lazy } from '../../../combinator';
+import { union, sequence, some, state, constraint, verify, rewrite, surround, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { emoji } from './hashtag';
 import { str } from '../../source';
@@ -11,23 +11,23 @@ import { define } from 'typed-dom/dom';
 
 export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
   sequence([
-    open(
+    surround(
       /(?<![0-9a-z])@/yi,
-      tails([
-        str(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi),
-        str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
-      ]),
-      false,
+      str(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi),
+      str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
+      true, undefined, undefined,
       [3 | Backtrack.autolink]),
-    some(open(
+    some(verify(surround(
       '#',
-      verify(
-        str(new RegExp([
-          /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^'\p{C}\p{S}\p{P}\s]|emoji))+(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
-        ].join('').replace(/emoji/g, emoji), 'yu')),
-        ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)),
-      false,
-      [3 | Backtrack.autolink])),
+      str(new RegExp([
+        /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source,
+      ].join('').replace(/emoji/g, emoji), 'yu')),
+      str(new RegExp([
+        /(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
+      ].join('').replace(/emoji/g, emoji), 'yu')),
+      false, undefined, undefined,
+      [3 | Backtrack.autolink]),
+      ([{ value }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value as string))),
   ]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source =>

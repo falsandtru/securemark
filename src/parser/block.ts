@@ -114,7 +114,7 @@ export const block: BlockParser = reset(
   ]) as any));
 
 function error(parser: BlockParser): BlockParser {
-  const reg = new RegExp(String.raw`^${Command.Error}.*\n`)
+  const reg = new RegExp(String.raw`^${Command.Error}[^\n]*\n`)
   return recover<BlockParser>(fallback(
     open(Command.Error, ({ context: { source, position } }) => { throw new Error(source.slice(position).split('\n', 1)[0]); }),
     parser),

@@ -8,7 +8,7 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 export namespace blank {
   export const line = new RegExp(
     // TODO: 行全体をエスケープ
-    /^(?:[^\S\r\n])*(?!\s)(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source
+    /^(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'gm');
   export const start = new RegExp(
