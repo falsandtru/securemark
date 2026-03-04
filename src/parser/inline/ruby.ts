@@ -77,7 +77,9 @@ const text: RubyParser.TextParser = input => {
     assert(source[position] !== '\n');
     switch (source[position]) {
       case '&': {
-        const result = unsafehtmlentity(input) ?? txt(input)!;
+        const result = source[position + 1] !== ' '
+          ? unsafehtmlentity(input) ?? txt(input)!
+          : txt(input)!;
         assert(result);
         acc.last!.value += result.head!.value;
         continue;

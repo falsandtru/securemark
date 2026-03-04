@@ -238,7 +238,6 @@ function seek(source: string, position: number): number {
       case '@':
       case '#':
       case '$':
-      case '&':
       case '"':
       case '`':
       case '[':
@@ -273,6 +272,9 @@ function seek(source: string, position: number): number {
         continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
+        continue;
+      case '&':
+        if (source[i + 1] !== ' ') return i;
         continue;
       case ' ':
       case '\t':
