@@ -23,7 +23,7 @@ export const htmlentity: HTMLEntityParser = fmap(
       : new Data(html('span', {
           class: 'invalid',
           ...invalid('htmlentity', 'syntax', 'Invalid HTML entity'),
-      }, value))
+        }, value))
   ]));
 
 const parser = (el => (entity: string): string => {
