@@ -24,7 +24,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
       context.delimiters.push(delims);
     }
     // whileは数倍遅い
-    for (; context.position < source.length;) {
+    for (const len = source.length; context.position < len;) {
       if (match(input)) break;
       if (context.delimiters?.match(input)) break;
       const result = parser(input);
