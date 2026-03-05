@@ -16,10 +16,7 @@ function format(source: string): string {
 function sanitize(source: string): string {
   return source
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER)
-    .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char =>
-      char.length === 1
-        ? UNICODE_REPLACEMENT_CHARACTER
-        : char);
+    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, UNICODE_REPLACEMENT_CHARACTER);
 }
 
 // https://dev.w3.org/html5/html-author/charref
