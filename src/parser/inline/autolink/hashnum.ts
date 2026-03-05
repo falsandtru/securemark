@@ -9,7 +9,7 @@ import { define } from 'typed-dom/dom';
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
   open(
     new RegExp([
-      /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
+      /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source,
     ].join('').replace(/emoji/g, emoji.source), 'yu'),
     new RegExp([
       /[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,

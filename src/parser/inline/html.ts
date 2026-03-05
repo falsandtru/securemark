@@ -23,7 +23,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
   union([
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/yi),
+      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y),
       some(union([attribute])),
       open(str(/ ?/y), str('>'), true),
       true,
