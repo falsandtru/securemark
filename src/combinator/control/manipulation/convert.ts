@@ -8,6 +8,7 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
     const { source, position } = context;
     if (position === source.length) return;
     const src = conv(source.slice(position), context);
+    assert(context.position === position);
     if (src === '') {
       if (!empty) return;
       context.position = source.length;
@@ -22,7 +23,7 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
       return result;
     }
     else {
-    const { offset, backtracks } = context;
+      const { offset, backtracks } = context;
       const result = parser(subinput(src, context));
       context.position = context.source.length
       assert(context.offset === offset);
