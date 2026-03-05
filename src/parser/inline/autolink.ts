@@ -1,35 +1,47 @@
 import { AutolinkParser } from '../inline';
 import { State } from '../context';
-import { union, state, validate, lazy } from '../../combinator';
+import { state, lazy } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
 import { account } from './autolink/account';
-import { hashtag, emoji } from './autolink/hashtag';
+import { hashtag } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
+import { isAlphanumeric } from '../source/text';
 
 export const autolink: AutolinkParser = lazy(() =>
-  validate(new RegExp([
-    /(?<![0-9a-z])@/yi.source,
-    /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
-    /(?<![0-9a-z])>>/yi.source,
-    /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source,
-  ].join('|').replace(/emoji/g, emoji.source), 'yiu'),
   state(~State.autolink,
-  union([
-    lineurl,
-    url,
-    email,
-    // Escape unmatched email-like strings.
-    //str(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi),
-    channel,
-    account,
-    // Escape unmatched account-like strings.
-    //str(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi),
-    hashtag,
-    hashnum,
-    // Escape unmatched hashtag-like strings.
-    //str(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, emoji), 'yu')),
-    anchor,
-  ]))));
+  input => {
+    const { context: { source, position } } = input;
+    if (position === source.length) return;
+    const fst = source[position];
+    switch (fst) {
+      case '@':
+        return channel(input) || account(input);
+      case '#':
+        return hashtag(input) || hashnum(input);
+      case '>':
+        return anchor(input);
+      case '!':
+        if (!source.startsWith('http', position + 1)) break;
+        if (position === 0) return lineurl(input);
+        switch (source[position - 1]) {
+          case '\r':
+          case '\n':
+            return lineurl(input);
+        }
+        break;
+      case 'h':
+        if (!source.startsWith('http', position)) return;
+        if (position === 0) return lineurl(input) || url(input) || email(input);
+        switch (source[position - 1]) {
+          case '\r':
+          case '\n':
+            return lineurl(input) || url(input) || email(input);
+        }
+        return url(input) || email(input);
+      default:
+        if (isAlphanumeric(fst)) return email(input);
+    }
+  }));

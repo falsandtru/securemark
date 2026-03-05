@@ -5,6 +5,7 @@ import { reference } from './inline/reference';
 import { template } from './inline/template';
 import { remark } from './inline/remark';
 import { extension } from './inline/extension';
+import { label } from './inline/extension/label';
 import { textlink } from './inline/link';
 import { ruby } from './inline/ruby';
 import { html } from './inline/html';
@@ -94,7 +95,7 @@ export const inline: InlineParser = lazy(() => union([
         return html(input);
       case '$':
         if (source[position + 1] === '{') return math(input);
-        return extension(input)
+        return label(input)
             || math(input);
       case '+':
         if (source[position + 1] === '+') return insertion(input);

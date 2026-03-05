@@ -185,12 +185,12 @@ export function backToEmailHead(source: string, position: number, index: number)
     ? delim
     : index;
 }
-function isAlphanumeric(char: string): boolean {
+export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9'
-      || 'a' <= char && char <= 'z'
-      || 'A' <= char && char <= 'Z';
+      || 'A' <= char && char <= 'Z'
+      || 'a' <= char && char <= 'z';
 }
 
 //const dict = new class {
