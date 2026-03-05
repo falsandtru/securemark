@@ -2894,9 +2894,7 @@ function indent(opener, parser = false, separation = false) {
     } = context;
     context.position = source.length;
     return new parser_1.List([new parser_1.Data(source.slice(position))]);
-  }))), ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation), (lines, context) => {
-    return parser((0, parser_1.subinput)(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
-  }));
+  }))), ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation), (lines, context) => parser((0, parser_1.subinput)(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context))));
 }
 exports.indent = indent;
 function trimBlockEnd(block) {
@@ -3094,6 +3092,11 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
     case 'object':
       opener = (0, combinator_1.clear)((0, combinator_1.matcher)(opener, true));
   }
+  switch (typeof parser) {
+    case 'string':
+    case 'object':
+      parser = (0, combinator_1.clear)((0, combinator_1.matcher)(parser, true));
+  }
   switch (typeof closer) {
     case 'string':
     case 'object':
@@ -3124,16 +3127,14 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
     if (!nodesM && !optional) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
-      revert(context, linebreak);
-      return result;
+      return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
     if (!nodesC) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
-      revert(context, linebreak);
-      return result;
+      return result || void revert(context, linebreak);
     }
     if (context.position === position) {
       return void revert(context, linebreak);
@@ -3142,10 +3143,8 @@ function surround(opener, parser, closer, optional = false, f, g, backtracks = [
     const result = f ? f([nodesO, nodesM, nodesC], context) : nodesO.import(nodesM ?? new parser_1.List()).import(nodesC);
     if (result) {
       context.linebreak ||= linebreak;
-    } else {
-      revert(context, linebreak);
     }
-    return result;
+    return result || void revert(context, linebreak);
   });
 }
 exports.surround = surround;
@@ -3183,7 +3182,7 @@ function isBacktrack(context, backtracks, position = context.position, length = 
 }
 exports.isBacktrack = isBacktrack;
 function setBacktrack(context, backtracks, position, length = 1) {
-  // 以降バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
+  // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
   const {
     source
   } = context;
@@ -4396,8 +4395,9 @@ exports.normalize = normalize;
 function format(source) {
   return source.replace(/\r\n?/g, '\n');
 }
+const invalid = new RegExp([/(?![\t\r\n])[\x00-\x1F\x7F]/g.source, /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g.source, /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source].join('|'), 'g');
 function sanitize(source) {
-  return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
+  return source.replace(invalid, UNICODE_REPLACEMENT_CHARACTER);
 }
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
@@ -6041,6 +6041,7 @@ const reference_1 = __webpack_require__(9047);
 const template_1 = __webpack_require__(4510);
 const remark_1 = __webpack_require__(8948);
 const extension_1 = __webpack_require__(2743);
+const label_1 = __webpack_require__(2178);
 const link_1 = __webpack_require__(3628);
 const ruby_1 = __webpack_require__(7304);
 const html_1 = __webpack_require__(5013);
@@ -6096,7 +6097,7 @@ exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input => 
       return (0, html_1.html)(input);
     case '$':
       if (source[position + 1] === '{') return (0, math_1.math)(input);
-      return (0, extension_1.extension)(input) || (0, math_1.math)(input);
+      return (0, label_1.label)(input) || (0, math_1.math)(input);
     case '+':
       if (source[position + 1] === '+') return (0, insertion_1.insertion)(input);
       break;
@@ -6208,16 +6209,45 @@ const account_1 = __webpack_require__(4107);
 const hashtag_1 = __webpack_require__(5764);
 const hashnum_1 = __webpack_require__(8684);
 const anchor_1 = __webpack_require__(8535);
-exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(new RegExp([/(?<![0-9a-z])@/yi.source, /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source, /(?<![0-9a-z])>>/yi.source, /(?<![0-9a-z][.+-]?|[@#])!?[0-9a-z]/yi.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yiu'), (0, combinator_1.state)(~1 /* State.autolink */, (0, combinator_1.union)([url_1.lineurl, url_1.url, email_1.email,
-// Escape unmatched email-like strings.
-//str(/[0-9a-z]+(?:[_.+-][0-9a-z]+[:@]?|:|@(?=@))*/yi),
-channel_1.channel, account_1.account,
-// Escape unmatched account-like strings.
-//str(/@+(?:[0-9a-z]+(?:[_.+-][0-9a-z]+)*)?/yi),
-hashtag_1.hashtag, hashnum_1.hashnum,
-// Escape unmatched hashtag-like strings.
-//str(new RegExp(/#+(?:(?:[^\p{C}\p{S}\p{P}\s]|emoji)+(?:['_.+-](?:[^\p{C}\p{S}\p{P}\s]|emoji)+)*)?/yu.source.replace(/emoji/g, emoji), 'yu')),
-anchor_1.anchor]))));
+const text_1 = __webpack_require__(5655);
+exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.state)(~1 /* State.autolink */, input => {
+  const {
+    context: {
+      source,
+      position
+    }
+  } = input;
+  if (position === source.length) return;
+  const fst = source[position];
+  switch (fst) {
+    case '@':
+      return (0, channel_1.channel)(input) || (0, account_1.account)(input);
+    case '#':
+      return (0, hashtag_1.hashtag)(input) || (0, hashnum_1.hashnum)(input);
+    case '>':
+      return (0, anchor_1.anchor)(input);
+    case '!':
+      if (!source.startsWith('http', position + 1)) break;
+      if (position === 0) return (0, url_1.lineurl)(input);
+      switch (source[position - 1]) {
+        case '\r':
+        case '\n':
+          return (0, url_1.lineurl)(input);
+      }
+      break;
+    case 'h':
+      if (!source.startsWith('http', position)) return;
+      if (position === 0) return (0, url_1.lineurl)(input) || (0, url_1.url)(input) || (0, email_1.email)(input);
+      switch (source[position - 1]) {
+        case '\r':
+        case '\n':
+          return (0, url_1.lineurl)(input) || (0, url_1.url)(input) || (0, email_1.email)(input);
+      }
+      return (0, url_1.url)(input) || (0, email_1.email)(input);
+    default:
+      if ((0, text_1.isAlphanumeric)(fst)) return (0, email_1.email)(input);
+  }
+}));
 
 /***/ },
 
@@ -6234,10 +6264,9 @@ exports.account = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
-const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@#]|>>|:\S)/yi), true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.surround)(/(?<![0-9a-z])@/yi, /[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi, /[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@#]|>>|:\S)/yi, true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1).replace('/', '/@')}` : `/${source}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'account'
@@ -6258,7 +6287,6 @@ exports.anchor = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
-const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // Timeline(pseudonym): user/tid
 // Thread(anonymous): cid
@@ -6267,7 +6295,7 @@ const dom_1 = __webpack_require__(394);
 // cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi), false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9a-z])>>/yi, /(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi, false, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `/@${source.slice(2).replace('/', '/timeline?at=')}` : `?at=${source.slice(2)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'anchor'
@@ -6292,7 +6320,7 @@ const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi), true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.surround)('#', (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
+exports.channel = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.sequence)([(0, combinator_1.surround)(/(?<![0-9a-z])@/yi, /[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi, /[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi, true, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), (0, combinator_1.some)((0, combinator_1.verify)((0, combinator_1.surround)('#', (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
   value
 }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)))]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.includes('/') ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}` : `/${source.slice(0, source.indexOf('#'))}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value: el
@@ -6353,9 +6381,8 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
-const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), false, [1 | 0 /* Backtrack.autolink */]), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${source.slice(1)} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
   class: 'hashnum',
@@ -6382,7 +6409,7 @@ const dom_1 = __webpack_require__(394);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.verify)((0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu')), (0, source_1.str)(new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('').replace(/emoji/g, exports.emoji.source), 'yu')), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.verify)((0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu')), new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), false, undefined, undefined, [3 | 0 /* Backtrack.autolink */]), ([{
   value
 }]) => !/^[0-9]{1,4}$|^[0-9]{5}/.test(value)), (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.fmap)((0, combinator_1.convert)(source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`, (0, combinator_1.union)([link_1.unsafelink]), false), ([{
   value
@@ -7065,7 +7092,7 @@ Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[ >])/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
+(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
 // 不可視のHTML構造が可視構造を変化させるべきでない。
 // 可視のHTMLは優先度変更を検討する。
 // このため<>は将来的に共通構造を変化させる可能性があり
@@ -8509,7 +8536,7 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.backToEmailHead = exports.backToUrlHead = exports.backToWhitespace = exports.next = exports.canSkip = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = void 0;
+exports.isAlphanumeric = exports.backToEmailHead = exports.backToUrlHead = exports.backToWhitespace = exports.next = exports.canSkip = exports.linebreak = exports.txt = exports.text = exports.nonWhitespace = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
@@ -8670,8 +8697,9 @@ function backToEmailHead(source, position, index) {
 exports.backToEmailHead = backToEmailHead;
 function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
-  return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
+  return '0' <= char && char <= '9' || 'A' <= char && char <= 'Z' || 'a' <= char && char <= 'z';
 }
+exports.isAlphanumeric = isAlphanumeric;
 //const dict = new class {
 //  constructor() {
 //    [
