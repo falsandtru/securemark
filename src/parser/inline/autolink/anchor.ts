@@ -3,7 +3,6 @@ import { State, Backtrack } from '../../context';
 import { List, Data } from '../../../combinator/data/parser';
 import { union, state, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
-import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
 // Timeline(pseudonym): user/tid
@@ -19,7 +18,7 @@ import { define } from 'typed-dom/dom';
 export const anchor: AutolinkParser.AnchorParser = lazy(() => rewrite(
   open(
     /(?<![0-9a-z])>>/yi,
-    str(/(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi),
+    /(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*\/)?[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi,
     false,
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(

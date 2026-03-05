@@ -4,7 +4,6 @@ import { List, Data } from '../../../combinator/data/parser';
 import { union, state, constraint, rewrite, open, convert, fmap, lazy } from '../../../combinator';
 import { unsafelink } from '../link';
 import { emoji } from './hashtag';
-import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
@@ -12,9 +11,9 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => rewrite(
     new RegExp([
       /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yiu.source,
     ].join('').replace(/emoji/g, emoji.source), 'yu'),
-    str(new RegExp([
+    new RegExp([
       /[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
-    ].join('').replace(/emoji/g, emoji.source), 'yu')),
+    ].join('').replace(/emoji/g, emoji.source), 'yu'),
     false,
     [1 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
