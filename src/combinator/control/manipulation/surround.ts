@@ -85,8 +85,7 @@ export function surround<N>(
     if (!nodesM && !optional) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
-      revert(context, linebreak);
-      return result;
+      return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     assert(context.position >= position);
@@ -94,8 +93,7 @@ export function surround<N>(
     if (!nodesC) {
       setBacktrack(context, backtracks, position);
       const result = g?.([nodesO, nodesM], context);
-      revert(context, linebreak);
-      return result;
+      return result || void revert(context, linebreak);
     }
     if (context.position === position) {
       return void revert(context, linebreak);
@@ -107,10 +105,7 @@ export function surround<N>(
     if (result) {
       context.linebreak ||= linebreak;
     }
-    else {
-      revert(context, linebreak);
-    }
-    return result;
+    return result || void revert(context, linebreak);
   });
 }
 export function open<P extends Parser<unknown>>(
