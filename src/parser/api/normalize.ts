@@ -9,14 +9,16 @@ export function normalize(source: string): string {
 }
 
 function format(source: string): string {
-  return source
-    .replace(/\r\n?/g, '\n');
+  return source.replace(/\r\n?/g, '\n');
 }
 
+const invalid = new RegExp([
+  /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g.source,
+  /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g.source,
+  /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
+].join('|'), 'g');
 function sanitize(source: string): string {
-  return source
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g, UNICODE_REPLACEMENT_CHARACTER)
-    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, UNICODE_REPLACEMENT_CHARACTER);
+  return source.replace(invalid, UNICODE_REPLACEMENT_CHARACTER);
 }
 
 // https://dev.w3.org/html5/html-author/charref
@@ -107,7 +109,6 @@ assert(unreadableSpecialCharacters.every(c => sanitize(c) === UNICODE_REPLACEMEN
 
 // 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
 export function escape(source: string): string {
-  return source
-    .replace(unreadableEscapeCharacter, char =>
-      `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
+  return source.replace(unreadableEscapeCharacter, char =>
+    `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
 }
