@@ -10,8 +10,12 @@ export function union<N, D extends Parser<N>[]>(parsers: D): Parser<N, Ctx, D> {
       return parsers[0];
     default:
       return eval([
+        '((',
+        parsers.map((_, i) => `parser${i},`).join(''),
+        ') =>',
         'input =>',
-        parsers.map((_, i) => `|| parsers[${i}](input)`).join('').slice(2),
-      ].join(''));
+        parsers.map((_, i) => `|| parser${i}(input)`).join('').slice(2),
+        ')',
+      ].join(''))(...parsers);
   }
 }
