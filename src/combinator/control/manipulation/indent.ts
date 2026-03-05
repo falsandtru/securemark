@@ -16,7 +16,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
     opener = / {1,4}|\t{1,2}/y;
   }
   assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
-  assert(parser);
+  assert(parser = parser as Parser<N>);
   return failsafe(bind(block(match(
     opener,
     memoize(
@@ -27,10 +27,8 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
         return new List([new Data(source.slice(position))]);
       }))),
     ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation),
-    (lines, context) => {
-      assert(parser = parser as Parser<N>);
-      return parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context));
-    }));
+    (lines, context) =>
+      parser(subinput(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context))));
 }
 
 function trimBlockEnd(block: string): string {

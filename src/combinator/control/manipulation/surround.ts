@@ -55,16 +55,19 @@ export function surround<N>(
     case 'object':
       opener = clear(matcher(opener, true));
   }
+  assert(opener);
   switch (typeof parser) {
     case 'string':
     case 'object':
       parser = clear(matcher(parser, true));
   }
+  assert(parser);
   switch (typeof closer) {
     case 'string':
     case 'object':
       closer = clear(matcher(closer, true));
   }
+  assert(closer);
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
