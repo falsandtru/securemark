@@ -16,7 +16,7 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     context.source = source;
     context.offset -= position;
     if (result === undefined) return;
-    if (!isBlank(source.slice(context.position, position + line.length))) return;
+    if (context.position < position + line.length && !isBlankline(source, context.position)) return;
     context.position = position + line.length;
     return result;
   });
@@ -29,8 +29,10 @@ export function firstline(source: string, position: number): string {
     : source.slice(position, i + 1);
 }
 
-export function isBlank(line: string): boolean {
-  return line === ''
-      || line === '\n'
-      || line.trimStart() === '';
+const blankline = /[^\S\n]*(?:$|\n)/y;
+export function isBlankline(source: string, position: number): boolean {
+  blankline.lastIndex = position;
+  return source.length === position
+      || source[position] === '\n'
+      || blankline.test(source);
 }
