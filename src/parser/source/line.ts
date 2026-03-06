@@ -8,6 +8,7 @@ export const anyline: AnyLineParser = input => {
   context.position = source.indexOf('\n', position) + 1 || source.length;
   return new List();
 };
+
 const regEmptyline = /[^\S\n]*(?:$|\n)/y;
 export const emptyline: EmptyLineParser = input => {
   const { context } = input;
@@ -21,6 +22,7 @@ export const emptyline: EmptyLineParser = input => {
   context.position = i;
   return new List();
 };
+
 const regContentline = /[^\S\n]*\S[^\n]*(?:$|\n)/y;
 export const contentline: ContentLineParser = input => {
   const { context } = input;
@@ -33,4 +35,4 @@ export const contentline: ContentLineParser = input => {
   if (i === 0) return;
   context.position = i;
   return new List();
-}
+};
