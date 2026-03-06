@@ -2,10 +2,10 @@ import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, inits, tails, sequence, subsequence, some, creation, precedence, state, constraint, surround, open, setBacktrack, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, sequence, subsequence, some, creation, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
-import { unescsource, str } from '../source';
+import { str } from '../source';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
 import { unwrap, invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
@@ -85,18 +85,6 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
   ]),
   ([{ value: content }, { value: params }], context) =>
     new List([new Data(parse(content, params as List<Data<string>>, context))]))))));
-
-export const unsafelink: LinkParser.UnsafeLinkParser = lazy(() =>
-  creation(10,
-  bind(reverse(tails([
-    dup(surround(
-      '[',
-      some(union([unescsource]), ']'),
-      ']')),
-    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
-  ])),
-  ([{ value: params }, { value: content } = new Data(new List<Data<string>>())], context) =>
-    new List([new Data(parse(content, params, context))]))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/ /y, str(/\S+/y)),

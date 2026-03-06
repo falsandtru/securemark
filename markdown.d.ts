@@ -808,13 +808,6 @@ export namespace MarkdownParser {
           LinkParser.ParameterParser,
         ]> {
       }
-      export interface UnsafeLinkParser extends
-        Inline<'link/unsafelink'>,
-        Parser<HTMLAnchorElement, Context, [
-          LinkParser.TextParser,
-          LinkParser.ParameterParser,
-        ]> {
-      }
       export interface ContentParser extends
         Inline<'link/content'>,
         Parser<List<Data<string | HTMLElement>>, Context, [

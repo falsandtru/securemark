@@ -1,8 +1,8 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
-import { List, Data, subinput } from '../../combinator/data/parser';
+import { List, Data } from '../../combinator/data/parser';
 import { union, inits, tails, some, creation, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
-import { unsafelink, uri, option as linkoption, resolve, decode } from './link';
+import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
 import { txt, str } from '../source';
@@ -97,15 +97,15 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
     }
     if (context.state! & State.link) return new List([new Data(el)]);
     if (cache && cache.tagName !== 'IMG') return new List([new Data(el)]);
-    const { source, position } = context;
-    return fmap(
-      unsafelink as MediaParser,
-      ([{ value }]) => {
-        context.source = source;
-        context.position = position;
-        return new List([new Data(define(value, { class: null, target: '_blank' }, [el]))]);
-      })
-      (subinput(`{ ${INSECURE_URI}${linkparams.join('')} }`, context));
+    return new List([new Data(define(
+      parse(
+        new List(),
+        linkparams.reduce(
+          (acc, p) => acc.push(new Data(p)) && acc,
+          new List([new Data(INSECURE_URI)])),
+        context),
+      { class: null, target: '_blank' }, [el]))
+    ]);
   })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
