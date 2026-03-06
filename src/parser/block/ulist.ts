@@ -10,7 +10,7 @@ import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const ulist: UListParser = lazy(() => block(validate(
-  /- /y,
+  '- ',
   ulist_)));
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
