@@ -13,6 +13,7 @@ export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB
 export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
 
 const parser: SegmentParser = union([
+  some(emptyline),
   input => {
     const { context: { source, position } } = input;
     if (position === source.length) return;
@@ -35,8 +36,7 @@ const parser: SegmentParser = union([
         return extension(input);
     }
   },
-  some(contentline, MAX_SEGMENT_SIZE + 1),
-  some(emptyline, MAX_SEGMENT_SIZE + 1),
+  some(contentline),
 ]) as any;
 
 export function* segment(source: string): Generator<string, undefined, undefined> {

@@ -48,7 +48,6 @@ describe('Unit: parser/api/bind', () => {
         [
           '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
           `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-          '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
         ]);
     });
 
