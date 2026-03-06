@@ -23,7 +23,8 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => rewrite(
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source =>
-      `[${source}]{ ${source.includes('/')
+      `[${source}]{ ${
+      source.includes('/')
         ? `/@${source.slice(2).replace('/', '/timeline?at=')}`
         : `?at=${source.slice(2)}`
       } }`,

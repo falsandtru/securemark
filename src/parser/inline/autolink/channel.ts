@@ -31,7 +31,8 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source =>
-      `[${source}]{ ${source.includes('/')
+      `[${source}]{ ${
+      source.includes('/')
         ? `https://${source.slice(1, source.indexOf('#')).replace('/', '/@')}`
         : `/${source.slice(0, source.indexOf('#'))}`
       } }`,

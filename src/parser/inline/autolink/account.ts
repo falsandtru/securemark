@@ -16,7 +16,8 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source =>
-      `[${source}]{ ${source.includes('/')
+      `[${source}]{ ${
+      source.includes('/')
         ? `https://${source.slice(1).replace('/', '/@')}`
         : `/${source}`
       } }`,
