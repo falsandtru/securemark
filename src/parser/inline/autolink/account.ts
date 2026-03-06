@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
 import { List, Data } from '../../../combinator/data/parser';
-import { some, state, constraint, verify, surround, lazy } from '../../../combinator';
+import { some, state, constraint, verify, surround, setBacktrack, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { emoji } from './hashtag';
 import { str } from '../../source';
@@ -45,7 +45,10 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
       ]);
     },
     ([[{ value: host }, { value: account }]], context) => {
-      if (context.source[context.position] === '#') return;
+      if (context.source[context.position] === '#') {
+        assert(context.source[context.position - context.range!] === '@');
+        return void setBacktrack(context, [2 | Backtrack.autolink], context.position - context.range!);
+      }
       return new List([
         new Data(define(
           parse(
