@@ -1,7 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { List, Data } from '../combinator/data/parser';
-import { union, inits, some, block, line, validate, focus, rewrite, clear, convert, lazy, fmap } from '../combinator';
-import { segment } from './segment';
+import { union, inits, some, block, line, validate, focus, clear, convert, lazy, fmap } from '../combinator';
 import { str } from './source';
 import { unwrap, invalid } from './util';
 import { normalize } from './api/normalize';
@@ -10,44 +9,33 @@ import { html, defrag } from 'typed-dom/dom';
 export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   /---+ *\r?\n(?=\S)/y,
   inits([
-    rewrite(
-      ({ context }) => {
-        const { source } = context;
-        if (context.header ?? true) {
-          context.position += segment(source).next().value!.length;
-        }
-        else {
-          context.position = source.length;
-        }
-        return new List();
-      },
-      block(
-        union([
-          validate(({ context }) => context.header ?? true,
-          focus(/(---+) *\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,100}\1 *(?:$|\r?\n)/y,
-          convert(source =>
-            normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
-            fmap(
-              some(union([field])),
-              ns => new List([
-                new Data(html('aside', { class: 'header' }, [
-                  html('details',
-                    { open: '' },
-                    defrag(unwrap(ns.unshift(new Data(html('summary', 'Header'))) && ns))),
-                ])),
-              ])), false))),
-          ({ context }) => {
-            const { source, position } = context;
-            context.position += source.length;
-            return new List([
-              new Data(html('pre', {
-                class: 'invalid',
-                translate: 'no',
-                ...invalid('header', 'syntax', 'Invalid syntax'),
-              }, normalize(source.slice(position)))),
-            ]);
-          },
-        ]))),
+    block(
+      union([
+        validate(({ context }) => context.header ?? true,
+        focus(/(---+) *\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,100}\1 *(?:$|\r?\n)/y,
+        convert(source =>
+          normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/(\S)\s+$/mg, '$1'),
+          fmap(
+            some(union([field])),
+            ns => new List([
+              new Data(html('aside', { class: 'header' }, [
+                html('details',
+                  { open: '' },
+                  defrag(unwrap(ns.unshift(new Data(html('summary', 'Header'))) && ns))),
+              ])),
+            ])), false))),
+        ({ context }) => {
+          const { source, position } = context;
+          context.position += source.length;
+          return new List([
+            new Data(html('pre', {
+              class: 'invalid',
+              translate: 'no',
+              ...invalid('header', 'syntax', 'Invalid syntax'),
+            }, normalize(source.slice(position)))),
+          ]);
+        },
+      ])),
     clear(str(/ *\r?\n/y)),
   ])));
 
