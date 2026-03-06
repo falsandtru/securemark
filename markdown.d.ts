@@ -1109,7 +1109,7 @@ export namespace MarkdownParser {
         // https://host
         Inline<'url'>,
         Parser<string | HTMLElement, Context, [
-          LinkParser.UnsafeLinkParser,
+          Parser<HTMLAnchorElement, Context, []>,
           InlineParser,
         ]> {
       }
@@ -1119,7 +1119,7 @@ export namespace MarkdownParser {
           Parser<string | HTMLElement, Context, [
             SourceParser.StrParser,
             Parser<string | HTMLElement, Context, [
-              InlineParser.LinkParser.UnsafeLinkParser,
+              Parser<HTMLAnchorElement, Context, []>,
               InlineParser,
             ]>,
           ]> {
@@ -1147,7 +1147,7 @@ export namespace MarkdownParser {
         // user@host
         Inline<'email'>,
         Parser<HTMLAnchorElement, Context, [
-          Parser<HTMLAnchorElement, Context, []>,
+          SourceParser.StrParser,
         ]> {
       }
       export interface AccountParser extends
@@ -1162,21 +1162,21 @@ export namespace MarkdownParser {
         // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser.UnsafeLinkParser,
+          SourceParser.StrParser,
         ]> {
       }
       export interface HashnumParser extends
         // #1
         Inline<'hashnum'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser.UnsafeLinkParser,
+          SourceParser.StrParser,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
         Parser<HTMLAnchorElement, Context, [
-          LinkParser.UnsafeLinkParser,
+          SourceParser.StrParser,
         ]> {
       }
     }

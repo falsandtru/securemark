@@ -1,8 +1,8 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
 import { List, Data } from '../../../combinator/data/parser';
-import { union, state, constraint, verify, rewrite, surround, convert, fmap, lazy } from '../../../combinator';
-import { unsafelink } from '../link';
+import { state, constraint, verify, surround, lazy } from '../../../combinator';
+import { parse } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
 
@@ -11,7 +11,7 @@ import { define } from 'typed-dom/dom';
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 export const emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
 
-export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
+export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State.autolink, state(State.autolink,
   surround(
     new RegExp([
       /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source,
@@ -25,9 +25,12 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
       /(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     false,
-    [3 | Backtrack.autolink]),
-  constraint(State.autolink, state(State.autolink, fmap(convert(
-    source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,
-    union([unsafelink]),
-    false),
-    ([{ value }]) => new List([new Data(define(value, { class: 'hashtag' }))]))))));
+    [3 | Backtrack.autolink],
+    ([, [{ value }]], context) =>
+      new List([
+        new Data(define(parse(
+          new List([new Data(`#${value}`)]),
+          new List([new Data(`/hashtags/${value}`)]),
+          context),
+          { class: 'hashtag' }))
+      ])))));
