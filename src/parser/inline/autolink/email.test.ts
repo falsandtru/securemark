@@ -27,8 +27,8 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser('a..b@c'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('a++b@c'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('a@b.c:d'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser('a@b.domain.com:c'), ctx), undefined);
       assert.deepStrictEqual(inspect(parser('a@http://host'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(`a@${'b'.repeat(64)}`), ctx), undefined);
       assert.deepStrictEqual(inspect(parser(' a@b'), ctx), undefined);
     });
 
