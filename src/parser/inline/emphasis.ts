@@ -17,6 +17,7 @@ export const emphasis: EmphasisParser = lazy(() => surround(
     some(inline, blankWith('*')),
     open(some(inline, '*'), inline),
   ]))))),
-  str('*'), false,
+  str('*'),
+  false, [],
   ([, bs]) => new List([new Data(html('em', defrag(unwrap(bs))))]),
   ([as, bs]) => bs && as.import(bs as List<Data<string>>)));

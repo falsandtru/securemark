@@ -22,12 +22,12 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   ]), ']', [[']', 1]])))),
   str(']'),
   false,
+  [3 | Backtrack.bracket],
   ([, bs], context) =>
     context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0
       ? new List([new Data(html('a', { 'data-index': dataindex(bs) }, defrag(unwrap(bs))))])
       : undefined,
-  undefined,
-  [3 | Backtrack.bracket])),
+  undefined)),
   ns => {
     if (ns.length === 1) {
       const el = ns.head!.value as HTMLElement;
@@ -54,14 +54,14 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   ]), ']'),
   /(?=])/y,
   false,
+  [3 | Backtrack.bracket],
   ([, ns], context) => {
     const index = identity('index', undefined, ns.foldl((acc, { value }) => acc + value, ''))?.slice(7);
     return index && context.linebreak === 0
       ? new List([new Data(html('span', { class: 'indexer', 'data-index': index }))])
       : undefined;
   },
-  ([as, bs]) => bs && as.import(bs),
-  [3 | Backtrack.bracket])));
+  ([as, bs]) => bs && as.import(bs))));
 
 export function dataindex(nodes: List<Data<string | HTMLElement>>): string | undefined {
   let node = nodes.last;

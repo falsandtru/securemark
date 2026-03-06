@@ -15,7 +15,7 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
       /(?<![0-9a-z])@/yi,
       /[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\//yi,
       /[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?=#)/yi,
-      true, undefined, undefined),
+      true),
     some(surround(
       '#',
       verify(
@@ -26,7 +26,7 @@ export const channel: AutolinkParser.ChannelParser = lazy(() => rewrite(
       new RegExp([
         /(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
       ].join('|').replace(/emoji/g, emoji.source), 'yu'),
-      false, undefined, undefined)),
+      false)),
     false,
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(

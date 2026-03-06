@@ -13,9 +13,8 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   trimBlankStart(some(union([inline]), ')', [[')', 1]])))),
   '))',
   false,
+  [1 | Backtrack.bracket, 3 | Backtrack.doublebracket],
   ([, ns], context) =>
     context.linebreak === 0
       ? new List([new Data(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])
-      : undefined,
-  undefined,
-  [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));
+      : undefined)));

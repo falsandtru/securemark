@@ -13,15 +13,14 @@ export const ruby: RubyParser = lazy(() => bind(
     dup(surround(
       '[', text, ']',
       false,
+      [1 | Backtrack.bracket, 3 | Backtrack.ruby],
       ([, ns]) => {
         ns && ns.last?.value === '' && ns.pop();
         return isTightNodeStart(ns) ? ns : undefined;
-      },
-      undefined,
-      [1 | Backtrack.bracket, 3 | Backtrack.ruby])),
+      })),
     dup(surround(
       '(', text, ')',
-      false, undefined, undefined,
+      false,
       [1 | Backtrack.bracket, 3 | Backtrack.ruby])),
   ]),
   ([{ value: texts }, { value: rubies = undefined } = {}], context) => {

@@ -24,12 +24,11 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       trimBlankStart(some(union([inline]), ']', [[']', 1]])),
       ']',
       true,
+      [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby],
       ([, ns = new List()], context) =>
         context.linebreak === 0
           ? ns.push(new Data(Command.Separator)) && ns
-          : undefined,
-      undefined,
-      [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby])),
+          : undefined)),
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
     dup(surround(
@@ -37,14 +36,14 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       inits([uri, some(option)]),
       / ?}/y,
       false,
+      [3 | Backtrack.link],
       undefined,
       ([as, bs], context) => {
         if (!bs) return;
         const head = context.position - context.range!;
         setBacktrack(context, [2 | Backtrack.link], head);
         return as.import(bs).push(new Data(Command.Cancel)) && as;
-      },
-      [3 | Backtrack.link])),
+      })),
   ]),
   ([{ value: content }, { value: params = undefined } = {}], context) => {
     if (content.last!.value === Command.Separator) {

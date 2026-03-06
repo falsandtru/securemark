@@ -12,6 +12,7 @@ export const template: TemplateParser = lazy(() => surround(
   some(union([bracket, escsource]), '}')),
   str('}}'),
   true,
+  [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket],
   ([as, bs = new List(), cs]) => new List([
     new Data(html('span', { class: 'template' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))
   ]),
@@ -23,25 +24,24 @@ export const template: TemplateParser = lazy(() => surround(
           ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
         },
         context.source.slice(context.position - context.range!, context.position)))
-    ]),
-  [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket]));
+    ])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
-  surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
-  surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
-  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
+  surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+  surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
   surround(
     str('"'),
     precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
     true,
+    [3 | Backtrack.escbracket],
     ([as, bs = new List(), cs], context) =>
       context.linebreak === 0
         ? as.import(bs as List<Data<string>>).import(cs)
         : (context.position -= 1, as.import(bs as List<Data<string>>)),
-    ([as, bs]) => bs && as.import(bs as List<Data<string>>),
-    [3 | Backtrack.escbracket]),
+    ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
 ]));

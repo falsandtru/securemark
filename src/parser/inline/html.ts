@@ -26,7 +26,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y),
       some(union([attribute])),
       open(str(/ ?/y), str('>'), true),
-      true,
+      true, [],
       ([as, bs = new List(), cs], context) =>
         new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
@@ -38,7 +38,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
         surround<HTMLParser.TagParser, string>(
           surround(
             str(`<${tag}`), some(attribute), open(str(/ ?/y), str('>'), true),
-            true,
+            true, [],
             ([as, bs = new List(), cs]) => as.import(bs).import(cs),
             ([as, bs = new List()]) => as.import(bs)),
           // 不可視のHTML構造が可視構造を変化させるべきでない。
@@ -51,7 +51,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
             open('\n', some(inline, `</${tag}>`), true),
           ])))),
           str(`</${tag}>`),
-          true,
+          true, [],
           ([as, bs = new List(), cs], context) =>
             new List([new Data(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
           ([as, bs = new List()], context) =>
@@ -63,7 +63,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       str(/<[a-z]+(?=[ >])/yi),
       some(union([attribute])),
       open(str(/ ?/y), str('>'), true),
-      true,
+      true, [],
       ([as, bs = new List(), cs], context) =>
         new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>

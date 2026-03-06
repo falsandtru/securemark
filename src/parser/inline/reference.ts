@@ -18,6 +18,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ]))),
   ']]',
   false,
+  [1 | Backtrack.bracket, 3 | Backtrack.doublebracket],
   ([, ns], context) => {
     const { position, range = 0, linebreak = 0 } = context;
     if (linebreak === 0) {
@@ -69,7 +70,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
           '',
           some(inline, ']', [[']', 1]]),
           str(']'),
-          true,
+          true, [],
           ([, cs = new List(), ds]) =>
             cs.import(ds),
           ([, cs = new List()]) => {
@@ -86,15 +87,14 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     return state & State.annotation
       ? as.import(bs as List<Data<string>>)
       : undefined;
-  },
-  [1 | Backtrack.bracket, 3 | Backtrack.doublebracket])));
+  })));
 
 // Chicago-Style
 const abbr: ReferenceParser.AbbrParser = surround(
   str('^'),
   union([str(/(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/y)]),
   /\|?(?=]])|\|/y,
-  true,
+  true, [],
   ([, ns], context) => {
     const { source, position, range = 0 } = context;
     if (!ns) return new List([new Data(''), new Data(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);

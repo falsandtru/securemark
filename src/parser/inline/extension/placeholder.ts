@@ -17,7 +17,9 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   str(/\[[:^|]/y),
   precedence(1, recursion(Recursion.inline,
   tightStart(some(union([inline]), ']', [[']', 1]])))),
-  str(']'), false,
+  str(']'),
+  false,
+  [3 | Backtrack.bracket],
   (_, context) => new List([
     new Data(html('span',
       {
@@ -26,5 +28,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
       },
       context.source.slice(context.position - context.range!, context.position)))
   ]),
-  ([as, bs]) => bs && as.import(bs as List<Data<string>>),
-  [3 | Backtrack.bracket]));
+  ([as, bs]) => bs && as.import(bs as List<Data<string>>)));

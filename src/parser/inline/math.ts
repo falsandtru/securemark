@@ -14,7 +14,8 @@ export const math: MathParser = lazy(() => rewrite(
       /\$(?={)/y,
       precedence(4, bracket),
       '$',
-      false, undefined, undefined, [3 | Backtrack.bracket]),
+      false,
+      [3 | Backtrack.bracket]),
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
@@ -22,7 +23,8 @@ export const math: MathParser = lazy(() => rewrite(
         precedence(4, bracket),
       ]))),
       /\$(?![-0-9A-Za-z])/y,
-      false, undefined, undefined, [3 | Backtrack.bracket]),
+      false,
+      [3 | Backtrack.bracket]),
   ]),
   ({ context: { source, caches: { math: cache } = {} } }) => new List([
     new Data(cache?.get(source)?.cloneNode(true) ||

@@ -12,7 +12,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => rewrite(
     /(?<![0-9a-z])@/yi,
     /[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?(?:\.[0-9a-z](?:(?:[0-9a-z]|-(?=[0-9a-z])){0,61}[0-9a-z])?)*\//yi,
     /[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@#]|>>|:\S)/yi,
-    true, undefined, undefined,
+    true,
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source =>

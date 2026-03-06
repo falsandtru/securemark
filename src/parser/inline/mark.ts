@@ -16,7 +16,8 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
       some(inline, blankWith('==')),
       open(some(inline, '='), inline),
     ])))),
-    '==', false,
+    '==',
+    false, [],
     ([, bs], { buffer }) => buffer!.import(bs),
     ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Data(Command.Cancel)) && buffer!),
     (nodes, { id }) => {

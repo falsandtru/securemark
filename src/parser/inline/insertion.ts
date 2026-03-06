@@ -15,7 +15,8 @@ export const insertion: InsertionParser = lazy(() =>
       some(inline, blankWith('\n', '++')),
       open('\n', some(inline, '+'), true),
     ]))),
-    '++', false,
+    '++',
+    false, [],
     ([, bs], { buffer }) => buffer!.import(bs),
     ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Data(Command.Cancel)) && buffer!),
     nodes => new List([new Data(html('ins', defrag(unwrap(nodes))))]))));

@@ -11,7 +11,8 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
   str(/\[%(?=[ \n])/y),
   precedence(3, recursion(Recursion.inline,
   some(union([inline]), /[ \n]%\]/y, [[/[ \n]%\]/y, 3]]))),
-  close(text, str(`%]`)), true,
+  close(text, str(`%]`)),
+  true, [],
   ([as, bs = new List(), cs]) => new List([
     new Data(html('span', { class: 'remark' }, [
       html('input', { type: 'checkbox' }),

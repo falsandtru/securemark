@@ -32,7 +32,8 @@ export const emstrong: EmStrongParser = lazy(() =>
       some(inline, blankWith('*')),
       open(some(inline, '*'), inline),
     ])))),
-    str(/\*{1,3}/y), false,
+    str(/\*{1,3}/y),
+    false, [],
     ([, bs, cs], context): Result<Node<EmStrongParser>, Context<EmStrongParser>> => {
       assert(cs.length === 1);
       const { buffer = new List() } = context;

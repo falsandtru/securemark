@@ -24,7 +24,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => rewrite(
     new RegExp([
       /(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
-    false, undefined, undefined,
+    false,
     [3 | Backtrack.autolink]),
   constraint(State.autolink, state(State.autolink, fmap(convert(
     source => `[${source}]{ ${`/hashtags/${source.slice(1)}`} }`,

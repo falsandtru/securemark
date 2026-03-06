@@ -9,11 +9,11 @@ import { html } from 'typed-dom/dom';
 export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
   str('&'), str(/[0-9A-Za-z]+/y), str(';'),
   false,
+  [3 | Backtrack.bracket],
   ([as, bs, cs]) =>
     new List([new Data(parser(as.head!.value + bs.head!.value + cs.head!.value))]),
   ([as, bs]) =>
-    new List([new Data(as.head!.value + (bs?.head?.value ?? ''))]),
-  [3 | Backtrack.bracket]);
+    new List([new Data(as.head!.value + (bs?.head?.value ?? ''))]));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),

@@ -30,25 +30,24 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
       ]), ']')),
       ']',
       true,
+      [3 | Backtrack.escbracket],
       ([, ns = new List()], context) =>
         context.linebreak === 0
           ? ns
-          : undefined,
-      undefined,
-      [3 | Backtrack.escbracket])),
+          : undefined)),
     dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
       / ?}/y,
       false,
+      [3 | Backtrack.link],
       undefined,
       ([as, bs], context) => {
         if (!bs) return;
         const head = context.position - context.range!;
         setBacktrack(context, [2 | Backtrack.link], head);
         return as.import(bs).push(new Data(Command.Cancel)) && as;
-      },
-      [3 | Backtrack.link])),
+      })),
   ]),
   nodes =>
     nodes.length === 1
@@ -110,14 +109,14 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
   })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
-  surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
-  surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
-  surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
-  surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'), true,
-    undefined, () => new List(), [3 | Backtrack.escbracket]),
+  surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+  surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+  surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+  surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'),
+    true, [3 | Backtrack.escbracket], undefined, () => new List()),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
@@ -125,7 +124,7 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
     open(/ /y, str(/[1-9][0-9]*/y)),
     str(/[x:]/y),
     str(/[1-9][0-9]*(?=[ }])/y),
-    false,
+    false, [],
     ([[{ value: a }], [{ value: b }], [{ value: c }]]) =>
       b === 'x'
         ? new List([new Data(`width="${a}"`), new Data(`height="${c}"`)])
