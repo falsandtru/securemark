@@ -2,7 +2,7 @@ import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, inits, sequence, subsequence, some, creation, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { str } from '../source';
@@ -16,7 +16,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link, creation(10,
+export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link,
   precedence(1, state(State.linkers,
   bind(subsequence([
     dup(surround(
@@ -72,9 +72,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
     return new List([new Data(parse(content, params as List<Data<string>>, context))]);
-  }))))));
+  })))));
 
-export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media, creation(10,
+export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media,
   state(State.linkers,
   bind(sequence([
     dup(surround(
@@ -84,7 +84,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ]),
   ([{ value: content }, { value: params }], context) =>
-    new List([new Data(parse(content, params as List<Data<string>>, context))]))))));
+    new List([new Data(parse(content, params as List<Data<string>>, context))])))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/ /y, str(/\S+/y)),
@@ -106,6 +106,7 @@ export function parse(
   const INSECURE_URI = params.shift()!.value;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
+  consume(10, context);
   let uri: ReadonlyURL | undefined;
   try{
     uri = new ReadonlyURL(

@@ -1,7 +1,7 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, inits, tails, some, creation, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, consume, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -18,7 +18,7 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => constraint(State.media, creation(10, open(
+export const media: MediaParser = lazy(() => constraint(State.media, open(
   '!',
   bind(fmap(tails([
     dup(surround(
@@ -56,6 +56,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
   ([{ value: [{ value: text }] }, { value: params }], context) => {
     if (text && text.trimStart() === '') return;
     text = text.trim();
+    consume(100, context);
     if (params.last!.value === Command.Cancel) {
       params.pop();
       return new List([
@@ -106,7 +107,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, creation(10
         context),
       { class: null, target: '_blank' }, [el]))
     ]);
-  })))));
+  }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'),
@@ -153,11 +154,6 @@ function sanitize(target: HTMLElement, uri: ReadonlyURL | undefined): boolean {
       type = 'argument';
       message = 'Invalid protocol';
   }
-  //else {
-  //  target.setAttribute('alt', alt.replace(CmdRegExp.Error, ''));
-  //  type = 'argument';
-  //  message = `Invalid HTML entitiy "${alt.match(/&[0-9A-Za-z]+;/)![0]}"`;
-  //}
   define(target, {
     'data-src': null,
     class: 'invalid',
