@@ -109,7 +109,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/ [^\s{}]+/y),
 ]);
 
-function parse(
+export function parse(
   content: List<Data<string | HTMLElement>>,
   params: List<Data<string>>,
   context: MarkdownParser.Context,

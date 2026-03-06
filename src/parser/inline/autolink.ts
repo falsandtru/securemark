@@ -3,7 +3,6 @@ import { State } from '../context';
 import { state, lazy } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
-import { channel } from './autolink/channel';
 import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashnum } from './autolink/hashnum';
@@ -18,7 +17,7 @@ export const autolink: AutolinkParser = lazy(() =>
     const fst = source[position];
     switch (fst) {
       case '@':
-        return channel(input) || account(input);
+        return account(input);
       case '#':
         return hashtag(input) || hashnum(input);
       case '>':
