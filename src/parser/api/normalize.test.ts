@@ -2,10 +2,6 @@ import { normalize, escape } from './normalize';
 
 describe('Unit: parser/normalize', () => {
   describe('normalize', () => {
-    it('invalid surrogate pairs', () => {
-      assert(normalize('\uDC00\uD800') === '\uFFFD\uFFFD');
-    });
-
     it('controls', () => {
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
@@ -50,10 +46,11 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\u202A') === '\uFFFD');
       assert(normalize('\u202F') === '\uFFFD');
       assert(normalize('\uFEFF') === '\uFFFD');
-      assert(normalize('\u180E') === '\uFFFD');
-      assert(normalize('\u1820\u180E') === '\u1820\u180E');
-      assert(normalize('\u1821\u180E') === '\u1821\u180E');
-      assert(normalize('\u1822\u180E') === '\u1822\uFFFD');
+      //assert(normalize('\u180E') === '\uFFFD');
+      //assert(normalize('\u1820\u180E') === '\u1820\u180E');
+      //assert(normalize('\u1821\u180E') === '\u1821\u180E');
+      //assert(normalize('\u1822\u180E') === '\u1822\uFFFD');
+      //assert(normalize('\uDC00\uD800') === '\uFFFD\uFFFD');
     });
 
     it('header', () => {

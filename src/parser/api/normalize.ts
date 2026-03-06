@@ -14,8 +14,10 @@ function format(source: string): string {
 
 const invalid = new RegExp([
   /(?![\t\r\n])[\x00-\x1F\x7F]/g.source,
-  /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(?<![\u1820\u1821])\u180E/g.source,
-  /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
+  /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source,
+  // 後読みが重い
+  ///(?<![\u1820\u1821])\u180E/g.source,
+  ///[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
 ].join('|'), 'g');
 function sanitize(source: string): string {
   return source.replace(invalid, UNICODE_REPLACEMENT_CHARACTER);
