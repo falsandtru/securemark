@@ -3,7 +3,7 @@ import { List, Data } from '../../../combinator/data/parser';
 import { union, some, block, validate, rewrite, convert, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
-import { linebreak, unescsource, anyline } from '../../source';
+import { unescsource, anyline } from '../../source';
 import { unwrap } from '../../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -19,7 +19,6 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
         // quote補助関数が残した数式をパースする。
         math,
         autolink,
-        linebreak,
         unescsource,
       ])),
       false)),

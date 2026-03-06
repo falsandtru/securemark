@@ -1,7 +1,7 @@
-import { TextParser, TxtParser, LinebreakParser } from '../source';
+import { TextParser, TxtParser } from '../source';
 import { Command } from '../context';
 import { List, Data } from '../../combinator/data/parser';
-import { union, consume, focus } from '../../combinator';
+import { union, consume } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 //const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
@@ -15,10 +15,6 @@ export const text: TextParser = input => {
   consume(1, context);
   context.position += 1;
   switch (char) {
-    case '\r':
-      assert(!source.includes('\r', position + 1));
-      consume(-1, context);
-      return new List();
     case Command.Escape:
     case '\\':
       switch (source[position + 1]) {
@@ -32,6 +28,9 @@ export const text: TextParser = input => {
           context.position += 1;
           return new List([new Data(source.slice(position + 1, context.position))]);
       }
+    case '\r':
+      consume(-1, context);
+      return new List();
     case '\n':
       context.linebreak ||= source.length - position;
       return new List([new Data(html('br'))]);
@@ -63,10 +62,6 @@ export const text: TextParser = input => {
 export const txt: TxtParser = union([
   text,
 ]) as TxtParser;
-
-export const linebreak: LinebreakParser = focus(/[\r\n]/y, union([
-  text,
-])) as LinebreakParser;
 
 export function canSkip(source: string, position: number): boolean {
   assert(position < source.length);

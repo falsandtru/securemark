@@ -614,7 +614,6 @@ export namespace MarkdownParser {
         Parser<HTMLSpanElement | HTMLBRElement, Context, [
           InlineParser.MathParser,
           InlineParser.AutolinkParser,
-          SourceParser.LinebreakParser,
           SourceParser.UnescapableSourceParser,
         ]> {
       }
@@ -1178,7 +1177,6 @@ export namespace MarkdownParser {
     Markdown<'autolink'>,
     Parser<string | HTMLElement, Context, [
       InlineParser.AutolinkParser,
-      SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
     ]> {
   }
@@ -1193,13 +1191,6 @@ export namespace MarkdownParser {
       // abc
       Source<'txt'>,
       Parser<string, Context, [
-        TextParser,
-      ]> {
-    }
-    export interface LinebreakParser extends
-      // \n
-      Source<'linebreak'>,
-      Parser<HTMLBRElement, Context, [
         TextParser,
       ]> {
     }

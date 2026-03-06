@@ -14,14 +14,12 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
   consume(1, context);
   context.position += 1;
   switch (char) {
-    case '\r':
-      assert(!source.includes('\r', position + 1));
-      consume(-1, context);
-      return new List();
     case Command.Escape:
       consume(1, context);
       context.position += 1;
       return new List([new Data(source.slice(position + 1, position + 2))]);
+    case '\r':
+      return new List();
     case '\n':
       context.linebreak ||= source.length - position;
       return new List([new Data(html('br'))]);

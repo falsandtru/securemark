@@ -14,10 +14,6 @@ export const escsource: EscapableSourceParser = ({ context }) => {
   consume(1, context);
   context.position += 1;
   switch (char) {
-    case '\r':
-      assert(!source.includes('\r', position + 1));
-      consume(-1, context);
-      return new List();
     case Command.Escape:
       consume(1, context);
       context.position += 1;
@@ -33,6 +29,9 @@ export const escsource: EscapableSourceParser = ({ context }) => {
           context.position += 1;
           return new List([new Data(source.slice(position, position + 2))]);
       }
+    case '\r':
+      consume(-1, context);
+      return new List();
     case '\n':
       context.linebreak ||= source.length - position;
       return new List([new Data(html('br'))]);
