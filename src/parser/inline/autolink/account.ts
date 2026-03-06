@@ -15,7 +15,9 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
     surround(
       /(?<![0-9a-z])@/yi,
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
-      str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi)),
+      str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
+      false,
+      [3 | Backtrack.autolink]),
     some(surround(
       '#',
       verify(
@@ -29,8 +31,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
       false,
       [3 | Backtrack.autolink])),
     '',
-    false,
-    [3 | Backtrack.autolink],
+    false, [],
     ([[{ value: host }, { value: account }], nodes], context) => {
       const hashes = nodes.foldl((acc, { value }) => acc + '#' + value, '');
       const param = nodes.foldl((acc, { value }) => acc ? acc + '+' + value : value, '');
