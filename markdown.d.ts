@@ -1112,7 +1112,7 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
             Parser<string | HTMLElement, Context, [
               Parser<HTMLAnchorElement, Context, []>,
-              InlineParser,
+              SourceParser.StrParser,
             ]>,
           ]> {
         }

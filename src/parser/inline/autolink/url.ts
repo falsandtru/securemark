@@ -37,7 +37,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
             context))
         ]);
       })),
-      open(str(/[^:]+/y), some(inline)),
+      str(/[^:]+/y),
     ]),
   ])));
 
