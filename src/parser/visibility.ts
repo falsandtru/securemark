@@ -7,19 +7,19 @@ import { invisibleHTMLEntityNames } from './api/normalize';
 
 namespace blank {
   export const line = new RegExp(
-    // TODO: 行全体をエスケープ
-    /^(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source
+    /((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+(?=$|\n))/g.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
-    'gm');
+    'g');
   export const start = new RegExp(
-    /(?:\\?[^\S\r\n]|&IHN;|<wbr ?>)+/y.source
-      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`), 'y');
+    /(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+/y.source
+      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
+    'y');
 }
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return convert(
-    source => source.replace(blank.line, `${Command.Escape}$1`),
+    source => source.replace(blank.line, `$1${Command.Escape}$2`),
     parser);
 }
 

@@ -15,11 +15,6 @@
       "error",
       {
         "ignoreErrors": false,
-        "maxPatternSize": 3000,
-        "maxRepeatCount": 256,
-        "maxSimpleRepeatCount": 256,
-        "attackTimeout": null,
-        "incubationTimeout": null,
         "timeout": 1e6
       }
     ]
