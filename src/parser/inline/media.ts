@@ -30,24 +30,22 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       ]), ']')),
       ']',
       true,
-      [3 | Backtrack.escbracket],
-      ([, ns = new List()], context) =>
-        context.linebreak === 0
-          ? ns
-          : undefined)),
+      [3 | Backtrack.escbracket, 2 | Backtrack.ruby],
+      ([, ns = new List()], context) => {
+        if (context.linebreak !== 0) {
+          const head = context.position - context.range!;
+          return void setBacktrack(context, [2 | Backtrack.link, 2 | Backtrack.ruby], head);
+        }
+        return ns;
+      })),
     dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
       / ?}/y,
-      false,
-      [3 | Backtrack.link],
+      false, [],
       undefined,
-      ([as, bs], context) => {
-        if (!bs) return;
-        const head = context.position - context.range!;
-        setBacktrack(context, [2 | Backtrack.link], head);
-        return as.import(bs).push(new Data(Command.Cancel)) && as;
-      })),
+      ([as, bs]) =>
+        bs && as.import(bs).push(new Data(Command.Cancel)) && as)),
   ]),
   nodes =>
     nodes.length === 1

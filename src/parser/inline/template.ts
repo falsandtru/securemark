@@ -11,8 +11,7 @@ export const template: TemplateParser = lazy(() => surround(
   precedence(1,
   some(union([bracket, escsource]), '}')),
   str('}}'),
-  true,
-  [3 | Backtrack.doublebracket, 3 | Backtrack.escbracket],
+  true, [],
   ([as, bs = new List(), cs]) => new List([
     new Data(html('span', { class: 'template' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))
   ]),
@@ -39,9 +38,6 @@ const bracket: TemplateParser.BracketParser = lazy(() => union([
     str('"'),
     true,
     [3 | Backtrack.escbracket],
-    ([as, bs = new List(), cs], context) =>
-      context.linebreak === 0
-        ? as.import(bs as List<Data<string>>).import(cs)
-        : (context.position -= 1, as.import(bs as List<Data<string>>)),
+    undefined,
     ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
 ]));

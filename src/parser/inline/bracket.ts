@@ -72,7 +72,10 @@ const s1 = lazy(() => surround(
     if (context.state! & State.link) {
       const { source, position, range = 0 } = context;
       const head = position - range;
-      if (context.linebreak !== 0 || source[position] !== '{') {
+      if (context.linebreak !== 0) {
+        setBacktrack(context, [2 | Backtrack.link, 2 | Backtrack.ruby], head);
+      }
+      else if (source[position] !== '{') {
         setBacktrack(context, [2 | Backtrack.link], head);
       }
       else {
