@@ -32,16 +32,25 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true
 }
 
 //export function rewrite<N, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<N, C, never>): Parser<N, C, D>;
-export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Context<P>>, parser: P): P;
-export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>): Parser<N> {
+export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Context<P>>, parser: P, slice?: boolean): P;
+export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>, slice = true): Parser<N> {
   assert(scope);
   assert(parser);
-  return failsafe(({ context }) => {
+  return failsafe(arg => {
+    const { context } = arg;
     const { source, position } = context;
     if (position === source.length) return;
     const res1 = scope({ context });
     assert(context.position > position || !res1);
     if (res1 === undefined || context.position < position) return;
+    const range = context.range = context.position - position;
+    if (!slice) {
+      context.position = position;
+      const res2 = parser(arg);
+      context.position += res2 && context.position === position ? range : 0;
+      assert(context.position > position || !res2);
+      return res2;
+    }
     const src = source.slice(position, context.position);
     assert(src !== '');
     assert(source.startsWith(src, position));
