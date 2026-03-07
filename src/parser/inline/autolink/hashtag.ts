@@ -25,7 +25,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State
       /(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     false,
-    [3 | Backtrack.autolink],
+    [3 | Backtrack.unescapable],
     ([, [{ value }]], context) =>
       new List([
         new Data(define(parse(

@@ -24,7 +24,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       trimBlankStart(some(union([inline]), ']', [[']', 1]])),
       ']',
       true,
-      [3 | Backtrack.bracket, 3 | Backtrack.link, 2 | Backtrack.ruby],
+      [3 | Backtrack.common, 3 | Backtrack.link, 2 | Backtrack.ruby],
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
           const head = context.position - context.range!;

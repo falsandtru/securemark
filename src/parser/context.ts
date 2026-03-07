@@ -28,12 +28,15 @@ export const enum Recursion {
 }
 
 export const enum Backtrack {
-  bracket = 1 << 6,
-  doublebracket = 1 << 5,
-  link = 1 << 4,
-  ruby = 1 << 3,
-  escbracket = 1 << 2,
-  autolink = 0 << 2,
+  // 構文
+  doublebracket = 1 << 6,
+  link = 1 << 5,
+  ruby = 1 << 4,
+  // 特殊構造
+  escapable = 1 << 3,
+  unescapable = 1 << 2,
+  // 共通構造
+  common = 0 << 2,
 }
 
 export const enum Command {

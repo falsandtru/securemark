@@ -39,7 +39,7 @@ const p1 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
   str(')'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   ([as, bs = new List(), cs], { source, position, range = 0 }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
@@ -53,7 +53,7 @@ const p2 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
   str('）'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   ([as, bs = [], cs], { source, position, range = 0 }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexF.test(str)
@@ -67,7 +67,7 @@ const s1 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, ']', [[']', 1]]))),
   str(']'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   ([as, bs = new List(), cs], context) => {
     if (context.state! & State.link) {
       const { source, position, range = 0 } = context;
@@ -100,7 +100,7 @@ const s2 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '］', [['］', 1]]))),
   str('］'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   undefined,
   ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
 
@@ -109,7 +109,7 @@ const c1 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '}', [['}', 1]]))),
   str('}'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   undefined,
   ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
 
@@ -118,7 +118,7 @@ const c2 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '｝', [['｝', 1]]))),
   str('｝'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   undefined,
   ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
 
@@ -128,6 +128,6 @@ const d1 = lazy(() => surround(
   precedence(2, recursion(Recursion.bracket, some(inline, /["\n]/y, [['"', 2], ['\n', 3]]))),
   str('"'),
   true,
-  [2 | Backtrack.bracket],
+  [2 | Backtrack.common],
   undefined,
   ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));

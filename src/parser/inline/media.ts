@@ -30,7 +30,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       ]), ']')),
       ']',
       true,
-      [3 | Backtrack.escbracket, 2 | Backtrack.ruby],
+      [3 | Backtrack.escapable, 2 | Backtrack.ruby],
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
           const head = context.position - context.range!;
@@ -109,13 +109,13 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => recursion(Recursion.terminal, union([
   surround(str('('), some(union([unsafehtmlentity, bracket, txt]), ')'), str(')'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(str('['), some(union([unsafehtmlentity, bracket, txt]), ']'), str(']'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(str('{'), some(union([unsafehtmlentity, bracket, txt]), '}'), str('}'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(str('"'), precedence(2, some(union([unsafehtmlentity, txt]), '"')), str('"'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([

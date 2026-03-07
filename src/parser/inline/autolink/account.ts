@@ -17,7 +17,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
       str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
       false,
-      [3 | Backtrack.autolink]),
+      [3 | Backtrack.unescapable]),
     some(surround(
       '#',
       verify(
@@ -29,7 +29,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
         /(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
       ].join('|').replace(/emoji/g, emoji.source), 'yu'),
       false,
-      [3 | Backtrack.autolink])),
+      [3 | Backtrack.unescapable])),
     '',
     false, [],
     ([[{ value: host }, { value: account }], nodes], context) => {
@@ -47,7 +47,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
     ([[{ value: host }, { value: account }]], context) => {
       if (context.source[context.position] === '#') {
         assert(context.source[context.position - context.range!] === '@');
-        return void setBacktrack(context, [2 | Backtrack.autolink], context.position - context.range!);
+        return void setBacktrack(context, [2 | Backtrack.unescapable], context.position - context.range!);
       }
       return new List([
         new Data(define(

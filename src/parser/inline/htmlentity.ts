@@ -9,7 +9,7 @@ import { html } from 'typed-dom/dom';
 export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
   str('&'), str(/[0-9A-Za-z]+/y), str(';'),
   false,
-  [3 | Backtrack.bracket],
+  [3 | Backtrack.unescapable],
   ([as, bs, cs]) =>
     new List([new Data(parser(as.head!.value + bs.head!.value + cs.head!.value))]),
   ([as, bs]) =>

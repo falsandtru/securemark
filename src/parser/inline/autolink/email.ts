@@ -15,6 +15,6 @@ export const email: AutolinkParser.EmailParser = constraint(State.autolink, stat
       ([{ value }]) => value.length <= 254),
     '',
     false,
-    [3 | Backtrack.autolink],
+    [3 | Backtrack.unescapable],
     ([, [{ value }]]) =>
       new List([new Data(html('a', { class: 'email', href: `mailto:${value}` }, value))]))));

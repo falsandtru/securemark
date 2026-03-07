@@ -17,7 +17,7 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => constraint(State
     ].join('|').replace(/emoji/g, emoji.source), 'yu')),
     '',
     false,
-    [1 | Backtrack.autolink],
+    [1 | Backtrack.unescapable],
     ([, [{ value }]], context) =>
       new List([
         new Data(define(parse(

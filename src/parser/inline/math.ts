@@ -15,7 +15,7 @@ export const math: MathParser = lazy(() => rewrite(
       precedence(4, bracket),
       '$',
       false,
-      [3 | Backtrack.bracket]),
+      [3 | Backtrack.escapable]),
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
@@ -24,7 +24,7 @@ export const math: MathParser = lazy(() => rewrite(
       ]))),
       /\$(?![-0-9A-Za-z])/y,
       false,
-      [3 | Backtrack.bracket]),
+      [3 | Backtrack.escapable]),
   ]),
   ({ context: { source, caches: { math: cache } = {} } }) => new List([
     new Data(cache?.get(source)?.cloneNode(true) ||

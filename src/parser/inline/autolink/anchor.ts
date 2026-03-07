@@ -22,7 +22,7 @@ export const anchor: AutolinkParser.AnchorParser = lazy(() => constraint(State.a
     str(/[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi),
     '',
     false,
-    [3 | Backtrack.autolink],
+    [3 | Backtrack.unescapable],
     ([, [{ value }]], context) =>
       new List([
         new Data(define(parse(

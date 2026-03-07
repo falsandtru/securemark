@@ -19,7 +19,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   tightStart(some(union([inline]), ']', [[']', 1]])))),
   str(']'),
   false,
-  [3 | Backtrack.bracket],
+  [3 | Backtrack.common],
   (_, context) => new List([
     new Data(html('span',
       {

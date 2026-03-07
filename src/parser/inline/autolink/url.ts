@@ -14,7 +14,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
       precedence(1, verify(bracket, ns => ns.length > 0)),
     ]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
-    [3 | Backtrack.autolink]),
+    [3 | Backtrack.unescapable]),
   union([
     constraint(State.autolink, state(State.autolink, ({ context }) =>
       new List([new Data(parse(new List(), new List([new Data(context.source)]), context))]))),
@@ -43,11 +43,11 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'),
-    true, [3 | Backtrack.autolink], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable], undefined, () => new List()),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'),
-    true, [3 | Backtrack.autolink], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable], undefined, () => new List()),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'),
-    true, [3 | Backtrack.autolink], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable], undefined, () => new List()),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'),
-    true, [3 | Backtrack.autolink], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable], undefined, () => new List()),
 ]));

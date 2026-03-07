@@ -27,17 +27,17 @@ export const template: TemplateParser = lazy(() => surround(
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'),
-    true, [3 | Backtrack.escbracket], undefined, () => new List()),
+    true, [3 | Backtrack.escapable], undefined, () => new List()),
   surround(
     str('"'),
     precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
     true,
-    [3 | Backtrack.escbracket],
+    [3 | Backtrack.escapable],
     undefined,
     ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
 ]));
