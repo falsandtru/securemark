@@ -6,6 +6,8 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
       assert(normalize('\n\r') === '\n\n');
+      assert(normalize('\u2028') === '\n');
+      assert(normalize('\u2029') === '\n');
       assert(normalize('\x00') === '\uFFFD');
       assert(normalize('\x01') === '\uFFFD');
       assert(normalize('\x02') === '\uFFFD');

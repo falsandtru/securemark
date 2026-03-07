@@ -9,7 +9,7 @@ export function normalize(source: string): string {
 }
 
 function format(source: string): string {
-  return source.replace(/\r\n?/g, '\n');
+  return source.replace(/\r\n?|[\u2028\u2029]/g, '\n');
 }
 
 const invalid = new RegExp([
