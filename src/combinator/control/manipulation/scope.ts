@@ -1,17 +1,24 @@
 import { Parser, Context, input, failsafe } from '../../data/parser';
 import { matcher } from '../../../combinator';
 
-export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;
-export function focus<N>(scope: string | RegExp, parser: Parser<N>): Parser<N> {
+export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, slice?: boolean): P;
+export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true): Parser<N> {
   assert(parser);
   const match = matcher(scope, false);
-  return failsafe(({ context }) => {
+  return failsafe(arg => {
+    const { context } = arg;
     const { source, position } = context;
     if (position === source.length) return;
     const src = match({ context })?.head?.value ?? '';
     assert(source.startsWith(src, position));
     if (src === '') return;
-    context.range = src.length;
+    const range = context.range = src.length;
+    if (!slice) {
+      const result = parser(arg);
+      context.position += result && context.position === position ? range : 0;
+      assert(context.position > position || !result);
+      return result;
+    }
     context.offset ??= 0;
     context.offset += position;
     const result = parser(input(src, context));

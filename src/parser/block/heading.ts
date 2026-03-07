@@ -12,15 +12,15 @@ export const segment: HeadingParser.SegmentParser = block(focus(
   /#+ +\S[^\n]*(?:\n#+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
   input => {
     const { context } = input;
-    const { source } = context;
+    const { source, range = 0 } = context;
     const acc = new List<Data<string>>();
-    for (; context.position < source.length;) {
+    for (const len = context.position + range; context.position < len;) {
       const line = firstline(source, context.position);
       acc.push(new Data(line));
       context.position += line.length;
     }
     return acc;
-  }));
+  }, false));
 
 export const heading: HeadingParser = block(rewrite(segment,
   // その他の表示制御は各所のCSSで行う。
