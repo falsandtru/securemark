@@ -13,7 +13,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
   rewrite(
     some(validate(syntax, anyline)),
     convert(
-      source => source.replace(/(?<=^>+ )/mg, '\r'),
+      source => source.replace(/(?<=^>+ )/gm, '\r'),
       some(union([
         // quote補助関数が残した数式をパースする。
         math,

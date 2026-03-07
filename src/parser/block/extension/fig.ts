@@ -28,7 +28,7 @@ export const segment: FigParser.SegmentParser = block(
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {
     // Bug: TypeScript
-    const fence = (/^[^\n]*\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/mg) as string[] || [])
+    const fence = (/^[^\n]*\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/gm) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     const { position } = context;
     const result = parser({ context });
