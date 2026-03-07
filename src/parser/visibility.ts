@@ -5,7 +5,7 @@ import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
 
-export namespace blank {
+namespace blank {
   export const line = new RegExp(
     // TODO: 行全体をエスケープ
     /^(\\?[^\S\r\n]|&IHN;|<wbr ?>|\\$)+$/mg.source
@@ -22,23 +22,6 @@ export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Pa
     source => source.replace(blank.line, `${Command.Escape}$1`),
     parser);
 }
-//function hasVisible(
-//  nodes: readonly (HTMLElement | string)[],
-//): boolean {
-//  for (let i = 0; i < nodes.length; ++i) {
-//    const node = nodes[i];
-//    if (typeof node === 'string') {
-//      if (node && node.trimStart()) return true;
-//    }
-//    else {
-//      if (node.innerText.trimStart()) return true;
-//      if (node.classList.contains('reference')) return true;
-//      //if (state & State.media ^ State.media &&
-//      //    (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
-//    }
-//  }
-//  return false;
-//}
 
 export function blankWith(delimiter: string | RegExp): RegExp;
 export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp;
