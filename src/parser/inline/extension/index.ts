@@ -50,7 +50,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   str(/\|(?!\\?\s)/y),
   some(union([
     unsafehtmlentity,
-    some(txt, /(?:[$"`\[\](){}<>（）［］｛｝])/y),
+    some(txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y),
   ]), ']'),
   /(?=])/y,
   false,
