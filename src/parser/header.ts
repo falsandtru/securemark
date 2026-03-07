@@ -23,7 +23,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
                   { open: '' },
                   defrag(unwrap(ns.unshift(new Data(html('summary', 'Header'))) && ns))),
               ])),
-            ])), false))),
+            ]))))),
         ({ context }) => {
           const { source, position } = context;
           context.position += source.length;

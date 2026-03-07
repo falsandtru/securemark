@@ -24,9 +24,9 @@ const source: SidefenceParser.SourceParser = lazy(() => fmap(
   some(recursion(Recursion.block, union([
     focus(
       /(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y,
-      convert(unindent, source, false, true)),
+      convert(unindent, source, true)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => new List([new Data(html('pre', defrag(unwrap(ns))))])), false, true)),
+      convert(unindent, fmap(autolink, ns => new List([new Data(html('pre', defrag(unwrap(ns))))])), true)),
   ]))),
   ns => new List([new Data(html('blockquote', unwrap(ns)))])));

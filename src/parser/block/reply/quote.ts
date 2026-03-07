@@ -13,15 +13,13 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
   rewrite(
     some(validate(syntax, anyline)),
     convert(
-      // TODO: インデント数を渡してインデント数前の行頭確認を行う実装に置き換える
       source => source.replace(/(?<=^>+ )/mg, '\r'),
       some(union([
         // quote補助関数が残した数式をパースする。
         math,
         autolink,
         unescsource,
-      ])),
-      false)),
+      ])))),
   (ns, { source, position }) => new List([
     new Data(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br')),
     new Data(html('span', { class: 'quote' }, defrag(unwrap(ns)))),

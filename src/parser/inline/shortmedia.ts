@@ -8,12 +8,10 @@ export const shortmedia: ShortMediaParser = constraint(State.media, rewrite(
   open('!', url),
   convert(
     source => `!{ ${source.slice(1)} }`,
-    union([media]),
-    false)));
+    union([media]))));
 
-export const lineshortmedia: ShortMediaParser.LineShortMediaParser = focus(
+export const lineshortmedia: ShortMediaParser.LineShortMediaParser = constraint(State.media, focus(
   /(?<=^|[\r\n])!https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y,
   convert(
     source => `!{ ${source.slice(1)} }`,
-    union([media]),
-    false));
+    union([media]))));

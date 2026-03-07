@@ -20,8 +20,7 @@ export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return convert(
     source => source.replace(blank.line, `${Command.Escape}$1`),
-    parser,
-    false);
+    parser);
 }
 //function hasVisible(
 //  nodes: readonly (HTMLElement | string)[],

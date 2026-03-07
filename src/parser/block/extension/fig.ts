@@ -37,8 +37,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
       ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
       : `${fence}figure ${source}\n\n${fence}`;
   },
-  union([figure]),
-  false),
+  union([figure])),
   ([{ value: el }]) => el.tagName === 'FIGURE')));
 
 const parser = sequence([

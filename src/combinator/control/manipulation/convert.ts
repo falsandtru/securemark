@@ -1,7 +1,7 @@
 import { Parser, List, Ctx, Context, subinput, failsafe } from '../../data/parser';
 
-export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, continuous: boolean, empty?: boolean): P;
-export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, continuous: boolean, empty = false): Parser<N> {
+export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, empty?: boolean): P;
+export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, empty = false): Parser<N> {
   assert(parser);
   return failsafe(input => {
     const { context } = input;
@@ -14,22 +14,12 @@ export function convert<N>(conv: (source: string, context: Ctx) => string, parse
       context.position = source.length;
       return new List();
     }
-    assert(source.endsWith(src) || src.endsWith(source, position) || !continuous);
-    if (continuous) {
-      context.position += source.length - position - src.length;
-      const result = parser(input);
-      assert(context.position > position || !result);
-      context.source = source;
-      return result;
-    }
-    else {
-      const { offset, backtracks } = context;
-      const result = parser(subinput(src, context));
-      context.position = context.source.length
-      assert(context.offset === offset);
-      assert(context.source === source);
-      assert(context.backtracks === backtracks);
-      return result;
-    }
+    const { offset, backtracks } = context;
+    const result = parser(subinput(src, context));
+    context.position = context.source.length
+    assert(context.offset === offset);
+    assert(context.source === source);
+    assert(context.backtracks === backtracks);
+    return result;
   });
 }

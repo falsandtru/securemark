@@ -133,8 +133,8 @@ const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
-      validate(/!+ /y, convert(source => `:${source}`, data, false)),
-      convert(source => `: ${source}`, data, false),
+      validate(/!+ /y, convert(source => `:${source}`, data)),
+      convert(source => `: ${source}`, data),
     ])));
 
 function attributes(source: string): Record<string, string | undefined> {

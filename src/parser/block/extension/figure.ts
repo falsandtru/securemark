@@ -67,7 +67,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
       emptyline,
       block(visualize(trimBlank(some(inline)))),
     ]),
-  ]), false),
+  ])),
   nodes => {
     const [label, param, content, ...caption] = unwrap(nodes) as [HTMLAnchorElement, string, ...HTMLElement[]];
     return new List([
