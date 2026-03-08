@@ -1,6 +1,6 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { invalid } from '../util';
@@ -27,7 +27,7 @@ export const math: MathParser = lazy(() => rewrite(
       [3 | Backtrack.escapable]),
   ]),
   ({ context: { source, caches: { math: cache } = {} } }) => new List([
-    new Data(cache?.get(source)?.cloneNode(true) ||
+    new Node(cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)
         ? { class: 'math', translate: 'no', 'data-src': source }

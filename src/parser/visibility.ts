@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Input, List, Data, failsafe } from '../combinator/data/parser';
+import { Parser, Input, List, Node, failsafe } from '../combinator/data/parser';
 import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
@@ -93,7 +93,7 @@ function isTightStart(input: Input<MarkdownParser.Context>, except?: string): bo
   }
 }
 
-export function isLooseNodeStart(nodes: List<Data<HTMLElement | string>>): boolean {
+export function isLooseNodeStart(nodes: List<Node<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
   for (const { value: node } of nodes) {
     if (isVisible(node)) return true;
@@ -101,7 +101,7 @@ export function isLooseNodeStart(nodes: List<Data<HTMLElement | string>>): boole
   }
   return false;
 }
-export function isTightNodeStart(nodes: List<Data<HTMLElement | string>>): boolean {
+export function isTightNodeStart(nodes: List<Node<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes.head!.value, 0);
 }
@@ -178,7 +178,7 @@ export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<s
 //  }
 //  return nodes;
 //}
-export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Data<string | N>>): List<Data<string | N>> {
+export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Node<string | N>>): List<Node<string | N>> {
   const skip = nodes.length > 0 &&
     typeof nodes.last?.value === 'object' &&
     nodes.last.value.className === 'indexer'

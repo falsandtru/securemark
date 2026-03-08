@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { Parser, Result, List, Data } from '../../combinator/data/parser';
+import { Parser, Result, List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
@@ -47,18 +47,18 @@ export const emstrong: EmStrongParser = lazy(() =>
               const { source } = context;
               if (source.startsWith('*', context.position)) {
                 context.position += 1;
-                buffer.push(new Data(html('strong', defrag(unwrap(bs)))));
+                buffer.push(new Node(html('strong', defrag(unwrap(bs)))));
                 buffer.import(ds);
-                return new List([new Data(html('em', defrag(unwrap(buffer)))), new Data(Command.Separator)]);
+                return new List([new Node(html('em', defrag(unwrap(buffer)))), new Node(Command.Separator)]);
               }
               else {
-                buffer.push(new Data(html('strong', defrag(unwrap(bs)))));
+                buffer.push(new Node(html('strong', defrag(unwrap(bs)))));
                 buffer.import(ds);
-                buffer.push(new Data(Command.Separator));
+                buffer.push(new Node(Command.Separator));
                 return prepend('*', buffer);
               }
             })
-            ({ context }) ?? prepend('*', buffer.import(new List([new Data(html('strong', defrag(unwrap(bs)))), new Data(Command.Separator)])));
+            ({ context }) ?? prepend('*', buffer.import(new List([new Node(html('strong', defrag(unwrap(bs)))), new Node(Command.Separator)])));
         case '*':
           return bind<StrongParser>(
             substrong,
@@ -66,24 +66,24 @@ export const emstrong: EmStrongParser = lazy(() =>
               const { source } = context;
               if (source.startsWith('**', context.position)) {
                 context.position += 2;
-                buffer.push(new Data(html('em', defrag(unwrap(bs)))));
+                buffer.push(new Node(html('em', defrag(unwrap(bs)))));
                 buffer.import(ds);
-                return new List([new Data(html('strong', defrag(unwrap(buffer)))), new Data(Command.Separator)]);
+                return new List([new Node(html('strong', defrag(unwrap(buffer)))), new Node(Command.Separator)]);
               }
               else {
-                buffer.push(new Data(html('em', defrag(unwrap(bs)))));
+                buffer.push(new Node(html('em', defrag(unwrap(bs)))));
                 buffer.import(ds);
-                buffer.push(new Data(Command.Separator));
+                buffer.push(new Node(Command.Separator));
                 return prepend('**', buffer);
               }
             })
-            ({ context }) ?? prepend('**', buffer.import(new List([new Data(html('em', defrag(unwrap(bs)))), new Data(Command.Separator)])));
+            ({ context }) ?? prepend('**', buffer.import(new List([new Node(html('em', defrag(unwrap(bs)))), new Node(Command.Separator)])));
       }
       assert(false);
     },
-    ([, bs], { buffer }) => bs && buffer!.import(bs) && buffer!.push(new Data(Command.Cancel)) && buffer!),
+    ([, bs], { buffer }) => bs && buffer!.import(bs) && buffer!.push(new Node(Command.Cancel)) && buffer!),
     // 3以上の`*`に対してemの適用を保証する
-    nodes => new List([new Data(html('em', [html('strong', defrag(unwrap(nodes)))]))]),
+    nodes => new List([new Node(html('em', [html('strong', defrag(unwrap(nodes)))]))]),
     (nodes, context, prefix, postfix, state) => {
       context.position += postfix;
       assert(postfix < 3);
@@ -92,10 +92,10 @@ export const emstrong: EmStrongParser = lazy(() =>
           case 0:
             break;
           case 1:
-            nodes = new List([new Data(html('em', defrag(unwrap(nodes))))]);
+            nodes = new List([new Node(html('em', defrag(unwrap(nodes))))]);
             break;
           case 2:
-            nodes = new List([new Data(html('strong', defrag(unwrap(nodes))))]);
+            nodes = new List([new Node(html('strong', defrag(unwrap(nodes))))]);
             break;
           default:
             assert(false);
@@ -112,7 +112,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                 const { source } = context;
                 if (source.startsWith('*', context.position)) {
                   context.position += 1;
-                  return new List([new Data(html('em', defrag(unwrap(nodes.import(ds)))))]);
+                  return new List([new Node(html('em', defrag(unwrap(nodes.import(ds)))))]);
                 }
                 else {
                   return prepend('*', nodes.import(ds));
@@ -128,7 +128,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                 const { source } = context;
                 if (source.startsWith('**', context.position)) {
                   context.position += 2;
-                  return new List([new Data(html('strong', defrag(unwrap(nodes.import(ds)))))]);
+                  return new List([new Node(html('strong', defrag(unwrap(nodes.import(ds)))))]);
                 }
                 else {
                   return prepend('**', nodes.import(ds));
@@ -145,12 +145,12 @@ export const emstrong: EmStrongParser = lazy(() =>
       return nodes;
     })));
 
-function prepend<N>(prefix: string, nodes: List<Data<N>>): List<Data<N>> {
+function prepend<N>(prefix: string, nodes: List<Node<N>>): List<Node<N>> {
   if (typeof nodes.head?.value === 'string') {
     nodes.head.value = prefix + nodes.head.value as N;
   }
   else {
-    nodes.unshift(new Data(prefix as N));
+    nodes.unshift(new Node(prefix as N));
   }
   return nodes;
 }

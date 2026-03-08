@@ -1,6 +1,6 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, fillFirstLine } from './ulist';
 import { ilist_, ilistitem } from './ilist';
@@ -42,24 +42,24 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
       ]),
       ilistitem),
       ns => new List([
-        new Data(html('li', {
+        new Node(html('li', {
           'data-index': dataindex(ns),
           'data-marker': ns.shift()?.value as string || undefined,
         }, defrag(unwrap(fillFirstLine(ns)))))
       ]))),
   ]))),
-  ns => new List([new Data(format(html('ol', unwrap(ns)), type, form))]));
+  ns => new List([new Node(format(html('ol', unwrap(ns)), type, form))]));
 
 const heads = {
   '.': focus(
     openers['.'],
     ({ context: { source } }) => new List([
-      new Data(source.trimEnd().split('.', 1)[0] + '.')
+      new Node(source.trimEnd().split('.', 1)[0] + '.')
     ])),
   '(': focus(
     openers['('],
     ({ context: { source } }) => new List([
-      new Data(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))
+      new Node(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))
     ])),
 } as const;
 

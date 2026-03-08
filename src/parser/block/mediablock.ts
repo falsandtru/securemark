@@ -1,5 +1,5 @@
 import { MediaBlockParser } from '../block';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, inits, some, block, line, fallback, fmap } from '../../combinator';
 import { medialink, media, lineshortmedia } from '../inline';
 import { unwrap, invalid } from '../util';
@@ -17,9 +17,9 @@ export const mediablock: MediaBlockParser = block(fmap(
       media,
       lineshortmedia,
     ]), ({ context: { source } }) => new List([
-      new Data(html('span', {
+      new Node(html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
     }, source.replace('\n', '')))
     ]))))]),
-  ns => new List([new Data(html('div', unwrap(ns)))])));
+  ns => new List([new Node(html('div', unwrap(ns)))])));

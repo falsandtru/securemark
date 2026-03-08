@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { Recursion, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
@@ -21,11 +21,11 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   false,
   [3 | Backtrack.common],
   (_, context) => new List([
-    new Data(html('span',
+    new Node(html('span',
       {
         class: 'invalid',
         ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
       },
       context.source.slice(context.position - context.range!, context.position)))
   ]),
-  ([as, bs]) => bs && as.import(bs as List<Data<string>>)));
+  ([as, bs]) => bs && as.import(bs as List<Node<string>>)));

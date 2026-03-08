@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { union, constraint, clear, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
@@ -18,7 +18,7 @@ export const label: ExtensionParser.LabelParser = constraint(State.label, fmap(
     body,
   ]),
   ([{ value }]) => new List([
-    new Data(html('a', {
+    new Node(html('a', {
       class: 'label',
       'data-label': value.slice(value[1] === '-' ? 0 : 1).toLowerCase(),
     }, value)),

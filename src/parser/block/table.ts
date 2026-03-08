@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
@@ -21,7 +21,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     some(row(some(data), true)),
   ])),
   rows => new List([
-    new Data(html('table', [
+    new Node(html('table', [
       html('thead', [rows.shift()!.value]),
       html('tbody', unwrap(format(rows))),
     ])),
@@ -29,9 +29,9 @@ export const table: TableParser = lazy(() => block(fmap(validate(
 
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
   line(surround(/(?=\|)/y, some(union([parser])), /\|?\s*$/y, optional)),
-  ns => new List([new Data(html('tr', unwrap(ns)))])),
+  ns => new List([new Node(html('tr', unwrap(ns)))])),
   rewrite(contentline, ({ context: { source } }) => new List([
-    new Data(html('tr', {
+    new Node(html('tr', {
       class: 'invalid',
       ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
     }, [html('td', source.replace('\n', ''))]))
@@ -41,11 +41,11 @@ const align: AlignParser = fmap(open(
   '|',
   union([
     focus(/:-+:?/y, ({ context: { source, position, range = 0 } }) =>
-      new List([new Data(source[position + range - 1] === ':' ? 'center' : 'start')]), false),
+      new List([new Node(source[position + range - 1] === ':' ? 'center' : 'start')]), false),
     focus(/-+:?/y, ({ context: { source, position, range = 0 } }) =>
-      new List([new Data(source[position + range - 1] === ':' ? 'end' : '')]), false),
+      new List([new Node(source[position + range - 1] === ':' ? 'end' : '')]), false),
   ])),
-  ns => new List([new Data(html('td', defrag(unwrap(ns))))]));
+  ns => new List([new Node(html('td', defrag(unwrap(ns))))]));
 
 const cell: CellParser = surround(
   /\|\s*(?=\S)/y,
@@ -59,13 +59,13 @@ const cell: CellParser = surround(
 
 const head: CellParser.HeadParser = fmap(
   cell,
-  ns => new List([new Data(html('th', defrag(unwrap(ns))))]));
+  ns => new List([new Node(html('th', defrag(unwrap(ns))))]));
 
 const data: CellParser.DataParser = fmap(
   cell,
-  ns => new List([new Data(html('td', defrag(unwrap(ns))))]));
+  ns => new List([new Node(html('td', defrag(unwrap(ns))))]));
 
-function format(rows: List<Data<HTMLTableRowElement>>): List<Data<HTMLTableRowElement>> {
+function format(rows: List<Node<HTMLTableRowElement>>): List<Node<HTMLTableRowElement>> {
   const aligns = rows.head!.value.className === 'invalid'
     ? []
     : duffReduce(rows.shift()!.value.children, (acc, el) => push(acc, [el.textContent!]), [] as string[]);

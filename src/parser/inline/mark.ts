@@ -1,6 +1,6 @@
 import { MarkParser } from '../inline';
 import { State, Recursion, Command } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, state, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
@@ -19,11 +19,11 @@ export const mark: MarkParser = lazy(() => constraint(State.linkers & ~State.mar
     '==',
     false, [],
     ([, bs], { buffer }) => buffer!.import(bs),
-    ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Data(Command.Cancel)) && buffer!),
+    ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Node(Command.Cancel)) && buffer!),
     (nodes, { id }) => {
       const el = html('mark', defrag(unwrap(nodes)));
       define(el, { id: identity('mark', id, signature(el)) });
       return el.id
-        ? new List([new Data(el), new Data(html('a', { href: `#${el.id}` }))])
-        : new List([new Data(el)]);
+        ? new List([new Node(el), new Node(html('a', { href: `#${el.id}` }))])
+        : new List([new Node(el)]);
     })))));

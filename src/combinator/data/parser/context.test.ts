@@ -1,4 +1,4 @@
-import { Parser, List, Data, Ctx, CtxOptions, input } from '../parser';
+import { Parser, List, Node, Ctx, CtxOptions, input } from '../parser';
 import { some } from './some';
 import { reset, context, creation } from './context';
 import { unwrap } from '../../../parser/util';
@@ -12,7 +12,7 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<number> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return new List([new Data(context.resources?.clock ?? NaN)]);
+        return new List([new Node(context.resources?.clock ?? NaN)]);
       }));
 
     it('root', () => {
@@ -41,7 +41,7 @@ describe('Unit: combinator/data/parser/context', () => {
     const parser: Parser<boolean, Context & Ctx> = some(creation(1,
       ({ context }) => {
         context.position += 1;
-        return new List([new Data(context.status!)]);
+        return new List([new Node(context.status!)]);
       }));
 
     it('', () => {

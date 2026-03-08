@@ -1,6 +1,6 @@
 import { BracketParser } from '../inline';
 import { State, Recursion, Backtrack } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
@@ -47,8 +47,8 @@ const p1 = lazy(() => surround(
     }
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
-      ? new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])
-      : new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))]);
+      ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
+      : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
     const { source, position, range = 0 } = context;
@@ -56,7 +56,7 @@ const p1 = lazy(() => surround(
     if (context.linebreak !== 0 || source[head + 1] !== '(') {
       setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
-    return as.import(bs as List<Data<string>>);
+    return as.import(bs as List<Node<string>>);
   }));
 
 const p2 = lazy(() => surround(
@@ -67,10 +67,10 @@ const p2 = lazy(() => surround(
   ([as, bs = [], cs], { source, position, range = 0 }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexF.test(str)
-      ? new List([new Data(as.head!.value), new Data(str), new Data(cs.head!.value)])
-      : new List([new Data(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))]);
+      ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
+      : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const s1 = lazy(() => surround(
   str('['),
@@ -104,9 +104,9 @@ const s1 = lazy(() => surround(
         context.range = range;
       }
     }
-    return as.import(bs as List<Data<string>>).import(cs);
+    return as.import(bs as List<Node<string>>).import(cs);
   },
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const s2 = lazy(() => surround(
   str('［'),
@@ -114,7 +114,7 @@ const s2 = lazy(() => surround(
   str('］'),
   true, [],
   undefined,
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const c1 = lazy(() => surround(
   str('{'),
@@ -122,7 +122,7 @@ const c1 = lazy(() => surround(
   str('}'),
   true, [],
   undefined,
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const c2 = lazy(() => surround(
   str('｛'),
@@ -130,7 +130,7 @@ const c2 = lazy(() => surround(
   str('｝'),
   true, [],
   undefined,
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const d1 = lazy(() => surround(
   str('"'),
@@ -139,4 +139,4 @@ const d1 = lazy(() => surround(
   str('"'),
   true, [],
   undefined,
-  ([as, bs = new List()]) => as.import(bs as List<Data<string>>)));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));

@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { state, constraint, verify, surround } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
@@ -17,4 +17,4 @@ export const email: AutolinkParser.EmailParser = constraint(State.autolink, stat
     false,
     [3 | Backtrack.unescapable],
     ([, [{ value }]]) =>
-      new List([new Data(html('a', { class: 'email', href: `mailto:${value}` }, value))]))));
+      new List([new Node(html('a', { class: 'email', href: `mailto:${value}` }, value))]))));

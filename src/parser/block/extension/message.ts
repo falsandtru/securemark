@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { List, Data, subinput } from '../../../combinator/data/parser';
+import { List, Node, subinput } from '../../../combinator/data/parser';
 import { union, block, fence, fmap } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
@@ -22,10 +22,10 @@ import MessageParser = ExtensionParser.MessageParser;
 export const message: MessageParser = block(fmap(
   fence(/(~{3,})message\/(\S+)(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
-  (nodes: List<Data<string>>, context) => {
+  (nodes: List<Node<string>>, context) => {
     const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
     if (!closer || overflow || param.trimStart()) return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid(
@@ -43,7 +43,7 @@ export const message: MessageParser = block(fmap(
         break;
       default:
         return new List([
-          new Data(html('pre', {
+          new Node(html('pre', {
             class: 'invalid',
             translate: 'no',
             ...invalid('message', 'type', 'Invalid message type'),
@@ -51,7 +51,7 @@ export const message: MessageParser = block(fmap(
         ]);
     }
     return new List([
-      new Data(html('section',
+      new Node(html('section',
         {
           class: `message`,
           'data-type': type,

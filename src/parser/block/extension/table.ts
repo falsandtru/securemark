@@ -1,6 +1,6 @@
 import { max, min } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { List, Data, subinput } from '../../../combinator/data/parser';
+import { List, Node, subinput } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
@@ -25,10 +25,10 @@ export const segment_: TableParser.SegmentParser = block(
 export const table: TableParser = block(fmap(
   fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
-  (nodes: List<Data<string>>, context) => {
+  (nodes: List<Node<string>>, context) => {
     const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
     if (!closer || overflow || param.trimStart()) return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid(
@@ -42,13 +42,13 @@ export const table: TableParser = block(fmap(
     switch (type) {
       case 'grid':
       case undefined:
-        return (parser(subinput(body, context)) ?? new List([new Data(html('table'))]))
+        return (parser(subinput(body, context)) ?? new List([new Node(html('table'))]))
           .foldl(
-            (acc, { value }) => acc.push(new Data(define(value, { 'data-type': type }))) && acc,
+            (acc, { value }) => acc.push(new Node(define(value, { 'data-type': type }))) && acc,
             new List());
       default:
         return new List([
-          new Data(html('pre', {
+          new Node(html('pre', {
             class: 'invalid',
             translate: 'no',
             ...invalid('table', 'argument', 'Invalid table type'),
@@ -60,7 +60,7 @@ export const table: TableParser = block(fmap(
 const parser: TableParser = lazy(() => block(fmap(
   some(union([row])),
   rows => new List([
-    new Data(html('table', format([...unwrap(rows)])))
+    new Node(html('table', format([...unwrap(rows)])))
   ]))));
 
 const row: RowParser = lazy(() => dup(fmap(
@@ -75,13 +75,13 @@ const row: RowParser = lazy(() => dup(fmap(
       emptyline,
     ])),
   ]),
-  ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Data([[]])) && ns)));
+  ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Node([[]])) && ns)));
 
 const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
-  ([{ value }]) => new List([new Data(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
+  ([{ value }]) => new List([new Node(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
 
 const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y;
 
@@ -104,7 +104,7 @@ const head: CellParser.HeadParser = block(fmap(open(
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
-  ns => new List([new Data(html('th', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
+  ns => new List([new Node(html('th', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
@@ -126,7 +126,7 @@ const data: CellParser.DataParser = block(fmap(open(
       open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
-  ns => new List([new Data(html('td', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
+  ns => new List([new Node(html('td', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
   false);
 
 const dataline: CellParser.DatalineParser = line(
@@ -166,7 +166,7 @@ function attributes(source: string): Record<string, string | undefined> {
   };
 }
 
-function format(rows: List<Data<[string[], string[]?] | HTMLTableCellElement>>[]): HTMLTableSectionElement[] {
+function format(rows: List<Node<[string[], string[]?] | HTMLTableCellElement>>[]): HTMLTableSectionElement[] {
   const thead = html('thead');
   const tbody = html('tbody');
   const tfoot = html('tfoot');
@@ -180,7 +180,7 @@ function format(rows: List<Data<[string[], string[]?] | HTMLTableCellElement>>[]
   let cnt = 0;
   for (const list of rows) ROW: for (let i = cnt++; i < cnt; ++i) {
     // Copy to make them retryable.
-    const [{ value: [[...as], [...vs] = []] }, ...cells] = list as any as [Data<[string[], string[]?]>, ...Data<HTMLTableCellElement>[]];
+    const [{ value: [[...as], [...vs] = []] }, ...cells] = list as any as [Node<[string[], string[]?]>, ...Node<HTMLTableCellElement>[]];
     let isBody = target === tfoot
       ? false
       : undefined;

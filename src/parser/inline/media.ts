@@ -1,6 +1,6 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, inits, tails, some, consume, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
@@ -45,12 +45,12 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       false, [],
       undefined,
       ([as, bs]) =>
-        bs && as.import(bs).push(new Data(Command.Cancel)) && as)),
+        bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
   ]),
   nodes =>
     nodes.length === 1
-      ? new List<Data<List<Data<string>>>>([new Data(new List([new Data('')])), nodes.delete(nodes.head!)])
-      : new List<Data<List<Data<string>>>>([new Data(new List([new Data(nodes.head!.value.foldl((acc, { value }) => acc + value, ''))])), nodes.delete(nodes.last!)])),
+      ? new List<Node<List<Node<string>>>>([new Node(new List([new Node('')])), nodes.delete(nodes.head!)])
+      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, ''))])), nodes.delete(nodes.last!)])),
   ([{ value: [{ value: text }] }, { value: params }], context) => {
     if (text && text.trimStart() === '') return;
     text = text.trim();
@@ -58,7 +58,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
     if (params.last!.value === Command.Cancel) {
       params.pop();
       return new List([
-        new Data(html('span',
+        new Node(html('span',
           {
             class: 'invalid',
             ...invalid('media', 'syntax', 'Missing the closing symbol "}"')
@@ -85,7 +85,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
     el.setAttribute('alt', text);
-    if (!sanitize(el, uri)) return new List([new Data(el)]);
+    if (!sanitize(el, uri)) return new List([new Node(el)]);
     assert(!el.matches('.invalid'));
     const [attrs, linkparams] = attributes('media', optspec, unwrap(params));
     define(el, attrs);
@@ -94,14 +94,14 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state! & State.link) return new List([new Data(el)]);
-    if (cache && cache.tagName !== 'IMG') return new List([new Data(el)]);
-    return new List([new Data(define(
+    if (context.state! & State.link) return new List([new Node(el)]);
+    if (cache && cache.tagName !== 'IMG') return new List([new Node(el)]);
+    return new List([new Node(define(
       parse(
         new List(),
         linkparams.reduce(
-          (acc, p) => acc.push(new Data(p)) && acc,
-          new List([new Data(INSECURE_URI)])),
+          (acc, p) => acc.push(new Node(p)) && acc,
+          new List([new Node(INSECURE_URI)])),
         context),
       { class: null, target: '_blank' }, [el]))
     ]);
@@ -126,8 +126,8 @@ const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
     false, [],
     ([[{ value: a }], [{ value: b }], [{ value: c }]]) =>
       b === 'x'
-        ? new List([new Data(`width="${a}"`), new Data(`height="${c}"`)])
-        : new List([new Data(`aspect-ratio="${a}/${c}"`)])),
+        ? new List([new Node(`width="${a}"`), new Node(`height="${c}"`)])
+        : new List([new Node(`aspect-ratio="${a}/${c}"`)])),
   linkoption,
 ]));
 

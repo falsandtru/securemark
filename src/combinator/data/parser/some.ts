@@ -1,4 +1,4 @@
-import { Parser, List, Data } from '../parser';
+import { Parser, List, Node } from '../parser';
 import { Delimiters } from './context/delimiter';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
@@ -18,7 +18,7 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
     const { context } = input;
     const { source, position } = context;
     //assert(context.backtracks ??= {});
-    let nodes: List<Data<N>> | undefined;
+    let nodes: List<Node<N>> | undefined;
     if (delims.length > 0) {
       context.delimiters ??= new Delimiters();
       context.delimiters.push(delims);

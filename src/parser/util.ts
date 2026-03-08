@@ -1,26 +1,26 @@
 import { min } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Result, List, Data, Ctx, failsafe } from '../combinator/data/parser';
+import { Parser, Result, List, Node, Ctx, failsafe } from '../combinator/data/parser';
 import { define } from 'typed-dom/dom';
 
-export function* unwrap<N>(nodes: List<Data<N>> | undefined): Iterable<N> {
+export function* unwrap<N>(nodes: List<Node<N>> | undefined): Iterable<N> {
   if (nodes === undefined) return;
   for (const node of nodes) {
     yield node.value;
   }
 }
 
-export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Data<Parser.Node<P>>>, context: Parser.Context<P>) => List<Data<Parser.Node<P>>>, termination?: (acc: List<Data<Parser.Node<P>>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
-export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Data<N>>, context: MarkdownParser.Context) => List<Data<N>>, termination: (acc: List<Data<N>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
-  const acc = new List<Data<string | N>>();
+export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>) => List<Node<Parser.Node<P>>>, termination?: (acc: List<Node<Parser.Node<P>>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
+export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Node<N>>, context: MarkdownParser.Context) => List<Node<N>>, termination: (acc: List<Node<N>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
+  const acc = new List<Node<string | N>>();
   if (prefix > 0) {
-    acc.push(new Data(symbol[0].repeat(prefix)));
+    acc.push(new Node(symbol[0].repeat(prefix)));
   }
   acc.import(nodes);
   if (postfix > 0) {
     const { source, position } = context;
-    acc.push(new Data(source.slice(position, position + postfix)));
+    acc.push(new Node(source.slice(position, position + postfix)));
     context.position += postfix;
   }
   return acc;
@@ -29,7 +29,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     const { context } = input;
     const { source, position } = context;
     if (!source.startsWith(symbol, context.position)) return;
-    let nodes = new List<Data<N>>();
+    let nodes = new List<Node<N>>();
     let i = symbol.length;
     for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;

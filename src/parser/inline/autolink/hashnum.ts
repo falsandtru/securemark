@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { state, constraint, surround, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { emoji } from './hashtag';
@@ -20,9 +20,9 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => constraint(State
     [1 | Backtrack.unescapable],
     ([, [{ value }]], context) =>
       new List([
-        new Data(define(parse(
-          new List([new Data(`#${value}`)]),
-          new List([new Data(value)]),
+        new Node(define(parse(
+          new List([new Node(`#${value}`)]),
+          new List([new Node(value)]),
           context),
           { class: 'hashnum', href: null }))
       ])))));

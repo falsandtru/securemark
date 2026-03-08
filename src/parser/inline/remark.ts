@@ -1,6 +1,6 @@
 import { RemarkParser } from '../inline';
 import { Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, focus, surround, close, fallback, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { text, str } from '../source';
@@ -14,12 +14,12 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
   close(text, str(`%]`)),
   true, [],
   ([as, bs = new List(), cs]) => new List([
-    new Data(html('span', { class: 'remark' }, [
+    new Node(html('span', { class: 'remark' }, [
       html('input', { type: 'checkbox' }),
-      html('span', defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))),
+      html('span', defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))),
     ])),
   ]),
-  ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
+  ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
   focus(/\[%+(?=[ \n])/y, ({ context: { source } }) => new List([
-    new Data(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
+    new Node(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
   ]))));

@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { state, constraint, verify, surround, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { str } from '../../source';
@@ -28,9 +28,9 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State
     [3 | Backtrack.unescapable],
     ([, [{ value }]], context) =>
       new List([
-        new Data(define(parse(
-          new List([new Data(`#${value}`)]),
-          new List([new Data(`/hashtags/${value}`)]),
+        new Node(define(parse(
+          new List([new Node(`#${value}`)]),
+          new List([new Node(`/hashtags/${value}`)]),
           context),
           { class: 'hashtag' }))
       ])))));

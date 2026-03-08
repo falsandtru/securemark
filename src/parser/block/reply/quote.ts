@@ -1,5 +1,5 @@
 import { ReplyParser } from '../../block';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { union, some, block, validate, rewrite, convert, lazy, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
@@ -21,7 +21,7 @@ export const quote: ReplyParser.QuoteParser = lazy(() => block(fmap(
         unescsource,
       ])))),
   (ns, { source, position }) => new List([
-    new Data(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br')),
-    new Data(html('span', { class: 'quote' }, defrag(unwrap(ns)))),
+    new Node(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br')),
+    new Node(html('span', { class: 'quote' }, defrag(unwrap(ns)))),
   ].reverse())),
   false));

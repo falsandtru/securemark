@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
@@ -30,7 +30,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
           const head = context.position - context.range!;
           return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
         }
-        return ns.push(new Data(Command.Separator)) && ns;
+        return ns.push(new Node(Command.Separator)) && ns;
       })),
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
@@ -41,7 +41,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       false, [],
       undefined,
       ([as, bs]) =>
-        bs && as.import(bs).push(new Data(Command.Cancel)) && as)),
+        bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
   ]),
   ([{ value: content }, { value: params = undefined } = {}], context) => {
     if (content.last!.value === Command.Separator) {
@@ -52,13 +52,13 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       }
     }
     else {
-      params = content as List<Data<string>>;
+      params = content as List<Node<string>>;
       content = new List();
     }
     if (params.last!.value === Command.Cancel) {
       params.pop();
       return new List([
-        new Data(html('span',
+        new Node(html('span',
           {
             class: 'invalid',
             ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
@@ -69,7 +69,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     assert(!html('div', unwrap(content)).querySelector('a, .media, .annotation, .reference'));
     assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
-    return new List([new Data(parse(content, params as List<Data<string>>, context))]);
+    return new List([new Node(parse(content, params as List<Node<string>>, context))]);
   })))));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media,
@@ -82,7 +82,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
     dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
   ]),
   ([{ value: content }, { value: params }], context) =>
-    new List([new Data(parse(content, params as List<Data<string>>, context))])))));
+    new List([new Node(parse(content, params as List<Node<string>>, context))])))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(/ /y, str(/\S+/y)),
@@ -90,14 +90,14 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
-  fmap(str(/ nofollow(?=[ }])/y), () => new List([new Data(' rel="nofollow"')])),
+  fmap(str(/ nofollow(?=[ }])/y), () => new List([new Node(' rel="nofollow"')])),
   str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi),
   str(/ [^\s{}]+/y),
 ]);
 
 export function parse(
-  content: List<Data<string | HTMLElement>>,
-  params: List<Data<string>>,
+  content: List<Node<string | HTMLElement>>,
+  params: List<Node<string>>,
   context: MarkdownParser.Context,
 ): HTMLAnchorElement {
   assert(params.length > 0);
@@ -125,7 +125,7 @@ export function parse(
 
 function elem(
   INSECURE_URI: string,
-  content: List<Data<string | HTMLElement>>,
+  content: List<Node<string | HTMLElement>>,
   uri: ReadonlyURL | undefined,
   origin: string,
 ): HTMLAnchorElement {

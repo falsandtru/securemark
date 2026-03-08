@@ -1,5 +1,5 @@
 import { MathBlockParser } from '../block';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../combinator';
 import { unwrap, invalid } from '../util';
 import { html } from 'typed-dom/dom';
@@ -19,9 +19,9 @@ export const mathblock: MathBlockParser = block(fmap(
     const [body, overflow, closer, opener, delim, param] = unwrap<string>(nodes);
     return new List([
       delim.length === 2 && closer && !overflow && param.trimStart() === ''
-        ? new Data(cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
+        ? new Node(cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
           html('div', { class: 'math', translate: 'no' }, `${delim}\n${body}${delim}`))
-        : new Data(html('pre', {
+        : new Node(html('pre', {
             class: 'invalid',
             translate: 'no',
             ...invalid(

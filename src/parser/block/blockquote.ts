@@ -1,6 +1,6 @@
 import { BlockquoteParser } from '../block';
 import { Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, consume, recursion, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
@@ -28,9 +28,9 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       convert(unindent, source, true)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => new List([new Data(html('pre', defrag(unwrap(ns))))])), true)),
+      convert(unindent, fmap(autolink, ns => new List([new Node(html('pre', defrag(unwrap(ns))))])), true)),
   ]))),
-  ns => new List([new Data(html('blockquote', unwrap(ns)))])));
+  ns => new List([new Node(html('blockquote', unwrap(ns)))])));
 
 const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
   some(recursion(Recursion.blockquote, union([
@@ -50,7 +50,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
           },
         }, context);
         context.position = source.length;
-        return new List([new Data(html('section', [document, html('h2', 'References'), references]))]);
+        return new List([new Node(html('section', [document, html('h2', 'References'), references]))]);
       }, true)),
   ]))),
-  ns => new List([new Data(html('blockquote', unwrap(ns)))])));
+  ns => new List([new Node(html('blockquote', unwrap(ns)))])));

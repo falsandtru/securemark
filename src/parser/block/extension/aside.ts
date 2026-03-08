@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
 import { unwrap, invalid } from '../../util';
@@ -10,10 +10,10 @@ import { html } from 'typed-dom/dom';
 export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(fmap(
   fence(/(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
-  (nodes: List<Data<string>>, context) => {
+  (nodes: List<Node<string>>, context) => {
     const [body, overflow, closer, opener, delim, param] = unwrap(nodes);
     if (!closer || overflow || param.trimStart()) return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid(
@@ -34,7 +34,7 @@ export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, blo
     assert(!document.querySelector('[id]'));
     const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName!) && document.firstElementChild as HTMLHeadingElement;
     if (!heading) return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid('aside', 'content', 'Missing the title at the first line'),
@@ -42,7 +42,7 @@ export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, blo
     ]);
     assert(identity('index', context.id, heading));
     return new List([
-      new Data(html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
+      new Node(html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
         document,
         html('h2', 'References'),
         references,

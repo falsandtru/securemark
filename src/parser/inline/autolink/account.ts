@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { some, state, constraint, verify, surround, setBacktrack, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { emoji } from './hashtag';
@@ -36,10 +36,10 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
       const hashes = nodes.foldl((acc, { value }) => acc + '#' + value, '');
       const param = nodes.foldl((acc, { value }) => acc ? acc + '+' + value : value, '');
       return new List([
-        new Data(define(
+        new Node(define(
           parse(
-            new List([new Data(`@${host}${account}${hashes}`)]),
-            new List([new Data(host ? `https://${host}@${account}?ch=${param}` : `/@${account}?ch=${param}`)]),
+            new List([new Node(`@${host}${account}${hashes}`)]),
+            new List([new Node(host ? `https://${host}@${account}?ch=${param}` : `/@${account}?ch=${param}`)]),
             context),
           { class: 'channel' }))
       ]);
@@ -50,10 +50,10 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
         return void setBacktrack(context, 2 | Backtrack.unescapable, context.position - context.range!);
       }
       return new List([
-        new Data(define(
+        new Node(define(
           parse(
-            new List([new Data(`@${host}${account}`)]),
-            new List([new Data(host ? `https://${host}@${account}` : `/@${account}`)]),
+            new List([new Node(`@${host}${account}`)]),
+            new List([new Node(host ? `https://${host}@${account}` : `/@${account}`)]),
             context),
           { class: 'account' }))
       ]);

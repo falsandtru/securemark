@@ -1,4 +1,4 @@
-import { Parser, List, Data, subinput, failsafe } from '../../data/parser';
+import { Parser, List, Node, subinput, failsafe } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { block } from '../constraint/block';
 import { line } from '../constraint/line';
@@ -24,7 +24,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
       some(line(open(indent, ({ context }) => {
         const { source, position } = context;
         context.position = source.length;
-        return new List([new Data(source.slice(position))]);
+        return new List([new Node(source.slice(position))]);
       }))),
     ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation),
     (lines, context) =>

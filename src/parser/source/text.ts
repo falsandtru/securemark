@@ -1,6 +1,6 @@
 import { TextParser, TxtParser } from '../source';
 import { Command } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, consume } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
@@ -26,17 +26,17 @@ export const text: TextParser = input => {
         default:
           consume(1, context);
           context.position += 1;
-          return new List([new Data(source.slice(position + 1, context.position))]);
+          return new List([new Node(source.slice(position + 1, context.position))]);
       }
     case '\r':
       consume(-1, context);
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new List([new Data(html('br'))]);
+      return new List([new Node(html('br'))]);
     default:
       assert(char !== '\n');
-      if (context.sequential) return new List([new Data(char)]);
+      if (context.sequential) return new List([new Node(char)]);
       nonWhitespace.lastIndex = position + 1;
       const s = canSkip(source, position);
       let i = s
@@ -55,7 +55,7 @@ export const text: TextParser = input => {
       const linestart = position === 0 || source[position - 1] === '\n';
       return position === context.position || s && !linestart || lineend
         ? new List()
-        : new List([new Data(source.slice(position, context.position))]);
+        : new List([new Node(source.slice(position, context.position))]);
   }
 };
 

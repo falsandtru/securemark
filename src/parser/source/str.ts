@@ -1,5 +1,5 @@
 import { StrParser } from '../source';
-import { Parser, List, Data } from '../../combinator/data/parser';
+import { Parser, List, Node } from '../../combinator/data/parser';
 import { matcher } from '../../combinator';
 
 export function str(pattern: string | RegExp): StrParser;
@@ -17,6 +17,6 @@ export function strs(pattern: string): Parser<string> {
       acc += pattern;
       context.position += pattern.length;
     }
-    return new List([new Data(acc)]);
+    return new List([new Node(acc)]);
   };
 }

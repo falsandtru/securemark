@@ -1,6 +1,6 @@
 import { UListParser } from '../block';
 import { Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, fallback, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_, ilistitem } from './ilist';
@@ -25,23 +25,23 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
-      ns => new List([new Data(html('li', { 'data-index': dataindex(ns) }, defrag(unwrap(fillFirstLine(ns)))))]))),
+      ns => new List([new Node(html('li', { 'data-index': dataindex(ns) }, defrag(unwrap(fillFirstLine(ns)))))]))),
   ])))),
-  ns => new List([new Data(format(html('ul', unwrap(ns))))]))));
+  ns => new List([new Node(format(html('ul', unwrap(ns))))]))));
 
 export const checkbox = focus(
   /\[[xX ]\](?=$|[ \n])/y,
   ({ context: { source, position } }) => new List([
-    new Data(html('span', { class: 'checkbox' }, source[position + 1].trimStart() ? '☑' : '☐')),
+    new Node(html('span', { class: 'checkbox' }, source[position + 1].trimStart() ? '☑' : '☐')),
   ]), false);
 
-export function fillFirstLine(nodes: List<Data<string | HTMLElement>>): List<Data<string | HTMLElement>> {
+export function fillFirstLine(nodes: List<Node<string | HTMLElement>>): List<Node<string | HTMLElement>> {
   const node = nodes.head?.value;
   if (typeof node !== 'object') return nodes;
   switch (node.tagName) {
     case 'UL':
     case 'OL':
-      nodes.unshift(new Data(html('br')));
+      nodes.unshift(new Node(html('br')));
   }
   return nodes;
 }

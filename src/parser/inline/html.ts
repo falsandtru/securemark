@@ -1,6 +1,6 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
-import { List, Data, Ctx } from '../../combinator/data/parser';
+import { List, Node, Ctx } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -28,9 +28,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       open(str(/ ?/y), str('>'), true),
       true, [],
       ([as, bs = new List(), cs], context) =>
-        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
+        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
-        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
     match(
       new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'),
       memoize(
@@ -53,9 +53,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
           str(`</${tag}>`),
           true, [],
           ([as, bs = new List(), cs], context) =>
-            new List([new Data(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
+            new List([new Node(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
           ([as, bs = new List()], context) =>
-            new List([new Data(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
+            new List([new Node(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
       ([, tag]) => tag,
       new Map())),
     surround(
@@ -65,9 +65,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       open(str(/ ?/y), str('>'), true),
       true, [],
       ([as, bs = new List(), cs], context) =>
-        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
+        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
-        new List([new Data(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
   ])));
 
 export const attribute: HTMLParser.AttributeParser = union([
@@ -75,7 +75,7 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/ [^\s<>]+/y),
 ]);
 
-function elem(tag: string, content: boolean, as: readonly string[], bs: List<Data<HTMLElement | string>>, cs: List<Data<string>>, context: Ctx): HTMLElement {
+function elem(tag: string, content: boolean, as: readonly string[], bs: List<Node<HTMLElement | string>>, cs: List<Node<string>>, context: Ctx): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<');
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);

@@ -1,6 +1,6 @@
 import { HeadingParser } from '../block';
 import { State } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, state, block, line, focus, rewrite, open, fmap, firstline } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { str } from '../source';
@@ -13,10 +13,10 @@ export const segment: HeadingParser.SegmentParser = block(focus(
   input => {
     const { context } = input;
     const { source, range = 0 } = context;
-    const acc = new List<Data<string>>();
+    const acc = new List<Node<string>>();
     for (const len = context.position + range; context.position < len;) {
       const line = firstline(source, context.position);
-      acc.push(new Data(line));
+      acc.push(new Node(line));
       context.position += line.length;
     }
     return acc;
@@ -38,8 +38,8 @@ export const heading: HeadingParser = block(rewrite(segment,
     const [h, ...ns] = unwrap(nodes) as [string, ...(HTMLElement | string)[]];
     return new List([
       h.length <= 6
-        ? new Data(html(`h${h.length as 1}`, { 'data-index': dataindex(nodes) }, defrag(ns)))
-        : new Data(html(`h6`, {
+        ? new Node(html(`h${h.length as 1}`, { 'data-index': dataindex(nodes) }, defrag(ns)))
+        : new Node(html(`h6`, {
           class: 'invalid',
           ...invalid('heading', 'syntax', 'Heading level must be up to 6'),
         }, context.source.slice(context.position - context.range!, context.position)))

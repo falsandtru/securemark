@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { Recursion } from '../../context';
-import { List, Data, subinput } from '../../../combinator/data/parser';
+import { List, Node, subinput } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
 import { unwrap, invalid } from '../../util';
@@ -10,10 +10,10 @@ import { html } from 'typed-dom/dom';
 export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(fmap(
   fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
-  (nodes: List<Data<string>>, context) => {
+  (nodes: List<Node<string>>, context) => {
     const [body, overflow, closer, opener, delim, type = 'markdown', param] = unwrap(nodes);
     if (!closer || overflow || param.trimStart()) return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid(
@@ -35,7 +35,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
         }, context);
         assert(!document.querySelector('[id]'));
         return new List([
-          new Data(html('aside', { class: 'example', 'data-type': 'markdown' }, [
+          new Node(html('aside', { class: 'example', 'data-type': 'markdown' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
             html('section', [document, html('h2', 'References'), references]),
@@ -44,7 +44,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
       }
       case 'math':
         return new List([
-          new Data(html('aside', { class: 'example', 'data-type': 'math' }, [
+          new Node(html('aside', { class: 'example', 'data-type': 'math' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
             mathblock(subinput(`$$\n${body}$$`, context))!.head!.value,
@@ -52,7 +52,7 @@ export const example: ExtensionParser.ExampleParser = recursion(Recursion.block,
         ]);
       default:
         return new List([
-          new Data(html('pre', {
+          new Node(html('pre', {
             class: 'invalid',
             translate: 'no',
             ...invalid('example', 'type', 'Invalid example type'),

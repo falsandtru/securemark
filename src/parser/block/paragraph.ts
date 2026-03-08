@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../block';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, block, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { visualize, trimBlankEnd } from '../visibility';
@@ -8,4 +8,4 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const paragraph: ParagraphParser = block(fmap(
   visualize(trimBlankEnd(some(union([inline])))),
-  ns => new List([new Data(html('p', defrag(unwrap(ns))))])));
+  ns => new List([new Node(html('p', defrag(unwrap(ns))))])));

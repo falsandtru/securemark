@@ -1,6 +1,6 @@
 import { TemplateParser } from '../inline';
 import { Recursion, Backtrack } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { unwrap, invalid } from '../util';
@@ -13,11 +13,11 @@ export const template: TemplateParser = lazy(() => surround(
   str('}}'),
   true, [],
   ([as, bs = new List(), cs]) => new List([
-    new Data(html('span', { class: 'template' }, defrag(unwrap(as.import(bs as List<Data<string>>).import(cs)))))
+    new Node(html('span', { class: 'template' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))
   ]),
   ([, bs], context) =>
     bs && new List([
-      new Data(html('span',
+      new Node(html('span',
         {
           class: 'invalid',
           ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
@@ -39,5 +39,5 @@ const bracket: TemplateParser.BracketParser = lazy(() => union([
     true,
     [3 | Backtrack.escapable],
     undefined,
-    ([as, bs]) => bs && as.import(bs as List<Data<string>>)),
+    ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
 ]));

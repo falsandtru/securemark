@@ -1,5 +1,5 @@
 import { CodeBlockParser } from '../block';
-import { List, Data, subinput } from '../../combinator/data/parser';
+import { List, Node, subinput } from '../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { unwrap, invalid } from '../util';
@@ -50,7 +50,7 @@ export const codeblock: CodeBlockParser = block(fmap(
         : params[name] = value;
       return params;
     }, {}) ?? {};
-    if (!closer || overflow || params.invalid) return new List([new Data(html('pre', {
+    if (!closer || overflow || params.invalid) return new List([new Node(html('pre', {
       class: 'invalid',
       translate: 'no',
       ...invalid(
@@ -74,5 +74,5 @@ export const codeblock: CodeBlockParser = block(fmap(
         ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
           body.slice(0, -1) || undefined
         : defrag(unwrap(autolink(subinput(body.slice(0, -1), context)))));
-    return new List([new Data(el)]);
+    return new List([new Node(el)]);
   }));

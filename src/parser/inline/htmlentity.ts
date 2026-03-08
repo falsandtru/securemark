@@ -1,6 +1,6 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { Backtrack } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, surround, fmap } from '../../combinator';
 import { str } from '../source';
 import { invalid } from '../util';
@@ -11,16 +11,16 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
   false,
   [3 | Backtrack.unescapable],
   ([as, bs, cs]) =>
-    new List([new Data(parser(as.head!.value + bs.head!.value + cs.head!.value))]),
+    new List([new Node(parser(as.head!.value + bs.head!.value + cs.head!.value))]),
   ([as, bs]) =>
-    new List([new Data(as.head!.value + (bs?.head?.value ?? ''))]));
+    new List([new Node(as.head!.value + (bs?.head?.value ?? ''))]));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([{ value }]) => new List([
     length === 1 || value.at(-1) !== ';'
-      ? new Data(value)
-      : new Data(html('span', {
+      ? new Node(value)
+      : new Node(html('span', {
           class: 'invalid',
           ...invalid('htmlentity', 'syntax', 'Invalid HTML entity'),
         }, value))

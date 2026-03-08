@@ -1,6 +1,6 @@
 import { StrongParser } from '../inline';
 import { Recursion } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { emphasis } from './emphasis';
@@ -19,5 +19,5 @@ export const strong: StrongParser = lazy(() => surround(
   ]))))),
   str('**'),
   false, [],
-  ([, bs]) => new List([new Data(html('strong', defrag(unwrap(bs))))]),
-  ([as, bs]) => bs && as.import(bs as List<Data<string>>)));
+  ([, bs]) => new List([new Node(html('strong', defrag(unwrap(bs))))]),
+  ([as, bs]) => bs && as.import(bs as List<Node<string>>)));

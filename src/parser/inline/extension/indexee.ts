@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../../../markdown';
-import { Parser, List, Data } from '../../../combinator/data/parser';
+import { Parser, List, Node } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom/dom';
 
@@ -7,7 +7,7 @@ export function indexee<P extends Parser<HTMLElement, MarkdownParser.Context>>(p
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
   return fmap(parser, (ns, { id }) =>
     ns.length === 1
-      ? new List([new Data(define(ns.head!.value, { id: identity('index', id, ns.head!.value), 'data-index': null }))])
+      ? new List([new Node(define(ns.head!.value, { id: identity('index', id, ns.head!.value), 'data-index': null }))])
       : ns);
 }
 

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { List, Data, subinput } from '../../../combinator/data/parser';
+import { List, Node, subinput } from '../../../combinator/data/parser';
 import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
@@ -71,7 +71,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   nodes => {
     const [label, param, content, ...caption] = unwrap(nodes) as [HTMLAnchorElement, string, ...HTMLElement[]];
     return new List([
-      new Data(html('figure',
+      new Node(html('figure',
         attributes(label.getAttribute('data-label')!, param, content, caption),
         [
           html('figcaption', [
@@ -108,7 +108,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'Invalid content',
         ];
       return new List([
-        new Data(html('pre', {
+        new Node(html('pre', {
           class: 'invalid',
           translate: 'no',
           ...invalid('figure', violation[0], violation[1]),

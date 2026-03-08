@@ -1,4 +1,4 @@
-import { Parser, List, Data, Ctx, CtxOptions } from './src/combinator/data/parser';
+import { Parser, List, Node, Ctx, CtxOptions } from './src/combinator/data/parser';
 import { Dict } from 'spica/dict';
 
 declare abstract class Markdown<T> {
@@ -13,7 +13,7 @@ export interface MarkdownParser extends
 }
 export namespace MarkdownParser {
   export interface Context extends Ctx, Options {
-    buffer?: List<Data<(string | HTMLElement)>>;
+    buffer?: List<Node<(string | HTMLElement)>>;
     sequential?: boolean;
   }
   export interface Options extends CtxOptions {
@@ -434,7 +434,7 @@ export namespace MarkdownParser {
         }
         export interface RowParser extends
           Block<'extension/table/row'>,
-          Parser<List<Data<[string[], string[]?] | HTMLTableCellElement>>, Context, [
+          Parser<List<Node<[string[], string[]?] | HTMLTableCellElement>>, Context, [
             Parser<[string[], string[]?], Context, [
               AlignParser,
             ]>,
@@ -791,7 +791,7 @@ export namespace MarkdownParser {
       export interface TextLinkParser extends
         Inline<'link/textlink'>,
         Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
-          Parser<List<Data<string | HTMLElement>>, Context, [
+          Parser<List<Node<string | HTMLElement>>, Context, [
             InlineParser,
           ]>,
           LinkParser.ParameterParser,
@@ -800,7 +800,7 @@ export namespace MarkdownParser {
       export interface MediaLinkParser extends
         Inline<'link/medialink'>,
         Parser<HTMLAnchorElement | HTMLSpanElement, Context, [
-          Parser<List<Data<HTMLElement>>, Context, [
+          Parser<List<Node<HTMLElement>>, Context, [
             MediaParser,
             ShortMediaParser,
           ]>,
@@ -809,7 +809,7 @@ export namespace MarkdownParser {
       }
       export interface ContentParser extends
         Inline<'link/content'>,
-        Parser<List<Data<string | HTMLElement>>, Context, [
+        Parser<List<Node<string | HTMLElement>>, Context, [
           MediaParser,
           ShortMediaParser,
           InlineParser,
@@ -817,13 +817,13 @@ export namespace MarkdownParser {
       }
       export interface TextParser extends
         Inline<'link/text'>,
-        Parser<List<Data<string>>, Context, [
+        Parser<List<Node<string>>, Context, [
           SourceParser.UnescapableSourceParser,
         ]> {
       }
       export interface ParameterParser extends
         Inline<'link/parameter'>,
-        Parser<List<Data<string>>, Context, [
+        Parser<List<Node<string>>, Context, [
           LinkParser.ParameterParser.UriParser,
           LinkParser.ParameterParser.OptionParser,
         ]> {
@@ -858,7 +858,7 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<List<Data<string>>, Context, [
+        Parser<List<Node<string>>, Context, [
           UnsafeHTMLEntityParser,
           TextParser.BracketParser,
           SourceParser.TxtParser,
@@ -892,7 +892,7 @@ export namespace MarkdownParser {
       }
       export interface ParameterParser extends
         Inline<'media/parameter'>,
-        Parser<List<Data<string>>, Context, [
+        Parser<List<Node<string>>, Context, [
           LinkParser.ParameterParser.UriParser,
           ParameterParser.OptionParser,
         ]> {
@@ -911,8 +911,8 @@ export namespace MarkdownParser {
       // [AB](a b)
       Inline<'ruby'>,
       Parser<HTMLElement, Context, [
-        Parser<List<Data<string>>, Context, []>,
-        Parser<List<Data<string>>, Context, []>,
+        Parser<List<Node<string>>, Context, []>,
+        Parser<List<Node<string>>, Context, []>,
       ]> {
     }
     export namespace RubyParser {

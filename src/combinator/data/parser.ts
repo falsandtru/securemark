@@ -16,10 +16,10 @@ export interface Input<C extends Ctx = Ctx> {
   readonly context: C;
 }
 export type Result<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
-  = List<Data<N>, C, D>
+  = List<Node<N>, C, D>
   | undefined;
 export { List };
-export class Data<N> implements List.Node {
+export class Node<N> implements List.Node {
   constructor(public value: N) {
   }
   public next?: this = undefined;

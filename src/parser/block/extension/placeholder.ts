@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { List, Data } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/data/parser';
 import { block, fence, clear, fmap } from '../../../combinator';
 import { unwrap, invalid } from '../../util';
 import { html } from 'typed-dom/dom';
@@ -17,7 +17,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = block(fmap(
   nodes => {
     const [body, overflow, closer, opener, delim] = unwrap(nodes);
     return new List([
-      new Data(html('pre', {
+      new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
         ...invalid(

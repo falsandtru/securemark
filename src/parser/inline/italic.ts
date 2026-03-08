@@ -1,6 +1,6 @@
 import { ItalicParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { tightStart, blankWith } from '../visibility';
@@ -21,5 +21,5 @@ export const italic: ItalicParser = lazy(() =>
     '///',
     false, [],
     ([, bs], { buffer }) => buffer!.import(bs),
-    ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Data(Command.Cancel)) && buffer!),
-    nodes => new List([new Data(html('i', defrag(unwrap(nodes))))]))));
+    ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Node(Command.Cancel)) && buffer!),
+    nodes => new List([new Node(html('i', defrag(unwrap(nodes))))]))));

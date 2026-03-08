@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { List, Data } from '../combinator/data/parser';
+import { List, Node } from '../combinator/data/parser';
 import { union, inits, some, block, line, validate, focus, clear, convert, lazy, fmap } from '../combinator';
 import { str } from './source';
 import { unwrap, invalid } from './util';
@@ -18,17 +18,17 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
           fmap(
             some(union([field])),
             ns => new List([
-              new Data(html('aside', { class: 'header' }, [
+              new Node(html('aside', { class: 'header' }, [
                 html('details',
                   { open: '' },
-                  defrag(unwrap(ns.unshift(new Data(html('summary', 'Header'))) && ns))),
+                  defrag(unwrap(ns.unshift(new Node(html('summary', 'Header'))) && ns))),
               ])),
             ]))))),
         ({ context }) => {
           const { source, position } = context;
           context.position += source.length;
           return new List([
-            new Data(html('pre', {
+            new Node(html('pre', {
               class: 'invalid',
               translate: 'no',
               ...invalid('header', 'syntax', 'Invalid syntax'),
@@ -43,7 +43,7 @@ const field: MarkdownParser.HeaderParser.FieldParser = line(({ context: { source
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
   return new List([
-    new Data(html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
+    new Node(html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
       ': ',
       html('span', { class: 'field-value' }, value),

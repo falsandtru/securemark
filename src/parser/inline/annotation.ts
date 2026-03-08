@@ -1,6 +1,6 @@
 import { AnnotationParser } from '../inline';
 import { State, Backtrack } from '../context';
-import { List, Data } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/data/parser';
 import { union, some, precedence, state, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
@@ -16,5 +16,5 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
   ([, ns], context) =>
     context.linebreak === 0
-      ? new List([new Data(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])
+      ? new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])
       : undefined)));
