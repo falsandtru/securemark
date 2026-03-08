@@ -27,19 +27,18 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
     str('!'),
     union([
       constraint(State.autolink, state(State.autolink, ({ context }) => {
-        const { source, position, range = 0 } = context;
-        context.position -= position > 0 && source[position - 1] === '!' ? 1 : 0;
-        context.position += range;
+        const { source, position } = context;
+        context.position -= source[0] === '!' ? 1 : 0;
         return new List([
           new Data(parse(
             new List(),
-            new List([new Data(source.slice(position, context.position))]),
+            new List([new Data(source.slice(position))]),
             context))
         ]);
       })),
       str(/[^:]+/y),
     ]),
-  ]), false));
+  ])));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'),
