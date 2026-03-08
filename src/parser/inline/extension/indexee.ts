@@ -3,7 +3,7 @@ import { Parser, List, Data } from '../../../combinator/data/parser';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom/dom';
 
-export function indexee<P extends Parser<unknown, MarkdownParser.Context>>(parser: P): P;
+export function indexee<P extends Parser<HTMLElement, MarkdownParser.Context>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Parser<HTMLElement> {
   return fmap(parser, (ns, { id }) =>
     ns.length === 1
