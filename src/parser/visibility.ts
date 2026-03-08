@@ -50,7 +50,7 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
 //  return isTightStart({ source: source.replace(blank.start, ''), context }, except);
 //}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
-export function tightStart<P extends Parser<unknown>>(parser: P, except?: string): P;
+export function tightStart<P extends Parser>(parser: P, except?: string): P;
 export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
   return input =>
     isTightStart(input, except)
@@ -140,7 +140,7 @@ export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return trimBlankStart(trimBlankEnd(parser));
 }
-export function trimBlankStart<P extends Parser<unknown>>(parser: P): P;
+export function trimBlankStart<P extends Parser>(parser: P): P;
 export function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
   return failsafe(input => {
     const { context } = input;

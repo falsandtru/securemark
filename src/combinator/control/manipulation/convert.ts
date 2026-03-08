@@ -1,6 +1,6 @@
 import { Parser, List, Ctx, Context, subinput, failsafe } from '../../data/parser';
 
-export function convert<P extends Parser<unknown>>(conv: (source: string, context: Context<P>) => string, parser: P, empty?: boolean): P;
+export function convert<P extends Parser>(conv: (source: string, context: Context<P>) => string, parser: P, empty?: boolean): P;
 export function convert<N>(conv: (source: string, context: Ctx) => string, parser: Parser<N>, empty = false): Parser<N> {
   assert(parser);
   return failsafe(input => {

@@ -2,7 +2,7 @@ import { Parser, List, Data, Ctx, Node, Context, SubParsers, SubNode } from '../
 import { union } from './union';
 import { sequence } from './sequence';
 
-export function tails<P extends Parser<unknown>>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+export function tails<P extends Parser>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
 export function tails<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: List<Data<N>>) => boolean): Parser<N, Ctx, D> {
   return union(parsers.map((_, i) => sequence(parsers.slice(i), resume)) as D);
 }

@@ -1,7 +1,7 @@
 import { Parser, Context, input, failsafe } from '../../data/parser';
 import { matcher } from '../../../combinator';
 
-export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P, slice?: boolean): P;
+export function focus<P extends Parser>(scope: string | RegExp, parser: P, slice?: boolean): P;
 export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true): Parser<N> {
   assert(parser);
   const match = matcher(scope, false);
@@ -30,8 +30,8 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true
 }
 
 //export function rewrite<N, C extends Ctx, D extends Parser<unknown, C>[]>(scope: Parser<unknown, C, D>, parser: Parser<N, C, never>): Parser<N, C, D>;
-export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, Context<P>>, parser: P, slice?: boolean): P;
-export function rewrite<N>(scope: Parser<unknown>, parser: Parser<N>, slice = true): Parser<N> {
+export function rewrite<P extends Parser>(scope: Parser<unknown, Context<P>>, parser: P, slice?: boolean): P;
+export function rewrite<N>(scope: Parser, parser: Parser<N>, slice = true): Parser<N> {
   assert(scope);
   assert(parser);
   return failsafe(arg => {

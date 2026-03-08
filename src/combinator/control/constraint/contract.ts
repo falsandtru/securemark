@@ -1,13 +1,13 @@
 import { Parser, Input, List, Data, Ctx, Node, Context, failsafe } from '../../data/parser';
 import { matcher } from '../../../combinator';
 
-//export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
+//export function contract<P extends Parser>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
 //export function contract<N>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<N>, cond: (nodes: readonly N[], rest: string) => boolean): Parser<N> {
 //  return verify(validate(patterns, parser), cond);
 //}
 
-export function validate<P extends Parser<unknown>>(pattern: string | RegExp, parser: P): P;
-export function validate<P extends Parser<unknown>>(cond: ((input: Input<Context<P>>) => boolean), parser: P): P;
+export function validate<P extends Parser>(pattern: string | RegExp, parser: P): P;
+export function validate<P extends Parser>(cond: ((input: Input<Context<P>>) => boolean), parser: P): P;
 export function validate<N>(pattern: string | RegExp | ((input: Input<Ctx>) => boolean), parser: Parser<N>): Parser<N> {
   if (typeof pattern === 'function') return guard(pattern, parser);
   const match = matcher(pattern, false);
@@ -20,7 +20,7 @@ export function validate<N>(pattern: string | RegExp | ((input: Input<Ctx>) => b
   };
 }
 
-function guard<P extends Parser<unknown>>(f: (input: Input<Context<P>>) => boolean, parser: P): P;
+function guard<P extends Parser>(f: (input: Input<Context<P>>) => boolean, parser: P): P;
 function guard<N>(f: (input: Input<Ctx>) => boolean, parser: Parser<N>): Parser<N> {
   return input =>
     f(input)
@@ -28,7 +28,7 @@ function guard<N>(f: (input: Input<Ctx>) => boolean, parser: Parser<N>): Parser<
       : undefined;
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (nodes: List<Data<Node<P>>>, context: Context<P>) => boolean): P;
+export function verify<P extends Parser>(parser: P, cond: (nodes: List<Data<Node<P>>>, context: Context<P>) => boolean): P;
 export function verify<N>(parser: Parser<N>, cond: (nodes: List<Data<N>>, context: Ctx) => boolean): Parser<N> {
   assert(parser);
   return failsafe(input => {

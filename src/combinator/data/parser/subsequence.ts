@@ -2,7 +2,7 @@ import { Parser, List, Data, Ctx, Node, Context, SubParsers, SubNode } from '../
 import { union } from './union';
 import { inits } from './inits';
 
-export function subsequence<P extends Parser<unknown>>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+export function subsequence<P extends Parser>(parsers: SubParsers<P>, resume?: (nodes: List<Data<SubNode<P>>>) => boolean): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
 export function subsequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: List<Data<N>>) => boolean): Parser<N, Ctx, D> {
   assert(parsers.every(f => f));
   return union(

@@ -7,8 +7,8 @@ import { match } from './match';
 import { open } from './surround';
 import { memoize } from 'spica/memoize';
 
-export function indent<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
-export function indent<P extends Parser<unknown>>(opener: RegExp, parser: P, separation?: boolean): P;
+export function indent<P extends Parser>(parser: P, separation?: boolean): P;
+export function indent<P extends Parser>(opener: RegExp, parser: P, separation?: boolean): P;
 export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolean = false, separation = false): Parser<N> {
   if (typeof opener === 'function') {
     separation = parser as boolean;

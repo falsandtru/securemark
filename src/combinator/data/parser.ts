@@ -1,7 +1,7 @@
 import { List } from './data';
 import { Delimiters } from './parser/context/delimiter';
 
-export type Parser<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+export type Parser<N = unknown, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = (input: Input<C>) => Result<N, C, D>;
 export interface Input<C extends Ctx = Ctx> {
   readonly context: C;
@@ -65,13 +65,13 @@ export interface CtxOptions {
   linebreak?: number;
   range?: number;
 }
-export type Node<P extends Parser<unknown>> = P extends Parser<infer N> ? N : never;
-export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, Ctx, infer D> ? D : never;
-export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C : never;
-export type SubNode<P extends Parser<unknown>> = ExtractSubNode<SubParsers<P>>;
-export type IntermediateParser<P extends Parser<unknown>> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
-type ExtractSubNode<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
-type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
+export type Node<P extends Parser> = P extends Parser<infer N> ? N : never;
+export type SubParsers<P extends Parser> = P extends Parser<unknown, Ctx, infer D> ? D : never;
+export type Context<P extends Parser> = P extends Parser<unknown, infer C> ? C : never;
+export type SubNode<P extends Parser> = ExtractSubNode<SubParsers<P>>;
+export type IntermediateParser<P extends Parser> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+type ExtractSubNode<D extends Parser[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
+type ExtractSubParser<D extends Parser[]> = D extends (infer P)[] ? P extends Parser ? P : never : never;
 
 export function input<C extends CtxOptions>(source: string, context: C): Input<C & Ctx> {
   // @ts-expect-error
@@ -96,7 +96,7 @@ export function subinput<C extends Ctx>(source: string, context: C): Input<C> {
   };
 }
 
-export function failsafe<P extends Parser<unknown>>(parser: P): P;
+export function failsafe<P extends Parser>(parser: P): P;
 export function failsafe<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
   return input => {

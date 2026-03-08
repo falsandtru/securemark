@@ -1,6 +1,6 @@
 import { Parser, Ctx, Node, Context, SubParsers, SubNode } from '../parser';
 
-export function union<P extends Parser<unknown>>(parsers: SubParsers<P>): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
+export function union<P extends Parser>(parsers: SubParsers<P>): SubNode<P> extends Node<P> ? P : Parser<SubNode<P>, Context<P>, SubParsers<P>>;
 export function union<N, D extends Parser<N>[]>(parsers: D): Parser<N, Ctx, D> {
   assert(parsers.every(f => f));
   switch (parsers.length) {

@@ -1,7 +1,7 @@
 import { Parser, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
 
-export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;
+export function match<P extends Parser>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;
 export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<N>): Parser<N> {
   assert(!pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^'));
   const count = typeof pattern === 'object'

@@ -1,7 +1,7 @@
 import { Parser, failsafe } from '../../data/parser';
 import { isBlankline } from './line';
 
-export function block<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
+export function block<P extends Parser>(parser: P, separation?: boolean): P;
 export function block<N>(parser: Parser<N>, separation = true): Parser<N> {
   assert(parser);
   return failsafe(input => {

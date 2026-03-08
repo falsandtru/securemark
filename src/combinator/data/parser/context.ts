@@ -2,7 +2,7 @@ import { min } from 'spica/alias';
 import { Parser, Result, List, Data, Ctx, CtxOptions, Node, Context } from '../../data/parser';
 import { clone } from 'spica/assign';
 
-export function reset<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
+export function reset<P extends Parser>(base: CtxOptions, parser: P): P;
 export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -13,7 +13,7 @@ export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
     apply(parser, { ...context }, changes, values, true);
 }
 
-export function context<P extends Parser<unknown>>(base: CtxOptions, parser: P): P;
+export function context<P extends Parser>(base: CtxOptions, parser: P): P;
 export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
@@ -23,7 +23,7 @@ export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
     apply(parser, context, changes, values);
 }
 
-function apply<P extends Parser<unknown>>(parser: P, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
+function apply<P extends Parser>(parser: P, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
 function apply<N>(parser: Parser<N>, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
@@ -64,8 +64,8 @@ function apply<N>(parser: Parser<N>, context: Ctx, changes: readonly [string, un
   return result;
 }
 
-export function creation<P extends Parser<unknown>>(cost: number, parser: P): P;
-export function creation(cost: number, parser: Parser<unknown>): Parser<unknown> {
+export function creation<P extends Parser>(cost: number, parser: P): P;
+export function creation(cost: number, parser: Parser): Parser {
   assert(cost >= 0);
   return input => {
     const { context } = input;
@@ -85,8 +85,8 @@ export function consume(cost: number, context: Ctx): void {
   resources.clock -= cost;
 }
 
-export function recursion<P extends Parser<unknown>>(recursion: number, parser: P): P;
-export function recursion(recursion: number, parser: Parser<unknown>): Parser<unknown> {
+export function recursion<P extends Parser>(recursion: number, parser: P): P;
+export function recursion(recursion: number, parser: Parser): Parser {
   assert(recursion >= 0);
   return input => {
     const { context } = input;
@@ -102,7 +102,7 @@ export function recursion(recursion: number, parser: Parser<unknown>): Parser<un
   };
 }
 
-export function precedence<P extends Parser<unknown>>(precedence: number, parser: P): P;
+export function precedence<P extends Parser>(precedence: number, parser: P): P;
 export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> {
   assert(precedence >= 0);
   return input => {
@@ -119,8 +119,8 @@ export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> 
   };
 }
 
-export function state<P extends Parser<unknown>>(state: number, parser: P): P;
-export function state<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
+export function state<P extends Parser>(state: number, parser: P): P;
+export function state<P extends Parser>(state: number, positive: boolean, parser: P): P;
 export function state<N>(state: number, positive: boolean | Parser<N>, parser?: Parser<N>): Parser<N> {
   if (typeof positive === 'function') {
     parser = positive;
@@ -140,8 +140,8 @@ export function state<N>(state: number, positive: boolean | Parser<N>, parser?: 
   };
 }
 
-export function constraint<P extends Parser<unknown>>(state: number, parser: P): P;
-//export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
+export function constraint<P extends Parser>(state: number, parser: P): P;
+//export function constraint<P extends Parser>(state: number, positive: boolean, parser: P): P;
 export function constraint<N>(state: number, positive: boolean | Parser<N>, parser?: Parser<N>): Parser<N> {
   if (typeof positive === 'function') {
     parser = positive;
