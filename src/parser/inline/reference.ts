@@ -18,7 +18,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ]))),
   ']]',
   false,
-  [1 | Backtrack.common, 3 | Backtrack.doublebracket],
+  [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
   ([, ns], context) => {
     const { position, range = 0, linebreak = 0 } = context;
     if (linebreak === 0) {
