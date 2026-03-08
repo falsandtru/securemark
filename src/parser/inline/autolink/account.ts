@@ -47,7 +47,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
     ([[{ value: host }, { value: account }]], context) => {
       if (context.source[context.position] === '#') {
         assert(context.source[context.position - context.range!] === '@');
-        return void setBacktrack(context, [2 | Backtrack.unescapable], context.position - context.range!);
+        return void setBacktrack(context, 2 | Backtrack.unescapable, context.position - context.range!);
       }
       return new List([
         new Data(define(

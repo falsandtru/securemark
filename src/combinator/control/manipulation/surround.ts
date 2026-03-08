@@ -68,8 +68,7 @@ export function surround<N>(
       closer = clear(matcher(closer, true));
   }
   assert(closer);
-  const rbs = backtracks.filter(b => b & 1);
-  const wbs = backtracks.filter(b => b & 2);
+  const [rbs, wbs] = reduce(backtracks);
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
@@ -80,20 +79,20 @@ export function surround<N>(
     if (!nodesO) {
       return void revert(context, linebreak);
     }
-    if (isBacktrack(context, rbs, position, context.position - position || 1)) {
+    if (rbs && isBacktrack(context, rbs, position, context.position - position || 1)) {
       return void revert(context, linebreak);
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
     context.range = context.position - position;
     if (!nodesM && !optional) {
-      setBacktrack(context, wbs, position);
+      wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
     if (!nodesC) {
-      setBacktrack(context, wbs, position);
+      wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
@@ -154,46 +153,53 @@ export function close<N>(
 const commandsize = 2;
 export function isBacktrack(
   context: Ctx,
-  backtracks: readonly number[],
+  backtrack: number,
   position: number = context.position,
   length: number = 1,
 ): boolean {
-  if (length === 0 || backtracks.length === 0) return false;
+  assert(backtrack & 1);
+  if (length === 0) return false;
   const { source } = context;
   if (position === source.length) return false;
-  for (const backtrack of backtracks) {
-    if (backtrack & 1) {
-      const { backtracks = {}, offset = 0 } = context;
-      for (let i = 0; i < length; ++i) {
-        if (position + i === source.length) break;
-        if (i > 0 && source[position + i] !== source[position]) break;
-        const pos = position + i + offset;
-        if (backtracks[pos] & backtrack >>> commandsize) return true;
-      }
-    }
+  const { backtracks = {}, offset = 0 } = context;
+  for (let i = 0; i < length; ++i) {
+    if (position + i === source.length) break;
+    if (i > 0 && source[position + i] !== source[position]) break;
+    const pos = position + i + offset;
+    if (backtracks[pos] & backtrack >>> commandsize) return true;
   }
   return false;
 }
 export function setBacktrack(
   context: Ctx,
-  backtracks: readonly number[],
+  backtrack: number,
   position: number,
   length: number = 1,
 ): void {
   // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
-  if (length === 0 || backtracks.length === 0) return;
+  assert(backtrack & 2);
+  if (length === 0) return;
   const { source } = context;
   if (position === source.length) return;
+  const { backtracks = {}, offset = 0 } = context;
+  for (let i = 0; i < length; ++i) {
+    if (position + i === source.length) break;
+    const pos = position + i + offset;
+    backtracks[pos] |= backtrack >>> commandsize;
+  }
+}
+function reduce(backtracks: readonly number[]): readonly [number, number] {
+  let rbs = 0;
+  let wbs = 0;
   for (const backtrack of backtracks) {
+    if (backtrack & 1) {
+      rbs |= backtrack;
+    }
     if (backtrack & 2) {
-      const { backtracks = {}, offset = 0 } = context;
-      for (let i = 0; i < length; ++i) {
-        if (position + i === source.length) break;
-        const pos = position + i + offset;
-        backtracks[pos] |= backtrack >>> commandsize;
-      }
+      wbs |= backtrack;
     }
   }
+  return [rbs, wbs];
 }
 
 function revert(context: Ctx, linebreak: number | undefined): void {

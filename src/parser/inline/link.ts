@@ -28,7 +28,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
           const head = context.position - context.range!;
-          return void setBacktrack(context, [2 | Backtrack.link | Backtrack.ruby], head);
+          return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
         }
         return ns.push(new Data(Command.Separator)) && ns;
       })),
@@ -48,7 +48,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       content.pop();
       if (params === undefined) {
         const head = context.position - context.range!;
-        return void setBacktrack(context, [2 | Backtrack.link], head);
+        return void setBacktrack(context, 2 | Backtrack.link, head);
       }
     }
     else {

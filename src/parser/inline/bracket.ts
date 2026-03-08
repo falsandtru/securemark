@@ -43,7 +43,7 @@ const p1 = lazy(() => surround(
     const { source, position, range = 0 } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
-      setBacktrack(context, [2 | Backtrack.doublebracket], head);
+      setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
@@ -54,7 +54,7 @@ const p1 = lazy(() => surround(
     const { source, position, range = 0 } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[head + 1] !== '(') {
-      setBacktrack(context, [2 | Backtrack.doublebracket], head);
+      setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
     return as.import(bs as List<Data<string>>);
   }));
@@ -83,22 +83,22 @@ const s1 = lazy(() => surround(
       const { source, position, range = 0 } = context;
       const head = position - range;
       if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
-        setBacktrack(context, [2 | Backtrack.doublebracket], head);
+        setBacktrack(context, 2 | Backtrack.doublebracket, head);
       }
       if (context.linebreak !== 0) {
-        setBacktrack(context, [2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby], head);
+        setBacktrack(context, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head);
       }
       else if (source[position] !== '{') {
-        setBacktrack(context, [2 | Backtrack.link], head);
+        setBacktrack(context, 2 | Backtrack.link, head);
       }
       else {
         context.state! ^= State.link;
-        const result = !isBacktrack(context, [1 | Backtrack.link])
+        const result = !isBacktrack(context, 1 | Backtrack.link)
           ? textlink({ context })
           : undefined;
         context.position = position;
         if (!result) {
-          setBacktrack(context, [2 | Backtrack.link], head);
+          setBacktrack(context, 2 | Backtrack.link, head);
         }
         context.state! ^= State.link;
         context.range = range;
