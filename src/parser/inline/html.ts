@@ -1,6 +1,6 @@
 import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
-import { List, Node, Ctx } from '../../combinator/data/parser';
+import { List, Node, Context } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -75,7 +75,7 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/ [^\s<>]+/y),
 ]);
 
-function elem(tag: string, content: boolean, as: readonly string[], bs: List<Node<HTMLElement | string>>, cs: List<Node<string>>, context: Ctx): HTMLElement {
+function elem(tag: string, content: boolean, as: readonly string[], bs: List<Node<HTMLElement | string>>, cs: List<Node<string>>, context: Context): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<');
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
@@ -90,7 +90,7 @@ function elem(tag: string, content: boolean, as: readonly string[], bs: List<Nod
   return h(tag as 'span', attrs, defrag(unwrap(bs)));
 }
 
-function ielem(type: string, message: string, context: Ctx): HTMLElement {
+function ielem(type: string, message: string, context: Context): HTMLElement {
   return h('span',
     { class: 'invalid', ...invalid('html', type, message) },
     context.source.slice(context.position - context.range!, context.position));

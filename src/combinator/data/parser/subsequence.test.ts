@@ -1,4 +1,4 @@
-import { Parser, List, Node, Ctx, input } from '../parser';
+import { Parser, List, Node, Context, input } from '../parser';
 import { subsequence } from './subsequence';
 import { inspect } from '../../../debug.test';
 
@@ -19,7 +19,7 @@ describe('Unit: combinator/data/parser/subsequence', () => {
         ? void ++context.position || new List([new Node('C')])
         : undefined;
     };
-    const abc = subsequence<Parser<string, Ctx, [typeof a, typeof b, typeof c]>>([a, b, c]);
+    const abc = subsequence<Parser<string, Context, [typeof a, typeof b, typeof c]>>([a, b, c]);
     const { context: ctx } = input('', {});
 
     it('basic', () => {

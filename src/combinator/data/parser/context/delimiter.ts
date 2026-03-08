@@ -1,4 +1,4 @@
-import { Input, Ctx } from '../../parser';
+import { Input, Context } from '../../parser';
 import { matcher } from '../../../../combinator';
 
 interface Delimiter {
@@ -27,7 +27,7 @@ export class Delimiters {
         return `r/${pattern.source}`;
     }
   }
-  public static matcher(pattern: string | RegExp | undefined): (input: Input<Ctx>) => true | undefined {
+  public static matcher(pattern: string | RegExp | undefined): (input: Input<Context>) => true | undefined {
     switch (typeof pattern) {
       case 'undefined':
         return () => undefined;

@@ -1,4 +1,4 @@
-import { Parser, List, Node, Ctx, input } from '../parser';
+import { Parser, List, Node, Context, input } from '../parser';
 import { union } from './union';
 import { some } from './some';
 import { inspect } from '../../../debug.test';
@@ -15,7 +15,7 @@ describe('Unit: combinator/data/parser/some', () => {
         ? void ++context.position || new List([new Node('B')])
         : undefined;
     };
-    const ab = union<Parser<string, Ctx, [typeof a, typeof b]>>([a, b]);
+    const ab = union<Parser<string, Context, [typeof a, typeof b]>>([a, b]);
     const { context: ctx } = input('', {});
 
     it('basic', () => {

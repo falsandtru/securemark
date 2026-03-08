@@ -1,10 +1,10 @@
-import { Parser, List, Node, Ctx, CtxOptions, input } from '../parser';
+import { Parser, List, Node, Context as Ctx, Options, input } from '../parser';
 import { some } from './some';
 import { reset, context, creation } from './context';
 import { unwrap } from '../../../parser/util';
 
 describe('Unit: combinator/data/parser/context', () => {
-  interface Context extends CtxOptions {
+  interface Context extends Options {
     status?: boolean;
   }
 

@@ -1,9 +1,9 @@
 import { min } from 'spica/alias';
-import { Parser, Result, List, Node, Ctx, CtxOptions } from '../../data/parser';
+import { Parser, Result, List, Node, Context, Options } from '../../data/parser';
 import { clone } from 'spica/assign';
 
-export function reset<P extends Parser>(base: CtxOptions, parser: P): P;
-export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
+export function reset<P extends Parser>(base: Options, parser: P): P;
+export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
@@ -13,8 +13,8 @@ export function reset<N>(base: Ctx, parser: Parser<N>): Parser<N> {
     apply(parser, { ...context }, changes, values, true);
 }
 
-export function context<P extends Parser>(base: CtxOptions, parser: P): P;
-export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
+export function context<P extends Parser>(base: Options, parser: P): P;
+export function context<N>(base: Context, parser: Parser<N>): Parser<N> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
@@ -24,7 +24,7 @@ export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
 }
 
 function apply<P extends Parser>(parser: P, context: Parser.Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Parser.Node<P>>;
-function apply<N>(parser: Parser<N>, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
+function apply<N>(parser: Parser<N>, context: Context, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -78,7 +78,7 @@ export function creation(cost: number, parser: Parser): Parser {
     return result;
   };
 }
-export function consume(cost: number, context: Ctx): void {
+export function consume(cost: number, context: Context): void {
   const { resources } = context;
   if (!resources) return;
   if (resources.clock < cost) throw new Error('Too many creations');

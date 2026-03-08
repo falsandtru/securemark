@@ -1,4 +1,4 @@
-import { Parser, Result, List, Node, Ctx, failsafe } from '../../data/parser';
+import { Parser, Result, List, Node, Context, failsafe } from '../../data/parser';
 import { matcher, clear } from '../../../combinator';
 
 export function surround<P extends Parser, S = string>(
@@ -47,8 +47,8 @@ export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: string | RegExp | Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
   backtracks: readonly number[] = [],
-  f?: (rss: [List<Node<N>>, List<Node<N>>, List<Node<N>>], context: Ctx) => Result<N>,
-  g?: (rss: [List<Node<N>>, List<Node<N>> | undefined], context: Ctx) => Result<N>,
+  f?: (rss: [List<Node<N>>, List<Node<N>>, List<Node<N>>], context: Context) => Result<N>,
+  g?: (rss: [List<Node<N>>, List<Node<N>> | undefined], context: Context) => Result<N>,
 ): Parser<N> {
   switch (typeof opener) {
     case 'string':
@@ -122,7 +122,7 @@ export function open<P extends Parser<string>>(
   backtracks?: readonly number[],
 ): P;
 export function open<N>(
-  opener: string | RegExp | Parser<N, Ctx>,
+  opener: string | RegExp | Parser<N, Context>,
   parser: string | RegExp | Parser<N>,
   optional?: boolean,
   backtracks: readonly number[] = [],
@@ -143,7 +143,7 @@ export function close<P extends Parser<string>>(
 ): P;
 export function close<N>(
   parser: string | RegExp | Parser<N>,
-  closer: string | RegExp | Parser<N, Ctx>,
+  closer: string | RegExp | Parser<N, Context>,
   optional?: boolean,
   backtracks: readonly number[] = [],
 ): Parser<N> {
@@ -152,7 +152,7 @@ export function close<N>(
 
 const commandsize = 2;
 export function isBacktrack(
-  context: Ctx,
+  context: Context,
   backtrack: number,
   position: number = context.position,
   length: number = 1,
@@ -167,7 +167,7 @@ export function isBacktrack(
   return false;
 }
 export function setBacktrack(
-  context: Ctx,
+  context: Context,
   backtrack: number,
   position: number,
   length: number = 1,
@@ -202,6 +202,6 @@ function reduce(backtracks: readonly number[]): readonly [number, number, number
   return [len, rbs, wbs];
 }
 
-function revert(context: Ctx, linebreak: number | undefined): void {
+function revert(context: Context, linebreak: number | undefined): void {
   context.linebreak = linebreak;
 }

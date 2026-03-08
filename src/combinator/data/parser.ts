@@ -1,21 +1,21 @@
 import { List } from './data';
 import { Delimiters } from './parser/context/delimiter';
 
-export type Parser<N = unknown, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+export type Parser<N = unknown, C extends Context = Context, D extends Parser<unknown, C>[] = any>
   = (input: Input<C>) => Result<N, C, D>;
 export namespace Parser {
   export type Node<P extends Parser> = P extends Parser<infer N> ? N : never;
-  export type SubParsers<P extends Parser> = P extends Parser<unknown, Ctx, infer D> ? D : never;
+  export type SubParsers<P extends Parser> = P extends Parser<unknown, any, infer D> ? D : never;
   export type Context<P extends Parser> = P extends Parser<unknown, infer C> ? C : never;
   export type SubNode<P extends Parser> = ExtractSubNode<SubParsers<P>>;
   export type IntermediateParser<P extends Parser> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
   type ExtractSubNode<D extends Parser[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
   type ExtractSubParser<D extends Parser[]> = D extends (infer P)[] ? P extends Parser ? P : never : never;
 }
-export interface Input<C extends Ctx = Ctx> {
+export interface Input<C extends Context = Context> {
   readonly context: C;
 }
-export type Result<N, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+export type Result<N, C extends Context = Context, D extends Parser<unknown, C>[] = any>
   = List<Node<N>, C, D>
   | undefined;
 export { List };
@@ -25,11 +25,11 @@ export class Node<N> implements List.Node {
   public next?: this = undefined;
   public prev?: this = undefined;
 }
-export interface Ctx extends CtxOptions {
+export interface Context extends Options {
   source: string;
   position: number;
 }
-export interface CtxOptions {
+export interface Options {
   readonly resources?: {
     clock: number;
     recursions: number[];
@@ -75,7 +75,7 @@ export interface CtxOptions {
   range?: number;
 }
 
-export function input<C extends CtxOptions>(source: string, context: C): Input<C & Ctx> {
+export function input<C extends Options>(source: string, context: C): Input<C & Context> {
   // @ts-expect-error
   context.source = source;
   // @ts-expect-error
@@ -86,7 +86,7 @@ export function input<C extends CtxOptions>(source: string, context: C): Input<C
   };
 }
 
-export function subinput<C extends Ctx>(source: string, context: C): Input<C> {
+export function subinput<C extends Context>(source: string, context: C): Input<C> {
   return {
     context: {
       ...context,

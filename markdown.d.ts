@@ -1,4 +1,4 @@
-import { Parser, List, Node, Ctx, CtxOptions } from './src/combinator/data/parser';
+import { Parser, List, Node, Context as Ctx, Options as Opts } from './src/combinator/data/parser';
 import { Dict } from 'spica/dict';
 
 declare abstract class Markdown<T> {
@@ -16,7 +16,7 @@ export namespace MarkdownParser {
     buffer?: List<Node<(string | HTMLElement)>>;
     sequential?: boolean;
   }
-  export interface Options extends CtxOptions {
+  export interface Options extends Opts {
     readonly host?: URL;
     readonly url?: URL;
     readonly id?: string;

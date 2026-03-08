@@ -1,7 +1,7 @@
 import { min } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Result, List, Node, Ctx, failsafe } from '../combinator/data/parser';
+import { Parser, Result, List, Node, Context, failsafe } from '../combinator/data/parser';
 import { define } from 'typed-dom/dom';
 
 export function* unwrap<N>(nodes: List<Node<N>> | undefined): Iterable<N> {
@@ -11,8 +11,8 @@ export function* unwrap<N>(nodes: List<Node<N>> | undefined): Iterable<N> {
   }
 }
 
-export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>) => List<Node<Parser.Node<P>>>, termination?: (acc: List<Node<Parser.Node<P>>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
-export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Node<N>>, context: MarkdownParser.Context) => List<Node<N>>, termination: (acc: List<Node<N>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
+export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>) => List<Node<Parser.Node<P>>>, termination?: (acc: List<Node<Parser.Node<P>>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
+export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Node<N>>, context: MarkdownParser.Context) => List<Node<N>>, termination: (acc: List<Node<N>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
   const acc = new List<Node<string | N>>();
   if (prefix > 0) {
     acc.push(new Node(symbol[0].repeat(prefix)));

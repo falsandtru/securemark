@@ -1,5 +1,5 @@
-import { Parser, List, Ctx } from '../../data/parser';
+import { Parser, List, Context } from '../../data/parser';
 
-export function clear<D extends Parser<unknown, C>[], C extends Ctx>(parser: Parser<unknown, C, D>): Parser<never, C, D> {
+export function clear<D extends Parser<unknown, C>[], C extends Context>(parser: Parser<unknown, C, D>): Parser<never, C, D> {
   return input => parser(input) && new List();
 }

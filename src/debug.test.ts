@@ -1,8 +1,8 @@
-import { Result, Ctx } from './combinator/data/parser';
+import { Result, Context } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
-export function inspect(result: Result<DocumentFragment | HTMLElement | string>, ctx: Ctx, until: number | string = Infinity): [string[], string] | undefined {
+export function inspect(result: Result<DocumentFragment | HTMLElement | string>, ctx: Context, until: number | string = Infinity): [string[], string] | undefined {
   return result && [
     result.foldl<string[]>((acc, { value: node }) => {
       assert(node);
