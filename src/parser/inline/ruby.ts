@@ -21,7 +21,7 @@ export const ruby: RubyParser = lazy(() => bind(
     dup(surround(
       '(', text, ')',
       false,
-      [1 | Backtrack.common, 3 | Backtrack.ruby])),
+      [3 | Backtrack.ruby])),
   ]),
   ([{ value: texts }, { value: rubies = undefined } = {}], context) => {
     if (rubies === undefined) {
