@@ -3111,7 +3111,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     case 'object':
       closer = (0, combinator_1.clear)((0, combinator_1.matcher)(closer, true));
   }
-  const [rbs, wbs] = reduce(backtracks);
+  const [blen, rbs, wbs] = reduce(backtracks);
   return (0, parser_1.failsafe)(input => {
     const {
       context
@@ -3129,7 +3129,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     if (!nodesO) {
       return void revert(context, linebreak);
     }
-    if (rbs && isBacktrack(context, rbs, position, context.position - position || 1)) {
+    if (rbs && isBacktrack(context, rbs, position, blen)) {
       return void revert(context, linebreak);
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
@@ -3158,30 +3158,22 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
   });
 }
 exports.surround = surround;
-function open(opener, parser, optional, backtracks) {
+function open(opener, parser, optional, backtracks = []) {
   return surround(opener, parser, '', optional, backtracks);
 }
 exports.open = open;
-function close(parser, closer, optional, backtracks) {
+function close(parser, closer, optional, backtracks = []) {
   return surround('', parser, closer, optional, backtracks);
 }
 exports.close = close;
 const commandsize = 2;
 function isBacktrack(context, backtrack, position = context.position, length = 1) {
-  if (length === 0) return false;
-  const {
-    source
-  } = context;
-  if (position === source.length) return false;
   const {
     backtracks = {},
     offset = 0
   } = context;
   for (let i = 0; i < length; ++i) {
-    if (position + i === source.length) break;
-    if (i > 0 && source[position + i] !== source[position]) break;
-    const pos = position + i + offset;
-    if (backtracks[pos] & backtrack >>> commandsize) return true;
+    if (backtracks[position + i + offset] & backtrack >>> commandsize) return true;
   }
   return false;
 }
@@ -3189,34 +3181,32 @@ exports.isBacktrack = isBacktrack;
 function setBacktrack(context, backtrack, position, length = 1) {
   // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
 
-  if (length === 0) return;
-  const {
-    source
-  } = context;
-  if (position === source.length) return;
   const {
     backtracks = {},
     offset = 0
   } = context;
   for (let i = 0; i < length; ++i) {
-    if (position + i === source.length) break;
-    const pos = position + i + offset;
-    backtracks[pos] |= backtrack >>> commandsize;
+    backtracks[position + i + offset] |= backtrack >>> commandsize;
   }
 }
 exports.setBacktrack = setBacktrack;
 function reduce(backtracks) {
+  let len = 1;
   let rbs = 0;
   let wbs = 0;
   for (const backtrack of backtracks) {
-    if (backtrack & 1) {
+    if (backtrack >>> commandsize === 0) {
+      len = backtrack;
+      continue;
+    }
+    if (1 & backtrack) {
       rbs |= backtrack;
     }
-    if (backtrack & 2) {
+    if (2 & backtrack) {
       wbs |= backtrack;
     }
   }
-  return [rbs, wbs];
+  return [len, rbs, wbs];
 }
 function revert(context, linebreak) {
   context.linebreak = linebreak;
@@ -6195,7 +6185,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined)));
 
@@ -7625,7 +7615,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
   const {
     position,
     range = 0,
