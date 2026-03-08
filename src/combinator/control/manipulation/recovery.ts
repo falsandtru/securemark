@@ -1,6 +1,6 @@
-import { Parser, Input, Result, Ctx, Node, Context } from '../../data/parser';
+import { Parser, Input, Result, Ctx } from '../../data/parser';
 
-export function recover<P extends Parser>(parser: P, fallback: (input: Input<Context<P>>, reason: unknown) => Result<Node<P>>): P;
+export function recover<P extends Parser>(parser: P, fallback: (input: Input<Parser.Context<P>>, reason: unknown) => Result<Parser.Node<P>>): P;
 export function recover<N>(parser: Parser<N>, fallback: (input: Input<Ctx>, reason: unknown) => Result<N>): Parser<N> {
   return input => {
     const { context } = input;

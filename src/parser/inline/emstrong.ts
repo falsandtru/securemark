@@ -1,6 +1,6 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
-import { Result, List, Data, Node, Context, IntermediateParser } from '../../combinator/data/parser';
+import { Parser, Result, List, Data } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, open, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
@@ -10,12 +10,12 @@ import { tightStart, blankWith } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-const substrong: IntermediateParser<StrongParser> = lazy(() => some(union([
+const substrong: Parser.IntermediateParser<StrongParser> = lazy(() => some(union([
   emphasis,
   some(inline, blankWith('*')),
   open(some(inline, '*'), inline),
 ])));
-const subemphasis: IntermediateParser<EmphasisParser> = lazy(() => some(union([
+const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(union([
   strong,
   some(inline, blankWith('*')),
   open(some(inline, '*'), inline),
@@ -34,7 +34,7 @@ export const emstrong: EmStrongParser = lazy(() =>
     ])))),
     str(/\*{1,3}/y),
     false, [],
-    ([, bs, cs], context): Result<Node<EmStrongParser>, Context<EmStrongParser>> => {
+    ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {
       assert(cs.length === 1);
       const { buffer = new List() } = context;
       switch (cs.head!.value) {

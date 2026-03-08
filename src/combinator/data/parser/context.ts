@@ -1,5 +1,5 @@
 import { min } from 'spica/alias';
-import { Parser, Result, List, Data, Ctx, CtxOptions, Node, Context } from '../../data/parser';
+import { Parser, Result, List, Data, Ctx, CtxOptions } from '../../data/parser';
 import { clone } from 'spica/assign';
 
 export function reset<P extends Parser>(base: CtxOptions, parser: P): P;
@@ -23,7 +23,7 @@ export function context<N>(base: Ctx, parser: Parser<N>): Parser<N> {
     apply(parser, context, changes, values);
 }
 
-function apply<P extends Parser>(parser: P, context: Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Node<P>>;
+function apply<P extends Parser>(parser: P, context: Parser.Context<P>, changes: readonly [string, unknown][], values: unknown[], reset?: boolean): Result<Parser.Node<P>>;
 function apply<N>(parser: Parser<N>, context: Ctx, changes: readonly [string, unknown][], values: unknown[], reset = false): Result<N> {
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];

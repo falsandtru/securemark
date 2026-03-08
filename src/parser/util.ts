@@ -1,7 +1,7 @@
 import { min } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Command } from './context';
-import { Parser, Result, List, Data, Ctx, Node, Context, failsafe } from '../combinator/data/parser';
+import { Parser, Result, List, Data, Ctx, failsafe } from '../combinator/data/parser';
 import { define } from 'typed-dom/dom';
 
 export function* unwrap<N>(nodes: List<Data<N>> | undefined): Iterable<N> {
@@ -11,7 +11,7 @@ export function* unwrap<N>(nodes: List<Data<N>> | undefined): Iterable<N> {
   }
 }
 
-export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Data<Node<P>>>, context: Context<P>) => List<Data<Node<P>>>, termination?: (acc: List<Data<Node<P>>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Node<P>>): P;
+export function repeat<P extends Parser<HTMLElement | string, MarkdownParser.Context>>(symbol: string, parser: P, cons: (nodes: List<Data<Parser.Node<P>>>, context: Parser.Context<P>) => List<Data<Parser.Node<P>>>, termination?: (acc: List<Data<Parser.Node<P>>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
 export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Data<N>>, context: MarkdownParser.Context) => List<Data<N>>, termination: (acc: List<Data<N>>, context: Ctx, prefix: number, postfix: number, state: boolean) => Result<string | N, MarkdownParser.Context> = (nodes, context, prefix, postfix) => {
   const acc = new List<Data<string | N>>();
   if (prefix > 0) {
