@@ -158,13 +158,14 @@ export function isBacktrack(
   length: number = 1,
 ): boolean {
   assert(1 & backtrack);
-  assert(length > 0);
+  assert(0 < length);
   const { source, backtracks = {}, offset = 0 } = context;
   for (let i = 0; i < length; ++i) {
-    if (position + i === source.length) break;
-    if (i > 0 && source[position + i] !== source[position]) break;
-    const pos = position + i + offset;
-    if (backtracks[pos] & backtrack >>> commandsize) return true;
+    const pos = position + i;
+    if (pos === source.length) break;
+    if (i > 0 && source[pos] !== source[position]) break;
+    assert(i < 3);
+    if (backtracks[pos + offset] & backtrack >>> commandsize) return true;
   }
   return false;
 }
@@ -176,12 +177,12 @@ export function setBacktrack(
 ): void {
   // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
   assert(2 & backtrack);
-  assert(length > 0);
+  assert(0 < length && length < 3);
   const { source, backtracks = {}, offset = 0 } = context;
   for (let i = 0; i < length; ++i) {
-    if (position + i === source.length) break;
-    const pos = position + i + offset;
-    backtracks[pos] |= backtrack >>> commandsize;
+    const pos = position + i;
+    if (pos === source.length) break;
+    backtracks[pos + offset] |= backtrack >>> commandsize;
   }
 }
 function reduce(backtracks: readonly number[]): readonly [number, number] {
