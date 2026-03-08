@@ -149,7 +149,7 @@ export function close<N>(
   return surround('', parser as Parser<N>, closer, optional, backtracks);
 }
 
-const statesize = 2;
+const commandsize = 2;
 export function isBacktrack(
   context: Ctx,
   backtracks: readonly number[],
@@ -164,10 +164,9 @@ export function isBacktrack(
       const { backtracks = {}, offset = 0 } = context;
       for (let i = 0; i < length; ++i) {
         if (position + i === source.length) break;
-        if (source[position + i] !== source[position + 0]) break;
+        if (i > 0 && source[position + i] !== source[position]) break;
         const pos = position + i + offset;
-        if (!(pos in backtracks)) continue;
-        if (backtracks[pos] & 1 << size(backtrack >>> statesize)) return true;
+        if (backtracks[pos] & 1 << size(backtrack >>> commandsize)) return true;
       }
     }
   }
@@ -189,7 +188,7 @@ export function setBacktrack(
       for (let i = 0; i < length; ++i) {
         if (position + i === source.length) break;
         const pos = position + i + offset;
-        backtracks[pos] |= 1 << size(backtrack >>> statesize);
+        backtracks[pos] |= 1 << size(backtrack >>> commandsize);
       }
     }
   }
