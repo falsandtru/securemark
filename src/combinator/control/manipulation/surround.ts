@@ -4,49 +4,49 @@ import { matcher, clear } from '../../../combinator';
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<SubNode<P>>>, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<SubNode<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<Node<P>>>, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<P extends Parser<string>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: string | RegExp | P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: false,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<Node<P>>>, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<P extends Parser<string>, S = string>(
   opener: string | RegExp | Parser<S, Context<P>>, parser: string | RegExp | P, closer: string | RegExp | Parser<S, Context<P>>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
   f?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined, List<Data<S>>], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
   g?: (rss: [List<Data<S>>, List<Data<Node<P>>> | undefined], context: Context<P>) => Result<Node<P>, Context<P>, SubParsers<P>>,
 ): P;
 export function surround<N>(
   opener: string | RegExp | Parser<N>, parser: string | RegExp | Parser<N>, closer: string | RegExp | Parser<N>,
   optional: boolean = false,
-  backtracks: readonly number[] = [],
+  backtracks: readonly [] | readonly [number] | readonly [number, number] = [],
   f?: (rss: [List<Data<N>>, List<Data<N>>, List<Data<N>>], context: Ctx) => Result<N>,
   g?: (rss: [List<Data<N>>, List<Data<N>> | undefined], context: Ctx) => Result<N>,
 ): Parser<N> {
@@ -113,19 +113,19 @@ export function open<P extends Parser>(
   opener: string | RegExp | Parser<Node<P>, Context<P>>,
   parser: P,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): P;
 export function open<P extends Parser<string>>(
   opener: string | RegExp | Parser<Node<P>, Context<P>>,
   parser: string | RegExp | P,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): P;
 export function open<N>(
   opener: string | RegExp | Parser<N, Ctx>,
   parser: string | RegExp | Parser<N>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): Parser<N> {
   return surround(opener, parser as Parser<N>, '', optional, backtracks);
 }
@@ -133,19 +133,19 @@ export function close<P extends Parser>(
   parser: P,
   closer: string | RegExp | Parser<Node<P>, Context<P>>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): P;
 export function close<P extends Parser<string>>(
   parser: string | RegExp | P,
   closer: string | RegExp | Parser<Node<P>, Context<P>>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): P;
 export function close<N>(
   parser: string | RegExp | Parser<N>,
   closer: string | RegExp | Parser<N, Ctx>,
   optional?: boolean,
-  backtracks?: readonly number[],
+  backtracks?: readonly [] | readonly [number] | readonly [number, number],
 ): Parser<N> {
   return surround('', parser as Parser<N>, closer, optional, backtracks);
 }
