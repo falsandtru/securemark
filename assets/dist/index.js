@@ -2945,7 +2945,7 @@ function match(pattern, f) {
     count && (0, combinator_1.consume)(params[0].length, context);
     const result = f(params)(input);
     context.position += result && context.position === position ? params[0].length : 0;
-    return context.position > position ? result : undefined;
+    return result;
   });
 }
 exports.match = match;
@@ -3111,6 +3111,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     case 'object':
       closer = (0, combinator_1.clear)((0, combinator_1.matcher)(closer, true));
   }
+  const [rbs, wbs] = reduce(backtracks);
   return (0, parser_1.failsafe)(input => {
     const {
       context
@@ -3128,20 +3129,20 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     if (!nodesO) {
       return void revert(context, linebreak);
     }
-    if (isBacktrack(context, backtracks, position, context.position - position || 1)) {
+    if (rbs && isBacktrack(context, rbs, position, context.position - position || 1)) {
       return void revert(context, linebreak);
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
     context.range = context.position - position;
     if (!nodesM && !optional) {
-      setBacktrack(context, backtracks, position);
+      wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
     if (!nodesC) {
-      setBacktrack(context, backtracks, position);
+      wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
@@ -3165,65 +3166,60 @@ function close(parser, closer, optional, backtracks) {
   return surround('', parser, closer, optional, backtracks);
 }
 exports.close = close;
-const statesize = 2;
-function isBacktrack(context, backtracks, position = context.position, length = 1) {
+const commandsize = 2;
+function isBacktrack(context, backtrack, position = context.position, length = 1) {
+  if (length === 0) return false;
   const {
     source
   } = context;
   if (position === source.length) return false;
-  if (length === 0) return false;
-  for (const backtrack of backtracks) {
-    if (backtrack & 1) {
-      const {
-        backtracks = {},
-        offset = 0
-      } = context;
-      for (let i = 0; i < length; ++i) {
-        if (position + i === source.length) break;
-        if (source[position + i] !== source[position + 0]) break;
-        const pos = position + i + offset;
-        if (!(pos in backtracks)) continue;
-        if (backtracks[pos] & 1 << size(backtrack >>> statesize)) return true;
-      }
-    }
+  const {
+    backtracks = {},
+    offset = 0
+  } = context;
+  for (let i = 0; i < length; ++i) {
+    if (position + i === source.length) break;
+    if (i > 0 && source[position + i] !== source[position]) break;
+    const pos = position + i + offset;
+    if (backtracks[pos] & backtrack >>> commandsize) return true;
   }
   return false;
 }
 exports.isBacktrack = isBacktrack;
-function setBacktrack(context, backtracks, position, length = 1) {
+function setBacktrack(context, backtrack, position, length = 1) {
   // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
+
+  if (length === 0) return;
   const {
     source
   } = context;
   if (position === source.length) return;
-  if (length === 0) return;
-  for (const backtrack of backtracks) {
-    if (backtrack & 2) {
-      const {
-        backtracks = {},
-        offset = 0
-      } = context;
-      for (let i = 0; i < length; ++i) {
-        if (position + i === source.length) break;
-        const pos = position + i + offset;
-        backtracks[pos] |= 1 << size(backtrack >>> statesize);
-      }
-    }
+  const {
+    backtracks = {},
+    offset = 0
+  } = context;
+  for (let i = 0; i < length; ++i) {
+    if (position + i === source.length) break;
+    const pos = position + i + offset;
+    backtracks[pos] |= backtrack >>> commandsize;
   }
 }
 exports.setBacktrack = setBacktrack;
+function reduce(backtracks) {
+  let rbs = 0;
+  let wbs = 0;
+  for (const backtrack of backtracks) {
+    if (backtrack & 1) {
+      rbs |= backtrack;
+    }
+    if (backtrack & 2) {
+      wbs |= backtrack;
+    }
+  }
+  return [rbs, wbs];
+}
 function revert(context, linebreak) {
   context.linebreak = linebreak;
-}
-function size(bits) {
-  if (bits === 0) return 0;
-  let p = 0;
-  for (let s = 32 / 2; s > 0; s >>>= 1) {
-    const q = p + s;
-    if (bits >>> q === 0) continue;
-    p = q;
-  }
-  return p + 1;
 }
 
 /***/ },
@@ -3249,11 +3245,10 @@ function bind(parser, f) {
       position
     } = context;
     if (position === source.length) return;
-    const res1 = parser(input);
-    if (res1 === undefined) return;
+    const result = parser(input);
+    if (result === undefined) return;
     context.range = context.position - position;
-    const res2 = f(res1, context);
-    return context.position > position ? res2 : undefined;
+    return f(result, context);
   });
 }
 exports.bind = bind;
@@ -3635,7 +3630,7 @@ function state(state, positive, parser) {
   };
 }
 exports.state = state;
-//export function constraint<P extends Parser<unknown>>(state: number, positive: boolean, parser: P): P;
+//export function constraint<P extends Parser>(state: number, positive: boolean, parser: P): P;
 function constraint(state, positive, parser) {
   if (typeof positive === 'function') {
     parser = positive;
@@ -3863,8 +3858,7 @@ function inits(parsers, resume) {
       context
     } = input;
     const {
-      source,
-      position
+      source
     } = context;
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
@@ -3875,7 +3869,7 @@ function inits(parsers, resume) {
       nodes = nodes?.import(result) ?? result;
       if (resume?.(result) === false) break;
     }
-    return context.position > position ? nodes : undefined;
+    return nodes;
   };
 }
 exports.inits = inits;
@@ -3899,8 +3893,7 @@ function sequence(parsers, resume) {
       context
     } = input;
     const {
-      source,
-      position
+      source
     } = context;
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
@@ -3911,7 +3904,7 @@ function sequence(parsers, resume) {
       nodes = nodes?.import(result) ?? result;
       if (resume?.(result) === false) return;
     }
-    return context.position > position ? nodes : undefined;
+    return nodes;
   };
 }
 exports.sequence = sequence;
@@ -6202,7 +6195,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [1 | 0 /* Backtrack.common */, 3 | 64 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined)));
 
@@ -6285,9 +6278,9 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)((0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi), false, [3 | 4 /* Backtrack.unescapable */]), (0, combinator_1.some)((0, combinator_1.surround)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), ([{
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)((0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi), false, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.some)((0, combinator_1.surround)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), ([{
   value
-}]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), false, [3 | 4 /* Backtrack.unescapable */])), '', false, [], ([[{
+}]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), false, [3 | 8 /* Backtrack.unescapable */])), '', false, [], ([[{
   value: host
 }, {
   value: account
@@ -6307,7 +6300,7 @@ exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /*
   value: account
 }]], context) => {
   if (context.source[context.position] === '#') {
-    return void (0, combinator_1.setBacktrack)(context, [2 | 4 /* Backtrack.unescapable */], context.position - context.range);
+    return void (0, combinator_1.setBacktrack)(context, 2 | 8 /* Backtrack.unescapable */, context.position - context.range);
   }
   return new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`@${host}${account}`)]), new parser_1.List([new parser_1.Data(host ? `https://${host}@${account}` : `/@${account}`)]), context), {
     class: 'account'
@@ -6338,7 +6331,7 @@ const dom_1 = __webpack_require__(394);
 // cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi), '', false, [3 | 4 /* Backtrack.unescapable */], ([, [{
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
 }]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`>>${value}`)]), new parser_1.List([new parser_1.Data(`?at=${value}`)]), context), {
   class: 'anchor'
@@ -6363,7 +6356,7 @@ const dom_1 = __webpack_require__(394);
 // https://html.spec.whatwg.org/multipage/input.html
 exports.email = (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z][_.+-]?|[@#])(?=[0-9a-z])/yi, (0, combinator_1.verify)((0, source_1.str)(/[0-9a-z](?:[_.+-](?=[0-9a-z])|[0-9a-z]){0,63}@[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}(?![.-]?[0-9a-z@#]|>>|:\S)/yi), ([{
   value
-}]) => value.length <= 254), '', false, [3 | 4 /* Backtrack.unescapable */], ([, [{
+}]) => value.length <= 254), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
 }]]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
   class: 'email',
@@ -6388,7 +6381,7 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false, [1 | 4 /* Backtrack.unescapable */], ([, [{
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false, [1 | 8 /* Backtrack.unescapable */], ([, [{
   value
 }]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`#${value}`)]), new parser_1.List([new parser_1.Data(value)]), context), {
   class: 'hashnum',
@@ -6417,7 +6410,7 @@ const dom_1 = __webpack_require__(394);
 exports.emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
 exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu')), ([{
   value
-}]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), false, [3 | 4 /* Backtrack.unescapable */], ([, [{
+}]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
 }]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`#${value}`)]), new parser_1.List([new parser_1.Data(`/hashtags/${value}`)]), context), {
   class: 'hashtag'
@@ -6440,7 +6433,7 @@ const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
-exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 4 /* Backtrack.unescapable */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
+exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
   context
 }) => new parser_1.List([new parser_1.Data((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Data(context.source)]), context))]))), (0, combinator_1.open)((0, source_1.str)(/[^:]+/y), (0, combinator_1.some)(inline_1.inline))])));
 exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
@@ -6448,14 +6441,12 @@ exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\
 }) => {
   const {
     source,
-    position,
-    range = 0
+    position
   } = context;
-  context.position -= position > 0 && source[position - 1] === '!' ? 1 : 0;
-  context.position += range;
-  return new parser_1.List([new parser_1.Data((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Data(source.slice(position, context.position))]), context))]);
-})), (0, source_1.str)(/[^:]+/y)])]), false));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, [3 | 4 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, [3 | 4 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, [3 | 4 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, [3 | 4 /* Backtrack.unescapable */], undefined, () => new parser_1.List())]));
+  context.position -= source[0] === '!' ? 1 : 0;
+  return new parser_1.List([new parser_1.Data((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Data(source.slice(position))]), context))]);
+})), (0, source_1.str)(/[^:]+/y)])])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List())]));
 
 /***/ },
 
@@ -6502,17 +6493,33 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input =>
       return d1(input);
   }
 }]));
-const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, [2 | 0 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], {
-  source,
-  position,
-  range = 0
-}) => {
+const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, [], ([as, bs = new parser_1.List(), cs], context) => {
+  const {
+    source,
+    position,
+    range = 0
+  } = context;
+  const head = position - range;
+  if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
+  }
   const str = source.slice(position - range + 1, position - 1);
   return indexA.test(str) ? new parser_1.List([new parser_1.Data(as.head.value), new parser_1.Data(str), new parser_1.Data(cs.head.value)]) : new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
     class: 'paren'
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
-}, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [2 | 0 /* Backtrack.common */], ([as, bs = [], cs], {
+}, ([as, bs = new parser_1.List()], context) => {
+  const {
+    source,
+    position,
+    range = 0
+  } = context;
+  const head = position - range;
+  if (context.linebreak !== 0 || source[head + 1] !== '(') {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
+  }
+  return as.import(bs);
+}));
+const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [], ([as, bs = [], cs], {
   source,
   position,
   range = 0
@@ -6522,7 +6529,7 @@ const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     class: 'paren'
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
 }, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, [2 | 0 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], context) => {
+const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, [2 | 4 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], context) => {
   if (context.state & 8 /* State.link */) {
     const {
       source,
@@ -6530,18 +6537,21 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
       range = 0
     } = context;
     const head = position - range;
+    if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
+      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
+    }
     if (context.linebreak !== 0) {
-      (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */, 2 | 16 /* Backtrack.ruby */], head);
+      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */ | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
     } else if (source[position] !== '{') {
-      (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head);
+      (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     } else {
       context.state ^= 8 /* State.link */;
-      const result = !(0, combinator_1.isBacktrack)(context, [1 | 32 /* Backtrack.link */]) ? (0, link_1.textlink)({
+      const result = !(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) ? (0, link_1.textlink)({
         context
       }) : undefined;
       context.position = position;
       if (!result) {
-        (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head);
+        (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
       }
       context.state ^= 8 /* State.link */;
       context.range = range;
@@ -6549,12 +6559,12 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   }
   return as.import(bs).import(cs);
 }, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const s2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, [2 | 0 /* Backtrack.common */], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const c1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, [2 | 0 /* Backtrack.common */], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const c2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, [2 | 0 /* Backtrack.common */], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const s2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const c1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const c2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
 const d1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('"'),
 // 改行の優先度を構文ごとに変える場合シグネチャの優先度対応が必要
-(0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [2 | 0 /* Backtrack.common */], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+(0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
 
 /***/ },
 
@@ -6810,7 +6820,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 0 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
   'data-index': dataindex(bs)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]) : undefined, undefined)), ns => {
   if (ns.length === 1) {
@@ -6825,7 +6835,7 @@ exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* 
     return ns;
   }
 })));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.some)(source_1.txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y)]), ']'), /(?=])/y, false, [3 | 8 /* Backtrack.escapable */], ([, ns], context) => {
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.some)(source_1.txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y)]), ']'), /(?=])/y, false, [3 | 16 /* Backtrack.escapable */], ([, ns], context) => {
   const index = (0, indexee_1.identity)('index', undefined, ns.foldl((acc, {
     value
   }) => acc + value, ''))?.slice(7);
@@ -7030,7 +7040,7 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 const body = (0, source_1.str)(/\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/y);
 exports.segment = (0, combinator_1.clear)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body]));
-exports.label = (0, combinator_1.constraint)(16 /* State.label */, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, [1 | 0 /* Backtrack.common */]), body]), ([{
+exports.label = (0, combinator_1.constraint)(16 /* State.label */, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, [1 | 4 /* Backtrack.common */]), body]), ([{
   value
 }]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
   class: 'label',
@@ -7077,7 +7087,7 @@ const dom_1 = __webpack_require__(394);
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)(
 // ^はabbrで使用済みだが^:などのようにして分離使用可能
-(0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 0 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+(0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('extension', 'syntax', `Invalid start symbol or linebreak`)
 }, context.source.slice(context.position - context.range, context.position)))]), ([as, bs]) => bs && as.import(bs)));
@@ -7191,7 +7201,7 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 4 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Data(parser(as.head.value + bs.head.value + cs.head.value))]), ([as, bs]) => new parser_1.List([new parser_1.Data(as.head.value + (bs?.head?.value ?? ''))]));
+exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Data(parser(as.head.value + bs.head.value + cs.head.value))]), ([as, bs]) => new parser_1.List([new parser_1.Data(as.head.value + (bs?.head?.value ?? ''))]));
 exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([{
   value
 }]) => new parser_1.List([length === 1 || value.at(-1) !== ';' ? new parser_1.Data(value) : new parser_1.Data((0, dom_1.html)('span', {
@@ -7280,10 +7290,10 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 0 /* Backtrack.common */, 3 | 32 /* Backtrack.link */, 2 | 16 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
-    return void (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */, 2 | 16 /* Backtrack.ruby */], head);
+    return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns.push(new parser_1.Data("\u001F" /* Command.Separator */)) && ns;
 })),
@@ -7298,7 +7308,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
     content.pop();
     if (params === undefined) {
       const head = context.position - context.range;
-      return void (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head);
+      return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     }
   } else {
     params = content;
@@ -7463,7 +7473,7 @@ const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
-exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(4, bracket), '$', false, [3 | 8 /* Backtrack.escapable */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(4, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, [3 | 8 /* Backtrack.escapable */])]), ({
+exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(4, bracket), '$', false, [3 | 16 /* Backtrack.escapable */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(4, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, [3 | 16 /* Backtrack.escapable */])]), ({
   context: {
     source,
     caches: {
@@ -7509,10 +7519,10 @@ const optspec = {
   rel: undefined
 };
 Object.setPrototypeOf(optspec, null);
-exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, [3 | 8 /* Backtrack.escapable */, 2 | 16 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* State.media */, (0, combinator_1.open)('!', (0, combinator_1.bind)((0, combinator_1.fmap)((0, combinator_1.tails)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), ']', true, [3 | 16 /* Backtrack.escapable */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
-    return void (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */, 2 | 16 /* Backtrack.ruby */], head);
+    return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns;
 })), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Data(new parser_1.List([new parser_1.Data('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Data(new parser_1.List([new parser_1.Data(nodes.head.value.foldl((acc, {
@@ -7561,7 +7571,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     target: '_blank'
   }, [el]))]);
 }))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List())])));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')'), (0, source_1.str)(')'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']'), (0, source_1.str)(']'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}'), (0, source_1.str)('}'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"')), (0, source_1.str)('"'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List())])));
 const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, combinator_1.open)(/ /y, (0, source_1.str)(/[1-9][0-9]*/y)), (0, source_1.str)(/[x:]/y), (0, source_1.str)(/[1-9][0-9]*(?=[ }])/y), false, [], ([[{
   value: a
 }], [{
@@ -7615,7 +7625,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [1 | 0 /* Backtrack.common */, 3 | 64 /* Backtrack.doublebracket */], ([, ns], context) => {
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
   const {
     position,
     range = 0,
@@ -7625,7 +7635,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     return new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
   } else {
     const head = position - range;
-    (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head, 2);
+    (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head, 2);
   }
 }, ([as, bs], context) => {
   if (!bs) return;
@@ -7638,9 +7648,9 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
   } = context;
   const head = position - range;
   if (source[position] !== ']') {
-    (0, combinator_1.setBacktrack)(context, [2 | 0 /* Backtrack.common */], head, 2);
+    (0, combinator_1.setBacktrack)(context, 2 | 4 /* Backtrack.common */, head, 2);
   } else if (linebreak !== 0) {
-    (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */, 2 | 16 /* Backtrack.ruby */], head, 2);
+    (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head, 2);
   } else {
     if (state & 128 /* State.annotation */) {
       bs.push(new parser_1.Data(source[position]));
@@ -7648,23 +7658,23 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     context.position += 1;
     let result;
     if (source[context.position] !== '{') {
-      (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head + 1);
+      (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
       result = new parser_1.List();
     } else {
-      result = !(0, combinator_1.isBacktrack)(context, [1 | 32 /* Backtrack.link */]) ? (0, link_1.textlink)({
+      result = !(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) ? (0, link_1.textlink)({
         context
       }) : undefined;
       context.range = range;
       if (!result) {
-        (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head + 1);
+        (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
         result = new parser_1.List();
       }
     }
     if (context.position === source.length) {
-      (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head);
+      (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     } else {
       const next = (0, combinator_1.surround)('', (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]), (0, source_1.str)(']'), true, [], ([, cs = new parser_1.List(), ds]) => cs.import(ds), ([, cs = new parser_1.List()]) => {
-        (0, combinator_1.setBacktrack)(context, [2 | 32 /* Backtrack.link */], head);
+        (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
         return cs;
       })({
         context
@@ -7762,17 +7772,17 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', text, ']', false, [1 | 0 /* Backtrack.common */, 3 | 16 /* Backtrack.ruby */], ([, ns]) => {
+exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', text, ']', false, [1 | 4 /* Backtrack.common */, 3 | 32 /* Backtrack.ruby */], ([, ns]) => {
   ns && ns.last?.value === '' && ns.pop();
   return (0, visibility_1.isTightNodeStart)(ns) ? ns : undefined;
-})), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, [1 | 0 /* Backtrack.common */, 3 | 16 /* Backtrack.ruby */]))]), ([{
+})), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, [3 | 32 /* Backtrack.ruby */]))]), ([{
   value: texts
 }, {
   value: rubies = undefined
 } = {}], context) => {
   if (rubies === undefined) {
     const head = context.position - context.range;
-    return void (0, combinator_1.setBacktrack)(context, [2 | 16 /* Backtrack.ruby */], head);
+    return void (0, combinator_1.setBacktrack)(context, 2 | 32 /* Backtrack.ruby */, head);
   }
   switch (true) {
     case texts.length >= rubies.length:
@@ -7910,7 +7920,7 @@ exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, s
   class: 'invalid',
   ...(0, util_1.invalid)('template', 'syntax', `Missing the closing symbol "}}"`)
 }, context.source.slice(context.position - context.range, context.position)))])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.escapable */], undefined, ([as, bs]) => bs && as.import(bs))]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, [3 | 16 /* Backtrack.escapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [3 | 16 /* Backtrack.escapable */], undefined, ([as, bs]) => bs && as.import(bs))]));
 
 /***/ },
 
