@@ -10,14 +10,9 @@ export function bind<N, U>(parser: Parser<N>, f: (nodes: List<Data<N>>, context:
     const { context } = input;
     const { source, position } = context;
     if (position === source.length) return;
-    const res1 = parser(input);
-    assert(context.position > position || !res1);
-    if (res1 === undefined) return;
+    const result = parser(input);
+    if (result === undefined) return;
     context.range = context.position - position;
-    const res2 = f(res1, context);
-    assert(context.position > position || !res2);
-    return context.position > position
-      ? res2
-      : undefined;
+    return f(result, context);
   });
 }

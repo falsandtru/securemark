@@ -36,7 +36,6 @@ export function verify<N>(parser: Parser<N>, cond: (nodes: List<Data<N>>, contex
     const { source, position } = context;
     if (position === source.length) return;
     const result = parser(input);
-    assert(context.position > position || !result);
     if (result && !cond(result, context)) return;
     return result;
   });

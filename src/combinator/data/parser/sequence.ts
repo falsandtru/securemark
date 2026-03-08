@@ -6,7 +6,7 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
   if (parsers.length === 1) return parsers[0];
   return input => {
     const { context } = input;
-    const { source, position } = context;
+    const { source } = context;
     let nodes: List<Data<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) return;
@@ -16,9 +16,6 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
       nodes = nodes?.import(result) ?? result;
       if (resume?.(result) === false) return;
     }
-    assert(context.position >= position);
-    return context.position > position
-      ? nodes
-      : undefined;
+    return nodes;
   };
 }

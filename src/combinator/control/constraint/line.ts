@@ -12,7 +12,6 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     const result = parser(input(line, context));
     context.position += position;
     context.position += result && context.position === position ? line.length : 0;
-    assert(context.position > position || !result);
     context.source = source;
     context.offset -= position;
     if (result === undefined) return;

@@ -75,7 +75,6 @@ export function surround<N>(
     const { linebreak } = context;
     context.linebreak = 0;
     const nodesO = opener(input);
-    assert(context.position >= position);
     if (!nodesO) {
       return void revert(context, linebreak);
     }
@@ -83,7 +82,6 @@ export function surround<N>(
       return void revert(context, linebreak);
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
-    assert(context.position >= position);
     context.range = context.position - position;
     if (!nodesM && !optional) {
       setBacktrack(context, backtracks, position);
@@ -91,7 +89,6 @@ export function surround<N>(
       return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
-    assert(context.position >= position);
     context.range = context.position - position;
     if (!nodesC) {
       setBacktrack(context, backtracks, position);

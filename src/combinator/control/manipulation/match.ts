@@ -18,9 +18,6 @@ export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     count && consume(params[0].length, context);
     const result = f(params)(input);
     context.position += result && context.position === position ? params[0].length : 0;
-    assert(context.position > position || !result);
-    return context.position > position
-      ? result
-      : undefined;
+    return result;
   });
 }
