@@ -34,7 +34,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
           const head = context.position - context.range!;
-          return void setBacktrack(context, [2 | Backtrack.link, 2 | Backtrack.ruby], head);
+          return void setBacktrack(context, [2 | Backtrack.link | Backtrack.ruby], head);
         }
         return ns;
       })),

@@ -37,7 +37,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       setBacktrack(context, [2 | Backtrack.common], head, 2);
     }
     else if (linebreak !== 0) {
-      setBacktrack(context, [2 | Backtrack.link, 2 | Backtrack.ruby], head, 2);
+      setBacktrack(context, [2 | Backtrack.link | Backtrack.ruby], head, 2);
     }
     else {
       assert(source[position] === ']');

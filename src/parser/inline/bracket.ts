@@ -86,7 +86,7 @@ const s1 = lazy(() => surround(
         setBacktrack(context, [2 | Backtrack.doublebracket], head);
       }
       if (context.linebreak !== 0) {
-        setBacktrack(context, [2 | Backtrack.doublebracket, 2 | Backtrack.link, 2 | Backtrack.ruby], head);
+        setBacktrack(context, [2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby], head);
       }
       else if (source[position] !== '{') {
         setBacktrack(context, [2 | Backtrack.link], head);

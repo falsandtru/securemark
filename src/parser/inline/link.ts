@@ -24,11 +24,11 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       trimBlankStart(some(union([inline]), ']', [[']', 1]])),
       ']',
       true,
-      [3 | Backtrack.common, 3 | Backtrack.link, 2 | Backtrack.ruby],
+      [3 | Backtrack.common | Backtrack.link, 2 | Backtrack.ruby],
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
           const head = context.position - context.range!;
-          return void setBacktrack(context, [2 | Backtrack.link, 2 | Backtrack.ruby], head);
+          return void setBacktrack(context, [2 | Backtrack.link | Backtrack.ruby], head);
         }
         return ns.push(new Data(Command.Separator)) && ns;
       })),

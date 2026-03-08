@@ -29,14 +29,14 @@ export const enum Recursion {
 
 export const enum Backtrack {
   // 構文
-  doublebracket = 1 << 6,
-  link = 1 << 5,
-  ruby = 1 << 4,
+  doublebracket = 1 << 7,
+  link = 1 << 6,
+  ruby = 1 << 5,
   // 特殊構造
-  escapable = 1 << 3,
-  unescapable = 1 << 2,
+  escapable = 1 << 4,
+  unescapable = 1 << 3,
   // 共通構造
-  common = 0 << 2,
+  common = 1 << 2,
 }
 
 export const enum Command {
