@@ -55,7 +55,13 @@ const p1 = lazy(() => surround(
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
+  ([as, bs = new List()], context) => {
+    const { source, position, range } = context;
+    const str = source.slice(position - range + 1, position);
+    return indexA.test(str)
+      ? new List([new Node(as.head!.value), new Node(str)])
+      : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
+  }));
 
 const p2 = lazy(() => surround(
   str('（'),
@@ -68,7 +74,13 @@ const p2 = lazy(() => surround(
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
+  ([as, bs = new List()], context) => {
+    const { source, position, range } = context;
+    const str = source.slice(position - range + 1, position);
+    return indexF.test(str)
+      ? new List([new Node(as.head!.value), new Node(str)])
+      : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
+  }));
 
 const s1 = lazy(() => surround(
   str('['),
