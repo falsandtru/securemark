@@ -15,7 +15,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
     surround(
       /(?<![0-9a-z])@/yi,
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
-      str(/[a-z][0-9a-z]*(?:[-.][0-9a-z]+)*(?![-.]?[0-9a-z@]|>>|:\S)/yi),
+      str(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![.-]?[0-9a-z@]|>>|:\S)/yi),
       false,
       [3 | Backtrack.unescapable]),
     some(surround(
