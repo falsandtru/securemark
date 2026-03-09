@@ -362,7 +362,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('backtrack', function () {
       this.timeout(5000);
-      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して3倍遅い程度。
+      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して50-400%程度。
       // 5n = annotation/reference + link + url/math + ruby + text
       const source = `((([[[[#$[${'.'.repeat(19998)}`;
       assert.deepStrictEqual(
