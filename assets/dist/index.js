@@ -2665,7 +2665,6 @@ function line(parser) {
     } = context;
     if (position === source.length) return;
     const line = firstline(source, position);
-    context.offset ??= 0;
     context.offset += position;
     const result = parser((0, parser_1.input)(line, context));
     context.position += position;
@@ -2764,7 +2763,7 @@ exports.dup = void 0;
 const parser_1 = __webpack_require__(605);
 const fmap_1 = __webpack_require__(2705);
 function dup(parser) {
-  return (0, fmap_1.fmap)(parser, nodes => new parser_1.List([new parser_1.Data(nodes)]));
+  return (0, fmap_1.fmap)(parser, nodes => new parser_1.List([new parser_1.Node(nodes)]));
 }
 exports.dup = dup;
 
@@ -2849,7 +2848,7 @@ function fence(opener, limit, separation = true) {
       }
       context.position += line.length;
     }
-    return new parser_1.List((0, array_1.push)([block, overflow, closer], matches).map(str => new parser_1.Data(str)));
+    return new parser_1.List((0, array_1.push)([block, overflow, closer], matches).map(str => new parser_1.Node(str)));
   });
 }
 exports.fence = fence;
@@ -2888,7 +2887,7 @@ function indent(opener, parser = false, separation = false) {
       position
     } = context;
     context.position = source.length;
-    return new parser_1.List([new parser_1.Data(source.slice(position))]);
+    return new parser_1.List([new parser_1.Node(source.slice(position))]);
   }))), ([indent]) => indent.length * 2 + -(indent[0] === ' '), [], 2 ** 4 - 1)), separation), (lines, context) => parser((0, parser_1.subinput)(trimBlockEnd(lines.foldl((acc, node) => acc + node.value, '')), context))));
 }
 exports.indent = indent;
@@ -3036,7 +3035,6 @@ function focus(scope, parser, slice = true) {
       context.position += result && context.position === position ? range : 0;
       return result;
     }
-    context.offset ??= 0;
     context.offset += position;
     const result = parser((0, parser_1.input)(src, context));
     context.position += position;
@@ -3069,7 +3067,6 @@ function rewrite(scope, parser, slice = true) {
       return res2;
     }
     const src = source.slice(position, context.position);
-    context.offset ??= 0;
     context.offset += position;
     const res2 = parser((0, parser_1.input)(src, context));
     context.position += position;
@@ -3169,10 +3166,10 @@ exports.close = close;
 const commandsize = 2;
 function isBacktrack(context, backtrack, position = context.position, length = 1) {
   const {
-    backtracks = {},
-    offset = 0
+    backtracks,
+    offset
   } = context;
-  for (let i = 0; i < length; ++i) {
+  if (backtracks) for (let i = 0; i < length; ++i) {
     if (backtracks[position + i + offset] & backtrack >>> commandsize) return true;
   }
   return false;
@@ -3182,10 +3179,10 @@ function setBacktrack(context, backtrack, position, length = 1) {
   // バックトラックの可能性がなく記録不要の場合もあるが判別が面倒なので省略
 
   const {
-    backtracks = {},
-    offset = 0
+    backtracks,
+    offset
   } = context;
-  for (let i = 0; i < length; ++i) {
+  if (backtracks) for (let i = 0; i < length; ++i) {
     backtracks[position + i + offset] |= backtrack >>> commandsize;
   }
 }
@@ -3417,7 +3414,7 @@ exports.List = List;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.failsafe = exports.subinput = exports.input = exports.Data = exports.List = void 0;
+exports.failsafe = exports.subinput = exports.input = exports.Context = exports.Node = exports.List = void 0;
 const data_1 = __webpack_require__(3602);
 Object.defineProperty(exports, "List", ({
   enumerable: true,
@@ -3425,21 +3422,45 @@ Object.defineProperty(exports, "List", ({
     return data_1.List;
   }
 }));
-class Data {
+const delimiter_1 = __webpack_require__(5691);
+class Node {
   constructor(value) {
     this.value = value;
     this.next = undefined;
     this.prev = undefined;
   }
 }
-exports.Data = Data;
+exports.Node = Node;
+class Context {
+  constructor({
+    source,
+    position,
+    resources,
+    delimiters,
+    precedence,
+    state,
+    linebreak,
+    range,
+    offset,
+    backtracks
+  } = {}) {
+    this.source = source ?? '';
+    this.position = position ?? 0;
+    this.resources = resources;
+    this.precedence = precedence ?? 0;
+    this.delimiters = delimiters ?? new delimiter_1.Delimiters();
+    this.state = state ?? 0;
+    this.linebreak = linebreak ?? 0;
+    this.range = range ?? 0;
+    this.offset = offset ?? 0;
+    this.backtracks = backtracks;
+  }
+}
+exports.Context = Context;
 function input(source, context) {
-  // @ts-expect-error
   context.source = source;
-  // @ts-expect-error
   context.position = 0;
   return {
-    // @ts-expect-error
     context
   };
 }
@@ -3450,7 +3471,7 @@ function subinput(source, context) {
       ...context,
       source,
       position: 0,
-      offset: undefined,
+      offset: 0,
       backtracks: {}
     }
   };
@@ -3476,8 +3497,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.matcher = exports.constraint = exports.state = exports.precedence = exports.recursion = exports.consume = exports.creation = exports.context = exports.reset = void 0;
-const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
+const alias_1 = __webpack_require__(5413);
 const assign_1 = __webpack_require__(9888);
 function reset(base, parser) {
   const changes = Object.entries(base);
@@ -3590,7 +3611,7 @@ function precedence(precedence, parser) {
     } = input;
     const {
       delimiters,
-      precedence: p = 0
+      precedence: p
     } = context;
     const shift = delimiters && precedence > p;
     context.precedence = precedence;
@@ -3650,7 +3671,7 @@ function matcher(pattern, advance) {
         if (advance) {
           context.position += pattern.length;
         }
-        return new parser_1.List([new parser_1.Data(pattern)]);
+        return new parser_1.List([new parser_1.Node(pattern)]);
       };
     case 'object':
       return ({
@@ -3667,7 +3688,7 @@ function matcher(pattern, advance) {
         if (advance) {
           context.position += src.length;
         }
-        return new parser_1.List([new parser_1.Data(src)]);
+        return new parser_1.List([new parser_1.Node(src)]);
       };
   }
 }
@@ -3807,7 +3828,7 @@ class Delimiters {
   }
   match(input) {
     const {
-      precedence = 0
+      precedence
     } = input.context;
     const {
       delimiters
@@ -3853,7 +3874,7 @@ function inits(parsers, resume) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) break;
-      if (context.delimiters?.match(input)) break;
+      if (context.delimiters.match(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
@@ -3888,7 +3909,7 @@ function sequence(parsers, resume) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) return;
-      if (context.delimiters?.match(input)) return;
+      if (context.delimiters.match(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
       nodes = nodes?.import(result) ?? result;
@@ -3931,13 +3952,12 @@ function some(parser, end, delimiters = [], limit = -1) {
     //assert(context.backtracks ??= {});
     let nodes;
     if (delims.length > 0) {
-      context.delimiters ??= new delimiter_1.Delimiters();
       context.delimiters.push(delims);
     }
     // whileは数倍遅い
     for (const len = source.length; context.position < len;) {
       if (match(input)) break;
-      if (context.delimiters?.match(input)) break;
+      if (context.delimiters.match(input)) break;
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
@@ -4118,21 +4138,21 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.bind = void 0;
+const context_1 = __webpack_require__(8669);
 const parser_1 = __webpack_require__(605);
 const segment_1 = __webpack_require__(3967);
-const header_1 = __webpack_require__(3009);
 const block_1 = __webpack_require__(7099);
 const normalize_1 = __webpack_require__(4490);
-const header_2 = __webpack_require__(3652);
+const header_1 = __webpack_require__(3652);
 const figure_1 = __webpack_require__(1657);
 const note_1 = __webpack_require__(165);
 const url_1 = __webpack_require__(1904);
 const array_1 = __webpack_require__(6876);
 function bind(target, settings) {
-  const context = {
+  const context = new context_1.Context({
     ...settings,
     host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin)
-  };
+  });
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const blocks = [];
@@ -4147,7 +4167,7 @@ function bind(target, settings) {
   };
   function* parse(source) {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
-    const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
+    const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = (0, normalize_1.normalize)(source);
     // @ts-expect-error
     context.url = url ? new url_1.ReadonlyURL(url) : undefined;
@@ -4174,13 +4194,15 @@ function bind(target, settings) {
     }
     const base = next(head);
     let index = head;
+    // @ts-expect-error
+    context.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       const seg = sourceSegments[index];
-      const es = ((0, header_1.header)((0, parser_1.input)(seg, {
-        header: index === 0
-      })) || (0, block_1.block)((0, parser_1.input)(seg, context)))?.foldl((acc, {
+      const es = (0, block_1.block)((0, parser_1.input)(seg, context))?.foldl((acc, {
         value
       }) => void acc.push(value) || acc, []) ?? [];
+      // @ts-expect-error
+      context.header = false;
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
@@ -4346,7 +4368,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.headers = exports.header = void 0;
-const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(8669);
 const header_1 = __webpack_require__(3009);
 function header(source) {
   const [, pos = 0] = parse(source);
@@ -4359,10 +4381,14 @@ function headers(source) {
 }
 exports.headers = headers;
 function parse(source) {
-  const i = (0, parser_1.input)(source, {});
-  const result = (0, header_1.header)(i);
+  const context = new context_1.Context({
+    source
+  });
+  const result = (0, header_1.header)({
+    context
+  });
   const el = result?.head?.value;
-  return el?.tagName === 'ASIDE' ? [el, i.context.position] : [];
+  return el?.tagName === 'ASIDE' ? [el, context.position] : [];
 }
 
 /***/ },
@@ -4378,6 +4404,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
 const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(8669);
 const htmlentity_1 = __webpack_require__(470);
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 function normalize(source) {
@@ -4399,7 +4426,7 @@ function sanitize(source) {
 // https://en.wikipedia.org/wiki/Whitespace_character
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
 const unreadableEscapeHTMLEntityNames = exports.invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
-const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, {})).head.value);
+const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, new context_1.Context())).head.value);
 const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
@@ -4452,35 +4479,36 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.parse = void 0;
 const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(8669);
 const segment_1 = __webpack_require__(3967);
-const header_1 = __webpack_require__(3009);
 const block_1 = __webpack_require__(7099);
 const normalize_1 = __webpack_require__(4490);
-const header_2 = __webpack_require__(3652);
+const header_1 = __webpack_require__(3652);
 const figure_1 = __webpack_require__(1657);
 const note_1 = __webpack_require__(165);
 const url_1 = __webpack_require__(1904);
 const dom_1 = __webpack_require__(394);
 function parse(source, options = {}, context) {
-  const url = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
+  const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? (0, normalize_1.normalize)(source) : source;
-  context = {
+  context = new context_1.Context({
     host: options.host ?? context?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     url: url ? new url_1.ReadonlyURL(url) : context?.url,
     id: options.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources
-  };
+  });
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = (0, dom_1.frag)();
-  let index = 0;
+  // @ts-expect-error
+  context.header = true;
   for (const seg of (0, segment_1.segment)(source)) {
-    node.append(...(((0, header_1.header)((0, parser_1.input)(seg, {
-      header: index++ === 0
-    })) || (0, block_1.block)((0, parser_1.input)(seg, context)))?.foldl((acc, {
+    node.append(...((0, block_1.block)((0, parser_1.input)(seg, context))?.foldl((acc, {
       value
     }) => void acc.push(value) || acc, []) ?? []));
+    // @ts-expect-error
+    context.header = false;
   }
   if (options.test) return node;
   for (const _ of (0, figure_1.figure)(node, options.notes, context));
@@ -4521,6 +4549,7 @@ exports.block = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const segment_1 = __webpack_require__(3967);
+const header_1 = __webpack_require__(3009);
 const source_1 = __webpack_require__(8745);
 const pagebreak_1 = __webpack_require__(2946);
 const heading_1 = __webpack_require__(2778);
@@ -4567,6 +4596,7 @@ exports.block = (0, combinator_1.reset)({
       if (source[position + 1] === ' ') return (0, dlist_1.dlist)(input);
       break;
     case '-':
+      if (source.startsWith('---', position)) return (0, header_1.header)(input);
       if (source[position + 1] === ' ') return (0, ulist_1.ulist)(input) || (0, ilist_1.ilist)(input);
       break;
     case '+':
@@ -4615,10 +4645,10 @@ function error(parser) {
       position,
       id
     }
-  }, reason) => new parser_1.List([new parser_1.Data((0, dom_1.html)('h1', {
+  }, reason) => new parser_1.List([new parser_1.Node((0, dom_1.html)('h1', {
     id: id !== '' ? `error:${(0, random_1.rnd0Z)(8)}` : undefined,
     class: 'error'
-  }, reason instanceof Error ? `${reason.name}: ${reason.message}` : `UnknownError: ${reason}`)), new parser_1.Data((0, dom_1.html)('pre', {
+  }, reason instanceof Error ? `${reason.name}: ${reason.message}` : `UnknownError: ${reason}`)), new parser_1.Node((0, dom_1.html)('pre', {
     class: 'error',
     translate: 'no'
   }, source.slice(position).replace(reg, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || undefined))]));
@@ -4648,7 +4678,7 @@ exports.blockquote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, co
 const opener = /(?=>>+(?:$|[ \n]))/y;
 const indent = (0, combinator_1.block)((0, combinator_1.open)(opener, (0, combinator_1.some)(source_1.contentline, />(?:$|[ \n])/y)), false);
 const unindent = source => source.replace(/(?<=^|\n)>(?: |(?=>*(?:$|[ \n])))|\n$/g, '');
-const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(2 /* Recursion.blockquote */, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), true))]))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
+const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(2 /* Recursion.blockquote */, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), true))]))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
 const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(2 /* Recursion.blockquote */, (0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, markdown, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, ({
   context
 }) => {
@@ -4666,8 +4696,8 @@ const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combina
     }
   }, context);
   context.position = source.length;
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references]))]);
-}, true))]))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references]))]);
+}, true))]))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
 
 /***/ },
 
@@ -4714,7 +4744,7 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinato
     name in params ? params.invalid = `Duplicate ${name} attribute` : params[name] = value;
     return params;
   }, {}) ?? {};
-  if (!closer || overflow || params.invalid) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!closer || overflow || params.invalid) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('codeblock', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : params.invalid)
@@ -4726,7 +4756,7 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinato
     'data-line': params.line || undefined,
     'data-path': params.path || undefined
   }, params.lang ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes || body.slice(0, -1) || undefined : (0, dom_1.defrag)((0, util_1.unwrap)((0, autolink_1.autolink)((0, parser_1.subinput)(body.slice(0, -1), context)))));
-  return new parser_1.List([new parser_1.Data(el)]);
+  return new parser_1.List([new parser_1.Node(el)]);
 }));
 
 /***/ },
@@ -4748,13 +4778,13 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/~ +(?=\S)/y, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 32 /* State.index */ | 16 /* State.label */ | 8 /* State.link */, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('dl', (0, util_1.unwrap)(fillTrailingDescription(ns))))]))));
-const term = (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/~ +(?=\S)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('dt', {
+exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/~ +(?=\S)/y, (0, combinator_1.some)((0, combinator_1.inits)([(0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 32 /* State.index */ | 16 /* State.label */ | 8 /* State.link */, (0, combinator_1.some)(term)), (0, combinator_1.some)(desc)]))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('dl', (0, util_1.unwrap)(fillTrailingDescription(ns))))]))));
+const term = (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/~ +(?=\S)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('dt', {
   'data-index': (0, inline_1.dataindex)(ns)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]))));
-const desc = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/: +(?=\S)|/y, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /[~:] +(?=\S)/y), (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('dd', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
+const desc = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)(/: +(?=\S)|/y, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, /[~:] +(?=\S)/y), (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('dd', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
 function fillTrailingDescription(nodes) {
-  return nodes.last?.value.tagName === 'DT' ? nodes.push(new parser_1.Data((0, dom_1.html)('dd'))) && nodes : nodes;
+  return nodes.last?.value.tagName === 'DT' ? nodes.push(new parser_1.Node((0, dom_1.html)('dd'))) && nodes : nodes;
 }
 
 /***/ },
@@ -4803,7 +4833,7 @@ exports.aside = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combina
 // Bug: Type mismatch between outer and inner.
 (nodes, context) => {
   const [body, overflow, closer, opener, delim, param] = (0, util_1.unwrap)(nodes);
-  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('aside', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -4818,12 +4848,12 @@ exports.aside = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combina
     }
   }, context);
   const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName) && document.firstElementChild;
-  if (!heading) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!heading) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('aside', 'content', 'Missing the title at the first line')
   }, `${opener}${body}${closer}`))]);
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('aside', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('aside', {
     id: (0, indexee_1.identity)('index', context.id, heading),
     class: 'aside'
   }, [document, (0, dom_1.html)('h2', 'References'), references]))]);
@@ -4851,7 +4881,7 @@ exports.example = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combi
 // Bug: Type mismatch between outer and inner.
 (nodes, context) => {
   const [body, overflow, closer, opener, delim, type = 'markdown', param] = (0, util_1.unwrap)(nodes);
-  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('example', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -4868,7 +4898,7 @@ exports.example = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combi
             references
           }
         }, context);
-        return new parser_1.List([new parser_1.Data((0, dom_1.html)('aside', {
+        return new parser_1.List([new parser_1.Node((0, dom_1.html)('aside', {
           class: 'example',
           'data-type': 'markdown'
         }, [(0, dom_1.html)('pre', {
@@ -4876,14 +4906,14 @@ exports.example = (0, combinator_1.recursion)(1 /* Recursion.block */, (0, combi
         }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, dom_1.html)('section', [document, (0, dom_1.html)('h2', 'References'), references])]))]);
       }
     case 'math':
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('aside', {
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('aside', {
         class: 'example',
         'data-type': 'math'
       }, [(0, dom_1.html)('pre', {
         translate: 'no'
       }, body.slice(0, -1)), (0, dom_1.html)('hr'), (0, mathblock_1.mathblock)((0, parser_1.subinput)(`$$\n${body}$$`, context)).head.value]))]);
     default:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
         class: 'invalid',
         translate: 'no',
         ...(0, util_1.invalid)('example', 'type', 'Invalid example type')
@@ -4951,7 +4981,7 @@ exports.figbase = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_
 }]) => {
   const label = el.getAttribute('data-label');
   const group = label.split('-', 1)[0];
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('figure', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('figure', {
     'data-label': label,
     'data-group': group,
     hidden: ''
@@ -4993,7 +5023,7 @@ exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/(~{3,})(?:fig
 (0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)));
 exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/(?!\S).*\n/y)])), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media), (0, combinator_1.line)(inline_1.lineshortmedia)])), source_1.emptyline, (0, combinator_1.block)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))))])])), nodes => {
   const [label, param, content, ...caption] = (0, util_1.unwrap)(nodes);
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
     class: 'figindex'
   }), (0, dom_1.html)('span', {
     class: 'figtext'
@@ -5001,7 +5031,7 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
 })), (0, combinator_1.fmap)((0, combinator_1.fence)(/(~{3,})(?:figure(?=$|[ \n])|\[?\$)[^\n]*(?:$|\n)/y, 300), (nodes, context) => {
   const [body, overflow, closer, opener, delim] = (0, util_1.unwrap)(nodes);
   const violation = !closer && ['fence', `Missing the closing delimiter "${delim}"`] || overflow && ['fence', `Invalid trailing line after the closing delimiter "${delim}"`] || !(0, label_1.segment)((0, parser_1.subinput)(opener.match(/^~+(?:figure )?(\[?\$\S+)/)?.[1] ?? '', context)) && ['label', 'Invalid label'] || /^~+(?:figure )?(\[?\$\S+)[^\S\n]+\S/.test(opener) && ['argument', 'Invalid argument'] || ['content', 'Invalid content'];
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('figure', violation[0], violation[1])
@@ -5078,7 +5108,7 @@ exports.message = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_
 // Bug: Type mismatch between outer and inner.
 (nodes, context) => {
   const [body, overflow, closer, opener, delim, type, param] = (0, util_1.unwrap)(nodes);
-  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('message', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -5089,13 +5119,13 @@ exports.message = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_
     case 'warning':
       break;
     default:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
         class: 'invalid',
         translate: 'no',
         ...(0, util_1.invalid)('message', 'type', 'Invalid message type')
       }, `${opener}${body}${closer}`))]);
   }
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('section', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('section', {
     class: `message`,
     'data-type': type
   }, [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, util_1.unwrap)(content((0, parser_1.subinput)(seg, context)))), [(0, dom_1.html)('h1', title(type))])))]);
@@ -5134,7 +5164,7 @@ exports.segment = (0, combinator_1.block)((0, combinator_1.clear)((0, combinator
 exports.segment_ = (0, combinator_1.block)((0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false)), false);
 exports.placeholder = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.fence)(opener, Infinity), nodes => {
   const [body, overflow, closer, opener, delim] = (0, util_1.unwrap)(nodes);
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('extension', 'fence', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -5153,13 +5183,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.table = exports.segment_ = exports.segment = void 0;
-const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const visibility_1 = __webpack_require__(6364);
+const alias_1 = __webpack_require__(5413);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
@@ -5169,7 +5199,7 @@ exports.table = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.
 // Bug: Type mismatch between outer and inner.
 (nodes, context) => {
   const [body, overflow, closer, opener, delim, type, param] = (0, util_1.unwrap)(nodes);
-  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  if (!closer || overflow || param.trimStart()) return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('table', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -5177,28 +5207,28 @@ exports.table = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.
   switch (type) {
     case 'grid':
     case undefined:
-      return (parser((0, parser_1.subinput)(body, context)) ?? new parser_1.List([new parser_1.Data((0, dom_1.html)('table'))])).foldl((acc, {
+      return (parser((0, parser_1.subinput)(body, context)) ?? new parser_1.List([new parser_1.Node((0, dom_1.html)('table'))])).foldl((acc, {
         value
-      }) => acc.push(new parser_1.Data((0, dom_1.define)(value, {
+      }) => acc.push(new parser_1.Node((0, dom_1.define)(value, {
         'data-type': type
       }))) && acc, new parser_1.List());
     default:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
         class: 'invalid',
         translate: 'no',
         ...(0, util_1.invalid)('table', 'argument', 'Invalid table type')
       }, `${opener}${body}${closer}`))]);
   }
 }));
-const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => new parser_1.List([new parser_1.Data((0, dom_1.html)('table', format([...(0, util_1.unwrap)(rows)])))]))));
-const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.union)([align]), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new parser_1.Data([[]])) && ns)));
+const parser = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([row])), rows => new parser_1.List([new parser_1.Node((0, dom_1.html)('table', format([...(0, util_1.unwrap)(rows)])))]))));
+const row = (0, combinator_1.lazy)(() => (0, combinator_1.dup)((0, combinator_1.fmap)((0, combinator_1.subsequence)([(0, combinator_1.union)([align]), (0, combinator_1.some)((0, combinator_1.union)([head, data, (0, combinator_1.some)(dataline, alignment), source_1.emptyline]))]), ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new parser_1.Node([[]])) && ns)));
 const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
 const align = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.union)([(0, source_1.str)(alignment)]), ([{
   value
-}]) => new parser_1.List([new parser_1.Data(value.split('/').map(s => s.split('')))])));
+}]) => new parser_1.List([new parser_1.Node(value.split('/').map(s => s.split('')))])));
 const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y;
-const head = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /[^\S\n]*(?:$|\n)/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('th', attributes(ns.shift().value), (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
-const data = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /[^\S\n]*(?:$|\n)/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('td', attributes(ns.shift().value), (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
+const head = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /[^\S\n]*(?:$|\n)/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('th', attributes(ns.shift().value), (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
+const data = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y), (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.anyline, (0, combinator_1.some)(source_1.contentline, delimiter)]), (0, combinator_1.union)([(0, combinator_1.block)((0, combinator_1.surround)(/\s/y, (0, combinator_1.union)([inline_1.medialink, inline_1.media, inline_1.lineshortmedia]), /[^\S\n]*(?:$|\n)/y)), (0, combinator_1.open)(/(?:[^\S\n]*\n|\s)/y, (0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)(inline_1.inline))), true)])), true), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('td', attributes(ns.shift().value), (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), false);
 const dataline = (0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([(0, combinator_1.validate)(/!+ /y, (0, combinator_1.convert)(source => `:${source}`, data)), (0, combinator_1.convert)(source => `: ${source}`, data)])));
 function attributes(source) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] = source.match(/^[#:](?:(\d+)?:(\d+)?)?(?:(!+)([+]?))?$/) ?? [];
@@ -5425,12 +5455,12 @@ exports.segment = (0, combinator_1.block)((0, combinator_1.focus)(/#+ +\S[^\n]*(
   } = input;
   const {
     source,
-    range = 0
+    range
   } = context;
   const acc = new parser_1.List();
   for (const len = context.position + range; context.position < len;) {
     const line = (0, combinator_1.firstline)(source, context.position);
-    acc.push(new parser_1.Data(line));
+    acc.push(new parser_1.Node(line));
     context.position += line.length;
   }
   return acc;
@@ -5439,9 +5469,9 @@ exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segm
 // その他の表示制御は各所のCSSで行う。
 (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */ | 32 /* State.index */ | 16 /* State.label */ | 8 /* State.link */, (0, combinator_1.line)((0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.open)((0, source_1.str)(/##+/y), (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline])))), true), (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))), true)]), (nodes, context) => {
   const [h, ...ns] = (0, util_1.unwrap)(nodes);
-  return new parser_1.List([h.length <= 6 ? new parser_1.Data((0, dom_1.html)(`h${h.length}`, {
+  return new parser_1.List([h.length <= 6 ? new parser_1.Node((0, dom_1.html)(`h${h.length}`, {
     'data-index': (0, inline_1.dataindex)(nodes)
-  }, (0, dom_1.defrag)(ns))) : new parser_1.Data((0, dom_1.html)(`h6`, {
+  }, (0, dom_1.defrag)(ns))) : new parser_1.Node((0, dom_1.html)(`h6`, {
     class: 'invalid',
     ...(0, util_1.invalid)('heading', 'syntax', 'Heading level must be up to 6')
   }, context.source.slice(context.position - context.range, context.position)))]);
@@ -5469,7 +5499,7 @@ const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(/[-+*] /y, exports.ilist_)));
-exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/[-+*](?:$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/[-+*](?:$|[ \n])/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), exports.ilistitem), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('li', (0, dom_1.defrag)((0, util_1.unwrap)((0, ulist_1.fillFirstLine)(ns)))))]))])))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('ul', {
+exports.ilist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/[-+*](?:$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/[-+*](?:$|[ \n])/y, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, olist_1.olist_, exports.ilist_]))]), exports.ilistitem), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('li', (0, dom_1.defrag)((0, util_1.unwrap)((0, ulist_1.fillFirstLine)(ns)))))]))])))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('ul', {
   class: 'invalid',
   ...(0, util_1.invalid)('list', 'syntax', 'Use "-" instead of "+" or "*"')
 }, (0, util_1.unwrap)(ns)))]))));
@@ -5477,11 +5507,11 @@ exports.ilistitem = (0, combinator_1.rewrite)((0, combinator_1.inits)([source_1.
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data(source)]))]), ({
+}) => new parser_1.List([new parser_1.Node(source)]))]), ({
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data(''), new parser_1.Data((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node(''), new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('list', 'syntax', 'Fix the indent or the head of the list item')
 }, source.replace('\n', '')))]));
@@ -5513,10 +5543,10 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinato
   } = {}
 }) => {
   const [body, overflow, closer, opener, delim, param] = (0, util_1.unwrap)(nodes);
-  return new parser_1.List([delim.length === 2 && closer && !overflow && param.trimStart() === '' ? new parser_1.Data(cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) || (0, dom_1.html)('div', {
+  return new parser_1.List([delim.length === 2 && closer && !overflow && param.trimStart() === '' ? new parser_1.Node(cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) || (0, dom_1.html)('div', {
     class: 'math',
     translate: 'no'
-  }, `${delim}\n${body}${delim}`)) : new parser_1.Data((0, dom_1.html)('pre', {
+  }, `${delim}\n${body}${delim}`)) : new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('mathblock', delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument', delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
@@ -5544,10 +5574,10 @@ exports.mediablock = (0, combinator_1.block)((0, combinator_1.fmap)((0, combinat
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('mediablock', 'syntax', 'Not media syntax')
-}, source.replace('\n', '')))]))))]), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('div', (0, util_1.unwrap)(ns)))])));
+}, source.replace('\n', '')))]))))]), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('div', (0, util_1.unwrap)(ns)))])));
 
 /***/ },
 
@@ -5576,21 +5606,21 @@ const openers = {
 };
 exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)(new RegExp([/(?:[0-9]+)(?:-[0-9]+)*\. /y.source, /\((?:[0-9]+)\)(?:-[0-9]+)* /y.source].join('|'), 'y'), exports.olist_)));
 exports.olist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.match)(openers['.'], (0, memoize_1.memoize)(ms => list(type(ms[1]), '.'), ms => idx(ms[1]), [])), (0, combinator_1.match)(openers['('], (0, memoize_1.memoize)(ms => list(type(ms[1]), '('), ms => idx(ms[1]), []))])));
-const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('li', {
+const list = (type, form) => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(heads[form], (0, combinator_1.subsequence)([ulist_1.checkbox, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([ulist_1.ulist_, exports.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('li', {
   'data-index': (0, inline_1.dataindex)(ns),
   'data-marker': ns.shift()?.value || undefined
-}, (0, dom_1.defrag)((0, util_1.unwrap)((0, ulist_1.fillFirstLine)(ns)))))])))]))), ns => new parser_1.List([new parser_1.Data(format((0, dom_1.html)('ol', (0, util_1.unwrap)(ns)), type, form))]));
+}, (0, dom_1.defrag)((0, util_1.unwrap)((0, ulist_1.fillFirstLine)(ns)))))])))]))), ns => new parser_1.List([new parser_1.Node(format((0, dom_1.html)('ol', (0, util_1.unwrap)(ns)), type, form))]));
 const heads = {
   '.': (0, combinator_1.focus)(openers['.'], ({
     context: {
       source
     }
-  }) => new parser_1.List([new parser_1.Data(source.trimEnd().split('.', 1)[0] + '.')])),
+  }) => new parser_1.List([new parser_1.Node(source.trimEnd().split('.', 1)[0] + '.')])),
   '(': (0, combinator_1.focus)(openers['('], ({
     context: {
       source
     }
-  }) => new parser_1.List([new parser_1.Data(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))]))
+  }) => new parser_1.List([new parser_1.Node(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))]))
 };
 function idx(value) {
   switch (value) {
@@ -5695,7 +5725,7 @@ exports.pagebreak = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-exports.pagebreak = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/={3,}[^\S\n]*(?:$|\n)/y, () => new parser_1.List([new parser_1.Data((0, dom_1.html)('hr'))]))));
+exports.pagebreak = (0, combinator_1.block)((0, combinator_1.line)((0, combinator_1.focus)(/={3,}[^\S\n]*(?:$|\n)/y, () => new parser_1.List([new parser_1.Node((0, dom_1.html)('hr'))]))));
 
 /***/ },
 
@@ -5715,7 +5745,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.paragraph = (0, combinator_1.block)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])));
+exports.paragraph = (0, combinator_1.block)((0, combinator_1.fmap)((0, visibility_1.visualize)((0, visibility_1.trimBlankEnd)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline])))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])));
 
 /***/ },
 
@@ -5742,7 +5772,7 @@ const delimiter = new RegExp(`${cite_1.syntax.source}|${quote_1.syntax.source}`,
 exports.reply = (0, combinator_1.block)((0, combinator_1.validate)(cite_1.syntax, (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([cite_1.cite, quote_1.quote, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, delimiter), (0, visibility_1.visualize)((0, combinator_1.fmap)((0, combinator_1.some)(inline_1.inline), (ns, {
   source,
   position
-}) => source[position - 1] === '\n' ? ns : ns.push(new parser_1.Data((0, dom_1.html)('br'))) && ns)))])), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns)))))]))));
+}) => source[position - 1] === '\n' ? ns : ns.push(new parser_1.Node((0, dom_1.html)('br'))) && ns)))])), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns)))))]))));
 
 /***/ },
 
@@ -5770,13 +5800,13 @@ exports.cite = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.op
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   class: 'anchor'
 }, source))])), (0, combinator_1.focus)(/>>https?:\/\/\S+(?=\s*$)/y, ({
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   class: 'anchor',
   href: source.slice(2).trimEnd(),
   target: '_blank'
@@ -5784,17 +5814,17 @@ exports.cite = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.op
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data(source)]))])), nodes => {
+}) => new parser_1.List([new parser_1.Node(source)]))])), nodes => {
   const quotes = nodes.head.value;
   const node = nodes.last.value;
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('span', typeof node === 'object' ? {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', typeof node === 'object' ? {
     class: 'cite'
   } : {
     class: 'cite invalid',
     ...(0, util_1.invalid)('cite', 'syntax', 'Invalid syntax')
   }, (0, dom_1.defrag)([`${quotes}>`, typeof node === 'object' ? (0, dom_1.define)(node, {
     'data-depth': `${quotes.length + 1}`
-  }, node.innerText.slice(1)) : node.slice(1)]))), new parser_1.Data((0, dom_1.html)('br'))]);
+  }, node.innerText.slice(1)) : node.slice(1)]))), new parser_1.Node((0, dom_1.html)('br'))]);
 }));
 
 /***/ },
@@ -5822,7 +5852,7 @@ exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 math_1.math, autolink_1.autolink, source_1.unescsource])))), (ns, {
   source,
   position
-}) => new parser_1.List([new parser_1.Data(source[position - 1] === '\n' ? ns.pop().value : (0, dom_1.html)('br')), new parser_1.Data((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node(source[position - 1] === '\n' ? ns.pop().value : (0, dom_1.html)('br')), new parser_1.Node((0, dom_1.html)('span', {
   class: 'quote'
 }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))))].reverse())), false));
 
@@ -5846,13 +5876,13 @@ const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.sidefence = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.focus)(/\|+ [^\n]*(?:\n\|+(?=$|[ \n])[^\n]*)*(?:$|\n)/y, (0, combinator_1.union)([source])), ([{
   value
-}]) => new parser_1.List([new parser_1.Data((0, dom_1.define)(value, {
+}]) => new parser_1.List([new parser_1.Node((0, dom_1.define)(value, {
   class: 'invalid',
   ...(0, util_1.invalid)('sidefence', 'syntax', 'Reserved syntax')
 }))]))));
 const opener = /(?=\|\|+(?:$|[ \n]))/y;
 const unindent = source => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \n])))|\n$/g, '');
-const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(1 /* Recursion.block */, (0, combinator_1.union)([(0, combinator_1.focus)(/(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y, (0, combinator_1.convert)(unindent, source, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), true))]))), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
+const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.recursion)(1 /* Recursion.block */, (0, combinator_1.union)([(0, combinator_1.focus)(/(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y, (0, combinator_1.convert)(unindent, source, true)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))])), true))]))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
 
 /***/ },
 
@@ -5875,12 +5905,12 @@ const util_1 = __webpack_require__(4992);
 const duff_1 = __webpack_require__(9202);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/\|[^\n]*(?:\n\|[^\n]*){2}/y, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => new parser_1.List([new parser_1.Data((0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift().value]), (0, dom_1.html)('tbody', (0, util_1.unwrap)(format(rows)))]))]))));
-const row = (parser, optional) => (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/(?=\|)/y, (0, combinator_1.some)((0, combinator_1.union)([parser])), /\|?\s*$/y, optional)), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('tr', (0, util_1.unwrap)(ns)))])), (0, combinator_1.rewrite)(source_1.contentline, ({
+exports.table = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/\|[^\n]*(?:\n\|[^\n]*){2}/y, (0, combinator_1.sequence)([row((0, combinator_1.some)(head), true), row((0, combinator_1.some)(align), false), (0, combinator_1.some)(row((0, combinator_1.some)(data), true))])), rows => new parser_1.List([new parser_1.Node((0, dom_1.html)('table', [(0, dom_1.html)('thead', [rows.shift().value]), (0, dom_1.html)('tbody', (0, util_1.unwrap)(format(rows)))]))]))));
+const row = (parser, optional) => (0, combinator_1.fallback)((0, combinator_1.fmap)((0, combinator_1.line)((0, combinator_1.surround)(/(?=\|)/y, (0, combinator_1.some)((0, combinator_1.union)([parser])), /\|?\s*$/y, optional)), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('tr', (0, util_1.unwrap)(ns)))])), (0, combinator_1.rewrite)(source_1.contentline, ({
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('tr', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('tr', {
   class: 'invalid',
   ...(0, util_1.invalid)('table-row', 'syntax', 'Missing the start symbol of the table row')
 }, [(0, dom_1.html)('td', source.replace('\n', ''))]))])));
@@ -5888,18 +5918,18 @@ const align = (0, combinator_1.fmap)((0, combinator_1.open)('|', (0, combinator_
   context: {
     source,
     position,
-    range = 0
+    range
   }
-}) => new parser_1.List([new parser_1.Data(source[position + range - 1] === ':' ? 'center' : 'start')]), false), (0, combinator_1.focus)(/-+:?/y, ({
+}) => new parser_1.List([new parser_1.Node(source[position + range - 1] === ':' ? 'center' : 'start')]), false), (0, combinator_1.focus)(/-+:?/y, ({
   context: {
     source,
     position,
-    range = 0
+    range
   }
-}) => new parser_1.List([new parser_1.Data(source[position + range - 1] === ':' ? 'end' : '')]), false)])), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('td', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
+}) => new parser_1.List([new parser_1.Node(source[position + range - 1] === ':' ? 'end' : '')]), false)])), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('td', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
 const cell = (0, combinator_1.surround)(/\|\s*(?=\S)/y, (0, combinator_1.union)([(0, combinator_1.close)(inline_1.medialink, /\s*(?=\||$)/y), (0, combinator_1.close)(inline_1.media, /\s*(?=\||$)/y), (0, combinator_1.close)(inline_1.shortmedia, /\s*(?=\||$)/y), (0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline, /\|/y, [[/\|?\s*$/y, 9]]))]), /[^|]*/y, true);
-const head = (0, combinator_1.fmap)(cell, ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('th', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
-const data = (0, combinator_1.fmap)(cell, ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('td', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
+const head = (0, combinator_1.fmap)(cell, ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('th', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
+const data = (0, combinator_1.fmap)(cell, ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('td', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]));
 function format(rows) {
   const aligns = rows.head.value.className === 'invalid' ? [] : (0, duff_1.duffReduce)(rows.shift().value.children, (acc, el) => (0, array_1.push)(acc, [el.textContent]), []);
   for (const {
@@ -5937,15 +5967,15 @@ const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.ulist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.validate)('- ', exports.ulist_)));
-exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/-(?=$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/-(?:$|[ \n])/y, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('li', {
+exports.ulist_ = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/-(?=$|[ \n])/y, (0, combinator_1.some)((0, combinator_1.recursion)(3 /* Recursion.listitem */, (0, combinator_1.union)([(0, inline_1.indexee)((0, combinator_1.fmap)((0, combinator_1.fallback)((0, combinator_1.inits)([(0, combinator_1.line)((0, combinator_1.open)(/-(?:$|[ \n])/y, (0, combinator_1.subsequence)([exports.checkbox, (0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.indexer, inline_1.inline]))))]), true)), (0, combinator_1.indent)((0, combinator_1.union)([exports.ulist_, olist_1.olist_, ilist_1.ilist_]))]), ilist_1.ilistitem), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('li', {
   'data-index': (0, inline_1.dataindex)(ns)
-}, (0, dom_1.defrag)((0, util_1.unwrap)(fillFirstLine(ns)))))])))])))), ns => new parser_1.List([new parser_1.Data(format((0, dom_1.html)('ul', (0, util_1.unwrap)(ns))))]))));
+}, (0, dom_1.defrag)((0, util_1.unwrap)(fillFirstLine(ns)))))])))])))), ns => new parser_1.List([new parser_1.Node(format((0, dom_1.html)('ul', (0, util_1.unwrap)(ns))))]))));
 exports.checkbox = (0, combinator_1.focus)(/\[[xX ]\](?=$|[ \n])/y, ({
   context: {
     source,
     position
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'checkbox'
 }, source[position + 1].trimStart() ? '☑' : '☐'))]), false);
 function fillFirstLine(nodes) {
@@ -5954,7 +5984,7 @@ function fillFirstLine(nodes) {
   switch (node.tagName) {
     case 'UL':
     case 'OL':
-      nodes.unshift(new parser_1.Data((0, dom_1.html)('br')));
+      nodes.unshift(new parser_1.Node((0, dom_1.html)('br')));
   }
   return nodes;
 }
@@ -5965,6 +5995,45 @@ function format(list) {
   }
   return list;
 }
+
+/***/ },
+
+/***/ 8669
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.CmdRegExp = exports.Context = void 0;
+const parser_1 = __webpack_require__(605);
+class Context extends parser_1.Context {
+  constructor(options = {}) {
+    super(options);
+    const {
+      buffer,
+      sequential,
+      header,
+      host,
+      url,
+      id,
+      caches
+    } = options;
+    this.buffer = buffer ?? new parser_1.List();
+    this.sequential = sequential ?? false;
+    this.header = header;
+    this.host = host;
+    this.url = url;
+    this.id = id;
+    this.caches = caches;
+  }
+}
+exports.Context = Context;
+exports.CmdRegExp = {
+  Error: /\x07/g
+};
 
 /***/ },
 
@@ -5986,11 +6055,11 @@ const normalize_1 = __webpack_require__(4490);
 const dom_1 = __webpack_require__(394);
 exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/---+ *\n(?=\S)/y, (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.validate)(({
   context
-}) => context.header ?? true, (0, combinator_1.focus)(/(---+) *\n(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*:[ \t]+\S[^\n]*\n){1,100}\1 *(?:$|\n)/y, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), ns => new parser_1.List([new parser_1.Data((0, dom_1.html)('aside', {
+}) => context.header ?? true, (0, combinator_1.focus)(/(---+) *\n(?:[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*:[ \t]+\S[^\n]*\n){1,100}\1 *(?:$|\n)/y, (0, combinator_1.convert)(source => (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))), (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([field])), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('aside', {
   class: 'header'
 }, [(0, dom_1.html)('details', {
   open: ''
-}, (0, dom_1.defrag)((0, util_1.unwrap)(ns.unshift(new parser_1.Data((0, dom_1.html)('summary', 'Header'))) && ns)))]))]))))), ({
+}, (0, dom_1.defrag)((0, util_1.unwrap)(ns.unshift(new parser_1.Node((0, dom_1.html)('summary', 'Header'))) && ns)))]))]))))), ({
   context
 }) => {
   const {
@@ -5998,7 +6067,7 @@ exports.header = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/---+ *
     position
   } = context;
   context.position += source.length;
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('pre', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('header', 'syntax', 'Invalid syntax')
@@ -6012,7 +6081,7 @@ const field = (0, combinator_1.line)(({
 }) => {
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
-  return new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'field',
     'data-name': name.toLowerCase(),
     'data-value': value
@@ -6185,7 +6254,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined)));
 
@@ -6281,7 +6350,7 @@ exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /*
   const param = nodes.foldl((acc, {
     value
   }) => acc ? acc + '+' + value : value, '');
-  return new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`@${host}${account}${hashes}`)]), new parser_1.List([new parser_1.Data(host ? `https://${host}@${account}?ch=${param}` : `/@${account}?ch=${param}`)]), context), {
+  return new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`@${host}${account}${hashes}`)]), new parser_1.List([new parser_1.Node(host ? `https://${host}@${account}?ch=${param}` : `/@${account}?ch=${param}`)]), context), {
     class: 'channel'
   }))]);
 }, ([[{
@@ -6292,7 +6361,7 @@ exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /*
   if (context.source[context.position] === '#') {
     return void (0, combinator_1.setBacktrack)(context, 2 | 8 /* Backtrack.unescapable */, context.position - context.range);
   }
-  return new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`@${host}${account}`)]), new parser_1.List([new parser_1.Data(host ? `https://${host}@${account}` : `/@${account}`)]), context), {
+  return new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`@${host}${account}`)]), new parser_1.List([new parser_1.Node(host ? `https://${host}@${account}` : `/@${account}`)]), context), {
     class: 'account'
   }))]);
 }))));
@@ -6323,7 +6392,7 @@ const dom_1 = __webpack_require__(394);
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
 exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/[0-9a-z]+(?:-[0-9a-z]+)*(?!-?[0-9a-z@#]|>>|:\S)/yi), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
-}]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`>>${value}`)]), new parser_1.List([new parser_1.Data(`?at=${value}`)]), context), {
+}]], context) => new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`>>${value}`)]), new parser_1.List([new parser_1.Node(`?at=${value}`)]), context), {
   class: 'anchor'
 }))])))));
 
@@ -6348,7 +6417,7 @@ exports.email = (0, combinator_1.constraint)(1 /* State.autolink */, (0, combina
   value
 }]) => value.length <= 254), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
-}]]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+}]]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   class: 'email',
   href: `mailto:${value}`
 }, value))]))));
@@ -6373,7 +6442,7 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false, [1 | 8 /* Backtrack.unescapable */], ([, [{
   value
-}]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`#${value}`)]), new parser_1.List([new parser_1.Data(value)]), context), {
+}]], context) => new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`#${value}`)]), new parser_1.List([new parser_1.Node(value)]), context), {
   class: 'hashnum',
   href: null
 }))])))));
@@ -6402,7 +6471,7 @@ exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /*
   value
 }]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
-}]], context) => new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Data(`#${value}`)]), new parser_1.List([new parser_1.Data(`/hashtags/${value}`)]), context), {
+}]], context) => new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`#${value}`)]), new parser_1.List([new parser_1.Node(`/hashtags/${value}`)]), context), {
   class: 'hashtag'
 }))])))));
 
@@ -6425,7 +6494,7 @@ const link_1 = __webpack_require__(3628);
 const source_1 = __webpack_require__(8745);
 exports.url = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.open)(/(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y, (0, combinator_1.precedence)(0, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y), (0, combinator_1.precedence)(1, (0, combinator_1.verify)(bracket, ns => ns.length > 0))]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])), false, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
   context
-}) => new parser_1.List([new parser_1.Data((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Data(context.source)]), context))]))), (0, combinator_1.open)((0, source_1.str)(/[^:]+/y), (0, combinator_1.some)(inline_1.inline))])));
+}) => new parser_1.List([new parser_1.Node((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Node(context.source)]), context))]))), (0, combinator_1.open)((0, source_1.str)(/[^:]+/y), (0, combinator_1.some)(inline_1.inline))])));
 exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y, (0, combinator_1.tails)([(0, source_1.str)('!'), (0, combinator_1.union)([(0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, ({
   context
 }) => {
@@ -6434,7 +6503,7 @@ exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\
     position
   } = context;
   context.position -= source[0] === '!' ? 1 : 0;
-  return new parser_1.List([new parser_1.Data((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Data(source.slice(position))]), context))]);
+  return new parser_1.List([new parser_1.Node((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Node(source.slice(position))]), context))]);
 })), (0, source_1.str)(/[^:]+/y)])])));
 const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.unescapable */], undefined, () => new parser_1.List())]));
 
@@ -6487,21 +6556,21 @@ const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   const {
     source,
     position,
-    range = 0
+    range
   } = context;
   const head = position - range;
   if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
     (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
   }
   const str = source.slice(position - range + 1, position - 1);
-  return indexA.test(str) ? new parser_1.List([new parser_1.Data(as.head.value), new parser_1.Data(str), new parser_1.Data(cs.head.value)]) : new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+  return indexA.test(str) ? new parser_1.List([new parser_1.Node(as.head.value), new parser_1.Node(str), new parser_1.Node(cs.head.value)]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
 }, ([as, bs = new parser_1.List()], context) => {
   const {
     source,
     position,
-    range = 0
+    range
   } = context;
   const head = position - range;
   if (context.linebreak !== 0 || source[head + 1] !== '(') {
@@ -6512,10 +6581,10 @@ const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
 const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [], ([as, bs = [], cs], {
   source,
   position,
-  range = 0
+  range
 }) => {
   const str = source.slice(position - range + 1, position - 1);
-  return indexF.test(str) ? new parser_1.List([new parser_1.Data(as.head.value), new parser_1.Data(str), new parser_1.Data(cs.head.value)]) : new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+  return indexF.test(str) ? new parser_1.List([new parser_1.Node(as.head.value), new parser_1.Node(str), new parser_1.Node(cs.head.value)]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
 }, ([as, bs = new parser_1.List()]) => as.import(bs)));
@@ -6524,7 +6593,7 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     const {
       source,
       position,
-      range = 0
+      range
     } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
@@ -6572,12 +6641,12 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.code = (0, combinator_1.match)(/(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y, ([whole, opener, body, closer]) => () => closer ? new parser_1.List([new parser_1.Data((0, dom_1.html)('code', {
+exports.code = (0, combinator_1.match)(/(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y, ([whole, opener, body, closer]) => () => closer ? new parser_1.List([new parser_1.Node((0, dom_1.html)('code', {
   'data-src': whole
-}, format(body)))]) : body ? new parser_1.List([new parser_1.Data((0, dom_1.html)('code', {
+}, format(body)))]) : body ? new parser_1.List([new parser_1.Node((0, dom_1.html)('code', {
   class: 'invalid',
   ...(0, util_1.invalid)('code', 'syntax', `Missing the closing symbol "${opener}"`)
-}, whole))]) : new parser_1.List([new parser_1.Data(opener)]));
+}, whole))]) : new parser_1.List([new parser_1.Node(opener)]));
 function format(text) {
   return text.length > 2 && text[0] === ' ' && text[1] === '`' && text.at(-1) === ' ' ? text.slice(1, -1) : text;
 }
@@ -6604,7 +6673,7 @@ exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, 
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
 
 /***/ },
 
@@ -6626,7 +6695,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)(/\*(?!\*)/y), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))))), (0, source_1.str)('*'), false, [], ([, bs]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)(/\*(?!\*)/y), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([strong_1.strong, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))))), (0, source_1.str)('*'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
 
 /***/ },
 
@@ -6656,7 +6725,7 @@ const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, comb
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
 exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('***', (0, combinator_1.surround)('', (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)])))), (0, source_1.str)(/\*{1,3}/y), false, [], ([, bs, cs], context) => {
   const {
-    buffer = new parser_1.List()
+    buffer
   } = context;
   switch (cs.head.value) {
     case '***':
@@ -6668,18 +6737,18 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, 
         } = context;
         if (source.startsWith('*', context.position)) {
           context.position += 1;
-          buffer.push(new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
+          buffer.push(new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
           buffer.import(ds);
-          return new parser_1.List([new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(buffer)))), new parser_1.Data("\u001F" /* Command.Separator */)]);
+          return new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(buffer)))), new parser_1.Node("\u001F" /* Command.Separator */)]);
         } else {
-          buffer.push(new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
+          buffer.push(new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
           buffer.import(ds);
-          buffer.push(new parser_1.Data("\u001F" /* Command.Separator */));
+          buffer.push(new parser_1.Node("\u001F" /* Command.Separator */));
           return prepend('*', buffer);
         }
       })({
         context
-      }) ?? prepend('*', buffer.import(new parser_1.List([new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))), new parser_1.Data("\u001F" /* Command.Separator */)])));
+      }) ?? prepend('*', buffer.import(new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))), new parser_1.Node("\u001F" /* Command.Separator */)])));
     case '*':
       return (0, combinator_1.bind)(substrong, ds => {
         const {
@@ -6687,34 +6756,34 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, 
         } = context;
         if (source.startsWith('**', context.position)) {
           context.position += 2;
-          buffer.push(new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
+          buffer.push(new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
           buffer.import(ds);
-          return new parser_1.List([new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(buffer)))), new parser_1.Data("\u001F" /* Command.Separator */)]);
+          return new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(buffer)))), new parser_1.Node("\u001F" /* Command.Separator */)]);
         } else {
-          buffer.push(new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
+          buffer.push(new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))));
           buffer.import(ds);
-          buffer.push(new parser_1.Data("\u001F" /* Command.Separator */));
+          buffer.push(new parser_1.Node("\u001F" /* Command.Separator */));
           return prepend('**', buffer);
         }
       })({
         context
-      }) ?? prepend('**', buffer.import(new parser_1.List([new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))), new parser_1.Data("\u001F" /* Command.Separator */)])));
+      }) ?? prepend('**', buffer.import(new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs)))), new parser_1.Node("\u001F" /* Command.Separator */)])));
   }
 }, ([, bs], {
   buffer
-}) => bs && buffer.import(bs) && buffer.push(new parser_1.Data("\u0018" /* Command.Cancel */)) && buffer),
+}) => bs && buffer.import(bs) && buffer.push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer),
 // 3以上の`*`に対してemの適用を保証する
-nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)))]))]), (nodes, context, prefix, postfix, state) => {
+nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)))]))]), (nodes, context, prefix, postfix, state) => {
   context.position += postfix;
   if (state) {
     switch (postfix) {
       case 0:
         break;
       case 1:
-        nodes = new parser_1.List([new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
+        nodes = new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
         break;
       case 2:
-        nodes = new parser_1.List([new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
+        nodes = new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
         break;
       default:
     }
@@ -6730,7 +6799,7 @@ nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.h
           } = context;
           if (source.startsWith('*', context.position)) {
             context.position += 1;
-            return new parser_1.List([new parser_1.Data((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(nodes.import(ds)))))]);
+            return new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(nodes.import(ds)))))]);
           } else {
             return prepend('*', nodes.import(ds));
           }
@@ -6746,7 +6815,7 @@ nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('em', [(0, dom_1.h
           } = context;
           if (source.startsWith('**', context.position)) {
             context.position += 2;
-            return new parser_1.List([new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes.import(ds)))))]);
+            return new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes.import(ds)))))]);
           } else {
             return prepend('**', nodes.import(ds));
           }
@@ -6766,7 +6835,7 @@ function prepend(prefix, nodes) {
   if (typeof nodes.head?.value === 'string') {
     nodes.head.value = prefix + nodes.head.value;
   } else {
-    nodes.unshift(new parser_1.Data(prefix));
+    nodes.unshift(new parser_1.Node(prefix));
   }
   return nodes;
 }
@@ -6810,12 +6879,12 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   'data-index': dataindex(bs)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]) : undefined, undefined)), ns => {
   if (ns.length === 1) {
     const el = ns.head.value;
-    return new parser_1.List([new parser_1.Data((0, dom_1.define)(el, {
+    return new parser_1.List([new parser_1.Node((0, dom_1.define)(el, {
       id: el.id ? null : undefined,
       class: 'index',
       href: el.id ? `#${el.id}` : undefined
@@ -6829,7 +6898,7 @@ exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|',
   const index = (0, indexee_1.identity)('index', undefined, ns.foldl((acc, {
     value
   }) => acc + value, ''))?.slice(7);
-  return index && context.linebreak === 0 ? new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+  return index && context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'indexer',
     'data-index': index
   }))]) : undefined;
@@ -6866,7 +6935,7 @@ const dom_1 = __webpack_require__(394);
 function indexee(parser) {
   return (0, combinator_1.fmap)(parser, (ns, {
     id
-  }) => ns.length === 1 ? new parser_1.List([new parser_1.Data((0, dom_1.define)(ns.head.value, {
+  }) => ns.length === 1 ? new parser_1.List([new parser_1.Node((0, dom_1.define)(ns.head.value, {
     id: identity('index', id, ns.head.value),
     'data-index': null
   }))]) : ns);
@@ -7007,7 +7076,7 @@ const dom_1 = __webpack_require__(394);
 // 複合生成インデクスを手動で同期させるより最初から重複のない
 // テキストまたはインデクスを付けて同期が必要な機会を減らすのが
 // 継続的編集において最も簡便となる。
-exports.indexer = (0, combinator_1.surround)(/ \[(?=\|\S)/y, (0, combinator_1.union)([index_1.signature, (0, combinator_1.focus)(/\|(?=\])/y, () => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+exports.indexer = (0, combinator_1.surround)(/ \[(?=\|\S)/y, (0, combinator_1.union)([index_1.signature, (0, combinator_1.focus)(/\|(?=\])/y, () => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'indexer',
   'data-index': ''
 }))]))]), /\][^\S\n]*(?:$|\n)/y);
@@ -7032,7 +7101,7 @@ const body = (0, source_1.str)(/\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:
 exports.segment = (0, combinator_1.clear)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']'), body]));
 exports.label = (0, combinator_1.constraint)(16 /* State.label */, (0, combinator_1.fmap)((0, combinator_1.union)([(0, combinator_1.surround)('[', body, ']', false, [1 | 4 /* Backtrack.common */]), body]), ([{
   value
-}]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('a', {
+}]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   class: 'label',
   'data-label': value.slice(value[1] === '-' ? 0 : 1).toLowerCase()
 }, value))])));
@@ -7077,7 +7146,7 @@ const dom_1 = __webpack_require__(394);
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)(
 // ^はabbrで使用済みだが^:などのようにして分離使用可能
-(0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+(0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('extension', 'syntax', `Invalid start symbol or linebreak`)
 }, context.source.slice(context.position - context.range, context.position)))]), ([as, bs]) => bs && as.import(bs)));
@@ -7113,14 +7182,14 @@ Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[ >])/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
+(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
 // 不可視のHTML構造が可視構造を変化させるべきでない。
 // 可視のHTMLは優先度変更を検討する。
 // このため<>は将来的に共通構造を変化させる可能性があり
 // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
-(0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`)), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)])))), (0, source_1.str)(`</${tag}>`), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Data(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, cs, context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Data(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, new parser_1.List(), context))])), ([, tag]) => tag, new Map())), (0, combinator_1.surround)(
+(0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`)), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)])))), (0, source_1.str)(`</${tag}>`), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, cs, context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, new parser_1.List(), context))])), ([, tag]) => tag, new Map())), (0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<[a-z]+(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Data(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))]))])));
+(0, source_1.str)(/<[a-z]+(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))]))])));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi), (0, source_1.str)(/ [^\s<>]+/y)]);
 function elem(tag, content, as, bs, cs, context) {
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
@@ -7191,10 +7260,10 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Data(parser(as.head.value + bs.head.value + cs.head.value))]), ([as, bs]) => new parser_1.List([new parser_1.Data(as.head.value + (bs?.head?.value ?? ''))]));
+exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Node(parser(as.head.value + bs.head.value + cs.head.value))]), ([as, bs]) => new parser_1.List([new parser_1.Node(as.head.value + (bs?.head?.value ?? ''))]));
 exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([{
   value
-}]) => new parser_1.List([length === 1 || value.at(-1) !== ';' ? new parser_1.Data(value) : new parser_1.Data((0, dom_1.html)('span', {
+}]) => new parser_1.List([length === 1 || value.at(-1) !== ';' ? new parser_1.Node(value) : new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('htmlentity', 'syntax', 'Invalid HTML entity')
 }, value))]));
@@ -7226,7 +7295,7 @@ exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0,
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
 
 /***/ },
 
@@ -7253,7 +7322,7 @@ exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Data((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
 
 /***/ },
 
@@ -7285,11 +7354,11 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
     const head = context.position - context.range;
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
-  return ns.push(new parser_1.Data("\u001F" /* Command.Separator */)) && ns;
+  return ns.push(new parser_1.Node("\u001F" /* Command.Separator */)) && ns;
 })),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
-(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && as))]), ([{
+(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
   value: content
 }, {
   value: params = undefined
@@ -7306,21 +7375,21 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
   }
   if (params.last.value === "\u0018" /* Command.Cancel */) {
     params.pop();
-    return new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
       class: 'invalid',
       ...(0, util_1.invalid)('link', 'syntax', 'Missing the closing symbol "}"')
     }, context.source.slice(context.position - context.range, context.position)))]);
   }
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
-  return new parser_1.List([new parser_1.Data(parse(content, params, context))]);
+  return new parser_1.List([new parser_1.Node(parse(content, params, context))]);
 })))));
 exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y))]), ([{
   value: content
 }, {
   value: params
-}], context) => new parser_1.List([new parser_1.Data(parse(content, params, context))])))));
+}], context) => new parser_1.List([new parser_1.Node(parse(content, params, context))])))));
 exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(/ /y, (0, source_1.str)(/\S+/y)), (0, source_1.str)(/[^\s{}]+/y)]);
-exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/ nofollow(?=[ }])/y), () => new parser_1.List([new parser_1.Data(' rel="nofollow"')])), (0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi), (0, source_1.str)(/ [^\s{}]+/y)]);
+exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/ nofollow(?=[ }])/y), () => new parser_1.List([new parser_1.Node(' rel="nofollow"')])), (0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi), (0, source_1.str)(/ [^\s{}]+/y)]);
 function parse(content, params, context) {
   const INSECURE_URI = params.shift().value;
   (0, combinator_1.consume)(10, context);
@@ -7433,16 +7502,16 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(251 /* 
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && buffer), (nodes, {
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer), (nodes, {
   id
 }) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)));
   (0, dom_1.define)(el, {
     id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el))
   });
-  return el.id ? new parser_1.List([new parser_1.Data(el), new parser_1.Data((0, dom_1.html)('a', {
+  return el.id ? new parser_1.List([new parser_1.Node(el), new parser_1.Node((0, dom_1.html)('a', {
     href: `#${el.id}`
-  }))]) : new parser_1.List([new parser_1.Data(el)]);
+  }))]) : new parser_1.List([new parser_1.Node(el)]);
 })))));
 
 /***/ },
@@ -7470,7 +7539,7 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combin
       math: cache
     } = {}
   }
-}) => new parser_1.List([new parser_1.Data(cache?.get(source)?.cloneNode(true) || (0, dom_1.html)('span', !forbiddenCommand.test(source) ? {
+}) => new parser_1.List([new parser_1.Node(cache?.get(source)?.cloneNode(true) || (0, dom_1.html)('span', !forbiddenCommand.test(source) ? {
   class: 'math',
   translate: 'no',
   'data-src': source
@@ -7515,7 +7584,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns;
-})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Data("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Data(new parser_1.List([new parser_1.Data('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Data(new parser_1.List([new parser_1.Data(nodes.head.value.foldl((acc, {
+})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
   value
 }) => acc + value, ''))])), nodes.delete(nodes.last)])), ([{
   value: [{
@@ -7529,7 +7598,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
   (0, combinator_1.consume)(100, context);
   if (params.last.value === "\u0018" /* Command.Cancel */) {
     params.pop();
-    return new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
       class: 'invalid',
       ...(0, util_1.invalid)('media', 'syntax', 'Missing the closing symbol "}"')
     }, '!' + context.source.slice(context.position - context.range, context.position)))]);
@@ -7547,16 +7616,16 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     'data-src': uri?.source
   });
   el.setAttribute('alt', text);
-  if (!sanitize(el, uri)) return new parser_1.List([new parser_1.Data(el)]);
+  if (!sanitize(el, uri)) return new parser_1.List([new parser_1.Node(el)]);
   const [attrs, linkparams] = (0, html_1.attributes)('media', optspec, (0, util_1.unwrap)(params));
   (0, dom_1.define)(el, attrs);
   // Awaiting the generic support for attr().
   if (el.hasAttribute('aspect-ratio')) {
     el.style.aspectRatio = el.getAttribute('aspect-ratio');
   }
-  if (context.state & 8 /* State.link */) return new parser_1.List([new parser_1.Data(el)]);
-  if (cache && cache.tagName !== 'IMG') return new parser_1.List([new parser_1.Data(el)]);
-  return new parser_1.List([new parser_1.Data((0, dom_1.define)((0, link_1.parse)(new parser_1.List(), linkparams.reduce((acc, p) => acc.push(new parser_1.Data(p)) && acc, new parser_1.List([new parser_1.Data(INSECURE_URI)])), context), {
+  if (context.state & 8 /* State.link */) return new parser_1.List([new parser_1.Node(el)]);
+  if (cache && cache.tagName !== 'IMG') return new parser_1.List([new parser_1.Node(el)]);
+  return new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List(), linkparams.reduce((acc, p) => acc.push(new parser_1.Node(p)) && acc, new parser_1.List([new parser_1.Node(INSECURE_URI)])), context), {
     class: null,
     target: '_blank'
   }, [el]))]);
@@ -7568,7 +7637,7 @@ const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combina
   value: b
 }], [{
   value: c
-}]]) => b === 'x' ? new parser_1.List([new parser_1.Data(`width="${a}"`), new parser_1.Data(`height="${c}"`)]) : new parser_1.List([new parser_1.Data(`aspect-ratio="${a}/${c}"`)])), link_1.option]));
+}]]) => b === 'x' ? new parser_1.List([new parser_1.Node(`width="${a}"`), new parser_1.Node(`height="${c}"`)]) : new parser_1.List([new parser_1.Node(`aspect-ratio="${a}/${c}"`)])), link_1.option]));
 function sanitize(target, uri) {
   let type;
   let message;
@@ -7618,11 +7687,11 @@ const dom_1 = __webpack_require__(394);
 exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
   const {
     position,
-    range = 0,
-    linebreak = 0
+    range,
+    linebreak
   } = context;
   if (linebreak === 0) {
-    return new parser_1.List([new parser_1.Data((0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
+    return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
   } else {
     const head = position - range;
     (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head, 2);
@@ -7632,9 +7701,9 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
   const {
     source,
     position,
-    range = 0,
-    linebreak = 0,
-    state = 0
+    range,
+    linebreak,
+    state
   } = context;
   const head = position - range;
   if (source[position] !== ']') {
@@ -7643,7 +7712,7 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head, 2);
   } else {
     if (state & 128 /* State.annotation */) {
-      bs.push(new parser_1.Data(source[position]));
+      bs.push(new parser_1.Node(source[position]));
     }
     context.position += 1;
     let result;
@@ -7682,14 +7751,14 @@ const abbr = (0, combinator_1.surround)((0, source_1.str)('^'), (0, combinator_1
   const {
     source,
     position,
-    range = 0
+    range
   } = context;
-  if (!ns) return new parser_1.List([new parser_1.Data(''), new parser_1.Data(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);
+  if (!ns) return new parser_1.List([new parser_1.Node(''), new parser_1.Node(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);
   context.position += source[position] === ' ' ? 1 : 0;
-  return new parser_1.List([new parser_1.Data("\u001F" /* Command.Separator */), new parser_1.Data(ns.head.value.trimEnd())]);
+  return new parser_1.List([new parser_1.Node("\u001F" /* Command.Separator */), new parser_1.Node(ns.head.value.trimEnd())]);
 }, (_, context) => {
   context.position -= context.range;
-  return new parser_1.List([new parser_1.Data('')]);
+  return new parser_1.List([new parser_1.Node('')]);
 });
 function attributes(ns) {
   switch (ns.head.value) {
@@ -7730,7 +7799,7 @@ const inline_1 = __webpack_require__(7973);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.fallback)((0, combinator_1.surround)((0, source_1.str)(/\[%(?=[ \n])/y), (0, combinator_1.precedence)(3, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /[ \n]%\]/y, [[/[ \n]%\]/y, 3]]))), (0, combinator_1.close)(source_1.text, (0, source_1.str)(`%]`)), true, [], ([as, bs = new parser_1.List(), cs]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.fallback)((0, combinator_1.surround)((0, source_1.str)(/\[%(?=[ \n])/y), (0, combinator_1.precedence)(3, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), /[ \n]%\]/y, [[/[ \n]%\]/y, 3]]))), (0, combinator_1.close)(source_1.text, (0, source_1.str)(`%]`)), true, [], ([as, bs = new parser_1.List(), cs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'remark'
 }, [(0, dom_1.html)('input', {
   type: 'checkbox'
@@ -7738,7 +7807,7 @@ exports.remark = (0, combinator_1.lazy)(() => (0, combinator_1.fallback)((0, com
   context: {
     source
   }
-}) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('remark', 'syntax', 'Invalid start symbol')
 }, source))]))));
@@ -7776,23 +7845,23 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinato
   }
   switch (true) {
     case texts.length >= rubies.length:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)([...zip(texts, rubies)].reduce((acc, [{
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)([...zip(texts, rubies)].reduce((acc, [{
         value: text = ''
       } = {}, {
         value: ruby = ''
-      } = {}]) => acc.import(ruby ? new parser_1.List([new parser_1.Data(text), new parser_1.Data((0, dom_1.html)('rp', '(')), new parser_1.Data((0, dom_1.html)('rt', ruby)), new parser_1.Data((0, dom_1.html)('rp', ')'))]) : new parser_1.List([new parser_1.Data(text), new parser_1.Data((0, dom_1.html)('rt'))])), new parser_1.List())))))]);
+      } = {}]) => acc.import(ruby ? new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', ruby)), new parser_1.Node((0, dom_1.html)('rp', ')'))]) : new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rt'))])), new parser_1.List())))))]);
     case texts.length === 1 && [...texts.head.value].length >= rubies.length:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)([...zip(new parser_1.List([...texts.head.value].map(char => new parser_1.Data(char))), rubies)].reduce((acc, [{
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)([...zip(new parser_1.List([...texts.head.value].map(char => new parser_1.Node(char))), rubies)].reduce((acc, [{
         value: text = ''
       } = {}, {
         value: ruby = ''
-      } = {}]) => acc.import(ruby ? new parser_1.List([new parser_1.Data(text), new parser_1.Data((0, dom_1.html)('rp', '(')), new parser_1.Data((0, dom_1.html)('rt', ruby)), new parser_1.Data((0, dom_1.html)('rp', ')'))]) : new parser_1.List([new parser_1.Data(text), new parser_1.Data((0, dom_1.html)('rt'))])), new parser_1.List())))))]);
+      } = {}]) => acc.import(ruby ? new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', ruby)), new parser_1.Node((0, dom_1.html)('rp', ')'))]) : new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rt'))])), new parser_1.List())))))]);
     default:
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)(new parser_1.List([new parser_1.Data(texts.foldr(({
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)(new parser_1.List([new parser_1.Node(texts.foldr(({
         value
-      }, acc) => value + ' ' + acc, '').slice(0, -1)), new parser_1.Data((0, dom_1.html)('rp', '(')), new parser_1.Data((0, dom_1.html)('rt', rubies.foldr(({
+      }, acc) => value + ' ' + acc, '').slice(0, -1)), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', rubies.foldr(({
         value
-      }, acc) => value + ' ' + acc, '').trim())), new parser_1.Data((0, dom_1.html)('rp', ')'))])))))]);
+      }, acc) => value + ' ' + acc, '').trim())), new parser_1.Node((0, dom_1.html)('rp', ')'))])))))]);
   }
 }));
 const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\n/y;
@@ -7803,7 +7872,7 @@ const text = input => {
   const {
     source
   } = context;
-  const acc = new parser_1.List([new parser_1.Data('')]);
+  const acc = new parser_1.List([new parser_1.Node('')]);
   let state = false;
   context.sequential = true;
   for (let {
@@ -7822,7 +7891,7 @@ const text = input => {
         {
           if (source[position].trimStart() === '') {
             state ||= acc.last.value.trimStart() !== '';
-            acc.push(new parser_1.Data(''));
+            acc.push(new parser_1.Node(''));
             context.position += 1;
             continue;
           }
@@ -7885,7 +7954,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)(/\*\*(?!\*)/y), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([emphasis_1.emphasis, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))))), (0, source_1.str)('**'), false, [], ([, bs]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)(/\*\*(?!\*)/y), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.union)([emphasis_1.emphasis, (0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('*')), (0, combinator_1.open)((0, combinator_1.some)(inline_1.inline, '*'), inline_1.inline)]))))), (0, source_1.str)('**'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
 
 /***/ },
 
@@ -7904,9 +7973,9 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{{'), (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}}'), true, [], ([as, bs = new parser_1.List(), cs]) => new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{{'), (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}}'), true, [], ([as, bs = new parser_1.List(), cs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'template'
-}, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]), ([, bs], context) => bs && new parser_1.List([new parser_1.Data((0, dom_1.html)('span', {
+}, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]), ([, bs], context) => bs && new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('template', 'syntax', `Missing the closing symbol "}}"`)
 }, context.source.slice(context.position - context.range, context.position)))])));
@@ -8231,6 +8300,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
+const context_1 = __webpack_require__(8669);
 const combinator_1 = __webpack_require__(3484);
 const heading_1 = __webpack_require__(2778);
 const codeblock_1 = __webpack_require__(9194);
@@ -8269,10 +8339,10 @@ const parser = (0, combinator_1.union)([(0, combinator_1.some)(source_1.emptylin
 function* segment(source) {
   if (!validate(source, exports.MAX_INPUT_SIZE)) return yield `${"\u0007" /* Command.Error */}Too large input over ${exports.MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   for (let position = 0; position < source.length;) {
-    const context = {
+    const context = new context_1.Context({
       source,
       position
-    };
+    });
     const result = parser({
       context
     });
@@ -8396,31 +8466,31 @@ const escsource = ({
     case "\u001B" /* Command.Escape */:
       (0, combinator_1.consume)(1, context);
       context.position += 1;
-      return new parser_1.List([new parser_1.Data(source.slice(position + 1, position + 2))]);
+      return new parser_1.List([new parser_1.Node(source.slice(position + 1, position + 2))]);
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return new parser_1.List([new parser_1.Data(char)]);
+          return new parser_1.List([new parser_1.Node(char)]);
         case '\n':
-          return new parser_1.List([new parser_1.Data(char)]);
+          return new parser_1.List([new parser_1.Node(char)]);
         default:
           (0, combinator_1.consume)(1, context);
           context.position += 1;
-          return new parser_1.List([new parser_1.Data(source.slice(position, position + 2))]);
+          return new parser_1.List([new parser_1.Node(source.slice(position, position + 2))]);
       }
     case '\r':
       (0, combinator_1.consume)(-1, context);
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('br'))]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'))]);
     default:
-      if (context.sequential) return new parser_1.List([new parser_1.Data(char)]);
+      if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       let i = (0, text_1.next)(source, position, delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
-      return new parser_1.List([new parser_1.Data(source.slice(position, context.position))]);
+      return new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
 };
 exports.escsource = escsource;
@@ -8520,7 +8590,7 @@ function strs(pattern) {
       acc += pattern;
       context.position += pattern.length;
     }
-    return new parser_1.List([new parser_1.Data(acc)]);
+    return new parser_1.List([new parser_1.Node(acc)]);
   };
 }
 exports.strs = strs;
@@ -8565,16 +8635,16 @@ const text = input => {
         default:
           (0, combinator_1.consume)(1, context);
           context.position += 1;
-          return new parser_1.List([new parser_1.Data(source.slice(position + 1, context.position))]);
+          return new parser_1.List([new parser_1.Node(source.slice(position + 1, context.position))]);
       }
     case '\r':
       (0, combinator_1.consume)(-1, context);
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('br'))]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'))]);
     default:
-      if (context.sequential) return new parser_1.List([new parser_1.Data(char)]);
+      if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       exports.nonWhitespace.lastIndex = position + 1;
       const s = canSkip(source, position);
       let i = s ? exports.nonWhitespace.test(source) ? exports.nonWhitespace.lastIndex - 1 : source.length : next(source, position);
@@ -8584,7 +8654,7 @@ const text = input => {
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      return position === context.position || s && !linestart || lineend ? new parser_1.List() : new parser_1.List([new parser_1.Data(source.slice(position, context.position))]);
+      return position === context.position || s && !linestart || lineend ? new parser_1.List() : new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
 };
 exports.text = text;
@@ -8843,20 +8913,20 @@ const unescsource = ({
     case "\u001B" /* Command.Escape */:
       (0, combinator_1.consume)(1, context);
       context.position += 1;
-      return new parser_1.List([new parser_1.Data(source.slice(position + 1, position + 2))]);
+      return new parser_1.List([new parser_1.Node(source.slice(position + 1, position + 2))]);
     case '\r':
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Data((0, dom_1.html)('br'))]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'))]);
     default:
-      if (context.sequential) return new parser_1.List([new parser_1.Data(char)]);
+      if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       text_1.nonWhitespace.lastIndex = position + 1;
       let i = (0, text_1.canSkip)(source, position) ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : (0, text_1.next)(source, position, exports.delimiter);
       i -= position;
       (0, combinator_1.consume)(i - 1, context);
       context.position += i - 1;
-      return new parser_1.List([new parser_1.Data(source.slice(position, context.position))]);
+      return new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
 };
 exports.unescsource = unescsource;
@@ -8873,8 +8943,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.unwrap = void 0;
-const alias_1 = __webpack_require__(5413);
 const parser_1 = __webpack_require__(605);
+const alias_1 = __webpack_require__(5413);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
   if (nodes === undefined) return;
@@ -8886,7 +8956,7 @@ exports.unwrap = unwrap;
 function repeat(symbol, parser, cons, termination = (nodes, context, prefix, postfix) => {
   const acc = new parser_1.List();
   if (prefix > 0) {
-    acc.push(new parser_1.Data(symbol[0].repeat(prefix)));
+    acc.push(new parser_1.Node(symbol[0].repeat(prefix)));
   }
   acc.import(nodes);
   if (postfix > 0) {
@@ -8894,7 +8964,7 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
       source,
       position
     } = context;
-    acc.push(new parser_1.Data(source.slice(position, position + postfix)));
+    acc.push(new parser_1.Node(source.slice(position, position + postfix)));
     context.position += postfix;
   }
   return acc;
@@ -9633,11 +9703,12 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.quote = void 0;
 const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(8669);
 const cite_1 = __webpack_require__(1200);
 function quote(anchor, range) {
   const {
     context
-  } = (0, parser_1.input)('', {});
+  } = (0, parser_1.input)('', new context_1.Context());
   (0, cite_1.cite)((0, parser_1.input)(`>>${anchor}`, context));
   if (context.position !== context.source.length) throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
