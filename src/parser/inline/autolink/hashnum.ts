@@ -13,7 +13,7 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => constraint(State
       /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     str(new RegExp([
-      /[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
+      /[0-9]{1,9}(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu')),
     '',
     false,

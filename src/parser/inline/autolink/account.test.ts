@@ -25,6 +25,7 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser, input('@@@a', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('@#', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('@#a', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('@a_b', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('@a.b:c', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('@a.domain.com:b', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('@http://host', new Context())), undefined);
@@ -34,11 +35,10 @@ describe('Unit: parser/inline/autolink/account', () => {
     it('valid', () => {
       assert.deepStrictEqual(inspect(parser, input('@a', new Context())), [['<a class="account" href="/@a">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('@A', new Context())), [['<a class="account" href="/@A">@A</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('@a_b', new Context())), [['<a class="account" href="/@a">@a</a>'], '_b']);
-      assert.deepStrictEqual(inspect(parser, input('@a__b', new Context())), [['<a class="account" href="/@a">@a</a>'], '__b']);
       assert.deepStrictEqual(inspect(parser, input('@a-', new Context())), [['<a class="account" href="/@a">@a</a>'], '-']);
       assert.deepStrictEqual(inspect(parser, input('@a-b', new Context())), [['<a class="account" href="/@a-b">@a-b</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('@a--b', new Context())), [['<a class="account" href="/@a">@a</a>'], '--b']);
+      assert.deepStrictEqual(inspect(parser, input('@a_', new Context())), [['<a class="account" href="/@a">@a</a>'], '_']);
       assert.deepStrictEqual(inspect(parser, input('@a.', new Context())), [['<a class="account" href="/@a">@a</a>'], '.']);
       assert.deepStrictEqual(inspect(parser, input('@a.domain.com', new Context())), [['<a class="account" href="/@a.domain.com">@a.domain.com</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('@domain/a', new Context())), [['<a class="account" href="https://domain/@a" target="_blank">@domain/a</a>'], '']);

@@ -26,6 +26,7 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser, input('a__b@c', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('a..b@c', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('a++b@c', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('a@b_c', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('a@b.c:d', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('a@b.domain.com:c', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('a@http://host', new Context())), undefined);
@@ -38,11 +39,10 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser, input('a@A', new Context())), [['<a class="email" href="mailto:a@A">a@A</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a@b+', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '+']);
       assert.deepStrictEqual(inspect(parser, input('a@b+c', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '+c']);
-      assert.deepStrictEqual(inspect(parser, input('a@b_', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '_']);
-      assert.deepStrictEqual(inspect(parser, input('a@b_c', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '_c']);
       assert.deepStrictEqual(inspect(parser, input('a@b-', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '-']);
       assert.deepStrictEqual(inspect(parser, input('a@b-c', new Context())), [['<a class="email" href="mailto:a@b-c">a@b-c</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a@b--c', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '--c']);
+      assert.deepStrictEqual(inspect(parser, input('a@b_', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '_']);
       assert.deepStrictEqual(inspect(parser, input('a@b.', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '.']);
       assert.deepStrictEqual(inspect(parser, input('a@b.c', new Context())), [['<a class="email" href="mailto:a@b.c">a@b.c</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a@b..c', new Context())), [['<a class="email" href="mailto:a@b">a@b</a>'], '..c']);

@@ -22,7 +22,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State
       ].join('|').replace(/emoji/g, emoji.source), 'yu')),
       ([{ value }]) => /^[0-9]{0,4}[^0-9]/.test(value)),
     new RegExp([
-      /(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
+      /(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     false,
     [3 | Backtrack.unescapable],

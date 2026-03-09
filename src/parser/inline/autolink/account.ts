@@ -15,7 +15,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
     surround(
       /(?<![0-9a-z])@/yi,
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
-      str(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![.-]?[0-9a-z@]|>>|:\S)/yi),
+      str(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![_.-]?[0-9a-z@]|>>|:\S)/yi),
       false,
       [3 | Backtrack.unescapable]),
     some(surround(
@@ -26,7 +26,7 @@ export const account: AutolinkParser.AccountParser = lazy(() => constraint(State
         ].join('|').replace(/emoji/g, emoji.source), 'yu')),
         ([{ value }]) => /^[0-9]{0,4}[^0-9]/.test(value)),
       new RegExp([
-        /(?![0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
+        /(?![_.-]?[0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
       ].join('|').replace(/emoji/g, emoji.source), 'yu'),
       false,
       [3 | Backtrack.unescapable])),
