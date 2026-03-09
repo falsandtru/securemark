@@ -1,8 +1,10 @@
-import { Result, Context } from './combinator/data/parser';
+import { Parser, Input } from './combinator/data/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
-export function inspect(result: Result<DocumentFragment | HTMLElement | string>, ctx: Context, until: number | string = Infinity): [string[], string] | undefined {
+export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>, input: Input, until: number | string = Infinity): [string[], string] | undefined {
+  const { context } = input;
+  const result = parser(input);
   return result && [
     result.foldl<string[]>((acc, { value: node }) => {
       assert(node);
@@ -34,7 +36,7 @@ export function inspect(result: Result<DocumentFragment | HTMLElement | string>,
       }
       return acc.push(normalize(node.outerHTML.slice(0, until))), acc;
     }, []),
-    ctx.source.slice(ctx.position),
+    context.source.slice(context.position),
   ];
 }
 

@@ -6,27 +6,26 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/pagebreak', () => {
   describe('pagebreak', () => {
-    const parser = (source: string) => some(pagebreak)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(pagebreak);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('\n'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('='), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('=='), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('==\n='), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('===a'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('===\na'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('= = ='), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(' ==='), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('---'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('\n', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('=', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('==', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('==\n=', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('===a', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('===\na', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('= = =', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input(' ===', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('---', new Context())), undefined);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('==='), ctx), [['<hr>'], '']);
-      assert.deepStrictEqual(inspect(parser('=== '), ctx), [['<hr>'], '']);
-      assert.deepStrictEqual(inspect(parser('===\n'), ctx), [['<hr>'], '']);
-      assert.deepStrictEqual(inspect(parser('===='), ctx), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('===', new Context())), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('=== ', new Context())), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('===\n', new Context())), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('====', new Context())), [['<hr>'], '']);
     });
 
   });

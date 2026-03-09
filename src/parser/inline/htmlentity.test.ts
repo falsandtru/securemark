@@ -6,49 +6,48 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/htmlentity', () => {
   describe('htmlentity', () => {
-    const parser = (source: string) => some(htmlentity)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(htmlentity);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('&'), ctx), [['&'], '']);
-      assert.deepStrictEqual(inspect(parser('&amp'), ctx), [['&amp'], '']);
-      assert.deepStrictEqual(inspect(parser('&;'), ctx), [['&'], ';']);
-      assert.deepStrictEqual(inspect(parser('& ;'), ctx), [['&'], ' ;']);
-      assert.deepStrictEqual(inspect(parser('&\n;'), ctx), [['&'], '\n;']);
-      assert.deepStrictEqual(inspect(parser('&a;'), ctx), [['<span class="invalid">&amp;a;</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('&#;'), ctx), [['&'], '#;']);
-      assert.deepStrictEqual(inspect(parser('&#g;'), ctx), [['&'], '#g;']);
-      assert.deepStrictEqual(inspect(parser('&#x;'), ctx), [['&'], '#x;']);
-      assert.deepStrictEqual(inspect(parser('&#-1;'), ctx), [['&'], '#-1;']);
-      assert.deepStrictEqual(inspect(parser('&&amp;;'), ctx), [['&', '&'], ';']);
-      assert.deepStrictEqual(inspect(parser('&*&amp*'), ctx), [['&'], '*&amp*']);
-      assert.deepStrictEqual(inspect(parser('&<;'), ctx), [['&'], '<;']);
-      assert.deepStrictEqual(inspect(parser('&<>;'), ctx), [['&'], '<>;']);
-      assert.deepStrictEqual(inspect(parser('&>;'), ctx), [['&'], '>;']);
-      assert.deepStrictEqual(inspect(parser('&#35;'), ctx), [['&'], '#35;']);
-      assert.deepStrictEqual(inspect(parser('&#1234;'), ctx), [['&'], '#1234;']);
-      assert.deepStrictEqual(inspect(parser('&#992;'), ctx), [['&'], '#992;']);
-      assert.deepStrictEqual(inspect(parser('&#98765432;'), ctx), [['&'], '#98765432;']);
-      assert.deepStrictEqual(inspect(parser('&#0;'), ctx), [['&'], '#0;']);
-      assert.deepStrictEqual(inspect(parser('&#X22;'), ctx), [['&'], '#X22;']);
-      assert.deepStrictEqual(inspect(parser('&#XD06;'), ctx), [['&'], '#XD06;']);
-      assert.deepStrictEqual(inspect(parser('&#xcab;'), ctx), [['&'], '#xcab;']);
-      assert.deepStrictEqual(inspect(parser(' &amp;'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('&', new Context())), [['&'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&amp', new Context())), [['&amp'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&;', new Context())), [['&'], ';']);
+      assert.deepStrictEqual(inspect(parser, input('& ;', new Context())), [['&'], ' ;']);
+      assert.deepStrictEqual(inspect(parser, input('&\n;', new Context())), [['&'], '\n;']);
+      assert.deepStrictEqual(inspect(parser, input('&a;', new Context())), [['<span class="invalid">&amp;a;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&#;', new Context())), [['&'], '#;']);
+      assert.deepStrictEqual(inspect(parser, input('&#g;', new Context())), [['&'], '#g;']);
+      assert.deepStrictEqual(inspect(parser, input('&#x;', new Context())), [['&'], '#x;']);
+      assert.deepStrictEqual(inspect(parser, input('&#-1;', new Context())), [['&'], '#-1;']);
+      assert.deepStrictEqual(inspect(parser, input('&&amp;;', new Context())), [['&', '&'], ';']);
+      assert.deepStrictEqual(inspect(parser, input('&*&amp*', new Context())), [['&'], '*&amp*']);
+      assert.deepStrictEqual(inspect(parser, input('&<;', new Context())), [['&'], '<;']);
+      assert.deepStrictEqual(inspect(parser, input('&<>;', new Context())), [['&'], '<>;']);
+      assert.deepStrictEqual(inspect(parser, input('&>;', new Context())), [['&'], '>;']);
+      assert.deepStrictEqual(inspect(parser, input('&#35;', new Context())), [['&'], '#35;']);
+      assert.deepStrictEqual(inspect(parser, input('&#1234;', new Context())), [['&'], '#1234;']);
+      assert.deepStrictEqual(inspect(parser, input('&#992;', new Context())), [['&'], '#992;']);
+      assert.deepStrictEqual(inspect(parser, input('&#98765432;', new Context())), [['&'], '#98765432;']);
+      assert.deepStrictEqual(inspect(parser, input('&#0;', new Context())), [['&'], '#0;']);
+      assert.deepStrictEqual(inspect(parser, input('&#X22;', new Context())), [['&'], '#X22;']);
+      assert.deepStrictEqual(inspect(parser, input('&#XD06;', new Context())), [['&'], '#XD06;']);
+      assert.deepStrictEqual(inspect(parser, input('&#xcab;', new Context())), [['&'], '#xcab;']);
+      assert.deepStrictEqual(inspect(parser, input(' &amp;', new Context())), undefined);
     });
 
     it('entity', () => {
-      assert.deepStrictEqual(inspect(parser('&NewLine;'), ctx), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('&nbsp;'), ctx), [['\u00A0'], '']);
-      assert.deepStrictEqual(inspect(parser('&amp;'), ctx), [['&'], '']);
-      assert.deepStrictEqual(inspect(parser('&copy;'), ctx), [['©'], '']);
-      assert.deepStrictEqual(inspect(parser('&AElig;'), ctx), [['Æ'], '']);
-      assert.deepStrictEqual(inspect(parser('&Dcaron;'), ctx), [['Ď'], '']);
-      assert.deepStrictEqual(inspect(parser('&frac34;'), ctx), [['¾'], '']);
-      assert.deepStrictEqual(inspect(parser('&HilbertSpace;'), ctx), [['ℋ'], '']);
-      assert.deepStrictEqual(inspect(parser('&DifferentialD;'), ctx), [['ⅆ'], '']);
-      assert.deepStrictEqual(inspect(parser('&ClockwiseContourIntegral;'), ctx), [['∲'], '']);
-      assert.deepStrictEqual(inspect(parser('&ngE;'), ctx), [['≧̸'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&NewLine;', new Context())), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser, input('&nbsp;', new Context())), [['\u00A0'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&amp;', new Context())), [['&'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&copy;', new Context())), [['©'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&AElig;', new Context())), [['Æ'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&Dcaron;', new Context())), [['Ď'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&frac34;', new Context())), [['¾'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&HilbertSpace;', new Context())), [['ℋ'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&DifferentialD;', new Context())), [['ⅆ'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&ClockwiseContourIntegral;', new Context())), [['∲'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&ngE;', new Context())), [['≧̸'], '']);
     });
 
   });

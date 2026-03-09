@@ -6,42 +6,41 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/insertion', () => {
   describe('insertion', () => {
-    const parser = (source: string) => some(insertion)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(insertion);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('+'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('++'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('++a'), ctx), [['++', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('++a+'), ctx), [['++', 'a+'], '']);
-      assert.deepStrictEqual(inspect(parser(' ++a++'), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('+', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('++', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('++a', new Context())), [['++', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a+', new Context())), [['++', 'a+'], '']);
+      assert.deepStrictEqual(inspect(parser, input(' ++a++', new Context())), undefined);
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('++a++'), ctx), [['<ins>a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a+b++'), ctx), [['<ins>a+b</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++ ++'), ctx), [['<ins> </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++ a++'), ctx), [['<ins> a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++ a ++'), ctx), [['<ins> a </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++  a  ++'), ctx), [['<ins> a </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++\na++'), ctx), [['<ins><br>a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++\\\na++'), ctx), [['<ins><br>a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++<wbr>a++'), ctx), [['<ins><wbr>a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a ++'), ctx), [['<ins>a </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a \n ++'), ctx), [['<ins>a </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\n++'), ctx), [['<ins>a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\n ++'), ctx), [['<ins>a </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\n<wbr>++'), ctx), [['<ins>a<wbr></ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\nb++'), ctx), [['<ins>a<br>b</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\\\nb++'), ctx), [['<ins>a<br>b</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++\\+++'), ctx), [['<ins>+</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a+++'), ctx), [['<ins>a</ins>'], '+']);
+      assert.deepStrictEqual(inspect(parser, input('++a++', new Context())), [['<ins>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a+b++', new Context())), [['<ins>a+b</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++ ++', new Context())), [['<ins> </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++ a++', new Context())), [['<ins> a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++ a ++', new Context())), [['<ins> a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++  a  ++', new Context())), [['<ins> a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++\na++', new Context())), [['<ins><br>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++\\\na++', new Context())), [['<ins><br>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++<wbr>a++', new Context())), [['<ins><wbr>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a ++', new Context())), [['<ins>a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a \n ++', new Context())), [['<ins>a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a\n++', new Context())), [['<ins>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a\n ++', new Context())), [['<ins>a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a\n<wbr>++', new Context())), [['<ins>a<wbr></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a\nb++', new Context())), [['<ins>a<br>b</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a\\\nb++', new Context())), [['<ins>a<br>b</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++\\+++', new Context())), [['<ins>+</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++a+++', new Context())), [['<ins>a</ins>'], '+']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('++*++a++*++'), ctx), [['<ins><em><ins>a</ins></em></ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++*~~a~~*++'), ctx), [['<ins><em><del>a</del></em></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++*++a++*++', new Context())), [['<ins><em><ins>a</ins></em></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('++*~~a~~*++', new Context())), [['<ins><em><del>a</del></em></ins>'], '']);
     });
 
   });

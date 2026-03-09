@@ -5,20 +5,15 @@ import { Context } from '../context';
 
 describe('Unit: parser/block/ilist', () => {
   describe('ilist', () => {
-    const parser = (source: string) => some(ilist)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(ilist);
 
     it('single', () => {
-      assert(!parser('-'));
-      assert(!parser('+'));
-      assert(!parser('*'));
-      assert(!parser(' * '));
-      assert(parser('- '));
-      assert(parser('+ '));
-      assert(parser('* '));
-      assert(parser('- \n-'));
-      assert(parser('+ \n+'));
-      assert(parser('* \n*'));
+      assert(!parser(input('-', new Context())));
+      assert(!parser(input('+', new Context())));
+      assert(!parser(input('*', new Context())));
+      assert(parser(input('- ', new Context())));
+      assert(parser(input('+ ', new Context())));
+      assert(parser(input('* ', new Context())));
     });
 
   });

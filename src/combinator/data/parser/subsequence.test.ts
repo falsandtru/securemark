@@ -20,21 +20,20 @@ describe('Unit: combinator/data/parser/subsequence', () => {
         : undefined;
     };
     const abc = subsequence<Parser<string, Context, [typeof a, typeof b, typeof c]>>([a, b, c]);
-    const { context: ctx } = input('', new Context());
 
     it('basic', () => {
       const parser = abc;
-      assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(input('a', ctx)), ctx), [['A'], '']);
-      assert.deepStrictEqual(inspect(parser(input('b', ctx)), ctx), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('c', ctx)), ctx), [['C'], '']);
-      assert.deepStrictEqual(inspect(parser(input('ab', ctx)), ctx), [['A', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('ba', ctx)), ctx), [['B'], 'a']);
-      assert.deepStrictEqual(inspect(parser(input('aab', ctx)), ctx), [['A'], 'ab']);
-      assert.deepStrictEqual(inspect(parser(input('abb', ctx)), ctx), [['A', 'B'], 'b']);
-      assert.deepStrictEqual(inspect(parser(input('bba', ctx)), ctx), [['B'], 'ba']);
-      assert.deepStrictEqual(inspect(parser(input('ac', ctx)), ctx), [['A', 'C'], '']);
-      assert.deepStrictEqual(inspect(parser(input('bc', ctx)), ctx), [['B', 'C'], '']);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('a', new Context())), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser, input('b', new Context())), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser, input('c', new Context())), [['C'], '']);
+      assert.deepStrictEqual(inspect(parser, input('ab', new Context())), [['A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser, input('ba', new Context())), [['B'], 'a']);
+      assert.deepStrictEqual(inspect(parser, input('aab', new Context())), [['A'], 'ab']);
+      assert.deepStrictEqual(inspect(parser, input('abb', new Context())), [['A', 'B'], 'b']);
+      assert.deepStrictEqual(inspect(parser, input('bba', new Context())), [['B'], 'ba']);
+      assert.deepStrictEqual(inspect(parser, input('ac', new Context())), [['A', 'C'], '']);
+      assert.deepStrictEqual(inspect(parser, input('bc', new Context())), [['B', 'C'], '']);
     });
 
   });

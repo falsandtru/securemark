@@ -5,24 +5,23 @@ import { Context } from '../../context';
 
 describe('Unit: parser/block/extension/placeholder', () => {
   describe('placeholder', () => {
-    const parser = (source: string) => some(placeholder)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(placeholder);
 
     it('invalid', () => {
-      assert(!parser(''));
-      assert(!parser('\n'));
-      assert(!parser('~~~'));
-      assert(!parser('~~~\n'));
-      assert(!parser('~~~a ~~~\n~~~'));
+      assert(!parser(input('', new Context())));
+      assert(!parser(input('\n', new Context())));
+      assert(!parser(input('~~~', new Context())));
+      assert(!parser(input('~~~\n', new Context())));
+      assert(!parser(input('~~~a ~~~\n~~~', new Context())));
     });
 
     it('valid', () => {
-      assert(parser('~~~\n~~~'));
-      assert(parser('~~~a\n~~~'));
-      assert(parser('~~~a \n~~~'));
-      assert(parser('~~~a b \n~~~'));
-      assert(parser('~~~~a\n~~~~'));
-      assert(parser('~~~~a\n~~~~\n'));
+      assert(parser(input('~~~\n~~~', new Context())));
+      assert(parser(input('~~~a\n~~~', new Context())));
+      assert(parser(input('~~~a \n~~~', new Context())));
+      assert(parser(input('~~~a b \n~~~', new Context())));
+      assert(parser(input('~~~~a\n~~~~', new Context())));
+      assert(parser(input('~~~~a\n~~~~\n', new Context())));
     });
 
   });

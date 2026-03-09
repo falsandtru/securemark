@@ -4,18 +4,16 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/line', () => {
   describe('line', () => {
-    const { context: ctx } = input('', new Context());
-
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(line(_ => new List<Node<string>>())(input('', ctx)), ctx), undefined);
+      assert.deepStrictEqual(inspect(line(_ => new List<Node<string>>()), input('', new Context())), undefined);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); })(input(' ', ctx)), ctx), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); })(input('\n', ctx)), ctx), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); })(input('\n\n', ctx)), ctx), [[], '\n']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); })(input(' \n', ctx)), ctx), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length - 1; return new List<Node<string>>(); })(input(' \n', ctx)), ctx), [[], '']);
+      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input(' ', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n\n', new Context())), [[], '\n']);
+      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length - 1; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
     });
 
   });

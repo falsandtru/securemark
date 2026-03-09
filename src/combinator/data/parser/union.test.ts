@@ -15,18 +15,17 @@ describe('Unit: combinator/data/parser/union', () => {
         : undefined;
     };
     const ab = union<Parser<string, Context, [typeof a, typeof b]>>([a, b]);
-    const { context: ctx } = input('', new Context());
 
     it('basic', () => {
       const parser = ab;
-      assert.deepStrictEqual(inspect(parser(input('', ctx)), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser(input('a', ctx)), ctx), [['A'], '']);
-      assert.deepStrictEqual(inspect(parser(input('b', ctx)), ctx), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser(input('ab', ctx)), ctx), [['A'], 'b']);
-      assert.deepStrictEqual(inspect(parser(input('ba', ctx)), ctx), [['B'], 'a']);
-      assert.deepStrictEqual(inspect(parser(input('aab', ctx)), ctx), [['A'], 'ab']);
-      assert.deepStrictEqual(inspect(parser(input('abb', ctx)), ctx), [['A'], 'bb']);
-      assert.deepStrictEqual(inspect(parser(input('bba', ctx)), ctx), [['B'], 'ba']);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('a', new Context())), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser, input('b', new Context())), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser, input('ab', new Context())), [['A'], 'b']);
+      assert.deepStrictEqual(inspect(parser, input('ba', new Context())), [['B'], 'a']);
+      assert.deepStrictEqual(inspect(parser, input('aab', new Context())), [['A'], 'ab']);
+      assert.deepStrictEqual(inspect(parser, input('abb', new Context())), [['A'], 'bb']);
+      assert.deepStrictEqual(inspect(parser, input('bba', new Context())), [['B'], 'ba']);
     });
 
   });

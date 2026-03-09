@@ -6,25 +6,24 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/message', () => {
   describe('message', () => {
-    const parser = (source: string) => some(message)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(message);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~message\n~~~'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~message/\n~~~'), ctx), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~message/a\n~~~'), ctx), [['<pre class="invalid" translate="no">~~~message/a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note a\n~~~'), ctx), [['<pre class="invalid" translate="no">~~~message/note a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~message/note\n0${'\n'.repeat(301)}~~~`), ctx, '>'), [['<pre class="invalid" translate="no">'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message\n~~~', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/\n~~~', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/a\n~~~', new Context())), [['<pre class="invalid" translate="no">~~~message/a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note a\n~~~', new Context())), [['<pre class="invalid" translate="no">~~~message/note a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser, input(`~~~message/note\n0${'\n'.repeat(301)}~~~`, new Context()), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n~~~'), ctx), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n\n~~~'), ctx), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n~~~'), ctx), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\na\n\n- \n~~~'), ctx), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p><ul><li></li></ul></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note\n# a\n~~~'), ctx), [['<section class="message" data-type="note"><h1>Note</h1><p># a</p></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/caution\n~~~'), ctx), [['<section class="message" data-type="caution"><h1>Caution!</h1></section>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/warning\n~~~'), ctx), [['<section class="message" data-type="warning"><h1>WARNING!!</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note\n~~~', new Context())), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note\n\n~~~', new Context())), [['<section class="message" data-type="note"><h1>Note</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note\na\n~~~', new Context())), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note\na\n\n- \n~~~', new Context())), [['<section class="message" data-type="note"><h1>Note</h1><p>a</p><ul><li></li></ul></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/note\n# a\n~~~', new Context())), [['<section class="message" data-type="note"><h1>Note</h1><p># a</p></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/caution\n~~~', new Context())), [['<section class="message" data-type="caution"><h1>Caution!</h1></section>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~message/warning\n~~~', new Context())), [['<section class="message" data-type="warning"><h1>WARNING!!</h1></section>'], '']);
     });
 
   });

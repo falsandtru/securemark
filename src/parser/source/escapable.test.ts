@@ -6,44 +6,43 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/escsource', () => {
   describe('escsource', () => {
-    const parser = (source: string) => some(escsource)(input(source, ctx));
-    const { context: ctx } = input('', new Context());
+    const parser = some(escsource);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser(''), ctx), undefined);
+      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('a'), ctx), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser('ab'), ctx), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser('a b c'), ctx), [['a b c'], '']);
-      assert.deepStrictEqual(inspect(parser('09あいAZaz'), ctx), [['09あいAZaz'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a', new Context())), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser, input('ab', new Context())), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a b c', new Context())), [['a b c'], '']);
+      assert.deepStrictEqual(inspect(parser, input('09あいAZaz', new Context())), [['09あいAZaz'], '']);
     });
 
     it('space', () => {
-      assert.deepStrictEqual(inspect(parser(' '), ctx), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('  '), ctx), [['  '], '']);
-      assert.deepStrictEqual(inspect(parser('   '), ctx), [['   '], '']);
-      assert.deepStrictEqual(inspect(parser(' \n'), ctx), [[' ', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('  \n'), ctx), [['  ', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('   \n'), ctx), [['   ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input(' ', new Context())), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser, input('  ', new Context())), [['  '], '']);
+      assert.deepStrictEqual(inspect(parser, input('   ', new Context())), [['   '], '']);
+      assert.deepStrictEqual(inspect(parser, input(' \n', new Context())), [[' ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('  \n', new Context())), [['  ', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('   \n', new Context())), [['   ', '<br>'], '']);
     });
 
     it('linebreak', () => {
-      assert.deepStrictEqual(inspect(parser('\n\n'), ctx), [['<br>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\n\n', new Context())), [['<br>', '<br>'], '']);
     });
 
     it('\\', () => {
-      assert.deepStrictEqual(inspect(parser('\\'), ctx), [['\\'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\\'), ctx), [['\\\\'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\\\\'), ctx), [['\\\\', '\\'], '']);
-      assert.deepStrictEqual(inspect(parser('\\ '), ctx), [['\\ '], '']);
-      assert.deepStrictEqual(inspect(parser('\\_'), ctx), [['\\_'], '']);
-      assert.deepStrictEqual(inspect(parser('\\0'), ctx), [['\\0'], '']);
-      assert.deepStrictEqual(inspect(parser('\\a'), ctx), [['\\a'], '']);
-      assert.deepStrictEqual(inspect(parser('\\$'), ctx), [['\\$'], '']);
-      assert.deepStrictEqual(inspect(parser('\\　'), ctx), [['\\　'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\n'), ctx), [['\\', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\', new Context())), [['\\'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\\\', new Context())), [['\\\\'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\\\\\', new Context())), [['\\\\', '\\'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\ ', new Context())), [['\\ '], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\_', new Context())), [['\\_'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\0', new Context())), [['\\0'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\a', new Context())), [['\\a'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\$', new Context())), [['\\$'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\　', new Context())), [['\\　'], '']);
+      assert.deepStrictEqual(inspect(parser, input('\\\n', new Context())), [['\\', '<br>'], '']);
     });
 
   });
