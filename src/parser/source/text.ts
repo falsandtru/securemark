@@ -152,7 +152,7 @@ export function backToUrlHead(source: string, position: number, index: number): 
     }
     break;
   }
-  return index === position
+  return index === position || source[index] !== 'h'
     ? delim
     : index;
 }
