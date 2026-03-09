@@ -1,5 +1,5 @@
 import { List } from './data';
-import { Delimiters } from './parser/context/delimiter';
+import { Delimiters } from './delimiter';
 
 export type Parser<N = unknown, C extends Context = Context, D extends Parser<unknown, C>[] = any>
   = (input: Input<C>) => Result<N, C, D>;

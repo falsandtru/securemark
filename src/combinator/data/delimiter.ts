@@ -1,5 +1,5 @@
-import { Input, Context } from '../../parser';
-import { matcher } from '../../../../combinator';
+import { Input, Context } from './parser';
+import { matcher } from '../../combinator';
 
 interface Delimiter {
   readonly memory: Delimiter[];

@@ -1,5 +1,5 @@
 import { Parser, List, Node } from '../parser';
-import { Delimiters } from './context/delimiter';
+import { Delimiters } from '../delimiter';
 
 type DelimiterOption = readonly [delimiter: string | RegExp, precedence: number];
 
