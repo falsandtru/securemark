@@ -6630,7 +6630,6 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     } else if (source[position] !== '{') {
       (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     } else {
-      context.state ^= 8 /* State.link */;
       if (!(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) && !(0, link_1.textlink)({
         context
       })) {
@@ -6638,7 +6637,6 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
       }
       context.position = position;
       context.range = range;
-      context.state ^= 8 /* State.link */;
     }
   }
   return as.import(bs).import(cs);
@@ -6907,19 +6905,14 @@ const dom_1 = __webpack_require__(394);
 exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.tightStart)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   'data-index': dataindex(bs)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]) : undefined, undefined)), ns => {
-  if (ns.length === 1) {
-    const el = ns.head.value;
-    return new parser_1.List([new parser_1.Node((0, dom_1.define)(el, {
-      id: el.id ? null : undefined,
-      class: 'index',
-      href: el.id ? `#${el.id}` : undefined
-    }))]);
-  } else {
-    ns.pop();
-    return ns;
-  }
+  const el = ns.head.value;
+  return new parser_1.List([new parser_1.Node((0, dom_1.define)(el, {
+    id: el.id ? null : undefined,
+    class: 'index',
+    href: el.id ? `#${el.id}` : undefined
+  }))]);
 })));
-exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.some)(source_1.txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y)]), ']'), /(?=])/y, false, [3 | 16 /* Backtrack.escapable */], ([, ns], context) => {
+exports.signature = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('|', (0, combinator_1.surround)((0, source_1.str)(/\|(?!\\?\s)/y), (0, combinator_1.precedence)(9, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, (0, combinator_1.some)(source_1.txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y)]), ']')), /(?=])/y, false, [3 | 16 /* Backtrack.escapable */], ([, ns], context) => {
   const index = (0, indexee_1.identity)('index', undefined, ns.foldl((acc, {
     value
   }) => acc + value, ''))?.slice(7);
@@ -7374,13 +7367,13 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns.push(new parser_1.Node("\u001F" /* Command.Separator */)) && ns;
-})),
+})))),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
 (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
@@ -7388,6 +7381,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
 }, {
   value: params = undefined
 } = {}], context) => {
+  if (context.state & 8 /* State.link */) return new parser_1.List([new parser_1.Node(context.source.slice(context.position - context.range, context.position))]);
   if (content.last.value === "\u001F" /* Command.Separator */) {
     content.pop();
     if (params === undefined) {
@@ -7407,7 +7401,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
   }
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
   return new parser_1.List([new parser_1.Node(parse(content, params, context))]);
-})))));
+}));
 exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y))]), ([{
   value: content
 }, {
@@ -7857,11 +7851,11 @@ exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinato
         value: ruby = ''
       } = {}]) => acc.import(ruby ? new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', ruby)), new parser_1.Node((0, dom_1.html)('rp', ')'))]) : new parser_1.List([new parser_1.Node(text), new parser_1.Node((0, dom_1.html)('rt'))])), new parser_1.List())))))]);
     default:
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)(new parser_1.List([new parser_1.Node(texts.foldr(({
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('ruby', (0, dom_1.defrag)((0, util_1.unwrap)(new parser_1.List([new parser_1.Node(texts.foldl((acc, {
         value
-      }, acc) => value + ' ' + acc, '').slice(0, -1)), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', rubies.foldr(({
+      }) => acc ? acc + ' ' + value : value, '')), new parser_1.Node((0, dom_1.html)('rp', '(')), new parser_1.Node((0, dom_1.html)('rt', rubies.foldl((acc, {
         value
-      }, acc) => value + ' ' + acc, '').trim())), new parser_1.Node((0, dom_1.html)('rp', ')'))])))))]);
+      }) => acc ? acc + ' ' + value : value, '').trim())), new parser_1.Node((0, dom_1.html)('rp', ')'))])))))]);
   }
 }));
 const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\n/y;
@@ -8309,7 +8303,7 @@ const extension_1 = __webpack_require__(6193);
 const source_1 = __webpack_require__(8745);
 exports.MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB)
 exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE * 10;
-const parser = (0, combinator_1.union)([(0, combinator_1.some)(source_1.emptyline), input => {
+const parser = (0, combinator_1.union)([(0, combinator_1.some)(source_1.emptyline, exports.MAX_SEGMENT_SIZE + 1), input => {
   const {
     context: {
       source,
@@ -8335,7 +8329,7 @@ const parser = (0, combinator_1.union)([(0, combinator_1.some)(source_1.emptylin
     case '$':
       return (0, extension_1.segment)(input);
   }
-}, (0, combinator_1.some)(source_1.contentline)]);
+}, (0, combinator_1.some)(source_1.contentline, exports.MAX_SEGMENT_SIZE + 1)]);
 function* segment(source) {
   if (!validate(source, exports.MAX_INPUT_SIZE)) return yield `${"\u0007" /* Command.Error */}Too large input over ${exports.MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   for (let position = 0; position < source.length;) {
