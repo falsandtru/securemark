@@ -17,7 +17,7 @@ export class Context extends Ctx {
     } = options;
     this.buffer = buffer ?? new List();
     this.sequential = sequential ?? false;
-    this.header = header;
+    this.header = header ?? true;
     this.host = host;
     this.url = url;
     this.id = id;
@@ -25,7 +25,7 @@ export class Context extends Ctx {
   }
   public buffer: List<Node<(string | HTMLElement)>>;
   public sequential: boolean;
-  public readonly header?: boolean;
+  public readonly header: boolean;
   public readonly host?: URL;
   public readonly url?: URL;
   public readonly id?: string;
