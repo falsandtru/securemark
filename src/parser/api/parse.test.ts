@@ -360,22 +360,32 @@ describe('Unit: parser/api/parse', () => {
         ]);
     });
 
-    it('backtrack', function () {
-      this.timeout(5000);
+    it('backtrack 1', () => {
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して50-400%程度。
       // 6n = annotation + reference + link + url/math + ruby + text
-      const source = `((([[[[#$[${'.'.repeat(16664)}]]]`;
       assert.deepStrictEqual(
-        [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$[${'.'.repeat(16665)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+          .map(el => el.tagName),
+        ['P']);
+    });
+
+    it('backtrack 1 error', () => {
+      assert.deepStrictEqual(
+        [...parse(`((([[[[#$[${'.'.repeat(16665 + 1)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+          .map(el => el.tagName),
+        ['H1', 'PRE']);
+    });
+
+    it('backtrack 2', () => {
+      assert.deepStrictEqual(
+        [...parse(`((([[[[#$[${'.'.repeat(16664)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['P', 'OL']);
     });
 
-    it('backtrack error', function () {
-      this.timeout(5000);
-      const source = `((([[[[#$[${'.'.repeat(16664 + 1)}]]]`;
+    it('backtrack 2 error', () => {
       assert.deepStrictEqual(
-        [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$[${'.'.repeat(16664 + 1)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['H1', 'PRE']);
     });

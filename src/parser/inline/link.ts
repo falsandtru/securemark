@@ -15,12 +15,12 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.link,
-  precedence(1, state(State.linkers,
-  bind(subsequence([
-    dup(surround(
+export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
+  subsequence([
+    constraint(State.link, state(State.linkers, dup(surround(
       '[',
-      trimBlankStart(some(union([inline]), ']', [[']', 1]])),
+      precedence(1,
+      trimBlankStart(some(union([inline]), ']', [[']', 1]]))),
       ']',
       true,
       [3 | Backtrack.common | Backtrack.link, 2 | Backtrack.ruby],
@@ -30,7 +30,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
           return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
         }
         return ns.push(new Node(Command.Separator)) && ns;
-      })),
+      })))),
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
     dup(surround(
@@ -43,6 +43,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
         bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
   ]),
   ([{ value: content }, { value: params = undefined } = {}], context) => {
+    if (context.state & State.link) return new List([new Node(context.source.slice(context.position - context.range, context.position))]);
     if (content.last!.value === Command.Separator) {
       content.pop();
       if (params === undefined) {
@@ -69,7 +70,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
     return new List([new Node(parse(content, params as List<Node<string>>, context))]);
-  })))));
+  }));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media,
   state(State.linkers,

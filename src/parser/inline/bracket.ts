@@ -100,13 +100,11 @@ const s1 = lazy(() => surround(
         setBacktrack(context, 2 | Backtrack.link, head);
       }
       else {
-        context.state ^= State.link;
         if (!isBacktrack(context, 1 | Backtrack.link) && !textlink({ context })) {
           setBacktrack(context, 2 | Backtrack.link, head);
         }
         context.position = position;
         context.range = range;
-        context.state ^= State.link;
       }
     }
     return as.import(bs as List<Node<string>>).import(cs);
