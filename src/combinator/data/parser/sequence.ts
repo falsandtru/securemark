@@ -1,7 +1,7 @@
 import { Parser, List, Node, Context } from '../parser';
 
-export function sequence<P extends Parser>(parsers: Parser.SubParsers<P>, resume?: (nodes: List<Node<Parser.SubNode<P>>>) => boolean): Parser.SubNode<P> extends Parser.Node<P> ? P : Parser<Parser.SubNode<P>, Parser.Context<P>, Parser.SubParsers<P>>;
-export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: List<Node<N>>) => boolean): Parser<N, Context, D> {
+export function sequence<P extends Parser>(parsers: Parser.SubParsers<P>): Parser.SubNode<P> extends Parser.Node<P> ? P : Parser<Parser.SubNode<P>, Parser.Context<P>, Parser.SubParsers<P>>;
+export function sequence<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return input => {
@@ -14,7 +14,6 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D, resume?: (nodes: 
       const result = parsers[i](input);
       if (result === undefined) return;
       nodes = nodes?.import(result) ?? result;
-      if (resume?.(result) === false) return;
     }
     return nodes;
   };
