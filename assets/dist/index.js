@@ -3169,7 +3169,7 @@ function isBacktrack(context, backtrack, position = context.position, length = 1
     backtracks,
     offset
   } = context;
-  if (backtracks) for (let i = 0; i < length; ++i) {
+  for (let i = 0; i < length; ++i) {
     if (backtracks[position + i + offset] & backtrack >>> commandsize) return true;
   }
   return false;
@@ -3182,7 +3182,7 @@ function setBacktrack(context, backtrack, position, length = 1) {
     backtracks,
     offset
   } = context;
-  if (backtracks) for (let i = 0; i < length; ++i) {
+  for (let i = 0; i < length; ++i) {
     backtracks[position + i + offset] |= backtrack >>> commandsize;
   }
 }
@@ -3405,6 +3405,162 @@ exports.List = List;
 
 /***/ },
 
+/***/ 385
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Delimiters = void 0;
+const combinator_1 = __webpack_require__(3484);
+class Delimiters {
+  constructor() {
+    this.tree = {};
+    this.map = new Map();
+    this.delimiters = [];
+    this.stack = [];
+    this.states = [];
+  }
+  // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
+  static signature(pattern) {
+    switch (typeof pattern) {
+      case 'undefined':
+        return 1 << 7;
+      case 'string':
+        if (pattern.length === 1) {
+          const code = pattern.charCodeAt(0);
+          return code;
+        }
+        return `s:${pattern}`;
+      case 'object':
+        return `r/${pattern.source}`;
+    }
+  }
+  static matcher(pattern) {
+    switch (typeof pattern) {
+      case 'undefined':
+        return () => undefined;
+      case 'string':
+      case 'object':
+        const match = (0, combinator_1.matcher)(pattern, false);
+        return input => match(input) !== undefined || undefined;
+    }
+  }
+  registry(signature) {
+    if (typeof signature === 'number') {
+      return this.tree[signature] ??= [];
+    } else {
+      const ds = this.map.get(signature);
+      if (ds) return ds;
+      const blank = [];
+      this.map.set(signature, blank);
+      return blank;
+    }
+  }
+  push(delims) {
+    const {
+      delimiters,
+      stack
+    } = this;
+    // シグネチャ数以下
+
+    for (let i = 0; i < delims.length; ++i) {
+      const {
+        signature,
+        matcher,
+        precedence
+      } = delims[i];
+      const memory = this.registry(signature);
+      const index = memory[0]?.index ?? delimiters.length;
+      if (memory.length === 0) {
+        const delimiter = {
+          memory,
+          index,
+          signature,
+          matcher,
+          precedence,
+          state: true
+        };
+        delimiters[index] = delimiter;
+        memory.push(delimiter);
+        stack.push(index);
+      } else {
+        stack.push(-1);
+      }
+      // 現状各優先順位は固定
+    }
+  }
+  pop(count) {
+    const {
+      delimiters,
+      stack
+    } = this;
+    for (let i = 0; i < count; ++i) {
+      const index = stack.pop();
+      if (index === -1) continue;
+      const {
+        memory
+      } = delimiters[index];
+      if (memory.length === 1) {
+        memory.pop();
+        delimiters.pop();
+      } else {
+        memory.pop();
+        delimiters[index] = memory.at(-1);
+      }
+    }
+  }
+  shift(precedence) {
+    const {
+      delimiters
+    } = this;
+    const indexes = [];
+    for (let i = delimiters.length; i--;) {
+      const delimiter = delimiters[i];
+      if (delimiter.precedence >= precedence || !delimiter.state) continue;
+      delimiter.state = false;
+      indexes.push(i);
+    }
+    this.states.push(indexes);
+  }
+  unshift() {
+    const {
+      delimiters
+    } = this;
+    const indexes = this.states.pop();
+    for (let i = indexes.length; i--;) {
+      delimiters[indexes[i]].state = true;
+    }
+  }
+  match(input) {
+    const {
+      precedence
+    } = input.context;
+    const {
+      delimiters
+    } = this;
+    for (let i = delimiters.length; i--;) {
+      const delimiter = delimiters[i];
+      if (delimiter.precedence <= precedence || !delimiter.state) continue;
+      switch (delimiter.matcher(input)) {
+        case true:
+          return true;
+        case false:
+          return false;
+        default:
+          continue;
+      }
+    }
+    return false;
+  }
+}
+exports.Delimiters = Delimiters;
+
+/***/ },
+
 /***/ 605
 (__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3422,7 +3578,7 @@ Object.defineProperty(exports, "List", ({
     return data_1.List;
   }
 }));
-const delimiter_1 = __webpack_require__(5691);
+const delimiter_1 = __webpack_require__(385);
 class Node {
   constructor(value) {
     this.value = value;
@@ -3453,7 +3609,7 @@ class Context {
     this.linebreak = linebreak ?? 0;
     this.range = range ?? 0;
     this.offset = offset ?? 0;
-    this.backtracks = backtracks;
+    this.backtracks = backtracks ?? {};
   }
 }
 exports.Context = Context;
@@ -3696,162 +3852,6 @@ exports.matcher = matcher;
 
 /***/ },
 
-/***/ 5691
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.Delimiters = void 0;
-const combinator_1 = __webpack_require__(3484);
-class Delimiters {
-  constructor() {
-    this.tree = {};
-    this.map = new Map();
-    this.delimiters = [];
-    this.stack = [];
-    this.states = [];
-  }
-  // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
-  static signature(pattern) {
-    switch (typeof pattern) {
-      case 'undefined':
-        return 1 << 7;
-      case 'string':
-        if (pattern.length === 1) {
-          const code = pattern.charCodeAt(0);
-          return code;
-        }
-        return `s:${pattern}`;
-      case 'object':
-        return `r/${pattern.source}`;
-    }
-  }
-  static matcher(pattern) {
-    switch (typeof pattern) {
-      case 'undefined':
-        return () => undefined;
-      case 'string':
-      case 'object':
-        const match = (0, combinator_1.matcher)(pattern, false);
-        return input => match(input) !== undefined || undefined;
-    }
-  }
-  registry(signature) {
-    if (typeof signature === 'number') {
-      return this.tree[signature] ??= [];
-    } else {
-      const ds = this.map.get(signature);
-      if (ds) return ds;
-      const blank = [];
-      this.map.set(signature, blank);
-      return blank;
-    }
-  }
-  push(delims) {
-    const {
-      delimiters,
-      stack
-    } = this;
-    // シグネチャ数以下
-
-    for (let i = 0; i < delims.length; ++i) {
-      const {
-        signature,
-        matcher,
-        precedence
-      } = delims[i];
-      const memory = this.registry(signature);
-      const index = memory[0]?.index ?? delimiters.length;
-      if (memory.length === 0) {
-        const delimiter = {
-          memory,
-          index,
-          signature,
-          matcher,
-          precedence,
-          state: true
-        };
-        delimiters[index] = delimiter;
-        memory.push(delimiter);
-        stack.push(index);
-      } else {
-        stack.push(-1);
-      }
-      // 現状各優先順位は固定
-    }
-  }
-  pop(count) {
-    const {
-      delimiters,
-      stack
-    } = this;
-    for (let i = 0; i < count; ++i) {
-      const index = stack.pop();
-      if (index === -1) continue;
-      const {
-        memory
-      } = delimiters[index];
-      if (memory.length === 1) {
-        memory.pop();
-        delimiters.pop();
-      } else {
-        memory.pop();
-        delimiters[index] = memory.at(-1);
-      }
-    }
-  }
-  shift(precedence) {
-    const {
-      delimiters
-    } = this;
-    const indexes = [];
-    for (let i = delimiters.length; i--;) {
-      const delimiter = delimiters[i];
-      if (delimiter.precedence >= precedence || !delimiter.state) continue;
-      delimiter.state = false;
-      indexes.push(i);
-    }
-    this.states.push(indexes);
-  }
-  unshift() {
-    const {
-      delimiters
-    } = this;
-    const indexes = this.states.pop();
-    for (let i = indexes.length; i--;) {
-      delimiters[indexes[i]].state = true;
-    }
-  }
-  match(input) {
-    const {
-      precedence
-    } = input.context;
-    const {
-      delimiters
-    } = this;
-    for (let i = delimiters.length; i--;) {
-      const delimiter = delimiters[i];
-      if (delimiter.precedence <= precedence || !delimiter.state) continue;
-      switch (delimiter.matcher(input)) {
-        case true:
-          return true;
-        case false:
-          return false;
-        default:
-          continue;
-      }
-    }
-    return false;
-  }
-}
-exports.Delimiters = Delimiters;
-
-/***/ },
-
 /***/ 2861
 (__unused_webpack_module, exports) {
 
@@ -3932,7 +3932,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.some = void 0;
-const delimiter_1 = __webpack_require__(5691);
+const delimiter_1 = __webpack_require__(385);
 function some(parser, end, delimiters = [], limit = -1) {
   if (typeof end === 'number') return some(parser, undefined, delimiters, end);
   const match = delimiter_1.Delimiters.matcher(end);
@@ -4530,7 +4530,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.autolink = void 0;
 const combinator_1 = __webpack_require__(3484);
-const autolink_1 = __webpack_require__(8072);
+const autolink_1 = __webpack_require__(5691);
 const source_1 = __webpack_require__(8745);
 exports.autolink = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, combinator_1.union)([autolink_1.autolink, source_1.unescsource])));
 
@@ -4571,7 +4571,7 @@ const dom_1 = __webpack_require__(394);
 exports.block = (0, combinator_1.reset)({
   resources: {
     // バックトラックのせいで文字数制限を受けないようにする。
-    clock: segment_1.MAX_SEGMENT_SIZE * 5 + 1,
+    clock: segment_1.MAX_SEGMENT_SIZE * 6 + 1,
     recursions: [10 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
   },
   backtracks: {}
@@ -5842,7 +5842,7 @@ exports.quote = exports.syntax = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const math_1 = __webpack_require__(2962);
-const autolink_1 = __webpack_require__(8072);
+const autolink_1 = __webpack_require__(5691);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
@@ -6125,7 +6125,7 @@ const math_1 = __webpack_require__(2962);
 const code_1 = __webpack_require__(3481);
 const htmlentity_1 = __webpack_require__(470);
 const bracket_1 = __webpack_require__(4526);
-const autolink_1 = __webpack_require__(8072);
+const autolink_1 = __webpack_require__(5691);
 const source_1 = __webpack_require__(8745);
 const stars = (0, source_1.strs)('*');
 exports.inline = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input => {
@@ -6256,11 +6256,24 @@ const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
   class: 'annotation'
-}, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined)));
+}, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined, (_, context) => {
+  const {
+    source,
+    position,
+    range,
+    linebreak
+  } = context;
+  const head = position - range;
+  if (source[position] !== ')') {
+    (0, combinator_1.setBacktrack)(context, 2 | 4 /* Backtrack.common */, head + 1);
+  } else if (linebreak !== 0) {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head + 1);
+  }
+})));
 
 /***/ },
 
-/***/ 8072
+/***/ 5691
 (__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -6440,7 +6453,9 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false, [1 | 8 /* Backtrack.unescapable */], ([, [{
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false,
+// unescapableを使用するべきだがhashtagとの重複を回避するためescapableを使用する。
+[3 | 16 /* Backtrack.escapable */], ([, [{
   value
 }]], context) => new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`#${value}`)]), new parser_1.List([new parser_1.Node(value)]), context), {
   class: 'hashnum',
@@ -6559,25 +6574,18 @@ const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     range
   } = context;
   const head = position - range;
-  if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
-    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
+  if (context.linebreak !== 0) {
+    if (head > 0 && source[head - 1] === '(') {
+      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
+    }
+  } else if (source[position] !== ')' && source[head - 1] === '(') {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
   }
   const str = source.slice(position - range + 1, position - 1);
   return indexA.test(str) ? new parser_1.List([new parser_1.Node(as.head.value), new parser_1.Node(str), new parser_1.Node(cs.head.value)]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
-}, ([as, bs = new parser_1.List()], context) => {
-  const {
-    source,
-    position,
-    range
-  } = context;
-  const head = position - range;
-  if (context.linebreak !== 0 || source[head + 1] !== '(') {
-    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
-  }
-  return as.import(bs);
-}));
+}, ([as, bs = new parser_1.List()]) => as.import(bs)));
 const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [], ([as, bs = [], cs], {
   source,
   position,
@@ -6589,18 +6597,22 @@ const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]);
 }, ([as, bs = new parser_1.List()]) => as.import(bs)));
 const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, [2 | 4 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], context) => {
-  if (context.state & 8 /* State.link */) {
-    const {
-      source,
-      position,
-      range
-    } = context;
-    const head = position - range;
-    if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
-      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
+  const {
+    source,
+    position,
+    range
+  } = context;
+  const head = position - range;
+  if (context.linebreak !== 0) {
+    if (head > 0 && source[head - 1] === '[') {
+      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
     }
+  } else if (source[position] !== ']' && source[head - 1] === '[') {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
+  }
+  if (context.state & 8 /* State.link */) {
     if (context.linebreak !== 0) {
-      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */ | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
+      (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
     } else if (source[position] !== '{') {
       (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     } else {
@@ -7696,55 +7708,27 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     const head = position - range;
     (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head, 2);
   }
-}, ([as, bs], context) => {
-  if (!bs) return;
+}, (_, context) => {
   const {
     source,
     position,
     range,
-    linebreak,
-    state
+    linebreak
   } = context;
   const head = position - range;
   if (source[position] !== ']') {
     (0, combinator_1.setBacktrack)(context, 2 | 4 /* Backtrack.common */, head, 2);
   } else if (linebreak !== 0) {
-    (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head, 2);
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */ | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head, 2);
   } else {
-    if (state & 128 /* State.annotation */) {
-      bs.push(new parser_1.Node(source[position]));
-    }
     context.position += 1;
-    let result;
-    if (source[context.position] !== '{') {
+    if (source[context.position] !== '{' || (0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) || !(0, link_1.textlink)({
+      context
+    })) {
       (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
-      result = new parser_1.List();
-    } else {
-      result = !(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) ? (0, link_1.textlink)({
-        context
-      }) : undefined;
-      context.range = range;
-      if (!result) {
-        (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
-        result = new parser_1.List();
-      }
-    }
-    if (context.position === source.length) {
-      (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
-    } else {
-      const next = (0, combinator_1.surround)('', (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]), (0, source_1.str)(']'), true, [], ([, cs = new parser_1.List(), ds]) => cs.import(ds), ([, cs = new parser_1.List()]) => {
-        (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
-        return cs;
-      })({
-        context
-      });
-      if (state & 128 /* State.annotation */ && next) {
-        return as.import(bs).import(result).import(next);
-      }
     }
     context.position = position;
   }
-  return state & 128 /* State.annotation */ ? as.import(bs) : undefined;
 })));
 // Chicago-Style
 const abbr = (0, combinator_1.surround)((0, source_1.str)('^'), (0, combinator_1.union)([(0, source_1.str)(/(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/y)]), /\|?(?=]])|\|/y, true, [], ([, ns], context) => {
