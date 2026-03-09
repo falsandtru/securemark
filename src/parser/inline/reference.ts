@@ -38,15 +38,19 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
     else if (linebreak !== 0) {
       setBacktrack(context, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head, 2);
     }
+    else if (source[position + 1] !== '{') {
+      setBacktrack(context, 2 | Backtrack.link, head + 1);
+    }
     else {
       assert(source[position] === ']');
+      assert(~context.state & State.link);
       context.position += 1;
-      if (source[context.position] !== '{' ||
-          isBacktrack(context, 1 | Backtrack.link) ||
-          !textlink({ context })) {
+      assert(!isBacktrack(context, 1 | Backtrack.link));
+      if (!textlink({ context })) {
         setBacktrack(context, 2 | Backtrack.link, head + 1);
       }
       context.position = position;
+      context.range = range;
     }
   })));
 

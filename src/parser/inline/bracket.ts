@@ -38,17 +38,15 @@ const p1 = lazy(() => surround(
   str('('),
   precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
   str(')'),
+  // 唯一の参照者であるAnnotation構文に対してのみバックトラックを記録しその他は記録しない。
+  // 二重括弧構文の内括弧のバックトラックは二重括弧構文自身が記録するため記録不要。
+  // Ruby構文の丸括弧は常にRuby構文が先に到達し記録するため記録不要。
   true, [],
   ([as, bs = new List(), cs], context) => {
     const { source, position, range } = context;
     const head = position - range;
-    if (context.linebreak !== 0) {
-      if (head > 0 && source[head - 1] === '(') {
-        setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
-      }
-    }
-    else if (source[position] !== ')' && source[head - 1] === '(') {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
+    if (source[head + 1] === '(' && (context.linebreak !== 0 || source[position - 2] !== ')')) {
+      setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
@@ -91,13 +89,8 @@ const s1 = lazy(() => surround(
   ([as, bs = new List(), cs], context) => {
     const { source, position, range } = context;
     const head = position - range;
-    if (context.linebreak !== 0) {
-      if (head > 0 && source[head - 1] === '[') {
-        setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
-      }
-    }
-    else if (source[position] !== ']' && source[head - 1] === '[') {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
+    if (source[head + 1] === '[' && (context.linebreak !== 0 || source[position - 2] !== ']')) {
+      setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
     if (context.state & State.link) {
       if (context.linebreak !== 0) {
@@ -108,15 +101,12 @@ const s1 = lazy(() => surround(
       }
       else {
         context.state ^= State.link;
-        const result = !isBacktrack(context, 1 | Backtrack.link)
-          ? textlink({ context })
-          : undefined;
-        context.position = position;
-        if (!result) {
+        if (!isBacktrack(context, 1 | Backtrack.link) && !textlink({ context })) {
           setBacktrack(context, 2 | Backtrack.link, head);
         }
-        context.state ^= State.link;
+        context.position = position;
         context.range = range;
+        context.state ^= State.link;
       }
     }
     return as.import(bs as List<Node<string>>).import(cs);
