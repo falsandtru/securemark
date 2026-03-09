@@ -17,6 +17,6 @@ export const deletion: DeletionParser = lazy(() =>
     ]))),
     '~~',
     false, [],
-    ([, bs], { buffer }) => buffer!.import(bs),
-    ([, bs], { buffer }) => bs && buffer!.import(bs).push(new Node(Command.Cancel)) && buffer!),
+    ([, bs], { buffer }) => buffer.import(bs),
+    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer),
     nodes => new List([new Node(html('del', defrag(unwrap(nodes))))]))));

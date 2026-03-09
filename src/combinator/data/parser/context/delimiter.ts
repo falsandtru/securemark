@@ -130,7 +130,7 @@ export class Delimiters {
     }
   }
   public match(input: Input): boolean {
-    const { precedence = 0 } = input.context;
+    const { precedence } = input.context;
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];

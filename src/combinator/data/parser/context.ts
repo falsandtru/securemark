@@ -106,7 +106,7 @@ export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> 
   assert(precedence >= 0);
   return input => {
     const { context } = input;
-    const { delimiters, precedence: p = 0 } = context;
+    const { delimiters, precedence: p } = context;
     const shift = delimiters && precedence > p;
     context.precedence = precedence;
     // デリミタはシフト後に設定しなければならない
@@ -151,8 +151,8 @@ export function constraint<N>(state: number, positive: boolean | Parser<N>, pars
   return input => {
     const { context } = input;
     const s = positive
-      ? state & context.state!
-      : state & ~context.state!;
+      ? state & context.state
+      : state & ~context.state;
     return s === state
       ? parser(input)
       : undefined;

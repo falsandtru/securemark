@@ -40,7 +40,7 @@ const p1 = lazy(() => surround(
   str(')'),
   true, [],
   ([as, bs = new List(), cs], context) => {
-    const { source, position, range = 0 } = context;
+    const { source, position, range } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
       setBacktrack(context, 2 | Backtrack.doublebracket, head);
@@ -51,7 +51,7 @@ const p1 = lazy(() => surround(
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
-    const { source, position, range = 0 } = context;
+    const { source, position, range } = context;
     const head = position - range;
     if (context.linebreak !== 0 || source[head + 1] !== '(') {
       setBacktrack(context, 2 | Backtrack.doublebracket, head);
@@ -64,7 +64,7 @@ const p2 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
   str('）'),
   true, [],
-  ([as, bs = [], cs], { source, position, range = 0 }) => {
+  ([as, bs = [], cs], { source, position, range }) => {
     const str = source.slice(position - range + 1, position - 1);
     return indexF.test(str)
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
@@ -79,8 +79,8 @@ const s1 = lazy(() => surround(
   true,
   [2 | Backtrack.common],
   ([as, bs = new List(), cs], context) => {
-    if (context.state! & State.link) {
-      const { source, position, range = 0 } = context;
+    if (context.state & State.link) {
+      const { source, position, range } = context;
       const head = position - range;
       if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
         setBacktrack(context, 2 | Backtrack.doublebracket, head);
@@ -92,7 +92,7 @@ const s1 = lazy(() => surround(
         setBacktrack(context, 2 | Backtrack.link, head);
       }
       else {
-        context.state! ^= State.link;
+        context.state ^= State.link;
         const result = !isBacktrack(context, 1 | Backtrack.link)
           ? textlink({ context })
           : undefined;
@@ -100,7 +100,7 @@ const s1 = lazy(() => surround(
         if (!result) {
           setBacktrack(context, 2 | Backtrack.link, head);
         }
-        context.state! ^= State.link;
+        context.state ^= State.link;
         context.range = range;
       }
     }

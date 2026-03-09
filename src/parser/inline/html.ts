@@ -93,7 +93,7 @@ function elem(tag: string, content: boolean, as: readonly string[], bs: List<Nod
 function ielem(type: string, message: string, context: Context): HTMLElement {
   return h('span',
     { class: 'invalid', ...invalid('html', type, message) },
-    context.source.slice(context.position - context.range!, context.position));
+    context.source.slice(context.position - context.range, context.position));
 }
 
 const requiredAttributes = memoize(

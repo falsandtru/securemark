@@ -33,7 +33,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       [3 | Backtrack.escapable, 2 | Backtrack.ruby],
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
-          const head = context.position - context.range!;
+          const head = context.position - context.range;
           return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
         }
         return ns;
@@ -63,7 +63,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
             class: 'invalid',
             ...invalid('media', 'syntax', 'Missing the closing symbol "}"')
           },
-          '!' + context.source.slice(context.position - context.range!, context.position)))
+          '!' + context.source.slice(context.position - context.range, context.position)))
       ]);
     }
     const INSECURE_URI = params.shift()!.value;
@@ -94,7 +94,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state! & State.link) return new List([new Node(el)]);
+    if (context.state & State.link) return new List([new Node(el)]);
     if (cache && cache.tagName !== 'IMG') return new List([new Node(el)]);
     return new List([new Node(define(
       parse(

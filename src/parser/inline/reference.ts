@@ -20,7 +20,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   false,
   [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
   ([, ns], context) => {
-    const { position, range = 0, linebreak = 0 } = context;
+    const { position, range, linebreak } = context;
     if (linebreak === 0) {
       return new List([new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
     }
@@ -31,7 +31,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   },
   ([as, bs], context) => {
     if (!bs) return;
-    const { source, position, range = 0, linebreak = 0, state = 0 } = context;
+    const { source, position, range, linebreak, state } = context;
     const head = position - range;
     if (source[position] !== ']') {
       setBacktrack(context, 2 | Backtrack.common, head, 2);
@@ -96,13 +96,13 @@ const abbr: ReferenceParser.AbbrParser = surround(
   /\|?(?=]])|\|/y,
   true, [],
   ([, ns], context) => {
-    const { source, position, range = 0 } = context;
+    const { source, position, range } = context;
     if (!ns) return new List([new Node(''), new Node(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);
     context.position += source[position] === ' ' ? 1 : 0;
     return new List([new Node(Command.Separator), new Node(ns.head!.value.trimEnd())]);
   },
   (_, context) => {
-    context.position -= context.range!;
+    context.position -= context.range;
     return new List([new Node('')]);
   });
 

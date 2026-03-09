@@ -7,7 +7,6 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     const { source, position } = context;
     if (position === source.length) return;
     const line = firstline(source, position);
-    context.offset ??= 0;
     context.offset += position;
     const result = parser(input(line, context));
     context.position += position;

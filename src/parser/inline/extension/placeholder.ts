@@ -26,6 +26,6 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
         class: 'invalid',
         ...invalid('extension', 'syntax', `Invalid start symbol or linebreak`),
       },
-      context.source.slice(context.position - context.range!, context.position)))
+      context.source.slice(context.position - context.range, context.position)))
   ]),
   ([as, bs]) => bs && as.import(bs as List<Node<string>>)));

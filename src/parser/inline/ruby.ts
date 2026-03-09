@@ -25,7 +25,7 @@ export const ruby: RubyParser = lazy(() => bind(
   ]),
   ([{ value: texts }, { value: rubies = undefined } = {}], context) => {
     if (rubies === undefined) {
-      const head = context.position - context.range!;
+      const head = context.position - context.range;
       return void setBacktrack(context, 2 | Backtrack.ruby, head);
     }
     switch (true) {

@@ -20,20 +20,19 @@ export function some<N>(parser: Parser<N>, end?: string | RegExp | number, delim
     //assert(context.backtracks ??= {});
     let nodes: List<Node<N>> | undefined;
     if (delims.length > 0) {
-      context.delimiters ??= new Delimiters();
       context.delimiters.push(delims);
     }
     // whileは数倍遅い
     for (const len = source.length; context.position < len;) {
       if (match(input)) break;
-      if (context.delimiters?.match(input)) break;
+      if (context.delimiters.match(input)) break;
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
       if (limit >= 0 && context.position - position > limit) break;
     }
     if (delims.length > 0) {
-      context.delimiters!.pop(delims.length);
+      context.delimiters.pop(delims.length);
     }
     assert(context.position >= position);
     return context.position > position

@@ -18,7 +18,6 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true
       context.position += result && context.position === position ? range : 0;
       return result;
     }
-    context.offset ??= 0;
     context.offset += position;
     const result = parser(input(src, context));
     context.position += position;
@@ -51,7 +50,6 @@ export function rewrite<N>(scope: Parser, parser: Parser<N>, slice = true): Pars
     const src = source.slice(position, context.position);
     assert(src !== '');
     assert(source.startsWith(src, position));
-    context.offset ??= 0;
     context.offset += position;
     const res2 = parser(input(src, context));
     context.position += position;

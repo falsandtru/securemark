@@ -36,7 +36,7 @@ export const emstrong: EmStrongParser = lazy(() =>
     false, [],
     ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {
       assert(cs.length === 1);
-      const { buffer = new List() } = context;
+      const { buffer } = context;
       switch (cs.head!.value) {
         case '***':
           return bs;
@@ -81,7 +81,7 @@ export const emstrong: EmStrongParser = lazy(() =>
       }
       assert(false);
     },
-    ([, bs], { buffer }) => bs && buffer!.import(bs) && buffer!.push(new Node(Command.Cancel)) && buffer!),
+    ([, bs], { buffer }) => bs && buffer.import(bs) && buffer.push(new Node(Command.Cancel)) && buffer),
     // 3以上の`*`に対してemの適用を保証する
     nodes => new List([new Node(html('em', [html('strong', defrag(unwrap(nodes)))]))]),
     (nodes, context, prefix, postfix, state) => {

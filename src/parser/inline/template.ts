@@ -22,7 +22,7 @@ export const template: TemplateParser = lazy(() => surround(
           class: 'invalid',
           ...invalid('template', 'syntax', `Missing the closing symbol "}}"`),
         },
-        context.source.slice(context.position - context.range!, context.position)))
+        context.source.slice(context.position - context.range, context.position)))
     ])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([

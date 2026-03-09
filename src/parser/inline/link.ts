@@ -26,7 +26,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
       [3 | Backtrack.common | Backtrack.link, 2 | Backtrack.ruby],
       ([, ns = new List()], context) => {
         if (context.linebreak !== 0) {
-          const head = context.position - context.range!;
+          const head = context.position - context.range;
           return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
         }
         return ns.push(new Node(Command.Separator)) && ns;
@@ -46,7 +46,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     if (content.last!.value === Command.Separator) {
       content.pop();
       if (params === undefined) {
-        const head = context.position - context.range!;
+        const head = context.position - context.range;
         return void setBacktrack(context, 2 | Backtrack.link, head);
       }
     }
@@ -62,7 +62,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
             class: 'invalid',
             ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
           },
-          context.source.slice(context.position - context.range!, context.position)))
+          context.source.slice(context.position - context.range, context.position)))
       ]);
     }
     assert(!html('div', unwrap(content)).querySelector('a, .media, .annotation, .reference'));

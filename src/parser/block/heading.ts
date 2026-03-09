@@ -12,7 +12,7 @@ export const segment: HeadingParser.SegmentParser = block(focus(
   /#+ +\S[^\n]*(?:\n#+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
   input => {
     const { context } = input;
-    const { source, range = 0 } = context;
+    const { source, range } = context;
     const acc = new List<Node<string>>();
     for (const len = context.position + range; context.position < len;) {
       const line = firstline(source, context.position);
@@ -42,6 +42,6 @@ export const heading: HeadingParser = block(rewrite(segment,
         : new Node(html(`h6`, {
           class: 'invalid',
           ...invalid('heading', 'syntax', 'Heading level must be up to 6'),
-        }, context.source.slice(context.position - context.range!, context.position)))
+        }, context.source.slice(context.position - context.range, context.position)))
     ]);
   }))))));
