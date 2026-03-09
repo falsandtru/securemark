@@ -2,7 +2,6 @@ import { ParserSettings, Progress } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
-import { header } from '../header';
 import { block } from '../block';
 import { normalize } from './normalize';
 import { headers } from './header';
@@ -72,11 +71,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     assert(head + last <= targetSegments.length);
     const base = next(head);
     let index = head;
+    // @ts-expect-error
+    context.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = (header(input(seg, { header: index === 0 } as MarkdownParser.Options)) || block(input(seg, context)))
+      const es = block(input(seg, context))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
+      // @ts-expect-error
+      context.header = false;
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.

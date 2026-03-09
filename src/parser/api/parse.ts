@@ -2,7 +2,6 @@ import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
-import { header } from '../header';
 import { block } from '../block';
 import { normalize } from './normalize';
 import { headers } from './header';
@@ -32,11 +31,14 @@ export function parse(source: string, options: Options = {}, context?: MarkdownP
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
-  let index = 0;
+  // @ts-expect-error
+  context.header = true;
   for (const seg of segment(source)) {
     node.append(
-      ...(header(input(seg, { header: index++ === 0 } as MarkdownParser.Context)) || block(input(seg, context)))
+      ...block(input(seg, context))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
+    // @ts-expect-error
+    context.header = false;
   }
   assert(options.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (options.test) return node;

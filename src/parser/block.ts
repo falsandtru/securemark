@@ -3,6 +3,7 @@ import { Recursion, Command } from './context';
 import { List, Node } from '../combinator/data/parser';
 import { union, reset, open, fallback, recover } from '../combinator';
 import { MAX_SEGMENT_SIZE } from './segment';
+import { header } from './header';
 import { emptyline } from './source';
 import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
@@ -73,6 +74,7 @@ export const block: BlockParser = reset(
           if (source[position + 1] === ' ') return dlist(input);
           break;
         case '-':
+          if (source.startsWith('---', position)) return header(input);
           if (source[position + 1] === ' ') return ulist(input) || ilist(input);
           break;
         case '+':
