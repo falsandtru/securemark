@@ -30,7 +30,7 @@ describe('Unit: parser/api/bind', () => {
     const cfgs = { notes: { references: html('ol') } };
 
     it('huge input', () => {
-      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2)}`);
+      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1e6 + 1)}`);
       assert.deepStrictEqual(
         inspect(iter),
         [
@@ -42,7 +42,7 @@ describe('Unit: parser/api/bind', () => {
     it('huge segment', function () {
       this.timeout(10 * 1000);
 
-      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1000 ** 2 - 1)}`);
+      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1e5 + 1)}`);
       assert.deepStrictEqual(
         inspect(iter, 3),
         [

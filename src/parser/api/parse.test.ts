@@ -6,7 +6,7 @@ describe('Unit: parser/api/parse', () => {
   describe('parse', () => {
     it('huge input', () => {
       assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(10 * 1000 ** 2)}`, { id: '' }).children].map(el => el.outerHTML),
+        [...parse(`${'\n'.repeat(1e6 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
         [
           '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
           `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
@@ -15,7 +15,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('huge segment', () => {
       assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(100 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
+        [...parse(`${'\n'.repeat(1e5 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
         [
           '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
           `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
