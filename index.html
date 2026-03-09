@@ -84,6 +84,7 @@
     background-color: #d5d5d5;
   }
   #viewer {
+    overflow-wrap: break-word;
     white-space: pre-wrap;
     letter-spacing: 0.03em;
     tab-size: 4;
@@ -91,7 +92,7 @@
   aside.header {
     margin-block: 0 1rem;
     border-block-end: dashed 1px gray;
-    white-space: pre;
+    text-indent: 1em hanging;
   }
   aside.header .field:is([data-name="url"]) {
     font-weight: bold;
@@ -532,9 +533,6 @@
     content: "Failed to load image";
     color: orangered;
   }
-  .media[data-type="pdf"] {
-    word-wrap: break-word;
-  }
   .media[data-type="pdf"] > object {
     display: block;
     width: 100%;
@@ -562,9 +560,6 @@
   .link,
   .link .math * {
     text-decoration: underline;
-  }
-  .url {
-    white-space: pre;
   }
   :is(.link, .url)::after {
     content: "†";

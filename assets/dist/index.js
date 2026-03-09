@@ -3862,7 +3862,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.inits = void 0;
-function inits(parsers, resume) {
+function inits(parsers) {
   if (parsers.length === 1) return parsers[0];
   return input => {
     const {
@@ -3878,7 +3878,6 @@ function inits(parsers, resume) {
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
-      if (resume?.(result) === false) break;
     }
     return nodes;
   };
@@ -3897,7 +3896,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.sequence = void 0;
-function sequence(parsers, resume) {
+function sequence(parsers) {
   if (parsers.length === 1) return parsers[0];
   return input => {
     const {
@@ -3913,7 +3912,6 @@ function sequence(parsers, resume) {
       const result = parsers[i](input);
       if (result === undefined) return;
       nodes = nodes?.import(result) ?? result;
-      if (resume?.(result) === false) return;
     }
     return nodes;
   };
@@ -3985,8 +3983,8 @@ Object.defineProperty(exports, "__esModule", ({
 exports.subsequence = void 0;
 const union_1 = __webpack_require__(2369);
 const inits_1 = __webpack_require__(2861);
-function subsequence(parsers, resume) {
-  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1), resume)], resume) : parsers[i]));
+function subsequence(parsers) {
+  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1))]) : parsers[i]));
 }
 exports.subsequence = subsequence;
 
@@ -4004,8 +4002,8 @@ Object.defineProperty(exports, "__esModule", ({
 exports.tails = void 0;
 const union_1 = __webpack_require__(2369);
 const sequence_1 = __webpack_require__(3989);
-function tails(parsers, resume) {
-  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i), resume)));
+function tails(parsers) {
+  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i))));
 }
 exports.tails = tails;
 
@@ -6567,19 +6565,19 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input =>
       return d1(input);
   }
 }]));
-const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, [], ([as, bs = new parser_1.List(), cs], context) => {
+const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'),
+// 唯一の参照者であるAnnotation構文に対してのみバックトラックを記録しその他は記録しない。
+// 二重括弧構文の内括弧のバックトラックは二重括弧構文自身が記録するため記録不要。
+// Ruby構文の丸括弧は常にRuby構文が先に到達し記録するため記録不要。
+true, [], ([as, bs = new parser_1.List(), cs], context) => {
   const {
     source,
     position,
     range
   } = context;
   const head = position - range;
-  if (context.linebreak !== 0) {
-    if (head > 0 && source[head - 1] === '(') {
-      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
-    }
-  } else if (source[position] !== ')' && source[head - 1] === '(') {
-    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
+  if (source[head + 1] === '(' && (context.linebreak !== 0 || source[position - 2] !== ')')) {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
   }
   const str = source.slice(position - range + 1, position - 1);
   return indexA.test(str) ? new parser_1.List([new parser_1.Node(as.head.value), new parser_1.Node(str), new parser_1.Node(cs.head.value)]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
@@ -6623,12 +6621,8 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     range
   } = context;
   const head = position - range;
-  if (context.linebreak !== 0) {
-    if (head > 0 && source[head - 1] === '[') {
-      (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
-    }
-  } else if (source[position] !== ']' && source[head - 1] === '[') {
-    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head - 1);
+  if (source[head + 1] === '[' && (context.linebreak !== 0 || source[position - 2] !== ']')) {
+    (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */, head);
   }
   if (context.state & 8 /* State.link */) {
     if (context.linebreak !== 0) {
@@ -6637,15 +6631,14 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
       (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
     } else {
       context.state ^= 8 /* State.link */;
-      const result = !(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) ? (0, link_1.textlink)({
+      if (!(0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) && !(0, link_1.textlink)({
         context
-      }) : undefined;
-      context.position = position;
-      if (!result) {
+      })) {
         (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head);
       }
-      context.state ^= 8 /* State.link */;
+      context.position = position;
       context.range = range;
+      context.state ^= 8 /* State.link */;
     }
   }
   return as.import(bs).import(cs);
@@ -7214,14 +7207,14 @@ Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[ >])/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.some)(exports.attribute), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
+(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.precedence)(9, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute]))), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.precedence)(9, (0, combinator_1.some)(exports.attribute)), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
 // 不可視のHTML構造が可視構造を変化させるべきでない。
 // 可視のHTMLは優先度変更を検討する。
-// このため<>は将来的に共通構造を変化させる可能性があり
+// このため`<>`記号は将来的に共通構造を変化させる可能性があり
 // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
 (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', `</${tag}>`)), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, `</${tag}>`), true)])))), (0, source_1.str)(`</${tag}>`), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, cs, context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(tag, true, [...(0, util_1.unwrap)(as)], bs, new parser_1.List(), context))])), ([, tag]) => tag, new Map())), (0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<[a-z]+(?=[ >])/yi), (0, combinator_1.some)((0, combinator_1.union)([exports.attribute])), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))]))])));
+(0, source_1.str)(/<[a-z]+(?=[ >])/yi), (0, combinator_1.precedence)(9, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute]))), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))]))])));
 exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi), (0, source_1.str)(/ [^\s<>]+/y)]);
 function elem(tag, content, as, bs, cs, context) {
   if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
@@ -7390,7 +7383,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
 })),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
-(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
+(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
   value: content
 }, {
   value: params = undefined
@@ -7415,7 +7408,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
   return new parser_1.List([new parser_1.Node(parse(content, params, context))]);
 })))));
-exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y))]), ([{
+exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y))]), ([{
   value: content
 }, {
   value: params
@@ -7616,7 +7609,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns;
-})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
+})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
   value
 }) => acc + value, ''))])), nodes.delete(nodes.last)])), ([{
   value: [{
@@ -7740,14 +7733,17 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     (0, combinator_1.setBacktrack)(context, 2 | 4 /* Backtrack.common */, head, 2);
   } else if (linebreak !== 0) {
     (0, combinator_1.setBacktrack)(context, 2 | 128 /* Backtrack.doublebracket */ | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head, 2);
+  } else if (source[position + 1] !== '{') {
+    (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
   } else {
     context.position += 1;
-    if (source[context.position] !== '{' || (0, combinator_1.isBacktrack)(context, 1 | 64 /* Backtrack.link */) || !(0, link_1.textlink)({
+    if (!(0, link_1.textlink)({
       context
     })) {
       (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head + 1);
     }
     context.position = position;
+    context.range = range;
   }
 })));
 // Chicago-Style
