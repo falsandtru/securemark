@@ -53,9 +53,9 @@ export const ruby: RubyParser = lazy(() => bind(
         assert(rubies.length > 0);
         return new List([
           new Node(html('ruby', defrag(unwrap(new List<Node<string | HTMLElement>>([
-            new Node(texts.foldr(({ value }, acc) => value + ' ' + acc, '').slice(0, -1)),
+            new Node(texts.foldl((acc, { value }) => acc ? acc + ' ' + value : value, '')),
             new Node(html('rp', '(')),
-            new Node(html('rt', rubies.foldr(({ value }, acc) => value + ' ' + acc, '').trim())),
+            new Node(html('rt', rubies.foldl((acc, { value }) => acc ? acc + ' ' + value : value, '').trim())),
             new Node(html('rp', ')')),
           ]))))),
         ]);
