@@ -48,10 +48,10 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
   str(/\|(?!\\?\s)/y),
-  some(union([
+  precedence(9, some(union([
     unsafehtmlentity,
     some(txt, /(?:[$"`\[\](){}<>（）［］｛｝|])/y),
-  ]), ']'),
+  ]), ']')),
   /(?=])/y,
   false,
   [3 | Backtrack.escapable],
