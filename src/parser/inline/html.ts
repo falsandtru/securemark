@@ -45,7 +45,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
             ([as, bs = new List()]) => as.import(bs)),
           // 不可視のHTML構造が可視構造を変化させるべきでない。
           // 可視のHTMLは優先度変更を検討する。
-          // このため<>は将来的に共通構造を変化させる可能性があり
+          // このため`<>`記号は将来的に共通構造を変化させる可能性があり
           // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
           precedence(0, recursion(Recursion.inline,
           some(union([
