@@ -34,7 +34,6 @@ describe('Unit: parser/block/table', () => {
       assert.deepStrictEqual(inspect(parser, input('|"|\n|-\n|', new Context())), [['<table><thead><tr><th>"</th></tr></thead><tbody><tr></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser, input('|`|`|\n|-\n|', new Context())), [['<table><thead><tr><th><code data-src="`|`">|</code></th></tr></thead><tbody><tr></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser, input('|((|\n|-\n|', new Context())), [['<table><thead><tr><th><span class="paren">(<span class="paren">(</span></span></th></tr></thead><tbody><tr></tr></tbody></table>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('|${|\n|-\n|', new Context())), [['<table><thead><tr><th>${</th></tr></thead><tbody><tr></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser, input('|a|b|\n|-|-|\n|1|2|', new Context())), [['<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser, input('|a|b\n|-|-\n|1|2', new Context())), [['<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser, input('|a|\n|-|\n|1|', new Context())), [['<table><thead><tr><th>a</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>'], '']);

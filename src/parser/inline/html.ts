@@ -24,7 +24,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
       str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y),
-      some(union([attribute])),
+      precedence(9, some(union([attribute]))),
       open(str(/ ?/y), str('>'), true),
       true, [],
       ([as, bs = new List(), cs], context) =>
@@ -37,7 +37,9 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       ([, tag]) =>
         surround<HTMLParser.TagParser, string>(
           surround(
-            str(`<${tag}`), some(attribute), open(str(/ ?/y), str('>'), true),
+            str(`<${tag}`),
+            precedence(9, some(attribute)),
+            open(str(/ ?/y), str('>'), true),
             true, [],
             ([as, bs = new List(), cs]) => as.import(bs).import(cs),
             ([as, bs = new List()]) => as.import(bs)),
@@ -61,7 +63,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
       str(/<[a-z]+(?=[ >])/yi),
-      some(union([attribute])),
+      precedence(9, some(union([attribute]))),
       open(str(/ ?/y), str('>'), true),
       true, [],
       ([as, bs = new List(), cs], context) =>

@@ -35,7 +35,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => constraint(State.l
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
     dup(surround(
       /{(?![{}])/y,
-      inits([uri, some(option)]),
+      precedence(9, inits([uri, some(option)])),
       / ?}/y,
       false, [],
       undefined,
@@ -78,7 +78,10 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
       '[',
       union([media, shortmedia]),
       ']')),
-    dup(surround(/{(?![{}])/y, inits([uri, some(option)]), / ?}/y)),
+    dup(surround(
+      /{(?![{}])/y,
+      precedence(9, inits([uri, some(option)])),
+      / ?}/y)),
   ]),
   ([{ value: content }, { value: params }], context) =>
     new List([new Node(parse(content, params as List<Node<string>>, context))])))));

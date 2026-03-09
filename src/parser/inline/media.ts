@@ -40,7 +40,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       })),
     dup(surround(
       /{(?![{}])/y,
-      inits([uri, some(option)]),
+      precedence(9, inits([uri, some(option)])),
       / ?}/y,
       false, [],
       undefined,
