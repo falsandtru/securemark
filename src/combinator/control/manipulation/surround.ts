@@ -161,7 +161,7 @@ export function isBacktrack(
   assert(backtrack >>> commandsize);
   assert(0 < length && length < 3);
   const { backtracks, offset } = context;
-  if (backtracks) for (let i = 0; i < length; ++i) {
+  for (let i = 0; i < length; ++i) {
     if (backtracks[position + i + offset] & backtrack >>> commandsize) return true;
   }
   return false;
@@ -177,7 +177,7 @@ export function setBacktrack(
   assert(backtrack >>> commandsize);
   assert(0 < length && length < 3);
   const { backtracks, offset } = context;
-  if (backtracks) for (let i = 0; i < length; ++i) {
+  for (let i = 0; i < length; ++i) {
     backtracks[position + i + offset] |= backtrack >>> commandsize;
   }
 }

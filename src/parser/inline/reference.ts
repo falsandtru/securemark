@@ -29,64 +29,25 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       setBacktrack(context, 2 | Backtrack.link, head, 2);
     }
   },
-  ([as, bs], context) => {
-    if (!bs) return;
-    const { source, position, range, linebreak, state } = context;
+  (_, context): undefined => {
+    const { source, position, range, linebreak } = context;
     const head = position - range;
     if (source[position] !== ']') {
       setBacktrack(context, 2 | Backtrack.common, head, 2);
     }
     else if (linebreak !== 0) {
-      setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head, 2);
+      setBacktrack(context, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head, 2);
     }
     else {
       assert(source[position] === ']');
-      if (state & State.annotation) {
-        bs.push(new Node(source[position]));
-      }
       context.position += 1;
-      let result: ReturnType<typeof textlink>;
-      if (source[context.position] !== '{') {
+      if (source[context.position] !== '{' ||
+          isBacktrack(context, 1 | Backtrack.link) ||
+          !textlink({ context })) {
         setBacktrack(context, 2 | Backtrack.link, head + 1);
-        result = new List();
-      }
-      else {
-        result = !isBacktrack(context, 1 | Backtrack.link)
-          ? textlink({ context })
-          : undefined;
-        context.range = range;
-        if (!result) {
-          setBacktrack(context, 2 | Backtrack.link, head + 1);
-          result = new List();
-        }
-      }
-      assert(result);
-      if (context.position === source.length) {
-        setBacktrack(context, 2 | Backtrack.link, head);
-      }
-      else {
-        assert(state ^ State.link);
-        const next = surround(
-          '',
-          some(inline, ']', [[']', 1]]),
-          str(']'),
-          true, [],
-          ([, cs = new List(), ds]) =>
-            cs.import(ds),
-          ([, cs = new List()]) => {
-            setBacktrack(context, 2 | Backtrack.link, head);
-            return cs;
-          })
-          ({ context });
-        if (state & State.annotation && next) {
-          return (as as List<Node<string | HTMLElement>>).import(bs).import(result).import(next);
-        }
       }
       context.position = position;
     }
-    return state & State.annotation
-      ? as.import(bs as List<Node<string>>)
-      : undefined;
   })));
 
 // Chicago-Style

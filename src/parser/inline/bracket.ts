@@ -42,22 +42,20 @@ const p1 = lazy(() => surround(
   ([as, bs = new List(), cs], context) => {
     const { source, position, range } = context;
     const head = position - range;
-    if (context.linebreak !== 0 || source[position - 2] !== ')' || source[head + 1] !== '(') {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head);
+    if (context.linebreak !== 0) {
+      if (head > 0 && source[head - 1] === '(') {
+        setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
+      }
+    }
+    else if (source[position] !== ')' && source[head - 1] === '(') {
+      setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
     }
     const str = source.slice(position - range + 1, position - 1);
     return indexA.test(str)
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
-  ([as, bs = new List()], context) => {
-    const { source, position, range } = context;
-    const head = position - range;
-    if (context.linebreak !== 0 || source[head + 1] !== '(') {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head);
-    }
-    return as.import(bs as List<Node<string>>);
-  }));
+  ([as, bs = new List()]) => as.import(bs as List<Node<string>>)));
 
 const p2 = lazy(() => surround(
   str('（'),
@@ -79,14 +77,19 @@ const s1 = lazy(() => surround(
   true,
   [2 | Backtrack.common],
   ([as, bs = new List(), cs], context) => {
-    if (context.state & State.link) {
-      const { source, position, range } = context;
-      const head = position - range;
-      if (context.linebreak !== 0 || source[position - 2] !== ']' || source[head + 1] !== '[') {
-        setBacktrack(context, 2 | Backtrack.doublebracket, head);
+    const { source, position, range } = context;
+    const head = position - range;
+    if (context.linebreak !== 0) {
+      if (head > 0 && source[head - 1] === '[') {
+        setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
       }
+    }
+    else if (source[position] !== ']' && source[head - 1] === '[') {
+      setBacktrack(context, 2 | Backtrack.doublebracket, head - 1);
+    }
+    if (context.state & State.link) {
       if (context.linebreak !== 0) {
-        setBacktrack(context, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head);
+        setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
       }
       else if (source[position] !== '{') {
         setBacktrack(context, 2 | Backtrack.link, head);

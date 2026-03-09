@@ -17,7 +17,8 @@ export const hashnum: AutolinkParser.HashnumParser = lazy(() => constraint(State
     ].join('|').replace(/emoji/g, emoji.source), 'yu')),
     '',
     false,
-    [1 | Backtrack.unescapable],
+    // unescapableを使用するべきだがhashtagとの重複を回避するためescapableを使用する。
+    [3 | Backtrack.escapable],
     ([, [{ value }]], context) =>
       new List([
         new Node(define(parse(

@@ -49,7 +49,7 @@ export class Context {
     this.linebreak = linebreak ?? 0;
     this.range = range ?? 0;
     this.offset = offset ?? 0;
-    this.backtracks = backtracks;
+    this.backtracks = backtracks ?? {};
   }
   public source: string;
   public position: number;
@@ -95,7 +95,7 @@ export class Context {
   //     1段落数百文字あたり平均2、3か所以下が妥当な頻度でありこの場合の最大追加データサイズは
   //     入力内の最大セグメントサイズの10%前後である。
   //
-  public backtracks?: Record<number, number>;
+  public backtracks: Record<number, number>;
 }
 export type Options = Partial<Context>;
 

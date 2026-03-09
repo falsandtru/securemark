@@ -44,7 +44,7 @@ export const block: BlockParser = reset(
   {
     resources: {
       // バックトラックのせいで文字数制限を受けないようにする。
-      clock: MAX_SEGMENT_SIZE * 5 + 1,
+      clock: MAX_SEGMENT_SIZE * 6 + 1,
       recursions: [
         10 || Recursion.block,
         20 || Recursion.blockquote,
