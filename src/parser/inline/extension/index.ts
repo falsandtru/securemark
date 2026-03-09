@@ -29,21 +29,15 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
       : undefined,
   undefined)),
   ns => {
-    if (ns.length === 1) {
-      const el = ns.head!.value as HTMLElement;
-      return new List([
-        new Node(define(el, {
-          id: el.id ? null : undefined,
-          class: 'index',
-          href: el.id ? `#${el.id}` : undefined,
-        }))
-      ]);
-    }
-    else {
-      assert(ns.last?.value === '');
-      ns.pop();
-      return ns;
-    }
+    assert(ns.length === 1);
+    const el = ns.head!.value as HTMLAnchorElement;
+    return new List([
+      new Node(define(el, {
+        id: el.id ? null : undefined,
+        class: 'index',
+        href: el.id ? `#${el.id}` : undefined,
+      }))
+    ]);
   })));
 
 export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
