@@ -364,16 +364,16 @@ describe('Unit: parser/api/parse', () => {
       this.timeout(5000);
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して50-400%程度。
       // 6n = annotation + reference + link + url/math + ruby + text
-      const source = `((([[[[#$[${'.'.repeat(16665)}`;
+      const source = `((([[[[#$[${'.'.repeat(16664)}]]]`;
       assert.deepStrictEqual(
         [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
-        ['P']);
+        ['P', 'OL']);
     });
 
     it('backtrack error', function () {
       this.timeout(5000);
-      const source = `((([[[[#$[${'.'.repeat(16665 + 1)}`;
+      const source = `((([[[[#$[${'.'.repeat(16664 + 1)}]]]`;
       assert.deepStrictEqual(
         [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
