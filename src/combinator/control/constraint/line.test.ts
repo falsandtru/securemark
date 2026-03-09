@@ -1,10 +1,10 @@
-import { List, Node, input } from '../../data/parser';
+import { List, Node, Context, input } from '../../data/parser';
 import { line } from './line';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/line', () => {
   describe('line', () => {
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(line(_ => new List<Node<string>>())(input('', ctx)), ctx), undefined);

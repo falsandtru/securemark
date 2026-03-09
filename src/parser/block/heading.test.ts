@@ -1,12 +1,13 @@
 import { heading } from './heading';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
     const parser = (source: string) => some(heading)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);

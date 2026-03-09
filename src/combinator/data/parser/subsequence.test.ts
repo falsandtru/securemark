@@ -20,7 +20,7 @@ describe('Unit: combinator/data/parser/subsequence', () => {
         : undefined;
     };
     const abc = subsequence<Parser<string, Context, [typeof a, typeof b, typeof c]>>([a, b, c]);
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('basic', () => {
       const parser = abc;

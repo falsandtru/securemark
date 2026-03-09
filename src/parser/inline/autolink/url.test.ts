@@ -1,12 +1,13 @@
 import { autolink } from '../autolink';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/url', () => {
   describe('url', () => {
     const parser = (source: string) => some(autolink)((i => void ++i.context.position || i)(input(source, ctx)));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);

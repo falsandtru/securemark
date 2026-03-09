@@ -1,8 +1,8 @@
 import { LinkParser } from '../inline';
 import { textlink, medialink } from './link';
 import { some, union } from '../../combinator';
-import { MarkdownParser } from '../../../markdown';
 import { input } from '../../combinator/data/parser';
+import { Context, Options } from '../context';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/link', () => {
@@ -11,8 +11,8 @@ describe('Unit: parser/inline/link', () => {
       medialink,
       textlink,
     ]);
-    const parser = (source: string, opts: MarkdownParser.Options = {}) => some(link)(input(source, Object.assign(ctx, { host: undefined }, opts)));
-    const { context: ctx } = input('', {});
+    const parser = (source: string, opts: Options = {}) => some(link)(input(source, Object.assign(ctx, { host: undefined }, opts)));
+    const { context: ctx } = input('', new Context());
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('[]{javascript:alert}'), ctx), [['<a class="invalid">javascript:alert</a>'], '']);

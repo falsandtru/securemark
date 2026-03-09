@@ -1,12 +1,13 @@
 import { media } from './media';
 import { some } from '../../combinator';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/media', () => {
   describe('media', () => {
     const parser = (source: string) => some(media)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('![]{javascript:alert}'), ctx), [['<img class="invalid" alt="javascript:alert">'], '']);

@@ -1,32 +1,17 @@
-import { Parser, List, Node, Context as Ctx, Options as Opts } from './src/combinator/data/parser';
-import { Dict } from 'spica/dict';
+import { Parser, List, Node } from './src/combinator/data/parser';
+import { Context } from './src/parser/context';
 
 declare abstract class Markdown<T> {
   private parser?: T;
 }
 export interface MarkdownParser extends
   Markdown<'markdown'>,
-  Parser<DocumentFragment, MarkdownParser.Context, [
+  Parser<DocumentFragment, Context, [
     MarkdownParser.HeaderParser,
     MarkdownParser.BlockParser,
   ]> {
 }
 export namespace MarkdownParser {
-  export interface Context extends Ctx, Options {
-    buffer?: List<Node<(string | HTMLElement)>>;
-    sequential?: boolean;
-  }
-  export interface Options extends Opts {
-    readonly host?: URL;
-    readonly url?: URL;
-    readonly id?: string;
-    readonly header?: boolean;
-    readonly caches?: {
-      readonly code?: Dict<string, HTMLElement>;
-      readonly math?: Dict<string, HTMLElement>;
-      readonly media?: Dict<string, HTMLElement>;
-    };
-  }
   export interface SegmentParser extends
     Markdown<'segment'>,
     Parser<string, Context, [

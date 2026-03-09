@@ -25,19 +25,44 @@ export class Node<N> implements List.Node {
   public next?: this = undefined;
   public prev?: this = undefined;
 }
-export interface Context extends Options {
-  source: string;
-  position: number;
-}
-export interface Options {
-  readonly resources?: {
+export class Context {
+  constructor(
+    {
+      source,
+      position,
+      resources,
+      delimiters,
+      precedence,
+      state,
+      linebreak,
+      range,
+      offset,
+      backtracks,
+    }: Options = {},
+  ) {
+    this.source = source ?? '';
+    this.position = position ?? 0;
+    this.resources = resources;
+    this.precedence = precedence ?? 0;
+    this.delimiters = delimiters ?? new Delimiters();
+    this.state = state ?? 0;
+    this.linebreak = linebreak ?? 0;
+    this.range = range ?? 0;
+    this.offset = offset ?? 0;
+    this.backtracks = backtracks;
+  }
+  public source: string;
+  public position: number;
+  public readonly resources?: {
     clock: number;
     recursions: number[];
   };
-  offset?: number;
-  precedence?: number;
-  delimiters?: Delimiters;
-  state?: number;
+  public precedence: number;
+  public delimiters: Delimiters;
+  public state: number;
+  public linebreak: number;
+  public range: number;
+  public offset: number;
   // Objectの内部実装を利用する。
   // 探索木を直接使用する場合は探索速度が重要で挿入は相対的に少なく削除は不要かつ不確実であるため
   // AVL木が適当と思われる。
@@ -70,18 +95,14 @@ export interface Options {
   //     1段落数百文字あたり平均2、3か所以下が妥当な頻度でありこの場合の最大追加データサイズは
   //     入力内の最大セグメントサイズの10%前後である。
   //
-  backtracks?: Record<number, number>;
-  linebreak?: number;
-  range?: number;
+  public backtracks?: Record<number, number>;
 }
+export type Options = Partial<Context>;
 
-export function input<C extends Options>(source: string, context: C): Input<C & Context> {
-  // @ts-expect-error
+export function input<C extends Context>(source: string, context: C): Input<C> {
   context.source = source;
-  // @ts-expect-error
   context.position = 0;
   return {
-    // @ts-expect-error
     context,
   };
 }
@@ -92,7 +113,7 @@ export function subinput<C extends Context>(source: string, context: C): Input<C
       ...context,
       source,
       position: 0,
-      offset: undefined,
+      offset: 0,
       backtracks: {},
     }
   };

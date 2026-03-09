@@ -1,8 +1,9 @@
 import { input } from '../combinator/data/parser';
+import { Context } from '../parser/context';
 import { cite } from '../parser/block/reply/cite';
 
 export function quote(anchor: string, range: Range): string {
-  const { context } = input('', {});
+  const { context } = input('', new Context());
   cite(input(`>>${anchor}`, context));
   if (context.position !== context.source.length) throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);

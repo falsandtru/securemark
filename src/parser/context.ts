@@ -1,3 +1,42 @@
+import { List, Node, Context as Ctx } from '../../src/combinator/data/parser';
+import { Dict } from 'spica/dict';
+
+export class Context extends Ctx {
+  constructor(
+    options: Partial<Context> = {},
+  ) {
+    super(options);
+    const {
+      buffer,
+      sequential,
+      header,
+      host,
+      url,
+      id,
+      caches,
+    } = options;
+    this.buffer = buffer ?? new List();
+    this.sequential = sequential ?? false;
+    this.header = header;
+    this.host = host;
+    this.url = url;
+    this.id = id;
+    this.caches = caches;
+  }
+  public buffer: List<Node<(string | HTMLElement)>>;
+  public sequential: boolean;
+  public readonly header?: boolean;
+  public readonly host?: URL;
+  public readonly url?: URL;
+  public readonly id?: string;
+  public readonly caches?: {
+    readonly code?: Dict<string, HTMLElement>;
+    readonly math?: Dict<string, HTMLElement>;
+    readonly media?: Dict<string, HTMLElement>;
+  };
+}
+export type Options = Partial<Context>;
+
 export const enum State {
   annotation = 1 << 7,
   reference = 1 << 6,

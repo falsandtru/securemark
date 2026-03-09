@@ -1,12 +1,13 @@
 import { example } from './example';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/example', () => {
   describe('example', () => {
     const parser = (source: string) => some(example)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~example/\n~~~'), ctx), undefined);

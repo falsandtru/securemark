@@ -1,12 +1,13 @@
 import { ruby } from './ruby';
 import { some } from '../../combinator';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/ruby', () => {
   describe('ruby', () => {
     const parser = (source: string) => some(ruby)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);

@@ -1,13 +1,14 @@
 import { table } from './table';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 import { html } from 'typed-dom/dom';
 
 describe('Unit: parser/block/extension/table', () => {
   describe('table', () => {
     const parser = (source: string) => some(table)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~'), ctx), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);

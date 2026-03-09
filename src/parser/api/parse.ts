@@ -1,6 +1,6 @@
 import { ParserOptions } from '../../..';
-import { MarkdownParser } from '../../../markdown';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalize';
@@ -14,19 +14,18 @@ interface Options extends ParserOptions {
   readonly test?: boolean;
 }
 
-export function parse(source: string, options: Options = {}, context?: MarkdownParser.Options): DocumentFragment {
+export function parse(source: string, options: Options = {}, context?: Context): DocumentFragment {
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
-  context = {
+  context = new Context({
     host: options.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
     url: url ? new ReadonlyURL(url as ':') : context?.url,
     id: options.id ?? context?.id,
     caches: context?.caches,
     resources: context?.resources,
-  };
+  });
   assert(!context.offset);
   assert(!context.precedence);
-  assert(!context.delimiters);
   assert(!context.state);
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);

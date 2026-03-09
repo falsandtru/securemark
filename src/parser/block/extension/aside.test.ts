@@ -1,12 +1,13 @@
 import { aside } from './aside';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/aside', () => {
   describe('aside', () => {
     const parser = (source: string) => some(aside)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~aside\n~~~'), ctx), [['<pre class="invalid" translate="no">~~~aside\n~~~</pre>'], '']);

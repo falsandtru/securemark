@@ -1,4 +1,5 @@
 import { parse } from './parse';
+import { Context } from '../context';
 import { html } from 'typed-dom/dom';
 
 describe('Unit: parser/api/parse', () => {
@@ -365,7 +366,7 @@ describe('Unit: parser/api/parse', () => {
       // 5n = annotation/reference + link + url/math + ruby + text
       const source = `((([[[[#$[${'.'.repeat(19998)}`;
       assert.deepStrictEqual(
-        [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
+        [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['P']);
     });
@@ -374,7 +375,7 @@ describe('Unit: parser/api/parse', () => {
       this.timeout(5000);
       const source = `((([[[[#$[${'.'.repeat(19998 + 1)}`;
       assert.deepStrictEqual(
-        [...parse(source, {}, { resources: { clock: 100000, recursions: [100] } }).children]
+        [...parse(source, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['H1', 'PRE']);
     });

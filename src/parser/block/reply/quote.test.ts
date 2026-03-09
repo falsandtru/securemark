@@ -1,12 +1,13 @@
 import { quote } from './quote';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/reply/quote', () => {
   describe('quote', () => {
     const parser = (source: string) => some(quote)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);

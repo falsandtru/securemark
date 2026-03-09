@@ -1,12 +1,13 @@
 import { emphasis } from './emphasis';
 import { some } from '../../combinator';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/emphasis', () => {
   describe('emphasis', () => {
     const parser = (source: string) => some(emphasis)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('*'), ctx), undefined);

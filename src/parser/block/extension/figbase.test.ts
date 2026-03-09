@@ -1,12 +1,13 @@
 import { figbase } from './figbase';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/figbase', () => {
   describe('figbase', () => {
     const parser = (source: string) => some(figbase)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('\n$-0'), ctx), undefined);

@@ -1,11 +1,12 @@
 import { contentline } from './line';
 import { input } from '../../combinator/data/parser';
+import { Context } from '../context';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {
   describe('contentline', () => {
     const parser = (source: string) => contentline(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser(''), ctx), undefined);

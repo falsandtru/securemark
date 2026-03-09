@@ -1,6 +1,5 @@
-import { MarkdownParser } from '../../../markdown';
 import { LinkParser } from '../inline';
-import { State, Backtrack, Command } from '../context';
+import { Context, State, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
@@ -98,7 +97,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 export function parse(
   content: List<Node<string | HTMLElement>>,
   params: List<Node<string>>,
-  context: MarkdownParser.Context,
+  context: Context,
 ): HTMLAnchorElement {
   assert(params.length > 0);
   const INSECURE_URI = params.shift()!.value;

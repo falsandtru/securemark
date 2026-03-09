@@ -1,12 +1,13 @@
 import { figure } from './figure';
 import { some } from '../../../combinator';
 import { input } from '../../../combinator/data/parser';
+import { Context } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/figure', () => {
   describe('figure', () => {
     const parser = (source: string) => some(figure)(input(source, ctx));
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure\n!https://host\n~~~'), ctx), [['<pre class="invalid" translate="no">~~~figure\n!https://host\n~~~</pre>'], '']);

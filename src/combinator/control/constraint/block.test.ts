@@ -1,10 +1,10 @@
 import { block } from './block';
-import { List, Node, input } from '../../data/parser';
+import { List, Node, Context, input } from '../../data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/block', () => {
   describe('block', () => {
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('invalid', () => {
       assert.throws(() => block(_ => new List<Node<string>>())(input(' \n', ctx)));

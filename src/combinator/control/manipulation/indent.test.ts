@@ -1,10 +1,10 @@
 import { indent } from './indent';
-import { List, Node, input } from '../../data/parser';
+import { List, Node, Context, input } from '../../data/parser';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/indent', () => {
   describe('indent', () => {
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('valid', () => {
       const parser = indent(({ context }) => { context.position = context.source.length; return new List([new Node(context.source)]); });

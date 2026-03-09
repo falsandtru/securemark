@@ -1,4 +1,3 @@
-import { max, min } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { List, Node, subinput } from '../../../combinator/data/parser';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
@@ -6,6 +5,7 @@ import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { unwrap, invalid } from '../../util';
 import { visualize, trimBlank, trimBlankEnd } from '../../visibility';
+import { max, min } from 'spica/alias';
 import { splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 

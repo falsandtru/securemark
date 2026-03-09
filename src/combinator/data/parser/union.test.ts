@@ -15,7 +15,7 @@ describe('Unit: combinator/data/parser/union', () => {
         : undefined;
     };
     const ab = union<Parser<string, Context, [typeof a, typeof b]>>([a, b]);
-    const { context: ctx } = input('', {});
+    const { context: ctx } = input('', new Context());
 
     it('basic', () => {
       const parser = ab;

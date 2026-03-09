@@ -1,5 +1,5 @@
-import { min } from 'spica/alias';
 import { Parser, Result, List, Node, Context, Options } from '../../data/parser';
+import { min } from 'spica/alias';
 import { clone } from 'spica/assign';
 
 export function reset<P extends Parser>(base: Options, parser: P): P;
@@ -36,7 +36,6 @@ function apply<N>(parser: Parser<N>, context: Context, changes: readonly [string
         assert(reset);
         assert(!context.offset);
         assert(!context.precedence);
-        assert(!context.delimiters);
         assert(!context.state);
         values[i] = context[prop];
         context[prop as string] ??= clone({}, change[1] as object);

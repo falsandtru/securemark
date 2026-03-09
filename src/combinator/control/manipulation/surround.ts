@@ -202,6 +202,6 @@ function reduce(backtracks: readonly number[]): readonly [number, number, number
   return [len, rbs, wbs];
 }
 
-function revert(context: Context, linebreak: number | undefined): void {
+function revert(context: Context, linebreak: number): void {
   context.linebreak = linebreak;
 }

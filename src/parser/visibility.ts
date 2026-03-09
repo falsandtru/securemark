@@ -1,6 +1,5 @@
-import { MarkdownParser } from '../../markdown';
-import { Command } from './context';
 import { Parser, Input, List, Node, failsafe } from '../combinator/data/parser';
+import { Context, Command } from './context';
 import { convert, fmap } from '../combinator';
 import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
@@ -46,18 +45,18 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
 //      ? parser(input)
 //      : undefined;
 //}
-//const isLooseStart = reduce(({ source, context }: Input<MarkdownParser.Context>, except?: string): boolean => {
+//const isLooseStart = reduce(({ source, context }: Input<Context>, except?: string): boolean => {
 //  return isTightStart({ source: source.replace(blank.start, ''), context }, except);
 //}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
 
 export function tightStart<P extends Parser>(parser: P, except?: string): P;
-export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N> {
+export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N, Context> {
   return input =>
     isTightStart(input, except)
       ? parser(input)
       : undefined;
 }
-function isTightStart(input: Input<MarkdownParser.Context>, except?: string): boolean {
+function isTightStart(input: Input<Context>, except?: string): boolean {
   const { context } = input;
   const { source, position } = context;
   if (position === source.length) return true;

@@ -1,5 +1,5 @@
 import { ParserSettings, Progress } from '../../..';
-import { MarkdownParser } from '../../../markdown';
+import { Context } from '../context';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { block } from '../block';
@@ -18,13 +18,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  const context: MarkdownParser.Options = {
+  const context = new Context({
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-  };
+  });
   assert(!context.offset);
   assert(!context.precedence);
-  assert(!context.delimiters);
   assert(!context.state);
   if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
