@@ -1,10 +1,10 @@
-import { Parser, List, Node, Context } from '../parser';
+import { Parser, List, Node, Context, failsafe } from '../parser';
 
 export function sequence<P extends Parser>(parsers: Parser.SubParsers<P>): Parser.SubNode<P> extends Parser.Node<P> ? P : Parser<Parser.SubNode<P>, Parser.Context<P>, Parser.SubParsers<P>>;
 export function sequence<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
-  return input => {
+  return failsafe(input => {
     const { context } = input;
     const { source } = context;
     let nodes: List<Node<N>> | undefined;
@@ -16,5 +16,5 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D): Parser<N, Contex
       nodes = nodes?.import(result) ?? result;
     }
     return nodes;
-  };
+  });
 }
