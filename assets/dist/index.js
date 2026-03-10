@@ -8609,7 +8609,7 @@ exports.strs = strs;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isAlphanumeric = exports.backToEmailHead = exports.backToUrlHead = exports.backToWhitespace = exports.next = exports.canSkip = exports.txt = exports.text = exports.nonWhitespace = void 0;
+exports.isAlphanumeric = exports.next = exports.canSkip = exports.txt = exports.text = exports.nonWhitespace = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
@@ -8687,26 +8687,18 @@ function next(source, position, state, delimiter) {
   if (delimiter) {
     delimiter.lastIndex = position + 1;
     delimiter.test(source);
-    index = delimiter.lastIndex;
+    index = delimiter.lastIndex || position;
   } else {
     index = seek(source, position, state);
   }
-  if (index === 0) return source.length;
+  if (index === position || index === source.length) return source.length;
   const char = source[index];
   switch (char) {
-    case '$':
-    case '*':
-    case '+':
-    case '~':
-    case '=':
-    case '/':
-      index = backToWhitespace(source, position, index);
-      break;
     case '%':
-      index += index - 1 > position && source.startsWith(' %]', index - 1) ? -1 : 0;
+      index += !delimiter && index - 1 > position ? -1 : 0;
       break;
     case '[':
-      index += index - 1 > position && source.startsWith(' [|', index - 1) ? -1 : 0;
+      index += !delimiter && index - 1 > position && source.startsWith(' [|', index - 1) ? -1 : 0;
       break;
     case ':':
       index = source.startsWith('//', index + 1) ? backToUrlHead(source, position, index) : index;
@@ -8718,11 +8710,6 @@ function next(source, position, state, delimiter) {
   return index;
 }
 exports.next = next;
-function backToWhitespace(source, position, index) {
-  const prev = index - 1;
-  return prev > position && /\s/.test(source[prev]) ? prev : index;
-}
-exports.backToWhitespace = backToWhitespace;
 function backToUrlHead(source, position, index) {
   const delim = index;
   let state = false;
@@ -8744,7 +8731,6 @@ function backToUrlHead(source, position, index) {
   }
   return index === position || source[index] !== 'h' ? delim : index;
 }
-exports.backToUrlHead = backToUrlHead;
 function backToEmailHead(source, position, index) {
   const delim = index;
   let state = false;
@@ -8767,7 +8753,6 @@ function backToEmailHead(source, position, index) {
   }
   return index === position ? delim : index;
 }
-exports.backToEmailHead = backToEmailHead;
 function isAlphanumeric(char) {
   if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9' || 'A' <= char && char <= 'Z' || 'a' <= char && char <= 'z';
@@ -8849,7 +8834,7 @@ function seek(source, position, state) {
         if (source[i + 1] === fst && source[i + 2] === fst) return i;
         continue;
       case '%':
-        if (source[i + 1] === ']') return i;
+        if (source[i + 1] === ']' && isWhitespace(source[i - 1], true)) return i;
         continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
