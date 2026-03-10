@@ -14,6 +14,8 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser, input('$$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$$$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$0 $', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$0\\ $', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$0\\\n$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-0, $-1', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-0 and $-1', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-0と$-1', new Context())), undefined);
@@ -38,9 +40,13 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser, input('$a$b', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$a$b$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$ $', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$\\ $', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$ a$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$ a $', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$\n$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$\\\n$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$a\nb$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$a\\\nb$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$a\\$\nb$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$a\\$\\\nb$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$`$', new Context())), undefined);
@@ -74,9 +80,12 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser, input('${a}b$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${a}b{c}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${a}{b}$', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('${$}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${\\}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${\n}$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('${\\\n}$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('${a\nb}$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('${a\\\nb}$', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('${$}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${a\\$\nb}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('${a\\$\\\nb}$', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$\\begin$', new Context())), [['<span class="invalid" translate="no">$\\begin$</span>'], '']);
@@ -109,7 +118,6 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser, input('$a$[A](a)', new Context())), [['<span class="math" translate="no" data-src="$a$">$a$</span>'], '[A](a)']);
       assert.deepStrictEqual(inspect(parser, input('$A$', new Context())), [['<span class="math" translate="no" data-src="$A$">$A$</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$-a$', new Context())), [['<span class="math" translate="no" data-src="$-a$">$-a$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('$\\ $', new Context())), [['<span class="math" translate="no" data-src="$\\ $">$\\ $</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$\\$$', new Context())), [['<span class="math" translate="no" data-src="$\\$$">$\\$$</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$\\Pi$', new Context())), [['<span class="math" translate="no" data-src="$\\Pi$">$\\Pi$</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$\\ 0$', new Context())), [['<span class="math" translate="no" data-src="$\\ 0$">$\\ 0$</span>'], '']);
