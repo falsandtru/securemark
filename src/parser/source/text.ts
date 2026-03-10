@@ -98,12 +98,13 @@ export function next(source: string, position: number, state: number, delimiter?
   const char = source[index];
   switch (char) {
     case '%':
-      index += index - 1 > position && source.startsWith(' %]', index - 1)
+      assert(source.startsWith('%]', index) || delimiter);
+      index += !delimiter && index - 1 > position && isWhitespace(source[index - 1], true)
         ? -1
         : 0;
       break;
     case '[':
-      index += index - 1 > position && source.startsWith(' [|', index - 1)
+      index += !delimiter && index - 1 > position && source.startsWith(' [|', index - 1)
         ? -1
         : 0;
       break;
