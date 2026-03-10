@@ -40,7 +40,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('*a***b****', new Context())), [['<em>a</em>', '<strong>b</strong>', '**'], '']);
       assert.deepStrictEqual(inspect(parser, input('*a***b****c', new Context())), [['<em>a</em>', '<strong>b</strong>', '**', 'c'], '']);
       assert.deepStrictEqual(inspect(parser, input('*a *b**', new Context())), [['<em>a <em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('*a *b**c', new Context())), [['*', 'a', ' ', '*', 'b', '**', 'c'], '']);
+      assert.deepStrictEqual(inspect(parser, input('*a *b**c', new Context())), [['*', 'a ', '*', 'b', '**', 'c'], '']);
       assert.deepStrictEqual(inspect(parser, input('*a **b***', new Context())), [['<em>a <strong>b</strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('*a **b***c', new Context())), [['<em>a <strong>b</strong></em>', 'c'], '']);
       assert.deepStrictEqual(inspect(parser, input('*a ***b****', new Context())), [['<em>a <em><strong>b</strong></em></em>'], '']);
@@ -101,8 +101,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('[$1]', new Context())), [['[', '$1', ']'], '']);
       assert.deepStrictEqual(inspect(parser, input('[$1-2]', new Context())), [['[', '$1-2', ']'], '']);
       assert.deepStrictEqual(inspect(parser, input('[$-1][$-2]', new Context())), [['<a class="label" data-label="$-1">$-1</a>', '<a class="label" data-label="$-2">$-2</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('$-1, $-2', new Context())), [['<a class="label" data-label="$-1">$-1</a>', ',', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('$-1 and $-2', new Context())), [['<a class="label" data-label="$-1">$-1</a>', ' and', ' ', '<a class="label" data-label="$-2">$-2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('$-1, $-2', new Context())), [['<a class="label" data-label="$-1">$-1</a>', ', ', '<a class="label" data-label="$-2">$-2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('$-1 and $-2', new Context())), [['<a class="label" data-label="$-1">$-1</a>', ' and ', '<a class="label" data-label="$-2">$-2</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$$-1', new Context())), [['$', '<a class="label" data-label="$-1">$-1</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[#a]]', new Context())), [['<sup class="reference"><span><a class="hashtag" href="/hashtags/a">#a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[$-1]]', new Context())), [['<sup class="reference"><span><a class="label" data-label="$-1">$-1</a></span></sup>'], '']);

@@ -97,14 +97,6 @@ export function next(source: string, position: number, state: number, delimiter?
   assert(index > position);
   const char = source[index];
   switch (char) {
-    case '$':
-    case '*':
-    case '+':
-    case '~':
-    case '=':
-    case '/':
-      index = backToWhitespace(source, position, index);
-      break;
     case '%':
       index += index - 1 > position && source.startsWith(' %]', index - 1)
         ? -1
@@ -129,13 +121,7 @@ export function next(source: string, position: number, state: number, delimiter?
   assert(index > position);
   return index;
 }
-export function backToWhitespace(source: string, position: number, index: number): number {
-  const prev = index - 1;
-  return prev > position && /\s/.test(source[prev])
-    ? prev
-    : index;
-}
-export function backToUrlHead(source: string, position: number, index: number): number {
+function backToUrlHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
   for (let i = index - 1; i >= position; --i) {
@@ -158,7 +144,7 @@ export function backToUrlHead(source: string, position: number, index: number): 
     ? delim
     : index;
 }
-export function backToEmailHead(source: string, position: number, index: number): number {
+function backToEmailHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
   for (let i = index - 1; i >= position; --i) {

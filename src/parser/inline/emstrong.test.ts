@@ -11,7 +11,7 @@ describe('Unit: parser/inline/emstrong', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser, input('***', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('***a', new Context())), [['***a'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***a ***', new Context())), [['***a', ' ', '***'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***a ***', new Context())), [['***a ', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a  ***', new Context())), [['***a', ' ', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a\n***', new Context())), [['***a', '<br>', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a\\ ***', new Context())), [['***a', ' ', '***'], '']);
@@ -66,7 +66,7 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser, input('***a*\\ **b****', new Context())), [['<strong><em>a</em> <strong>b</strong></strong>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*&Tab;**b****', new Context())), [['<strong><em>a</em>\t<strong>b</strong></strong>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*<wbr>**b****', new Context())), [['<strong><em>a</em><wbr><strong>b</strong></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***a*b **', new Context())), [['**', '<em>a</em>', 'b', ' ', '**'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***a*b **', new Context())), [['**', '<em>a</em>', 'b ', '**'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*b\\ **', new Context())), [['**', '<em>a</em>', 'b', ' ', '**'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**b*', new Context())), [['<em><strong>a</strong>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**b*c', new Context())), [['<em><strong>a</strong>b</em>'], 'c']);
@@ -77,7 +77,7 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser, input('***a**\\ *b**', new Context())), [['<em><strong>a</strong> <em>b</em></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**&Tab;*b**', new Context())), [['<em><strong>a</strong>\t<em>b</em></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**<wbr>*b**', new Context())), [['<em><strong>a</strong><wbr><em>b</em></em>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***a**b *', new Context())), [['*', '<strong>a</strong>', 'b', ' ', '*'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***a**b *', new Context())), [['*', '<strong>a</strong>', 'b ', '*'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**b\\ *', new Context())), [['*', '<strong>a</strong>', 'b', ' ', '*'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*', new Context())), [['**', '<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a**', new Context())), [['*', '<strong>a</strong>'], '']);
@@ -109,11 +109,11 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser, input('******a******', new Context())), [['<em><strong><em><strong>a</strong></em></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('******a******b', new Context())), [['<em><strong><em><strong>a</strong></em></strong></em>'], 'b']);
       assert.deepStrictEqual(inspect(parser, input('******a*b', new Context())), [['*****', '<em>a</em>', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser, input('******a*b *', new Context())), [['*****', '<em>a</em>', 'b', ' ', '*'], '']);
-      assert.deepStrictEqual(inspect(parser, input('******a*b **', new Context())), [['*****', '<em>a</em>', 'b', ' ', '**'], '']);
-      assert.deepStrictEqual(inspect(parser, input('******a*b ***', new Context())), [['*****', '<em>a</em>', 'b', ' ', '***'], '']);
-      assert.deepStrictEqual(inspect(parser, input('******a*b ****', new Context())), [['*****', '<em>a</em>', 'b', ' ', '****'], '']);
-      assert.deepStrictEqual(inspect(parser, input('******a*b *****', new Context())), [['*****', '<em>a</em>', 'b', ' ', '*****'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*b *', new Context())), [['*****', '<em>a</em>', 'b ', '*'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*b **', new Context())), [['*****', '<em>a</em>', 'b ', '**'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*b ***', new Context())), [['*****', '<em>a</em>', 'b ', '***'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*b ****', new Context())), [['*****', '<em>a</em>', 'b ', '****'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*b *****', new Context())), [['*****', '<em>a</em>', 'b ', '*****'], '']);
     });
 
   });
