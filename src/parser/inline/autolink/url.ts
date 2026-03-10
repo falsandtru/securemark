@@ -12,7 +12,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     precedence(0, some(union([
       some(unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y),
       precedence(1, verify(bracket, ns => ns.length > 0)),
-    ]), undefined, [[/[^\x21-\x7E]|\$/y, 9]])),
+    ]), [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
     [3 | Backtrack.unescapable]),
   union([
