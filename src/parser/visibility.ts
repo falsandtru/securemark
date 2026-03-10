@@ -42,29 +42,28 @@ function nonblankWith(delimiter: string | RegExp): RegExp {
   ].join(''), 'y');
 }
 
-//export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
-//export function looseStart<N extends HTMLElement | string>(parser: Parser<N>, except?: string): Parser<N> {
+//export function looseStart<P extends Parser<HTMLElement | string>>(parser: P): P;
+//export function looseStart<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
 //  return input =>
-//    isLooseStart(input, except)
+//    isLooseStart(input)
 //      ? parser(input)
 //      : undefined;
 //}
-//const isLooseStart = reduce(({ source, context }: Input<Context>, except?: string): boolean => {
-//  return isTightStart({ source: source.replace(blank.start, ''), context }, except);
-//}, ({ source }, except = '') => `${source}${Command.Separator}${except}`);
+//const isLooseStart = reduce(({ source, context }: Input<Context>): boolean => {
+//  return isTightStart({ source: source.replace(blank.start, ''), context });
+//}, ({ source }) => `${source}${Command.Separator}`);
 
-export function tightStart<P extends Parser>(parser: P, except?: string): P;
-export function tightStart<N>(parser: Parser<N>, except?: string): Parser<N, Context> {
+export function tightStart<P extends Parser>(parser: P): P;
+export function tightStart<N>(parser: Parser<N>): Parser<N, Context> {
   return input =>
-    isTightStart(input, except)
+    isTightStart(input)
       ? parser(input)
       : undefined;
 }
-function isTightStart(input: Input<Context>, except?: string): boolean {
+function isTightStart(input: Input<Context>): boolean {
   const { context } = input;
   const { source, position } = context;
   if (position === source.length) return true;
-  if (except && source.startsWith(except, position)) return false;
   switch (source[position]) {
     case ' ':
     case '　':
