@@ -1,5 +1,5 @@
-import { Parser, Input, List, Node, Context, failsafe } from '../../data/parser';
-import { matcher } from '../../../combinator';
+import { Parser, Input, List, Node, Context } from '../../data/parser';
+import { matcher, bind } from '../../../combinator';
 
 //export function contract<P extends Parser>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
 //export function contract<N>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<N>, cond: (nodes: readonly N[], rest: string) => boolean): Parser<N> {
@@ -11,32 +11,16 @@ export function validate<P extends Parser>(cond: ((input: Input<Parser.Context<P
 export function validate<N>(pattern: string | RegExp | ((input: Input<Context>) => boolean), parser: Parser<N>): Parser<N> {
   if (typeof pattern === 'function') return guard(pattern, parser);
   const match = matcher(pattern, false);
-  return input => {
-    const { context } = input;
-    const { source, position } = context;
-    if (position === source.length) return;
-    if (!match(input)) return;
-    return parser(input);
-  };
+  return input => match(input) ? parser(input) : undefined;
 }
 
 function guard<P extends Parser>(f: (input: Input<Parser.Context<P>>) => boolean, parser: P): P;
 function guard<N>(f: (input: Input<Context>) => boolean, parser: Parser<N>): Parser<N> {
-  return input =>
-    f(input)
-      ? parser(input)
-      : undefined;
+  return input => f(input) ? parser(input) : undefined;
 }
 
 export function verify<P extends Parser>(parser: P, cond: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>) => boolean): P;
 export function verify<N>(parser: Parser<N>, cond: (nodes: List<Node<N>>, context: Context) => boolean): Parser<N> {
   assert(parser);
-  return failsafe(input => {
-    const { context } = input;
-    const { source, position } = context;
-    if (position === source.length) return;
-    const result = parser(input);
-    if (result && !cond(result, context)) return;
-    return result;
-  });
+  return bind(parser, (nodes, context) => cond(nodes, context) ? nodes : undefined)
 }
