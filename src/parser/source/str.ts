@@ -7,16 +7,18 @@ export function str(pattern: string | RegExp, verify?: (source: string, position
   return matcher(pattern, true, verify);
 }
 
-export function strs(pattern: string): StrParser;
-export function strs(pattern: string): Parser<string> {
+export function strs(pattern: string, limit?: number): StrParser;
+export function strs(pattern: string, limit: number = -1): Parser<string> {
   assert(pattern);
   return ({ context }) => {
     const { source } = context;
     let acc = '';
-    for (; context.position < source.length && source.startsWith(pattern, context.position);) {
+    for (let i = 0; i !== limit && context.position < source.length && source.startsWith(pattern, context.position); ++i) {
       acc += pattern;
       context.position += pattern.length;
     }
-    return new List([new Node(acc)]);
+    return acc
+      ? new List([new Node(acc)])
+      : undefined;
   };
 }
