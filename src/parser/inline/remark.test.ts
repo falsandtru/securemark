@@ -30,8 +30,8 @@ describe('Unit: parser/inline/remark', () => {
       assert.deepStrictEqual(inspect(parser, input('[%% a [% b', new Context())), [['<span class="invalid">[%%</span>'], ' a [% b']);
       assert.deepStrictEqual(inspect(parser, input('[%\\ a %]', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[% a\\ %]', new Context())), [['[%', ' a', ' ', '%', ']'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[% a%]', new Context())), [['[%', ' a', '%', ']'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[% a %%]', new Context())), [['[%', ' a %', '%', ']'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[% a%]', new Context())), [['[%', ' a%', ']'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[% a %%]', new Context())), [['[%', ' a %%', ']'], '']);
       assert.deepStrictEqual(inspect(parser, input('[% [%% %]', new Context())), [['<span class="remark"><input type="checkbox"><span>[% <span class="invalid">[%%</span> %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[%% [% %%]', new Context())), [['<span class="invalid">[%%</span>'], ' [% %%]']);
       assert.deepStrictEqual(inspect(parser, input('[%% a %]', new Context())), [['<span class="invalid">[%%</span>'], ' a %]']);

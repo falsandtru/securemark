@@ -98,8 +98,8 @@ export function next(source: string, position: number, state: number, delimiter?
   const char = source[index];
   switch (char) {
     case '%':
-      assert(source.startsWith('%]', index) || delimiter);
-      index += !delimiter && index - 1 > position && isWhitespace(source[index - 1], true)
+      assert(source.startsWith('%]', index) && isWhitespace(source[index - 1], true) || delimiter);
+      index += !delimiter && index - 1 > position
         ? -1
         : 0;
       break;
@@ -254,7 +254,7 @@ function seek(source: string, position: number, state: number): number {
         if (source[i + 1] === fst && source[i + 2] === fst) return i;
         continue;
       case '%':
-        if (source[i + 1] === ']') return i;
+        if (source[i + 1] === ']' && isWhitespace(source[i - 1], true)) return i;
         continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
