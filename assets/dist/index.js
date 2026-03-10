@@ -7559,7 +7559,7 @@ const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
-exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(4, bracket), '$', false, [3 | 16 /* Backtrack.escapable */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\s?\$|[`"{}\n]/y), (0, combinator_1.precedence)(4, bracket)]))), /\$(?![-0-9A-Za-z])/y, false, [3 | 16 /* Backtrack.escapable */])]), ({
+exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.surround)(/\$(?={)/y, (0, combinator_1.precedence)(4, bracket), '$', false, [3 | 16 /* Backtrack.escapable */]), (0, combinator_1.surround)(/\$(?![\s{}])/y, (0, combinator_1.precedence)(2, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(source_1.escsource, /\$|[`"{}\n]/y), (0, combinator_1.precedence)(4, bracket)]))), /(?<!\s)\$(?![-0-9A-Za-z])/y, false, [3 | 16 /* Backtrack.escapable */])]), ({
   context: {
     source,
     caches: {
@@ -8613,7 +8613,6 @@ exports.isAlphanumeric = exports.next = exports.canSkip = exports.txt = exports.
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
-//const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 exports.nonWhitespace = /[^ \t　]/g;
 const text = input => {
   const {
@@ -8758,44 +8757,9 @@ function isAlphanumeric(char) {
   return '0' <= char && char <= '9' || 'A' <= char && char <= 'Z' || 'a' <= char && char <= 'z';
 }
 exports.isAlphanumeric = isAlphanumeric;
-//const dict = new class {
-//  constructor() {
-//    [
-//      '\\',
-//      '!',
-//      '@',
-//      '#',
-//      '$',
-//      '&',
-//      '"',
-//      '`',
-//      '[',
-//      ']',
-//      '(',
-//      ')',
-//      '{',
-//      '}',
-//      '<',
-//      '>',
-//      '（',
-//      '）',
-//      '［',
-//      '］',
-//      '｛',
-//      '｝',
-//      '*',
-//      '%',
-//      '|',
-//      '\r',
-//      '\n',
-//    ].forEach(c =>
-//      this[c.charCodeAt(0)] = undefined);
-//  }
-//};
 function seek(source, position, state) {
   for (let i = position + 1; i < source.length; ++i) {
     const fst = source[i];
-    //if (fst.charCodeAt(0) in dict) return i;
     switch (fst) {
       case '\\':
       case '!':
