@@ -5,7 +5,7 @@ import { union, some, recursion, precedence, surround, lazy } from '../../combin
 import { inline } from '../inline';
 import { strong } from './strong';
 import { str } from '../source';
-import { tightStart, nonblankWith } from '../visibility';
+import { tightStart, afterNonblank } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -13,7 +13,7 @@ export const emphasis: EmphasisParser = lazy(() => surround(
   str(/\*(?!\*)/y),
   precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
-    some(inline, nonblankWith('*')),
+    some(inline, '*', afterNonblank),
     strong,
   ]))))),
   str('*'),

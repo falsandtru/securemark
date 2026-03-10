@@ -22,28 +22,24 @@ export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Pa
     parser);
 }
 
-export function blankWith(delimiter: string | RegExp): RegExp;
-export function blankWith(starts: '' | '\n', delimiter: string | RegExp): RegExp;
-export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegExp {
-  if (delimiter === undefined) return blankWith('', starts);
-  return new RegExp(String.raw
-    `(?:(?=${starts})(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)${
-      // 空行除去
-      // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
-      starts && '+'
-    })?${
-      typeof delimiter === 'string'
-        ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
-        : delimiter.source
-    }`, 'y');
+export const afterNonblank = nonblankWith('');
+export function blankWith(starts: '\n', delimiter: string | RegExp): RegExp {
+  return new RegExp([
+    // 空行除去
+    // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
+    String.raw`(?:${starts}(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)*)?`,
+    typeof delimiter === 'string'
+      ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
+      : delimiter.source,
+  ].join(''), 'y');
 }
-export function nonblankWith(delimiter: string | RegExp): RegExp {
-  return new RegExp(String.raw
-    `(?<!\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)${
-      typeof delimiter === 'string'
-        ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
-        : delimiter.source
-    }`, 'y');
+function nonblankWith(delimiter: string | RegExp): RegExp {
+  return new RegExp([
+    String.raw`(?<!\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)`,
+    typeof delimiter === 'string'
+      ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
+      : delimiter.source,
+  ].join(''), 'y');
 }
 
 //export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;

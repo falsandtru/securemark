@@ -4,14 +4,14 @@ import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, state, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { identity, signature } from './extension/indexee';
-import { tightStart, nonblankWith } from '../visibility';
+import { tightStart, afterNonblank } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() =>
   precedence(0, recursion(Recursion.inline, repeat('==', surround(
     '',
-    tightStart(state(State.mark, some(union([inline]), nonblankWith('==')))),
+    tightStart(state(State.mark, some(union([inline]), '==', afterNonblank))),
     '==',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),

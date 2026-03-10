@@ -27,14 +27,17 @@ export class Delimiters {
         return `r/${pattern.source}`;
     }
   }
-  public static matcher(pattern: string | RegExp | undefined): (input: Input<Context>) => true | undefined {
+  public static matcher(pattern: string | RegExp | undefined, after?: string | RegExp): (input: Input<Context>) => true | undefined {
     switch (typeof pattern) {
       case 'undefined':
         return () => undefined;
       case 'string':
       case 'object':
         const match = matcher(pattern, false);
-        return input => match(input) !== undefined || undefined;
+        const verify = after ? matcher(after, false) : undefined;
+        return verify
+          ? input => match(input) !== undefined && verify(input) !== undefined || undefined
+          : input => match(input) !== undefined || undefined;
     }
   }
   private readonly tree: Record<number, Delimiter[]> = {};
