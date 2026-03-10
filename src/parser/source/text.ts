@@ -4,7 +4,6 @@ import { List, Node } from '../../combinator/data/parser';
 import { union, consume } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-//const delimiter = /(?=[\\!@#$&"`\[\](){}<>（）［］｛｝*%|\r\n]|([+~=])\1|\/{3}|\s(?:\\?(?:$|\s)|[$%])|:\/\/)/g;
 export const nonWhitespace = /[^ \t　]/g;
 
 export const text: TextParser = input => {
@@ -177,45 +176,9 @@ export function isAlphanumeric(char: string): boolean {
       || 'a' <= char && char <= 'z';
 }
 
-//const dict = new class {
-//  constructor() {
-//    [
-//      '\\',
-//      '!',
-//      '@',
-//      '#',
-//      '$',
-//      '&',
-//      '"',
-//      '`',
-//      '[',
-//      ']',
-//      '(',
-//      ')',
-//      '{',
-//      '}',
-//      '<',
-//      '>',
-//      '（',
-//      '）',
-//      '［',
-//      '］',
-//      '｛',
-//      '｝',
-//      '*',
-//      '%',
-//      '|',
-//      '\r',
-//      '\n',
-//    ].forEach(c =>
-//      this[c.charCodeAt(0)] = undefined);
-//  }
-//};
-
 function seek(source: string, position: number, state: number): number {
   for (let i = position + 1; i < source.length; ++i) {
     const fst = source[i];
-    //if (fst.charCodeAt(0) in dict) return i;
     switch (fst) {
       case '\\':
       case '!':
