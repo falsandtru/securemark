@@ -17,7 +17,7 @@ export const ilist: IListParser = lazy(() => block(validate(
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
   /[-+*](?:$|[ \n])/y,
-  some(recursion(Recursion.listitem, union([
+  recursion(Recursion.listitem, some(union([
     fmap(fallback(
       inits([
         line(open(/[-+*](?:$|[ \n])/y, visualize(trimBlank(some(inline))), true)),

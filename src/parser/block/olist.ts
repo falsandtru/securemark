@@ -32,7 +32,7 @@ export const olist_: OListParser = lazy(() => block(union([
 ])));
 
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  some(recursion(Recursion.listitem, union([
+  recursion(Recursion.listitem, some(union([
     indexee(fmap(fallback(
       inits([
         line(open(heads[form], subsequence([

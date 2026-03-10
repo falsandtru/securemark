@@ -22,7 +22,7 @@ const indent = block(open(opener, some(contentline, />(?:$|[ \n])/y)), false);
 const unindent = (source: string) => source.replace(/(?<=^|\n)>(?: |(?=>*(?:$|[ \n])))|\n$/g, '');
 
 const source: BlockquoteParser.SourceParser = lazy(() => fmap(
-  some(recursion(Recursion.blockquote, union([
+  recursion(Recursion.blockquote, some(union([
     rewrite(
       indent,
       convert(unindent, source, true)),
@@ -33,7 +33,7 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   ns => new List([new Node(html('blockquote', unwrap(ns)))])));
 
 const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
-  some(recursion(Recursion.blockquote, union([
+  recursion(Recursion.blockquote, some(union([
     rewrite(
       indent,
       convert(unindent, markdown, true)),

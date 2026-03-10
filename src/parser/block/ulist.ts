@@ -15,7 +15,7 @@ export const ulist: UListParser = lazy(() => block(validate(
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /-(?=$|[ \n])/y,
-  some(recursion(Recursion.listitem, union([
+  recursion(Recursion.listitem, some(union([
     indexee(fmap(fallback(
       inits([
         line(open(/-(?:$|[ \n])/y, subsequence([

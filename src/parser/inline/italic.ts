@@ -11,15 +11,14 @@ import { html, defrag } from 'typed-dom/dom';
 // 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
 // ある程度の長さのある文に使うのが望ましい。
 export const italic: ItalicParser = lazy(() =>
-  precedence(0, repeat('///', surround(
+  precedence(0, recursion(Recursion.inline, repeat('///', surround(
     '',
-    recursion(Recursion.inline,
     tightStart(some(union([
       some(inline, blankWith('///')),
       open(some(inline, '/'), inline),
-    ])))),
+    ]))),
     '///',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),
     ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer),
-    nodes => new List([new Node(html('i', defrag(unwrap(nodes))))]))));
+    nodes => new List([new Node(html('i', defrag(unwrap(nodes))))])))));

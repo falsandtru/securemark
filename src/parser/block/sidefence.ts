@@ -21,7 +21,7 @@ const opener = /(?=\|\|+(?:$|[ \n]))/y;
 const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \n])))|\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
-  some(recursion(Recursion.block, union([
+  recursion(Recursion.block, some(union([
     focus(
       /(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y,
       convert(unindent, source, true)),
