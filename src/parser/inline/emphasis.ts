@@ -10,7 +10,7 @@ import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const emphasis: EmphasisParser = lazy(() => surround(
-  str(/\*(?!\*)/y),
+  str('*', (source, position, range) => !source.startsWith('*', position + range)),
   precedence(0, recursion(Recursion.inline,
   tightStart(some(union([
     some(inline, '*', afterNonblank),

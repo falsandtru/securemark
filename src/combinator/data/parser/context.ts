@@ -159,7 +159,7 @@ export function constraint<N>(state: number, positive: boolean | Parser<N>, pars
   };
 }
 
-export function matcher(pattern: string | RegExp, advance: boolean): Parser<string> {
+export function matcher(pattern: string | RegExp, advance: boolean, verify?: (source: string, position: number, range: number) => boolean): Parser<string> {
   assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
   const count = typeof pattern === 'object'
     ? /[^^\\*+][*+]/.test(pattern.source)
@@ -169,6 +169,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
       return ({ context }) => {
         const { source, position } = context;
         if (!source.startsWith(pattern, position)) return;
+        if (verify?.(source, position, pattern.length) === false) return;
         if (advance) {
           context.position += pattern.length;
         }
@@ -182,6 +183,7 @@ export function matcher(pattern: string | RegExp, advance: boolean): Parser<stri
         if (!pattern.test(source)) return;
         const src = source.slice(position, pattern.lastIndex);
         count && consume(src.length, context);
+        if (verify?.(source, position, src.length) === false) return;
         if (advance) {
           context.position += src.length;
         }

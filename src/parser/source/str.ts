@@ -2,9 +2,9 @@ import { StrParser } from '../source';
 import { Parser, List, Node } from '../../combinator/data/parser';
 import { matcher } from '../../combinator';
 
-export function str(pattern: string | RegExp): StrParser;
-export function str(pattern: string | RegExp): Parser<string> {
-  return matcher(pattern, true);
+export function str(pattern: string | RegExp, verify?: (source: string, position: number, range: number) => boolean): StrParser;
+export function str(pattern: string | RegExp, verify?: (source: string, position: number, range: number) => boolean): Parser<string> {
+  return matcher(pattern, true, verify);
 }
 
 export function strs(pattern: string): StrParser;
