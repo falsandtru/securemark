@@ -38,12 +38,12 @@ describe('Unit: parser/inline/mark', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser, input('==a ==b====', new Context())), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('==- ==b====', new Context())), [['<mark id="mark::-_b">- <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::-_b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('==a\\ ==b====', new Context())), [['<mark id="mark::a_b">a <mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('==a&Tab;==b====', new Context())), [['<mark id="mark::a_b=33Mw2l">a\t<mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::a_b=33Mw2l"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('==a<wbr>==b====', new Context())), [['<mark id="mark::ab">a<wbr><mark id="mark::b">b</mark><a href="#mark::b"></a></mark>', '<a href="#mark::ab"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('==*==a==*==', new Context())), [['<mark id="mark::a"><em><mark id="mark::a">a</mark><a href="#mark::a"></a></em></mark>', '<a href="#mark::a"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==a ==b====', new Context())), [['<mark id="mark::a_b">a <mark>b</mark></mark>', '<a href="#mark::a_b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==- ==b====', new Context())), [['<mark id="mark::-_b">- <mark>b</mark></mark>', '<a href="#mark::-_b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==a\\ ==b====', new Context())), [['<mark id="mark::a_b">a <mark>b</mark></mark>', '<a href="#mark::a_b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==a&Tab;==b====', new Context())), [['<mark id="mark::a_b=33Mw2l">a\t<mark>b</mark></mark>', '<a href="#mark::a_b=33Mw2l"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==a<wbr>==b====', new Context())), [['<mark id="mark::ab">a<wbr><mark>b</mark></mark>', '<a href="#mark::ab"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('==*==a==*==', new Context())), [['<mark id="mark::a"><em><mark>a</mark></em></mark>', '<a href="#mark::a"></a>'], '']);
     });
 
   });

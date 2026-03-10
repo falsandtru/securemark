@@ -183,7 +183,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser, input('[@a]{b}', new Context())), [['<a class="link" href="b">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[@a@b]{c}', new Context())), [['<a class="link" href="c">@a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[a@b]{c}', new Context())), [['<a class="link" href="c">a@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[==a==]{b}', new Context())), [['<a class="link" href="b">==a==</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[==a==]{b}', new Context())), [['<a class="link" href="b"><mark>a</mark></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[*a*]{b}', new Context())), [['<a class="link" href="b"><em>a</em></a>'], '']);
     });
 

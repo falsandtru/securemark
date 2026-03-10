@@ -154,7 +154,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('[[a\nb]]', new Context())), [['[', '[', 'a', '<br>', 'b', ']', ']'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[[a\nb]]]', new Context())), [['[', '[', '[', 'a', '<br>', 'b', ']', ']', ']'], '']);
       assert.deepStrictEqual(inspect(parser, input('"[[""]]', new Context())), [['"', '[', '[', '"', '"', ']', ']'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[==a==]{b}', new Context())), [['<a class="link" href="b">==a==</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[==a==]{b}', new Context())), [['<a class="link" href="b"><mark>a</mark></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[a](b)]{c}', new Context())), [['<a class="link" href="c"><ruby>a<rp>(</rp><rt>b</rt><rp>)</rp></ruby></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[[[[[[{a}', new Context())), [['[', '[', '[', '[', '[', '[', '[', '<a class="url" href="a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<http://host>', new Context())), [['<', '<a class="url" href="http://host" target="_blank">http://host</a>', '>'], '']);

@@ -9,21 +9,21 @@ import { unwrap, repeat } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() =>
-  precedence(0, recursion(Recursion.inline, state(State.mark, repeat('==', surround(
+  precedence(0, recursion(Recursion.inline, repeat('==', surround(
     '',
-    tightStart(some(union([
+    tightStart(state(State.mark, some(union([
       some(inline, blankWith('==')),
       open(some(inline, '='), inline),
-    ]))),
+    ])))),
     '==',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),
     ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer),
     (nodes, { id, state }) => {
-      if (state & State.linkers & ~State.mark) return nodes.unshift(new Node('==')) && nodes.push(new Node('==')) && nodes;
       const el = html('mark', defrag(unwrap(nodes)));
+      if (state & State.linkers) return new List([new Node(el)]);
       define(el, { id: identity('mark', id, signature(el)) });
       return el.id
         ? new List([new Node(el), new Node(html('a', { href: `#${el.id}` }))])
         : new List([new Node(el)]);
-    })))));
+    }))));
