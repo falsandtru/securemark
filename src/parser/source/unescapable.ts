@@ -8,7 +8,7 @@ import { html } from 'typed-dom/dom';
 export const delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
 
 export const unescsource: UnescapableSourceParser = ({ context }) => {
-  const { source, position } = context;
+  const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];
   consume(1, context);
@@ -31,7 +31,7 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : next(source, position, delimiter);
+        : next(source, position, state, delimiter);
       assert(i > position);
       i -= position;
       consume(i - 1, context);

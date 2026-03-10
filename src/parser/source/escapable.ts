@@ -8,7 +8,7 @@ import { html } from 'typed-dom/dom';
 const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s\$|:\/\/)/g;
 
 export const escsource: EscapableSourceParser = ({ context }) => {
-  const { source, position } = context;
+  const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];
   consume(1, context);
@@ -38,7 +38,7 @@ export const escsource: EscapableSourceParser = ({ context }) => {
     default:
       assert(char !== '\n');
       if (context.sequential) return new List([new Node(char)]);
-      let i = next(source, position, delimiter);
+      let i = next(source, position, state, delimiter);
       assert(i > position);
       i -= position;
       consume(i - 1, context);

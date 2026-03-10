@@ -1,5 +1,5 @@
 import { TextParser, TxtParser } from '../source';
-import { Command } from '../context';
+import { State, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, consume } from '../../combinator';
 import { html } from 'typed-dom/dom';
@@ -9,7 +9,7 @@ export const nonWhitespace = /[^ \t　]/g;
 
 export const text: TextParser = input => {
   const { context } = input;
-  const { source, position } = context;
+  const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];
   consume(1, context);
@@ -43,7 +43,7 @@ export const text: TextParser = input => {
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : next(source, position);
+        : next(source, position, state);
       assert(i > position);
       const lineend = 0
         || s && i === source.length
@@ -83,7 +83,7 @@ function isWhitespace(char: string, linebreak: boolean): boolean {
   }
 }
 
-export function next(source: string, position: number, delimiter?: RegExp): number {
+export function next(source: string, position: number, state: number, delimiter?: RegExp): number {
   let index: number;
   if (delimiter) {
     delimiter.lastIndex = position + 1;
@@ -91,7 +91,7 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
     index = delimiter.lastIndex;
   }
   else {
-    index = seek(source, position);
+    index = seek(source, position, state);
   }
   if (index === 0) return source.length;
   assert(index > position);
@@ -121,7 +121,9 @@ export function next(source: string, position: number, delimiter?: RegExp): numb
         : index;
       break;
     case '@':
-      index = backToEmailHead(source, position, index);
+      index = ~state & State.autolink
+        ? backToEmailHead(source, position, index)
+        : index;
       break;
   }
   assert(index > position);
@@ -223,15 +225,13 @@ export function isAlphanumeric(char: string): boolean {
 //  }
 //};
 
-function seek(source: string, position: number): number {
+function seek(source: string, position: number, state: number): number {
   for (let i = position + 1; i < source.length; ++i) {
     const fst = source[i];
     //if (fst.charCodeAt(0) in dict) return i;
     switch (fst) {
       case '\\':
       case '!':
-      case '@':
-      case '#':
       case '$':
       case '"':
       case '`':
@@ -254,6 +254,10 @@ function seek(source: string, position: number): number {
       case '\r':
       case '\n':
         return i;
+      case '@':
+      case '#':
+        if (~state & State.autolink) return i;
+        continue;
       case '+':
       case '~':
       case '=':
