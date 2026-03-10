@@ -37,6 +37,14 @@ export function blankWith(starts: '' | '\n', delimiter?: string | RegExp): RegEx
         : delimiter.source
     }`, 'y');
 }
+export function nonblankWith(delimiter: string | RegExp): RegExp {
+  return new RegExp(String.raw
+    `(?<!\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr ?>)${
+      typeof delimiter === 'string'
+        ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
+        : delimiter.source
+    }`, 'y');
+}
 
 //export function looseStart<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
 //export function looseStart<N extends HTMLElement | string>(parser: Parser<N>, except?: string): Parser<N> {

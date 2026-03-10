@@ -1,9 +1,9 @@
 import { ItalicParser } from '../inline';
 import { Recursion, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, surround, open, lazy } from '../../combinator';
+import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { tightStart, blankWith } from '../visibility';
+import { tightStart, nonblankWith } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -13,10 +13,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const italic: ItalicParser = lazy(() =>
   precedence(0, recursion(Recursion.inline, repeat('///', surround(
     '',
-    tightStart(some(union([
-      some(inline, blankWith('///')),
-      open(some(inline, '/'), inline),
-    ]))),
+    tightStart(some(union([inline]), nonblankWith('///'))),
     '///',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),

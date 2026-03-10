@@ -1,24 +1,22 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
 import { Parser, Result, List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, surround, open, lazy, bind } from '../../combinator';
+import { union, some, recursion, precedence, surround, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { tightStart, blankWith } from '../visibility';
+import { tightStart, nonblankWith } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const substrong: Parser.IntermediateParser<StrongParser> = lazy(() => some(union([
+  some(inline, nonblankWith('*')),
   emphasis,
-  some(inline, blankWith('*')),
-  open(some(inline, '*'), inline),
 ])));
 const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(union([
+  some(inline, nonblankWith('*')),
   strong,
-  some(inline, blankWith('*')),
-  open(some(inline, '*'), inline),
 ])));
 
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
@@ -27,10 +25,7 @@ const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(u
 export const emstrong: EmStrongParser = lazy(() =>
   precedence(0, recursion(Recursion.inline, repeat('***', surround(
     '',
-    tightStart(some(union([
-      some(inline, blankWith('*')),
-      open(some(inline, '*'), inline),
-    ]))),
+    tightStart(some(union([some(inline, nonblankWith('*'))]))),
     str(/\*{1,3}/y),
     false, [],
     ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {

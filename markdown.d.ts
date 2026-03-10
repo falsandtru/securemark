@@ -959,7 +959,6 @@ export namespace MarkdownParser {
       Inline<'mark'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
       ]> {
     }
     export interface EmStrongParser extends
@@ -967,32 +966,28 @@ export namespace MarkdownParser {
       Inline<'emstrong'>,
       Parser<HTMLElement | string, Context, [
         InlineParser,
-        InlineParser,
       ]> {
     }
     export interface StrongParser extends
       // **abc**
       Inline<'strong'>,
       Parser<HTMLElement | string, Context, [
+        InlineParser,
         EmphasisParser,
-        InlineParser,
-        InlineParser,
       ]> {
     }
     export interface EmphasisParser extends
       // *abc*
       Inline<'emphasis'>,
       Parser<HTMLElement | string, Context, [
+        InlineParser,
         StrongParser,
-        InlineParser,
-        InlineParser,
       ]> {
     }
     export interface ItalicParser extends
       // ///abc///
       Inline<'italic'>,
       Parser<HTMLElement | string, Context, [
-        InlineParser,
         InlineParser,
       ]> {
     }
