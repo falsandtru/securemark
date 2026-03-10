@@ -88,12 +88,12 @@ export function next(source: string, position: number, state: number, delimiter?
   if (delimiter) {
     delimiter.lastIndex = position + 1;
     delimiter.test(source);
-    index = delimiter.lastIndex;
+    index = delimiter.lastIndex || position;
   }
   else {
     index = seek(source, position, state);
   }
-  if (index === 0) return source.length;
+  if (index === position || index === source.length) return source.length;
   assert(index > position);
   const char = source[index];
   switch (char) {
