@@ -19,10 +19,10 @@ export const math: MathParser = lazy(() => rewrite(
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
-        some(escsource, /\$|[`"{}\n]/y),
+        some(escsource, /\s?\$|[`"{}\n]/y),
         precedence(4, bracket),
       ]))),
-      /(?<!\s)\$(?![-0-9A-Za-z])/y,
+      /\$(?![-0-9A-Za-z])/y,
       false,
       [3 | Backtrack.escapable]),
   ]),
