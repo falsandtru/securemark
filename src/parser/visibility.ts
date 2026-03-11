@@ -15,8 +15,7 @@ namespace blank {
     'y');
 }
 
-export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function visualize<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
+export function visualize<P extends Parser>(parser: P): P {
   return convert(
     source => source.replace(blank.line, `$1${Command.Escape}$2`),
     parser);
@@ -137,7 +136,7 @@ function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   }
 }
 
-// デフラグ前の非効率な後方トリムを避けるため必要のない限りtrimBlankStart+trimNodeEndで処理する。
+// デフラグ前の非効率な後方トリムを避けるため必要のない限りtrimBlankStart+trimBlankNodeEndで処理する。
 export function trimBlank<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Parser<N> {
   return trimBlankStart(trimBlankEnd(parser));
