@@ -5,14 +5,14 @@ import { union, some, recursion, precedence, surround, lazy } from '../../combin
 import { inline } from '../inline';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { tightStart, afterNonblank } from '../visibility';
+import { beforeNonblank, afterNonblank } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const strong: StrongParser = lazy(() => surround(
   str('**', (source, position, range) => !source.startsWith('*', position + range)),
   precedence(0, recursion(Recursion.inline,
-  tightStart(some(union([
+  beforeNonblank(some(union([
     some(inline, '*', afterNonblank),
     emphasis,
   ]))))),

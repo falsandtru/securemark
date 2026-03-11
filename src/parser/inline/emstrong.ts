@@ -6,7 +6,7 @@ import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { strs } from '../source';
-import { tightStart, afterNonblank } from '../visibility';
+import { beforeNonblank, afterNonblank } from '../visibility';
 import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -25,7 +25,7 @@ const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(u
 export const emstrong: EmStrongParser = lazy(() =>
   precedence(0, recursion(Recursion.inline, repeat('***', surround(
     '',
-    tightStart(some(union([some(inline, '*', afterNonblank)]))),
+    beforeNonblank(some(union([some(inline, '*', afterNonblank)]))),
     strs('*', 3),
     false, [],
     ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {

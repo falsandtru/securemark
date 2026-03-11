@@ -4,7 +4,7 @@ import { List, Node } from '../../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { tightStart } from '../../visibility';
+import { beforeNonblank } from '../../visibility';
 import { invalid } from '../../util';
 import { html } from 'typed-dom/dom';
 
@@ -16,7 +16,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surroun
   // ^はabbrで使用済みだが^:などのようにして分離使用可能
   str(/\[[:^|]/y),
   precedence(1, recursion(Recursion.inline,
-  tightStart(some(union([inline]), ']', [[']', 1]])))),
+  beforeNonblank(some(union([inline]), ']', [[']', 1]])))),
   str(']'),
   false,
   [3 | Backtrack.common],

@@ -53,8 +53,8 @@ function nonblankWith(delimiter: string | RegExp): RegExp {
 //  return isTightStart({ source: source.replace(blank.start, ''), context });
 //}, ({ source }) => `${source}${Command.Separator}`);
 
-export function tightStart<P extends Parser>(parser: P): P;
-export function tightStart<N>(parser: Parser<N>): Parser<N, Context> {
+export function beforeNonblank<P extends Parser>(parser: P): P;
+export function beforeNonblank<N>(parser: Parser<N>): Parser<N, Context> {
   return input =>
     isTightStart(input)
       ? parser(input)

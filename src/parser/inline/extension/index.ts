@@ -6,7 +6,7 @@ import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
 import { txt, str } from '../../source';
-import { tightStart, trimBlankNodeEnd } from '../../visibility';
+import { beforeNonblank, trimBlankNodeEnd } from '../../visibility';
 import { unwrap } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
@@ -15,7 +15,7 @@ import IndexParser = ExtensionParser.IndexParser;
 export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(surround(
   str('[#'),
   precedence(1, state(State.linkers,
-  tightStart(
+  beforeNonblank(
   some(inits([
     inline,
     signature,
