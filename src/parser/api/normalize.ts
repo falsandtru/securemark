@@ -1,6 +1,4 @@
-import { input } from '../../combinator/data/parser';
-import { Context } from '../context';
-import { unsafehtmlentity } from '../inline/htmlentity';
+import { html } from 'typed-dom/dom';
 
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 assert(UNICODE_REPLACEMENT_CHARACTER.trim());
@@ -60,6 +58,11 @@ export const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ] as readonly string[];
+const parser = (el => (entity: string): string => {
+  if (entity === '&NewLine;') return entity;
+  el.innerHTML = entity;
+  return el.textContent!;
+})(html('span'));
 const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => ![
   'Tab',
   'NewLine',
@@ -69,7 +72,7 @@ const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => 
   'zwnj',
 ].includes(name));
 const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames
-  .map(name => unsafehtmlentity(input(`&${name};`, new Context()))!.head!.value);
+  .map(name => parser(`&${name};`));
 assert(unreadableEscapeCharacters.length === unreadableEscapeHTMLEntityNames.length);
 assert(unreadableEscapeCharacters.every(c => c.length === 1));
 const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');

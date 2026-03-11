@@ -5,6 +5,13 @@ export const enum Flag {
   invisible,
 }
 
-export function isinvisibleHTMLEntityName(name: string): boolean {
-  return invisibleHTMLEntityNames.includes(name);
-}
+export const isInvisibleHTMLEntityName: (name: string) => boolean = eval([
+  'name => {',
+  'switch(name){',
+  invisibleHTMLEntityNames.map(name => `case '${name}':`).join(''),
+  'return true;',
+  'default:',
+  'return false;',
+  '}',
+  '}',
+].join(''));
