@@ -27,7 +27,7 @@ export const htmlentity: HTMLEntityParser = fmap(
   ]));
 
 const parser = (el => (entity: string): string => {
-  if (entity === '&NewLine;') return ' ';
+  if (entity === '&NewLine;') return entity;
   el.innerHTML = entity;
   return el.textContent!;
 })(html('span'));

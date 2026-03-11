@@ -22,8 +22,8 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser, input('a\\ \n', new Context())), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a\\\n', new Context())), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a\\\nb', new Context())), [['<p>a<br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('a&NewLine;b', new Context())), [['<p>a b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('&Tab;&NewLine;', new Context())), [['<p>&amp;Tab;</p>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a&NewLine;b', new Context())), [['<p>a<span class="invalid">&amp;NewLine;</span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('&Tab;&nbsp;', new Context())), [['<p>&amp;Tab;</p>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<wbr>', new Context())), [['<p>&lt;wbr&gt;</p>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<wbr>\n', new Context())), [['<p>&lt;wbr&gt;</p>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<wbr>\na', new Context())), [['<p>&lt;wbr&gt;<br>a</p>'], '']);

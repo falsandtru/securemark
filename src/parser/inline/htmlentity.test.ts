@@ -33,11 +33,11 @@ describe('Unit: parser/inline/htmlentity', () => {
       assert.deepStrictEqual(inspect(parser, input('&#X22;', new Context())), [['&'], '#X22;']);
       assert.deepStrictEqual(inspect(parser, input('&#XD06;', new Context())), [['&'], '#XD06;']);
       assert.deepStrictEqual(inspect(parser, input('&#xcab;', new Context())), [['&'], '#xcab;']);
+      assert.deepStrictEqual(inspect(parser, input('&NewLine;', new Context())), [['<span class="invalid">&amp;NewLine;</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input(' &amp;', new Context())), undefined);
     });
 
     it('entity', () => {
-      assert.deepStrictEqual(inspect(parser, input('&NewLine;', new Context())), [[' '], '']);
       assert.deepStrictEqual(inspect(parser, input('&nbsp;', new Context())), [['\u00A0'], '']);
       assert.deepStrictEqual(inspect(parser, input('&amp;', new Context())), [['&'], '']);
       assert.deepStrictEqual(inspect(parser, input('&copy;', new Context())), [['©'], '']);
