@@ -5,7 +5,7 @@ import { union, subsequence, some, precedence, state, constraint, surround, isBa
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
-import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -14,7 +14,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   precedence(1, state(State.annotation | State.reference,
   subsequence([
     abbr,
-    trimBlankStart(some(inline, ']', [[']', 1]])),
+    beforeNonblank(some(inline, ']', [[']', 1]])),
   ]))),
   ']]',
   false,

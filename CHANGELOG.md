@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.296.0
+
+- Change link, media, annotation, and reference parsers to disallow invisible leading content.
+
 ## 0.295.9
 
 - Refactoring.

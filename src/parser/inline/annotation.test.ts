@@ -19,7 +19,10 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser, input('(([))', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('(([%))', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('(( ))', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('(( (a', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('(( a))', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('(( a ))', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('((\\ a))', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('((<wbr>a))', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('((\n))', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('((\na))', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('((\\\na))', new Context())), undefined);
@@ -35,10 +38,6 @@ describe('Unit: parser/inline/annotation', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser, input('(( a))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('(( a ))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('((\\ a))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('((<wbr>a))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((a))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((a ))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((a  ))', new Context())), [['<sup class="annotation"><span>a</span></sup>'], '']);

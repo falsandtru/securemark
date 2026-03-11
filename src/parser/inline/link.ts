@@ -5,7 +5,7 @@ import { union, inits, sequence, subsequence, some, consume, precedence, state, 
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { str } from '../source';
-import { trimBlankStart, trimBlankNodeEnd } from '../visibility';
+import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap, invalid, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, define, defrag } from 'typed-dom/dom';
@@ -20,7 +20,7 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
     constraint(State.link, state(State.linkers, dup(surround(
       '[',
       precedence(1,
-      trimBlankStart(some(union([inline]), ']', [[']', 1]]))),
+      beforeNonblank(some(union([inline]), ']', [[']', 1]]))),
       ']',
       true,
       [3 | Backtrack.common | Backtrack.link, 2 | Backtrack.ruby],

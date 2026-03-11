@@ -1,6 +1,7 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
+import { Flag } from '../node';
 import { union, inits, tails, some, consume, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
@@ -50,10 +51,14 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
   nodes =>
     nodes.length === 1
       ? new List<Node<List<Node<string>>>>([new Node(new List([new Node('')])), nodes.delete(nodes.head!)])
-      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, ''))])), nodes.delete(nodes.last!)])),
-  ([{ value: [{ value: text }] }, { value: params }], context) => {
-    if (text && text.trimStart() === '') return;
-    text = text.trim();
+      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, ''), nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
+  ([{ value: [{ value: text, flags }] }, { value: params }], context) => {
+    if (flags & Flag.invisible) return;
+    if (text) {
+      const tmp = text;
+      text = text.trim();
+      if (text === '' || text[0] !== tmp[0]) return;
+    }
     consume(100, context);
     if (params.last!.value === Command.Cancel) {
       params.pop();

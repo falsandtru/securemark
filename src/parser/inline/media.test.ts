@@ -41,10 +41,15 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser, input('![ ]{}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![ ]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![  ]{b}', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('![ a]{b}', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('![ a ]{b}', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('![\\ a]{b}', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('![ \\ a]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![\n]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![\\ ]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![\\\n]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![&Tab;]{b}', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('![&zwj;]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![&a;]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="&amp;a;"></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('![[]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![]]{b}', new Context())), undefined);
@@ -79,8 +84,6 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser, input('![]{?/../}', new Context())), [[`<a href="?/../" target="_blank"><img class="media" data-src="?/../" alt="?/../"></a>`], '']);
       assert.deepStrictEqual(inspect(parser, input('![]{#/../}', new Context())), [[`<a href="#/../" target="_blank"><img class="media" data-src="#/../" alt="#/../"></a>`], '']);
       assert.deepStrictEqual(inspect(parser, input('![]{^/b}', new Context())), [[`<a href="/b" target="_blank"><img class="media" data-src="/b" alt="^/b"></a>`], '']);
-      assert.deepStrictEqual(inspect(parser, input('![ a]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('![ a ]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('![a ]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('![a  ]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('![a b]{c}', new Context())), [['<a href="c" target="_blank"><img class="media" data-src="c" alt="a b"></a>'], '']);
