@@ -49,7 +49,6 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser, input('![\\ ]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![\\\n]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![&Tab;]{b}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('![&zwj;]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![&a;]{b}', new Context())), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="&amp;a;"></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('![[]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('![]]{b}', new Context())), undefined);

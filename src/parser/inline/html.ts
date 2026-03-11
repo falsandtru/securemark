@@ -5,7 +5,7 @@ import { Flag } from '../node';
 import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { isLooseNodeStart, blankWith } from '../visibility';
+import { isNonblankLineStart, blankWith } from '../visibility';
 import { invalid, unwrap } from '../util';
 import { memoize } from 'spica/memoize';
 import { html as h, defrag } from 'typed-dom/dom';
@@ -29,7 +29,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
       open(str(/ ?/y), str('>'), true),
       true, [],
       ([as, bs = new List(), cs], context) =>
-        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context), as.head!.value === '<wbr' ? Flag.invisible : Flag.none)]),
+        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context), as.head!.value === '<wbr' ? Flag.blank : Flag.none)]),
       ([as, bs = new List()], context) =>
         new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
     match(
@@ -85,7 +85,7 @@ function elem(tag: string, content: boolean, as: readonly string[], bs: List<Nod
   if (content) {
     if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, context);
     if (bs.length === 0) return ielem('content', `Missing the content`, context);
-    if (!isLooseNodeStart(bs)) return ielem('content', `Missing the visible content in the same line`, context);
+    if (!isNonblankLineStart(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
   const [attrs] = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)

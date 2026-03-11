@@ -4,7 +4,7 @@ import { List, Node } from '../../combinator/data/parser';
 import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { txt } from '../source';
-import { isTightNodeStart } from '../visibility';
+import { isNonblankNodeStart } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -16,7 +16,7 @@ export const ruby: RubyParser = lazy(() => bind(
       [1 | Backtrack.common, 3 | Backtrack.ruby],
       ([, ns]) => {
         ns && ns.last?.value === '' && ns.pop();
-        return isTightNodeStart(ns) ? ns : undefined;
+        return isNonblankNodeStart(ns) ? ns : undefined;
       })),
     dup(surround(
       '(', text, ')',

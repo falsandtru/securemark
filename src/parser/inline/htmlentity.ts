@@ -1,7 +1,7 @@
 import { HTMLEntityParser, UnsafeHTMLEntityParser } from '../inline';
 import { Backtrack } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { Flag, isInvisibleHTMLEntityName } from '../node';
+import { Flag, isBlankHTMLEntityName } from '../node';
 import { union, surround, fmap } from '../../combinator';
 import { str } from '../source';
 import { invalid } from '../util';
@@ -15,7 +15,7 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
     new List([
       new Node(
         parser(as.head!.value + bs.head!.value + cs.head!.value),
-        isInvisibleHTMLEntityName(bs.head!.value) ? Flag.invisible : Flag.none)
+        isBlankHTMLEntityName(bs.head!.value) ? Flag.blank : Flag.none)
     ]),
   ([as, bs]) =>
     new List([new Node(as.head!.value + (bs?.head?.value ?? ''))]));

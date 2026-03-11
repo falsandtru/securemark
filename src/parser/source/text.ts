@@ -33,7 +33,7 @@ export const text: TextParser = input => {
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'), Flag.invisible)]);
+      return new List([new Node(html('br'), Flag.blank)]);
     default:
       assert(char !== '\n');
       if (context.sequential) return new List([new Node(char)]);

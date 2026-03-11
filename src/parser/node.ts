@@ -1,14 +1,14 @@
-import { invisibleHTMLEntityNames } from './api/normalize';
+import { invisibleBlankHTMLEntityNames } from './api/normalize';
 
 export const enum Flag {
   none,
-  invisible,
+  blank,
 }
 
-export const isInvisibleHTMLEntityName: (name: string) => boolean = eval([
+export const isBlankHTMLEntityName: (name: string) => boolean = eval([
   'name => {',
   'switch(name){',
-  invisibleHTMLEntityNames.map(name => `case '${name}':`).join(''),
+  invisibleBlankHTMLEntityNames.map(name => `case '${name}':`).join(''),
   'return true;',
   'default:',
   'return false;',

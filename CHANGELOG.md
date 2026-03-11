@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.296.1
+
+- Fix parsers to disallow leading blank characters.
+
 ## 0.296.0
 
-- Change link, media, annotation, and reference parsers to disallow invisible leading content.
+- Change link, media, annotation, and reference parsers to disallow leading invisible characters.
 
 ## 0.295.9
 

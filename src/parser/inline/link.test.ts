@@ -84,7 +84,6 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser, input('[\\ ]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[\\\n]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[&Tab;]{b}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('[&zwj;]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[[]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[]]{b}', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[a]{}', new Context())), undefined);

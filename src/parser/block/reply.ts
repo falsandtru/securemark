@@ -21,6 +21,6 @@ export const reply: ReplyParser = block(validate(csyntax, fmap(
       visualize(fmap(some(inline), (ns, { source, position }) =>
         source[position - 1] === '\n'
           ? ns
-          : ns.push(new Node(html('br'), Flag.invisible)) && ns)))
+          : ns.push(new Node(html('br'), Flag.blank)) && ns)))
   ])),
   ns => new List([new Node(html('p', defrag(unwrap(trimBlankNodeEnd(ns)))))]))));

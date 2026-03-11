@@ -24,7 +24,7 @@ function sanitize(source: string): string {
 
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
-export const invisibleHTMLEntityNames = [
+const invisibleHTMLEntityNames = [
   'Tab',
   'NewLine',
   'NonBreakingSpace',
@@ -63,6 +63,10 @@ const parser = (el => (entity: string): string => {
   el.innerHTML = entity;
   return el.textContent!;
 })(html('span'));
+export const invisibleBlankHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames
+  .filter(name => parser(`&${name};`).trimStart() === '');
+export const invisibleGraphHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames
+  .filter(name => parser(`&${name};`).trimStart() !== '');
 const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => ![
   'Tab',
   'NewLine',

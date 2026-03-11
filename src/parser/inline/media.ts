@@ -53,7 +53,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       ? new List<Node<List<Node<string>>>>([new Node(new List([new Node('')])), nodes.delete(nodes.head!)])
       : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, ''), nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
   ([{ value: [{ value: text, flags }] }, { value: params }], context) => {
-    if (flags & Flag.invisible) return;
+    if (flags & Flag.blank) return;
     if (text) {
       const tmp = text;
       text = text.trim();

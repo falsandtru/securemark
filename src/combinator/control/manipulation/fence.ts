@@ -1,6 +1,6 @@
 import { Parser, List, Node, Context, failsafe } from '../../data/parser';
 import { consume } from '../../../combinator';
-import { firstline, isBlankline } from '../constraint/line';
+import { firstline, isEmptyline } from '../constraint/line';
 import { push } from 'spica/array';
 
 export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
@@ -20,20 +20,20 @@ export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener:
     context.position += matches[0].length;
     // Prevent annoying parsing in editing.
     const secondline = firstline(source, context.position);
-    if (isBlankline(secondline, 0) && firstline(source, context.position + secondline.length).trimEnd() !== delim) return;
+    if (isEmptyline(secondline, 0) && firstline(source, context.position + secondline.length).trimEnd() !== delim) return;
     let block = '';
     let closer = '';
     let overflow = '';
     for (let count = 1; ; ++count) {
       if (context.position === source.length) break;
       const line = firstline(source, context.position);
-      if ((closer || count > limit + 1) && isBlankline(line, 0)) break;
+      if ((closer || count > limit + 1) && isEmptyline(line, 0)) break;
       if(closer) {
         overflow += line;
       }
       if (!closer && count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim) {
         closer = line;
-        if (isBlankline(source, context.position + line.length)) {
+        if (isEmptyline(source, context.position + line.length)) {
           context.position += line.length;
           break;
         }

@@ -34,6 +34,6 @@ export const cite: ReplyParser.CiteParser = line(fmap(
             ? define(node, { 'data-depth': `${quotes.length + 1}` }, node.innerText.slice(1))
             : node.slice(1),
         ]))),
-      new Node(html('br'), Flag.invisible),
+      new Node(html('br'), Flag.blank),
     ]);
   }));
