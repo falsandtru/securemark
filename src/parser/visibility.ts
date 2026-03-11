@@ -96,17 +96,20 @@ export function isTightNodeStart(nodes: List<Node<HTMLElement | string>>): boole
 //  if (nodes.length === 0) return true;
 //  return isVisible(nodes.at(-1)!, -1);
 //}
-function isVisible({ value: node, flags }: Node<HTMLElement | string>, strpos?: 0 | -1): boolean {
-  if (strpos === undefined || typeof node !== 'string') return !(flags & Flag.invisible);
-  const char = node && node[strpos && node.length + strpos];
-  switch (char) {
+function isVisible({ value: node, flags }: Node<HTMLElement | string>, strpos?: number): boolean {
+  if (flags & Flag.invisible) return false;
+  if (typeof node !== 'string') return true;
+  const str = node && strpos !== undefined
+    ? node[strpos >= 0 ? strpos : node.length + strpos]
+    : node;
+  switch (str) {
     case '':
     case ' ':
     case '\t':
     case '\n':
       return false;
     default:
-      return char.trimStart() !== '';
+      return str.trimStart() !== '';
   }
 }
 
