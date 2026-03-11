@@ -4,7 +4,7 @@ import { Flag } from './node';
 import { convert, fmap } from '../combinator';
 import { invisibleHTMLEntityNames } from './api/normalize';
 
-namespace blank {
+namespace invisible {
   export const line = new RegExp(
     /((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+(?=$|\n))/g.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
@@ -21,7 +21,7 @@ namespace blank {
 
 export function visualize<P extends Parser>(parser: P): P {
   return convert(
-    source => source.replace(blank.line, `$1${Command.Escape}$2`),
+    source => source.replace(invisible.line, `$1${Command.Escape}$2`),
     parser);
 }
 
@@ -53,7 +53,7 @@ function nonblankWith(delimiter: string | RegExp): RegExp {
 //      : undefined;
 //}
 //const isLooseStart = reduce(({ source, context }: Input<Context>): boolean => {
-//  return isTightStart({ source: source.replace(blank.start, ''), context });
+//  return isTightStart({ source: source.replace(invisible.start, ''), context });
 //}, ({ source }) => `${source}${Command.Separator}`);
 
 export function beforeNonblank<P extends Parser>(parser: P): P;
@@ -74,7 +74,7 @@ function isTightStart(input: Input<Context>): boolean {
     case '\n':
       return false;
     default:
-      const reg = blank.unit;
+      const reg = invisible.unit;
       reg.lastIndex = position;
       return !reg.test(source);
   }
@@ -124,7 +124,7 @@ function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
     const { context } = input;
     const { source, position } = context;
     if (position === source.length) return;
-    const reg = blank.start;
+    const reg = invisible.start;
     reg.lastIndex = position;
     reg.test(source);
     context.position = reg.lastIndex || position;
