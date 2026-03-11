@@ -165,12 +165,8 @@ export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<s
 //  return nodes;
 //}
 export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Node<string | N>>): List<Node<string | N>> {
-  const skip = nodes.length > 0 &&
-    typeof nodes.last?.value === 'object' &&
-    nodes.last.value.className === 'indexer'
-    ? nodes.pop()
-    : undefined;
-  for (let node = nodes.last; nodes.length > 0 && !isVisible((node = nodes.last!).value, -1);) {
+  const skip = typeof nodes.last?.value === 'object' && nodes.last.value.className === 'indexer';
+  for (let node = skip ? nodes.last?.prev : nodes.last; node && !isVisible(node.value, -1);) {
     if (typeof node.value === 'string') {
       const str = node.value.trimEnd();
       if (str.length > 0) {
@@ -178,8 +174,9 @@ export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Node<string 
         break;
       }
     }
-    nodes.pop();
+    const target = node;
+    node = node.prev;
+    nodes.delete(target);
   }
-  skip && nodes.push(skip);
   return nodes;
 }
