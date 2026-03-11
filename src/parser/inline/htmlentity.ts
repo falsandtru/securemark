@@ -18,7 +18,7 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
   ([{ value }]) => new List([
-    length === 1 || value.at(-1) !== ';'
+    value.length === 1 || value.at(-1) !== ';'
       ? new Node(value)
       : new Node(html('span', {
           class: 'invalid',
