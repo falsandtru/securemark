@@ -59,7 +59,7 @@ export const invisibleHTMLEntityNames = [
   'it',
   'InvisibleComma',
   'ic',
-] as const;
+] as readonly string[];
 const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => ![
   'Tab',
   'NewLine',

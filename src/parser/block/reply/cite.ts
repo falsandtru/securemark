@@ -1,5 +1,6 @@
 import { ReplyParser } from '../../block';
 import { List, Node } from '../../../combinator/data/parser';
+import { Flag } from '../../node';
 import { union, line, focus, open, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
 import { str } from '../../source';
@@ -33,6 +34,6 @@ export const cite: ReplyParser.CiteParser = line(fmap(
             ? define(node, { 'data-depth': `${quotes.length + 1}` }, node.innerText.slice(1))
             : node.slice(1),
         ]))),
-      new Node(html('br')),
+      new Node(html('br'), Flag.invisible),
     ]);
   }));

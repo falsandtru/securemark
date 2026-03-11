@@ -1,5 +1,6 @@
 import { TextParser, TxtParser } from '../source';
 import { State, Command } from '../context';
+import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
 import { union, consume } from '../../combinator';
 import { html } from 'typed-dom/dom';
@@ -23,16 +24,19 @@ export const text: TextParser = input => {
           assert(char !== Command.Escape);
           return new List();
         default:
+          const flags = source[position + 1].trimStart()
+            ? Flag.none
+            : Flag.invisible;
           consume(1, context);
           context.position += 1;
-          return new List([new Node(source.slice(position + 1, context.position))]);
+          return new List([new Node(source.slice(position + 1, context.position), flags)]);
       }
     case '\r':
       consume(-1, context);
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'))]);
+      return new List([new Node(html('br'), Flag.invisible)]);
     default:
       assert(char !== '\n');
       if (context.sequential) return new List([new Node(char)]);
@@ -52,9 +56,10 @@ export const text: TextParser = input => {
       consume(i - 1, context);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      return position === context.position || s && !linestart || lineend
-        ? new List()
-        : new List([new Node(source.slice(position, context.position))]);
+      if (position === context.position || s && !linestart || lineend) return new List();
+      const str = source.slice(position, context.position);
+      const flags = str.length === 1 && str.trimStart() === '' ? Flag.invisible : Flag.none;
+      return new List([new Node(str, flags)]);
   }
 };
 

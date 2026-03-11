@@ -20,7 +20,10 @@ export type Result<N, C extends Context = Context, D extends Parser<unknown, C>[
   | undefined;
 export { List };
 export class Node<N> implements List.Node {
-  constructor(public value: N) {
+  constructor(
+    public value: N,
+    public flags: number = 0,
+  ) {
   }
   public next?: this = undefined;
   public prev?: this = undefined;

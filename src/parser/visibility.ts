@@ -1,5 +1,6 @@
 import { Parser, Input, List, Node, failsafe } from '../combinator/data/parser';
 import { Context, Command } from './context';
+import { Flag } from './node';
 import { convert, fmap } from '../combinator';
 import { invisibleHTMLEntityNames } from './api/normalize';
 
@@ -81,43 +82,31 @@ function isTightStart(input: Input<Context>): boolean {
 
 export function isLooseNodeStart(nodes: List<Node<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
-  for (const { value: node } of nodes) {
+  for (const node of nodes) {
     if (isVisible(node)) return true;
-    if (typeof node === 'object' && node.tagName === 'BR') break;
+    if (typeof node.value === 'object' && node.value.tagName === 'BR') break;
   }
   return false;
 }
 export function isTightNodeStart(nodes: List<Node<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
-  return isVisible(nodes.head!.value, 0);
+  return isVisible(nodes.head!, 0);
 }
 //export function isTightNodeEnd(nodes: readonly (HTMLElement | string)[]): boolean {
 //  if (nodes.length === 0) return true;
 //  return isVisible(nodes.at(-1)!, -1);
 //}
-function isVisible(node: HTMLElement | string, strpos?: number): boolean {
-  switch (typeof node) {
-    case 'string':
-      const char = node && strpos !== undefined
-        ? node[strpos >= 0 ? strpos : node.length + strpos]
-        : node;
-      switch (char) {
-        case '':
-        case ' ':
-        case '\t':
-        case '\n':
-          return false;
-        default:
-          return char.trimStart() !== '';
-      }
+function isVisible({ value: node, flags }: Node<HTMLElement | string>, strpos?: 0 | -1): boolean {
+  if (strpos === undefined || typeof node !== 'string') return !(flags & Flag.invisible);
+  const char = node && node[strpos && node.length + strpos];
+  switch (char) {
+    case '':
+    case ' ':
+    case '\t':
+    case '\n':
+      return false;
     default:
-      switch (node.tagName) {
-        case 'BR':
-        case 'WBR':
-          return false;
-        default:
-          return true;
-      }
+      return char.trimStart() !== '';
   }
 }
 
@@ -166,7 +155,7 @@ export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<s
 //}
 export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Node<string | N>>): List<Node<string | N>> {
   const skip = typeof nodes.last?.value === 'object' && nodes.last.value.className === 'indexer';
-  for (let node = skip ? nodes.last?.prev : nodes.last; node && !isVisible(node.value, -1);) {
+  for (let node = skip ? nodes.last?.prev : nodes.last; node && !isVisible(node, -1);) {
     if (typeof node.value === 'string') {
       const str = node.value.trimEnd();
       if (str.length > 0) {
