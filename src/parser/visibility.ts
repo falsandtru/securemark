@@ -1,7 +1,6 @@
 import { Parser, Input, List, Node, failsafe } from '../combinator/data/parser';
 import { Context, Command } from './context';
 import { convert, fmap } from '../combinator';
-import { unsafehtmlentity } from './inline/htmlentity';
 import { invisibleHTMLEntityNames } from './api/normalize';
 
 namespace blank {
@@ -11,6 +10,10 @@ namespace blank {
     'g');
   export const start = new RegExp(
     /(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+/y.source
+      .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
+    'y');
+  export const unit = new RegExp(
+    /(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)/y.source
       .replace('IHN', `(?:${invisibleHTMLEntityNames.join('|')})`),
     'y');
 }
@@ -69,28 +72,10 @@ function isTightStart(input: Input<Context>): boolean {
     case '\t':
     case '\n':
       return false;
-    case '\\':
-      return source[position + 1]?.trimStart() !== '';
-    case '&':
-      switch (true) {
-        case source.length - position > 2
-          && source[position + 1] !== ' '
-          && unsafehtmlentity(input)?.head?.value.trimStart() === '':
-          context.position = position;
-          return false;
-      }
-      context.position = position;
-      return true;
-    case '<':
-      switch (true) {
-        case source.length - position >= 5
-          && source.startsWith('<wbr', position)
-          && (source[position + 4] === '>' || source.startsWith(' >', position + 4)):
-          return false;
-      }
-      return true;
     default:
-      return source[position].trimStart() !== '';
+      const reg = blank.unit;
+      reg.lastIndex = position;
+      return !reg.test(source);
   }
 }
 
