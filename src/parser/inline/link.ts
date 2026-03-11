@@ -43,7 +43,9 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
         bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
   ]),
   ([{ value: content }, { value: params = undefined } = {}], context) => {
-    if (context.state & State.link) return new List([new Node(context.source.slice(context.position - context.range, context.position))]);
+    if (context.state & State.link) return new List([
+      new Node(context.source.slice(context.position - context.range, context.position).replace(/\\($|.)/g, '$1'))
+    ]);
     if (content.last!.value === Command.Separator) {
       content.pop();
       if (params === undefined) {
@@ -88,7 +90,7 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
     new List([new Node(parse(content, params as List<Node<string>>, context))])))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
-  open(/ /y, str(/\S+/y)),
+  open(' ', str(/\S+/y)),
   str(/[^\s{}]+/y),
 ]);
 

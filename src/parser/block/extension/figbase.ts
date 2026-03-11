@@ -5,7 +5,7 @@ import { label } from '../../inline/extension/label';
 import { html } from 'typed-dom/dom';
 
 export const figbase: ExtensionParser.FigbaseParser = block(fmap(
-  validate(/\[?\$-(?:[0-9]+\.)*0\]?(?:$|[ \n])/y,
+  validate(/\[?\$-(?:[0-9]+\.)*0\]?[^\S\n]*(?:$|\n)/y,
   line(union([label]))),
   ([{ value: el }]) => {
     const label = el.getAttribute('data-label')!;

@@ -13,10 +13,13 @@ describe('Unit: parser/block/extension/figbase', () => {
       assert.deepStrictEqual(inspect(parser, input('$-0.', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-0.1', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-1', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$-0 0', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-0\n 0', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-name', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$-name-0', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('$group-0', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('$-0]', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('[$-0', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input(' [$-0]', new Context())), undefined);
     });
 
