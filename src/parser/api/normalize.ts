@@ -13,7 +13,7 @@ function format(source: string): string {
 
 const invalid = new RegExp([
   /(?![\t\r\n])[\x00-\x1F\x7F]/g.source,
-  /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source,
+  /(?![\u200C\u200D])[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source,
   // 後読みが重い
   ///(?<![\u1820\u1821])\u180E/g.source,
   ///[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
@@ -87,7 +87,7 @@ const unreadableSpecialCharacters = [
   // ZERO WIDTH SPACE
   '\u200B',
   // ZERO WIDTH NON-JOINER
-  '\u200C',
+  //'\u200C',
   // ZERO WIDTH JOINER
   //'\u200D',
   // LEFT-TO-RIGHT MARK
