@@ -24,9 +24,9 @@ export const text: TextParser = input => {
           assert(char !== Command.Escape);
           return new List();
         default:
-          const flags = source[position + 1].trimStart()
-            ? Flag.none
-            : Flag.invisible;
+          const flags = source[position + 1].trimStart() === ''
+            ? Flag.invisible
+            : Flag.none;
           consume(1, context);
           context.position += 1;
           return new List([new Node(source.slice(position + 1, context.position), flags)]);
@@ -58,7 +58,9 @@ export const text: TextParser = input => {
       const linestart = position === 0 || source[position - 1] === '\n';
       if (position === context.position || s && !linestart || lineend) return new List();
       const str = source.slice(position, context.position);
-      const flags = str.length === 1 && str.trimStart() === '' ? Flag.invisible : Flag.none;
+      const flags = str.length === 1 && str.trimStart() === ''
+        ? Flag.invisible
+        : Flag.none;
       return new List([new Node(str, flags)]);
   }
 };
