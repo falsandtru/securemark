@@ -4387,9 +4387,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
-const parser_1 = __webpack_require__(605);
-const context_1 = __webpack_require__(8669);
-const htmlentity_1 = __webpack_require__(470);
+const dom_1 = __webpack_require__(394);
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 function normalize(source) {
   return sanitize(format(source));
@@ -4398,7 +4396,7 @@ exports.normalize = normalize;
 function format(source) {
   return source.replace(/\r\n?|[\u2028\u2029]/g, '\n');
 }
-const invalid = new RegExp([/(?![\t\r\n])[\x00-\x1F\x7F]/g.source, /(?!\u200D)[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source
+const invalid = new RegExp([/(?![\t\r\n])[\x00-\x1F\x7F]/g.source, /(?![\u200C\u200D])[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source
 // 後読みが重い
 ///(?<![\u1820\u1821])\u180E/g.source,
 ///[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
@@ -4409,8 +4407,13 @@ function sanitize(source) {
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
 exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
+const parser = (el => entity => {
+  if (entity === '&NewLine;') return entity;
+  el.innerHTML = entity;
+  return el.textContent;
+})((0, dom_1.html)('span'));
 const unreadableEscapeHTMLEntityNames = exports.invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
-const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => (0, htmlentity_1.unsafehtmlentity)((0, parser_1.input)(`&${name};`, new context_1.Context())).head.value);
+const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => parser(`&${name};`));
 const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
@@ -4421,7 +4424,7 @@ const unreadableSpecialCharacters = (/* unused pure expression or super */ null 
 // ZERO WIDTH SPACE
 '\u200B',
 // ZERO WIDTH NON-JOINER
-'\u200C',
+//'\u200C',
 // ZERO WIDTH JOINER
 //'\u200D',
 // LEFT-TO-RIGHT MARK
@@ -6238,7 +6241,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined, (_, context) => {
   const {
@@ -7265,7 +7268,7 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Node(parser(as.head.value + bs.head.value + cs.head.value), (0, node_1.isinvisibleHTMLEntityName)(bs.head.value) ? 1 /* Flag.invisible */ : 0 /* Flag.none */)]), ([as, bs]) => new parser_1.List([new parser_1.Node(as.head.value + (bs?.head?.value ?? ''))]));
+exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Node(parser(as.head.value + bs.head.value + cs.head.value), (0, node_1.isInvisibleHTMLEntityName)(bs.head.value) ? 1 /* Flag.invisible */ : 0 /* Flag.none */)]), ([as, bs]) => new parser_1.List([new parser_1.Node(as.head.value + (bs?.head?.value ?? ''))]));
 exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([{
   value,
   flags
@@ -7355,7 +7358,7 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, visibility_1.trimBlankStart)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
@@ -7595,15 +7598,20 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
   return ns;
 })), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
   value
-}) => acc + value, ''))])), nodes.delete(nodes.last)])), ([{
+}) => acc + value, ''), nodes.head.value.head?.flags)])), nodes.delete(nodes.last)])), ([{
   value: [{
-    value: text
+    value: text,
+    flags
   }]
 }, {
   value: params
 }], context) => {
-  if (text && text.trimStart() === '') return;
-  text = text.trim();
+  if (flags & 1 /* Flag.invisible */) return;
+  if (text) {
+    const tmp = text;
+    text = text.trim();
+    if (text === '' || text[0] !== tmp[0]) return;
+  }
   (0, combinator_1.consume)(100, context);
   if (params.last.value === "\u0018" /* Command.Cancel */) {
     params.pop();
@@ -7693,7 +7701,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.trimBlankStart)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.beforeNonblank)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
   const {
     position,
     range,
@@ -7976,12 +7984,9 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combin
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isinvisibleHTMLEntityName = void 0;
+exports.isInvisibleHTMLEntityName = void 0;
 const normalize_1 = __webpack_require__(4490);
-function isinvisibleHTMLEntityName(name) {
-  return normalize_1.invisibleHTMLEntityNames.includes(name);
-}
-exports.isinvisibleHTMLEntityName = isinvisibleHTMLEntityName;
+exports.isInvisibleHTMLEntityName = eval(['name => {', 'switch(name){', normalize_1.invisibleHTMLEntityNames.map(name => `case '${name}':`).join(''), 'return true;', 'default:', 'return false;', '}', '}'].join(''));
 
 /***/ },
 
@@ -8636,10 +8641,9 @@ const text = input => {
         case '\n':
           return new parser_1.List();
         default:
-          const flags = source[position + 1].trimStart() ? 0 /* Flag.none */ : 1 /* Flag.invisible */;
           (0, combinator_1.consume)(1, context);
           context.position += 1;
-          return new parser_1.List([new parser_1.Node(source.slice(position + 1, context.position), flags)]);
+          return new parser_1.List([new parser_1.Node(source.slice(position + 1, context.position))]);
       }
     case '\r':
       (0, combinator_1.consume)(-1, context);
@@ -8659,9 +8663,7 @@ const text = input => {
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
       if (position === context.position || s && !linestart || lineend) return new parser_1.List();
-      const str = source.slice(position, context.position);
-      const flags = str.length === 1 && str.trimStart() === '' ? 1 /* Flag.invisible */ : 0 /* Flag.none */;
-      return new parser_1.List([new parser_1.Node(str, flags)]);
+      return new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
 };
 exports.text = text;
@@ -9034,18 +9036,18 @@ exports.stringify = stringify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlankStart = exports.trimBlank = exports.isTightNodeStart = exports.isLooseNodeStart = exports.beforeNonblank = exports.blankWith = exports.afterNonblank = exports.visualize = void 0;
+exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isTightNodeStart = exports.isLooseNodeStart = exports.beforeNonblank = exports.blankWith = exports.afterNonblank = exports.visualize = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const normalize_1 = __webpack_require__(4490);
-var blank;
-(function (blank) {
-  blank.line = new RegExp(/((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+(?=$|\n))/g.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'g');
-  blank.start = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
-  blank.unit = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
-})(blank || (blank = {}));
+var invisible;
+(function (invisible) {
+  invisible.line = new RegExp(/((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+(?=$|\n))/g.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'g');
+  invisible.start = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
+  invisible.unit = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
+})(invisible || (invisible = {}));
 function visualize(parser) {
-  return (0, combinator_1.convert)(source => source.replace(blank.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
+  return (0, combinator_1.convert)(source => source.replace(invisible.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
 }
 exports.visualize = visualize;
 exports.afterNonblank = nonblankWith('');
@@ -9079,7 +9081,7 @@ function isTightStart(input) {
     case '\n':
       return false;
     default:
-      const reg = blank.unit;
+      const reg = invisible.unit;
       reg.lastIndex = position;
       return !reg.test(source);
   }
@@ -9106,16 +9108,17 @@ function isVisible({
   value: node,
   flags
 }, strpos) {
-  if (strpos === undefined || typeof node !== 'string') return !(flags & 1 /* Flag.invisible */);
-  const char = node && node[strpos && node.length + strpos];
-  switch (char) {
+  if (flags & 1 /* Flag.invisible */) return false;
+  if (typeof node !== 'string') return true;
+  const str = node && strpos !== undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
+  switch (str) {
     case '':
     case ' ':
     case '\t':
     case '\n':
       return false;
     default:
-      return char.trimStart() !== '';
+      return str.trimStart() !== '';
   }
 }
 function trimBlank(parser) {
@@ -9132,14 +9135,13 @@ function trimBlankStart(parser) {
       position
     } = context;
     if (position === source.length) return;
-    const reg = blank.start;
+    const reg = invisible.start;
     reg.lastIndex = position;
     reg.test(source);
     context.position = reg.lastIndex || position;
     return context.position === source.length ? new parser_1.List() : parser(input);
   });
 }
-exports.trimBlankStart = trimBlankStart;
 function trimBlankEnd(parser) {
   return (0, combinator_1.fmap)(parser, trimBlankNodeEnd);
 }
@@ -9164,14 +9166,17 @@ exports.trimBlankEnd = trimBlankEnd;
 //  return nodes;
 //}
 function trimBlankNodeEnd(nodes) {
-  const skip = typeof nodes.last?.value === 'object' && nodes.last.value.className === 'indexer';
-  for (let node = skip ? nodes.last?.prev : nodes.last; node && !isVisible(node, -1);) {
-    if (typeof node.value === 'string') {
+  const skip = nodes.last && ~nodes.last.flags & 1 /* Flag.invisible */ && typeof nodes.last.value === 'object' ? nodes.last.value.className === 'indexer' : false;
+  for (let node = skip ? nodes.last?.prev : nodes.last; node;) {
+    const visible = ~node.flags & 1 /* Flag.invisible */;
+    if (visible && typeof node.value === 'string') {
       const str = node.value.trimEnd();
       if (str.length > 0) {
         node.value = str;
         break;
       }
+    } else if (visible) {
+      break;
     }
     const target = node;
     node = node.prev;
