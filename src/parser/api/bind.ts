@@ -8,7 +8,7 @@ import { headers } from './header';
 import { figure } from '../processor/figure';
 import { note } from '../processor/note';
 import { ReadonlyURL } from 'spica/url';
-import { push, splice } from 'spica/array';
+import { splice } from 'spica/array';
 
 interface Settings extends ParserSettings {
 }
@@ -29,8 +29,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
   const blocks: Block[] = [];
-  const adds: [HTMLElement, Node | null][] = [];
-  const dels: [HTMLElement][] = [];
+  const adds: (readonly [HTMLElement, Node | null])[] = [];
+  const dels: (readonly [HTMLElement])[] = [];
   const bottom = target.firstChild;
   let revision: symbol | undefined;
   return {
@@ -83,7 +83,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      push(adds, es.map(el => [el, base] as const));
+      adds.push(...es.map(el => [el, base] as const));
       adds.reverse();
       for (; adds.length > 0;) {
         assert(rev === revision);
@@ -98,7 +98,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       assert(rev === revision);
       const es = refuse[i][1];
       if (es.length === 0) continue;
-      push(dels, es.map(el => [el]));
+      dels.push(...es.map(el => [el] as const));
     }
     assert(blocks.length === sourceSegments.length);
     adds.reverse();
