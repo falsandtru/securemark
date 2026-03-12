@@ -103,7 +103,7 @@ export function surround<N>(
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
-    const nodesC = nodesM || optional ? closer(input) : undefined;
+    const nodesC = optional || nodesM ? closer(input) : undefined;
     context.range = context.position - position;
     if (nodesC === undefined) {
       wbs && setBacktrack(context, wbs, position);
