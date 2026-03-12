@@ -90,7 +90,7 @@ export function surround<N>(
     const { linebreak } = context;
     context.linebreak = 0;
     const nodesO = opener(input);
-    if (!nodesO) {
+    if (nodesO === undefined) {
       return void revert(context, linebreak);
     }
     if (rbs && isBacktrack(context, rbs, position, blen)) {
@@ -98,14 +98,14 @@ export function surround<N>(
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
     context.range = context.position - position;
-    if (!nodesM && !optional) {
+    if (nodesM === undefined && !optional) {
       wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
-    if (!nodesC) {
+    if (nodesC === undefined) {
       wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
@@ -116,7 +116,9 @@ export function surround<N>(
     context.range = context.position - position;
     const result = f
       ? f([nodesO, nodesM!, nodesC], context)
-      : nodesO.import(nodesM ?? new List()).import(nodesC);
+      : nodesM
+        ? nodesO.import(nodesM).import(nodesC)
+        : nodesO.import(nodesC);
     if (result) {
       context.linebreak ||= linebreak;
     }
