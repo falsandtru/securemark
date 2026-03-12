@@ -1,5 +1,6 @@
 import { UnescapableSourceParser } from '../source';
 import { Command } from '../context';
+import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
 import { consume } from '../../combinator';
 import { nonWhitespace, canSkip, next } from './text';
@@ -22,7 +23,7 @@ export const unescsource: UnescapableSourceParser = ({ context }) => {
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'))]);
+      return new List([new Node(html('br'), Flag.blank)]);
     default:
       assert(char !== '\n');
       if (context.sequential) return new List([new Node(char)]);

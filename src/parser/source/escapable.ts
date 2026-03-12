@@ -1,5 +1,6 @@
 import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
+import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
 import { consume } from '../../combinator';
 import { next } from './text';
@@ -34,7 +35,7 @@ export const escsource: EscapableSourceParser = ({ context }) => {
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'))]);
+      return new List([new Node(html('br'), Flag.blank)]);
     default:
       assert(char !== '\n');
       if (context.sequential) return new List([new Node(char)]);
