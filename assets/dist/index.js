@@ -2585,7 +2585,7 @@ function block(parser, separation = true) {
     if (position === source.length) return;
     const result = parser(input);
     if (result === undefined) return;
-    if (separation && !(0, line_1.isBlankline)(source, context.position)) return;
+    if (separation && !(0, line_1.isEmptyline)(source, context.position)) return;
     return context.position === source.length || source[context.position - 1] === '\n' ? result : undefined;
   });
 }
@@ -2629,7 +2629,7 @@ exports.verify = verify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isBlankline = exports.firstline = exports.line = void 0;
+exports.isEmptyline = exports.firstline = exports.line = void 0;
 const parser_1 = __webpack_require__(605);
 function line(parser) {
   return (0, parser_1.failsafe)(({
@@ -2648,7 +2648,7 @@ function line(parser) {
     context.source = source;
     context.offset -= position;
     if (result === undefined) return;
-    if (context.position < position + line.length && !isBlankline(source, context.position)) return;
+    if (context.position < position + line.length && !isEmptyline(source, context.position)) return;
     context.position = position + line.length;
     return result;
   });
@@ -2659,12 +2659,12 @@ function firstline(source, position) {
   return i === -1 ? source.slice(position) : source.slice(position, i + 1);
 }
 exports.firstline = firstline;
-const blankline = /[^\S\n]*(?:$|\n)/y;
-function isBlankline(source, position) {
-  blankline.lastIndex = position;
-  return source.length === position || source[position] === '\n' || blankline.test(source);
+const emptyline = /[^\S\n]*(?:$|\n)/y;
+function isEmptyline(source, position) {
+  emptyline.lastIndex = position;
+  return source.length === position || source[position] === '\n' || emptyline.test(source);
 }
-exports.isBlankline = isBlankline;
+exports.isEmptyline = isEmptyline;
 
 /***/ },
 
@@ -2796,20 +2796,20 @@ function fence(opener, limit, separation = true) {
     context.position += matches[0].length;
     // Prevent annoying parsing in editing.
     const secondline = (0, line_1.firstline)(source, context.position);
-    if ((0, line_1.isBlankline)(secondline, 0) && (0, line_1.firstline)(source, context.position + secondline.length).trimEnd() !== delim) return;
+    if ((0, line_1.isEmptyline)(secondline, 0) && (0, line_1.firstline)(source, context.position + secondline.length).trimEnd() !== delim) return;
     let block = '';
     let closer = '';
     let overflow = '';
     for (let count = 1;; ++count) {
       if (context.position === source.length) break;
       const line = (0, line_1.firstline)(source, context.position);
-      if ((closer || count > limit + 1) && (0, line_1.isBlankline)(line, 0)) break;
+      if ((closer || count > limit + 1) && (0, line_1.isEmptyline)(line, 0)) break;
       if (closer) {
         overflow += line;
       }
       if (!closer && count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim) {
         closer = line;
-        if ((0, line_1.isBlankline)(source, context.position + line.length)) {
+        if ((0, line_1.isEmptyline)(source, context.position + line.length)) {
           context.position += line.length;
           break;
         }
@@ -4386,7 +4386,7 @@ function parse(source) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.escape = exports.invisibleHTMLEntityNames = exports.normalize = void 0;
+exports.escape = exports.invisibleGraphHTMLEntityNames = exports.invisibleBlankHTMLEntityNames = exports.normalize = void 0;
 const dom_1 = __webpack_require__(394);
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 function normalize(source) {
@@ -4406,13 +4406,15 @@ function sanitize(source) {
 }
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
-exports.invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
+const invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
 const parser = (el => entity => {
   if (entity === '&NewLine;') return entity;
   el.innerHTML = entity;
   return el.textContent;
 })((0, dom_1.html)('span'));
-const unreadableEscapeHTMLEntityNames = exports.invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
+exports.invisibleBlankHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() === '');
+exports.invisibleGraphHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() !== '');
+const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
 const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => parser(`&${name};`));
 const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
 // https://www.pandanoir.info/entry/2018/03/11/193000
@@ -5759,7 +5761,7 @@ const delimiter = new RegExp(`${cite_1.syntax.source}|${quote_1.syntax.source}`,
 exports.reply = (0, combinator_1.block)((0, combinator_1.validate)(cite_1.syntax, (0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.union)([cite_1.cite, quote_1.quote, (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, delimiter), (0, visibility_1.visualize)((0, combinator_1.fmap)((0, combinator_1.some)(inline_1.inline), (ns, {
   source,
   position
-}) => source[position - 1] === '\n' ? ns : ns.push(new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.invisible */)) && ns)))])), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns)))))]))));
+}) => source[position - 1] === '\n' ? ns : ns.push(new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.blank */)) && ns)))])), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('p', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns)))))]))));
 
 /***/ },
 
@@ -5811,7 +5813,7 @@ exports.cite = (0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.op
     ...(0, util_1.invalid)('cite', 'syntax', 'Invalid syntax')
   }, (0, dom_1.defrag)([`${quotes}>`, typeof node === 'object' ? (0, dom_1.define)(node, {
     'data-depth': `${quotes.length + 1}`
-  }, node.innerText.slice(1)) : node.slice(1)]))), new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.invisible */)]);
+  }, node.innerText.slice(1)) : node.slice(1)]))), new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.blank */)]);
 }));
 
 /***/ },
@@ -5839,7 +5841,7 @@ exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combina
 math_1.math, autolink_1.autolink, source_1.unescsource])))), (ns, {
   source,
   position
-}) => new parser_1.List([new parser_1.Node(source[position - 1] === '\n' ? ns.pop().value : (0, dom_1.html)('br'), 1 /* Flag.invisible */), new parser_1.Node((0, dom_1.html)('span', {
+}) => new parser_1.List([new parser_1.Node(source[position - 1] === '\n' ? ns.pop().value : (0, dom_1.html)('br'), 1 /* Flag.blank */), new parser_1.Node((0, dom_1.html)('span', {
   class: 'quote'
 }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))))].reverse())), false));
 
@@ -7189,7 +7191,7 @@ Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 exports.html = (0, combinator_1.lazy)(() => (0, combinator_1.validate)(/<[a-z]+(?=[ >])/yi, (0, combinator_1.union)([(0, combinator_1.surround)(
 // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.precedence)(9, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute]))), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context), as.head.value === '<wbr' ? 1 /* Flag.invisible */ : 0 /* Flag.none */)]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.precedence)(9, (0, combinator_1.some)(exports.attribute)), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
+(0, source_1.str)(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y), (0, combinator_1.precedence)(9, (0, combinator_1.some)((0, combinator_1.union)([exports.attribute]))), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs).import(cs))], new parser_1.List(), new parser_1.List(), context), as.head.value === '<wbr' ? 1 /* Flag.blank */ : 0 /* Flag.none */)]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node(elem(as.head.value.slice(1), false, [...(0, util_1.unwrap)(as.import(bs))], new parser_1.List(), new parser_1.List(), context))])), (0, combinator_1.match)(new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'), (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${tag}`), (0, combinator_1.precedence)(9, (0, combinator_1.some)(exports.attribute)), (0, combinator_1.open)((0, source_1.str)(/ ?/y), (0, source_1.str)('>'), true), true, [], ([as, bs = new parser_1.List(), cs]) => as.import(bs).import(cs), ([as, bs = new parser_1.List()]) => as.import(bs)),
 // 不可視のHTML構造が可視構造を変化させるべきでない。
 // 可視のHTMLは優先度変更を検討する。
 // このため`<>`記号は将来的に共通構造を変化させる可能性があり
@@ -7203,7 +7205,7 @@ function elem(tag, content, as, bs, cs, context) {
   if (content) {
     if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, context);
     if (bs.length === 0) return ielem('content', `Missing the content`, context);
-    if (!(0, visibility_1.isLooseNodeStart)(bs)) return ielem('content', `Missing the visible content in the same line`, context);
+    if (!(0, visibility_1.isNonblankFirstLine)(bs)) return ielem('content', `Missing the visible content in the same line`, context);
   }
   const [attrs] = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
   if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context);
@@ -7268,7 +7270,7 @@ const combinator_1 = __webpack_require__(3484);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Node(parser(as.head.value + bs.head.value + cs.head.value), (0, node_1.isInvisibleHTMLEntityName)(bs.head.value) ? 1 /* Flag.invisible */ : 0 /* Flag.none */)]), ([as, bs]) => new parser_1.List([new parser_1.Node(as.head.value + (bs?.head?.value ?? ''))]));
+exports.unsafehtmlentity = (0, combinator_1.surround)((0, source_1.str)('&'), (0, source_1.str)(/[0-9A-Za-z]+/y), (0, source_1.str)(';'), false, [3 | 8 /* Backtrack.unescapable */], ([as, bs, cs]) => new parser_1.List([new parser_1.Node(parser(as.head.value + bs.head.value + cs.head.value), (0, node_1.isBlankHTMLEntityName)(bs.head.value) ? 1 /* Flag.blank */ : 0 /* Flag.none */)]), ([as, bs]) => new parser_1.List([new parser_1.Node(as.head.value + (bs?.head?.value ?? ''))]));
 exports.htmlentity = (0, combinator_1.fmap)((0, combinator_1.union)([exports.unsafehtmlentity]), ([{
   value,
   flags
@@ -7606,7 +7608,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
 }, {
   value: params
 }], context) => {
-  if (flags & 1 /* Flag.invisible */) return;
+  if (flags & 1 /* Flag.blank */) return;
   if (text) {
     const tmp = text;
     text = text.trim();
@@ -7825,7 +7827,7 @@ const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.inits)([(0, combinator_1.dup)((0, combinator_1.surround)('[', text, ']', false, [1 | 4 /* Backtrack.common */, 3 | 32 /* Backtrack.ruby */], ([, ns]) => {
   ns && ns.last?.value === '' && ns.pop();
-  return (0, visibility_1.isTightNodeStart)(ns) ? ns : undefined;
+  return (0, visibility_1.isNonblankNodeStart)(ns) ? ns : undefined;
 })), (0, combinator_1.dup)((0, combinator_1.surround)('(', text, ')', false, [3 | 32 /* Backtrack.ruby */]))]), ([{
   value: texts
 }, {
@@ -7984,9 +7986,9 @@ const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combin
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.isInvisibleHTMLEntityName = void 0;
+exports.isBlankHTMLEntityName = void 0;
 const normalize_1 = __webpack_require__(4490);
-exports.isInvisibleHTMLEntityName = eval(['name => {', 'switch(name){', normalize_1.invisibleHTMLEntityNames.map(name => `case '${name}':`).join(''), 'return true;', 'default:', 'return false;', '}', '}'].join(''));
+exports.isBlankHTMLEntityName = eval(['name => {', 'switch(name){', normalize_1.invisibleBlankHTMLEntityNames.map(name => `case '${name}':`).join(''), 'return true;', 'default:', 'return false;', '}', '}'].join(''));
 
 /***/ },
 
@@ -8491,7 +8493,7 @@ const escsource = ({
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'))]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.blank */)]);
     default:
       if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       let i = (0, text_1.next)(source, position, state, delimiter);
@@ -8650,7 +8652,7 @@ const text = input => {
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.invisible */)]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.blank */)]);
     default:
       if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       exports.nonWhitespace.lastIndex = position + 1;
@@ -8880,7 +8882,7 @@ const unescsource = ({
       return new parser_1.List();
     case '\n':
       context.linebreak ||= source.length - position;
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'))]);
+      return new parser_1.List([new parser_1.Node((0, dom_1.html)('br'), 1 /* Flag.blank */)]);
     default:
       if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       text_1.nonWhitespace.lastIndex = position + 1;
@@ -9036,18 +9038,18 @@ exports.stringify = stringify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isTightNodeStart = exports.isLooseNodeStart = exports.beforeNonblank = exports.blankWith = exports.afterNonblank = exports.visualize = void 0;
+exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isNonblankNodeStart = exports.isNonblankFirstLine = exports.beforeNonblank = exports.blankWith = exports.afterNonblank = exports.visualize = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const normalize_1 = __webpack_require__(4490);
-var invisible;
-(function (invisible) {
-  invisible.line = new RegExp(/((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+(?=$|\n))/g.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'g');
-  invisible.start = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)+/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
-  invisible.unit = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IHN;|<wbr ?>)/y.source.replace('IHN', `(?:${normalize_1.invisibleHTMLEntityNames.join('|')})`), 'y');
-})(invisible || (invisible = {}));
+var blank;
+(function (blank) {
+  blank.line = new RegExp(/((?:^|\n)[^\S\n]*(?=\S))((?:[^\S\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+(?=$|\n))/g.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'g');
+  blank.start = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'y');
+  blank.unit = new RegExp(/(?:[^\S\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'y');
+})(blank || (blank = {}));
 function visualize(parser) {
-  return (0, combinator_1.convert)(source => source.replace(invisible.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
+  return (0, combinator_1.convert)(source => source.replace(blank.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
 }
 exports.visualize = visualize;
 exports.afterNonblank = nonblankWith('');
@@ -9055,17 +9057,17 @@ function blankWith(starts, delimiter) {
   return new RegExp([
   // 空行除去
   // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
-  String.raw`(?:${starts}(?:\\?\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr ?>)*)?`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
+  String.raw`(?:${starts}(?:\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)*)?`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
 }
 exports.blankWith = blankWith;
 function nonblankWith(delimiter) {
-  return new RegExp([String.raw`(?<!\s|&(?:${normalize_1.invisibleHTMLEntityNames.join('|')});|<wbr ?>)`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
+  return new RegExp([String.raw`(?<!\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
 }
 function beforeNonblank(parser) {
-  return input => isTightStart(input) ? parser(input) : undefined;
+  return input => isNonblankStart(input) ? parser(input) : undefined;
 }
 exports.beforeNonblank = beforeNonblank;
-function isTightStart(input) {
+function isNonblankStart(input) {
   const {
     context
   } = input;
@@ -9081,34 +9083,30 @@ function isTightStart(input) {
     case '\n':
       return false;
     default:
-      const reg = invisible.unit;
+      const reg = blank.unit;
       reg.lastIndex = position;
       return !reg.test(source);
   }
 }
-function isLooseNodeStart(nodes) {
+function isNonblankFirstLine(nodes) {
   if (nodes.length === 0) return true;
   for (const node of nodes) {
-    if (isVisible(node)) return true;
-    if (typeof node.value === 'object' && node.value.tagName === 'BR') break;
+    if (isNonblank(node)) return true;
+    if (node.flags & 1 /* Flag.blank */ && typeof node.value === 'object' && node.value.tagName === 'BR') break;
   }
   return false;
 }
-exports.isLooseNodeStart = isLooseNodeStart;
-function isTightNodeStart(nodes) {
+exports.isNonblankFirstLine = isNonblankFirstLine;
+function isNonblankNodeStart(nodes) {
   if (nodes.length === 0) return true;
-  return isVisible(nodes.head, 0);
+  return isNonblank(nodes.head, 0);
 }
-exports.isTightNodeStart = isTightNodeStart;
-//export function isTightNodeEnd(nodes: readonly (HTMLElement | string)[]): boolean {
-//  if (nodes.length === 0) return true;
-//  return isVisible(nodes.at(-1)!, -1);
-//}
-function isVisible({
+exports.isNonblankNodeStart = isNonblankNodeStart;
+function isNonblank({
   value: node,
   flags
 }, strpos) {
-  if (flags & 1 /* Flag.invisible */) return false;
+  if (flags & 1 /* Flag.blank */) return false;
   if (typeof node !== 'string') return true;
   const str = node && strpos !== undefined ? node[strpos >= 0 ? strpos : node.length + strpos] : node;
   switch (str) {
@@ -9135,7 +9133,7 @@ function trimBlankStart(parser) {
       position
     } = context;
     if (position === source.length) return;
-    const reg = invisible.start;
+    const reg = blank.start;
     reg.lastIndex = position;
     reg.test(source);
     context.position = reg.lastIndex || position;
@@ -9146,37 +9144,19 @@ function trimBlankEnd(parser) {
   return (0, combinator_1.fmap)(parser, trimBlankNodeEnd);
 }
 exports.trimBlankEnd = trimBlankEnd;
-//export function trimBlankNode<N extends HTMLElement | string>(nodes: N[]): N[] {
-//  return trimBlankNodeStart(trimBlankNodeEnd(nodes));
-//}
-//function trimBlankNodeStart<N extends HTMLElement | string>(nodes: N[]): N[] {
-//  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
-//    if (typeof node === 'string') {
-//      const pos = node.trimStart().length;
-//      if (pos > 0) {
-//        nodes[0] = node.slice(-pos) as N;
-//        break;
-//      }
-//    }
-//    else if (nodes.length === 1 && node.className === 'indexer') {
-//      break;
-//    }
-//    nodes.shift();
-//  }
-//  return nodes;
-//}
 function trimBlankNodeEnd(nodes) {
-  const skip = nodes.last && ~nodes.last.flags & 1 /* Flag.invisible */ && typeof nodes.last.value === 'object' ? nodes.last.value.className === 'indexer' : false;
+  const skip = nodes.last && ~nodes.last.flags & 1 /* Flag.blank */ && typeof nodes.last.value === 'object' ? nodes.last.value.className === 'indexer' : false;
   for (let node = skip ? nodes.last?.prev : nodes.last; node;) {
-    const visible = ~node.flags & 1 /* Flag.invisible */;
-    if (visible && typeof node.value === 'string') {
-      const str = node.value.trimEnd();
-      if (str.length > 0) {
-        node.value = str;
+    if (~node.flags & 1 /* Flag.blank */) {
+      if (typeof node.value === 'string') {
+        const str = node.value.trimEnd();
+        if (str.length > 0) {
+          node.value = str;
+          break;
+        }
+      } else {
         break;
       }
-    } else if (visible) {
-      break;
     }
     const target = node;
     node = node.prev;
