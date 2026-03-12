@@ -69,7 +69,7 @@ function isNonblankStart(input: Input<Context>): boolean {
   }
 }
 
-export function isNonblankLineStart(nodes: List<Node<HTMLElement | string>>): boolean {
+export function isNonblankFirstLine(nodes: List<Node<HTMLElement | string>>): boolean {
   if (nodes.length === 0) return true;
   for (const node of nodes) {
     if (isNonblank(node)) return true;
