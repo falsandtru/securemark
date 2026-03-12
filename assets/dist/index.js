@@ -3113,7 +3113,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
-    const nodesC = nodesM || optional ? closer(input) : undefined;
+    const nodesC = optional || nodesM ? closer(input) : undefined;
     context.range = context.position - position;
     if (nodesC === undefined) {
       wbs && setBacktrack(context, wbs, position);
@@ -3720,15 +3720,24 @@ exports.constraint = exports.state = exports.precedence = exports.recursion = ex
 const alias_1 = __webpack_require__(5413);
 const assign_1 = __webpack_require__(9888);
 function reset(base, parser) {
-  const changes = Object.entries(base);
-  const values = Array(changes.length);
-  return ({
-    context
-  }) =>
-  // 大域離脱時の汚染回避のため複製
-  apply(parser, {
-    ...context
-  }, changes, values, true);
+  return input => {
+    const {
+      context
+    } = input;
+    // @ts-expect-error
+    context.resources ??= {
+      clock: base.resources?.clock,
+      recursions: base.resources?.recursions.slice()
+    };
+    context.backtracks = {};
+    return parser(input);
+  };
+  // removed by dead control flow
+
+  // removed by dead control flow
+
+  // removed by dead control flow
+
 }
 exports.reset = reset;
 function context(base, parser) {
@@ -4228,7 +4237,7 @@ function bind(target, settings) {
     context.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       const seg = sourceSegments[index];
-      const es = (0, block_1.block)((0, parser_1.input)(seg, context))?.foldl((acc, {
+      const es = (0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(context)))?.foldl((acc, {
         value
       }) => void acc.push(value) || acc, []) ?? [];
       // @ts-expect-error
@@ -4237,7 +4246,7 @@ function bind(target, settings) {
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      (0, array_1.push)(adds, es.map(el => [el, base]));
+      adds.push(...es.map(el => [el, base]));
       adds.reverse();
       for (; adds.length > 0;) {
         const [el, base] = adds.pop();
@@ -4254,7 +4263,7 @@ function bind(target, settings) {
     for (let refuse = (0, array_1.splice)(blocks, index, blocks.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
       const es = refuse[i][1];
       if (es.length === 0) continue;
-      (0, array_1.push)(dels, es.map(el => [el]));
+      dels.push(...es.map(el => [el]));
     }
     adds.reverse();
     for (; adds.length > 0;) {
@@ -4539,7 +4548,7 @@ function parse(source, options = {}, context) {
   // @ts-expect-error
   context.header = true;
   for (const seg of (0, segment_1.segment)(source)) {
-    node.append(...((0, block_1.block)((0, parser_1.input)(seg, context))?.foldl((acc, {
+    node.append(...((0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(context)))?.foldl((acc, {
       value
     }) => void acc.push(value) || acc, []) ?? []));
     // @ts-expect-error
