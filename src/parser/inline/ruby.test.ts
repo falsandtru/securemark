@@ -46,7 +46,12 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser, input('[AB](a b c)', new Context())), [['<ruby>AB<rp>(</rp><rt>a b c</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[A B](ab)', new Context())), [['<ruby>A<rp>(</rp><rt>ab</rt><rp>)</rp>B<rt></rt></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[A B](a b)', new Context())), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rp>(</rp><rt>b</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[A B](a b )', new Context())), [['<ruby>A B<rp>(</rp><rt>a b</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[ABC](a )', new Context())), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rt></rt>C<rt></rt></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[ABC](a  )', new Context())), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rt></rt>C<rt></rt></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[ABC]( b)', new Context())), [['<ruby>A<rt></rt>B<rp>(</rp><rt>b</rt><rp>)</rp>C<rt></rt></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[ABC]( b )', new Context())), [['<ruby>A<rt></rt>B<rp>(</rp><rt>b</rt><rp>)</rp>C<rt></rt></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[ABC](  c)', new Context())), [['<ruby>A<rt></rt>B<rt></rt>C<rp>(</rp><rt>c</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[ABC](a  c)', new Context())), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rt></rt>C<rp>(</rp><rt>c</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[東方](とう　ほう)', new Context())), [['<ruby>東<rp>(</rp><rt>とう</rt><rp>)</rp>方<rp>(</rp><rt>ほう</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[秦　\\　　こころ](はた　の　こころ)', new Context())), [['<ruby>秦<rp>(</rp><rt>はた</rt><rp>)</rp>　<rp>(</rp><rt>の</rt><rp>)</rp>こころ<rp>(</rp><rt>こころ</rt><rp>)</rp></ruby>'], '']);
