@@ -21,7 +21,7 @@ describe('Unit: combinator/data/parser/context', () => {
       const ctx: Ctx = new Context();
       assert.deepStrictEqual([...unwrap(reset(base, parser)(input('123', ctx))!)], [3, 2, 1]);
       assert(base.resources?.clock === 3);
-      assert(ctx.resources?.clock === undefined);
+      assert(ctx.resources?.clock === 0);
       assert.throws(() => reset(base, parser)(input('1234', ctx)));
       assert(ctx.resources?.clock === 0);
     });

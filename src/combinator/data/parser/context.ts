@@ -4,6 +4,16 @@ import { clone } from 'spica/assign';
 
 export function reset<P extends Parser>(base: Options, parser: P): P;
 export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
+  return input => {
+    const { context } = input;
+    // @ts-expect-error
+    context.resources ??= {
+      clock: base.resources?.clock,
+      recursions: base.resources?.recursions.slice(),
+    };
+    context.backtracks = {};
+    return parser(input);
+  };
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const changes = Object.entries(base);
