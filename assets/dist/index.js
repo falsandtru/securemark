@@ -2603,18 +2603,19 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.verify = exports.validate = void 0;
-const combinator_1 = __webpack_require__(3484);
+const delimiter_1 = __webpack_require__(385);
+const bind_1 = __webpack_require__(994);
 function validate(pattern, parser) {
   if (typeof pattern === 'function') return guard(pattern, parser);
-  const match = (0, combinator_1.matcher)(pattern, false);
-  return input => match(input) ? parser(input) : undefined;
+  const test = (0, delimiter_1.tester)(pattern, false);
+  return input => test(input) && parser(input);
 }
 exports.validate = validate;
 function guard(f, parser) {
   return input => f(input) ? parser(input) : undefined;
 }
 function verify(parser, cond) {
-  return (0, combinator_1.bind)(parser, (nodes, context) => cond(nodes, context) ? nodes : undefined);
+  return (0, bind_1.bind)(parser, (nodes, context) => cond(nodes, context) ? nodes : undefined);
 }
 exports.verify = verify;
 
@@ -2989,9 +2990,9 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.rewrite = exports.focus = void 0;
 const parser_1 = __webpack_require__(605);
-const combinator_1 = __webpack_require__(3484);
+const delimiter_1 = __webpack_require__(385);
 function focus(scope, parser, slice = true) {
-  const match = (0, combinator_1.matcher)(scope, false);
+  const match = (0, delimiter_1.matcher)(scope, false);
   return (0, parser_1.failsafe)(arg => {
     const {
       context
@@ -3067,22 +3068,22 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.setBacktrack = exports.isBacktrack = exports.close = exports.open = exports.surround = void 0;
 const parser_1 = __webpack_require__(605);
-const combinator_1 = __webpack_require__(3484);
+const delimiter_1 = __webpack_require__(385);
 function surround(opener, parser, closer, optional = false, backtracks = [], f, g) {
   switch (typeof opener) {
     case 'string':
     case 'object':
-      opener = (0, combinator_1.clear)((0, combinator_1.matcher)(opener, true));
+      opener = (0, delimiter_1.tester)(opener, true);
   }
   switch (typeof parser) {
     case 'string':
     case 'object':
-      parser = (0, combinator_1.clear)((0, combinator_1.matcher)(parser, true));
+      parser = (0, delimiter_1.tester)(parser, true);
   }
   switch (typeof closer) {
     case 'string':
     case 'object':
-      closer = (0, combinator_1.clear)((0, combinator_1.matcher)(closer, true));
+      closer = (0, delimiter_1.tester)(closer, true);
   }
   const [blen, rbs, wbs] = reduce(backtracks);
   return (0, parser_1.failsafe)(input => {
@@ -3099,7 +3100,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     } = context;
     context.linebreak = 0;
     const nodesO = opener(input);
-    if (!nodesO) {
+    if (nodesO === undefined) {
       return void revert(context, linebreak);
     }
     if (rbs && isBacktrack(context, rbs, position, blen)) {
@@ -3107,14 +3108,14 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
     }
     const nodesM = context.position < source.length ? parser(input) : undefined;
     context.range = context.position - position;
-    if (!nodesM && !optional) {
+    if (nodesM === undefined && !optional) {
       wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
     }
     const nodesC = nodesM || optional ? closer(input) : undefined;
     context.range = context.position - position;
-    if (!nodesC) {
+    if (nodesC === undefined) {
       wbs && setBacktrack(context, wbs, position);
       const result = g?.([nodesO, nodesM], context);
       return result || void revert(context, linebreak);
@@ -3123,7 +3124,7 @@ function surround(opener, parser, closer, optional = false, backtracks = [], f, 
       return void revert(context, linebreak);
     }
     context.range = context.position - position;
-    const result = f ? f([nodesO, nodesM, nodesC], context) : nodesO.import(nodesM ?? new parser_1.List()).import(nodesC);
+    const result = f ? f([nodesO, nodesM, nodesC], context) : nodesM ? nodesO.import(nodesM).import(nodesC) : nodesO.import(nodesC);
     if (result) {
       context.linebreak ||= linebreak;
     }
@@ -3245,8 +3246,9 @@ exports.fmap = fmap;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.Delimiters = void 0;
-const combinator_1 = __webpack_require__(3484);
+exports.tester = exports.matcher = exports.Delimiters = void 0;
+const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(5745);
 class Delimiters {
   constructor() {
     this.tree = {};
@@ -3276,9 +3278,9 @@ class Delimiters {
         return () => undefined;
       case 'string':
       case 'object':
-        const match = (0, combinator_1.matcher)(pattern, false);
-        const verify = after ? (0, combinator_1.matcher)(after, false) : undefined;
-        return verify ? input => match(input) !== undefined && verify(input) !== undefined || undefined : input => match(input) !== undefined || undefined;
+        const test = tester(pattern, false);
+        const verify = after ? tester(after, false) : undefined;
+        return verify ? input => test(input) !== undefined && verify(input) !== undefined || undefined : input => test(input) !== undefined || undefined;
     }
   }
   registry(signature) {
@@ -3390,6 +3392,90 @@ class Delimiters {
   }
 }
 exports.Delimiters = Delimiters;
+function matcher(pattern, advance, after) {
+  const count = typeof pattern === 'object' ? /[^^\\*+][*+]/.test(pattern.source) : false;
+  switch (typeof pattern) {
+    case 'string':
+      if (pattern === '') return () => new parser_1.List([new parser_1.Node(pattern)]);
+      return input => {
+        const {
+          context
+        } = input;
+        const {
+          source,
+          position
+        } = context;
+        if (!source.startsWith(pattern, position)) return;
+        if (advance) {
+          context.position += pattern.length;
+        }
+        const next = after?.(input);
+        return after ? next && new parser_1.List([new parser_1.Node(pattern)]).import(next) : new parser_1.List([new parser_1.Node(pattern)]);
+      };
+    case 'object':
+      return input => {
+        const {
+          context
+        } = input;
+        const {
+          source,
+          position
+        } = context;
+        pattern.lastIndex = position;
+        if (!pattern.test(source)) return;
+        const src = source.slice(position, pattern.lastIndex);
+        count && (0, context_1.consume)(src.length, context);
+        if (advance) {
+          context.position += src.length;
+        }
+        const next = after?.(input);
+        return after ? next && new parser_1.List([new parser_1.Node(src)]).import(next) : new parser_1.List([new parser_1.Node(src)]);
+      };
+  }
+}
+exports.matcher = matcher;
+function tester(pattern, advance, after) {
+  const count = typeof pattern === 'object' ? /[^^\\*+][*+]/.test(pattern.source) : false;
+  switch (typeof pattern) {
+    case 'string':
+      if (pattern === '') return () => new parser_1.List();
+      return input => {
+        const {
+          context
+        } = input;
+        const {
+          source,
+          position
+        } = context;
+        if (!source.startsWith(pattern, position)) return;
+        if (advance) {
+          context.position += pattern.length;
+        }
+        if (after && after(input) === undefined) return;
+        return new parser_1.List();
+      };
+    case 'object':
+      return input => {
+        const {
+          context
+        } = input;
+        const {
+          source,
+          position
+        } = context;
+        pattern.lastIndex = position;
+        if (!pattern.test(source)) return;
+        const len = pattern.lastIndex - position;
+        count && (0, context_1.consume)(len, context);
+        if (advance) {
+          context.position += len;
+        }
+        if (after && after(input) === undefined) return;
+        return new parser_1.List();
+      };
+  }
+}
+exports.tester = tester;
 
 /***/ },
 
@@ -3630,8 +3716,7 @@ exports.failsafe = failsafe;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.matcher = exports.constraint = exports.state = exports.precedence = exports.recursion = exports.consume = exports.creation = exports.context = exports.reset = void 0;
-const parser_1 = __webpack_require__(605);
+exports.constraint = exports.state = exports.precedence = exports.recursion = exports.consume = exports.creation = exports.context = exports.reset = void 0;
 const alias_1 = __webpack_require__(5413);
 const assign_1 = __webpack_require__(9888);
 function reset(base, parser) {
@@ -3790,45 +3875,6 @@ function constraint(state, positive, parser) {
   };
 }
 exports.constraint = constraint;
-function matcher(pattern, advance, verify) {
-  const count = typeof pattern === 'object' ? /[^^\\*+][*+]/.test(pattern.source) : false;
-  switch (typeof pattern) {
-    case 'string':
-      return ({
-        context
-      }) => {
-        const {
-          source,
-          position
-        } = context;
-        if (!source.startsWith(pattern, position)) return;
-        if (verify?.(source, position, pattern.length) === false) return;
-        if (advance) {
-          context.position += pattern.length;
-        }
-        return new parser_1.List([new parser_1.Node(pattern)]);
-      };
-    case 'object':
-      return ({
-        context
-      }) => {
-        const {
-          source,
-          position
-        } = context;
-        pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const src = source.slice(position, pattern.lastIndex);
-        count && consume(src.length, context);
-        if (verify?.(source, position, src.length) === false) return;
-        if (advance) {
-          context.position += src.length;
-        }
-        return new parser_1.List([new parser_1.Node(src)]);
-      };
-  }
-}
-exports.matcher = matcher;
 
 /***/ },
 
@@ -6243,7 +6289,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)('((', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]])))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)((0, combinator_1.close)('((', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]))), '))', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => context.linebreak === 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
   class: 'annotation'
 }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]) : undefined, (_, context) => {
   const {
@@ -6683,7 +6729,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('~~', (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
+exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('~~', '', (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -6709,7 +6755,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', (source, position, range) => !source.startsWith('*', position + range)), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank), strong_1.strong]))))), (0, source_1.str)('*'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
+exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('*', (0, visibility_1.beforeNonblankWith)(/(?!\*)/)), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank), strong_1.strong])))), (0, source_1.str)('*'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
 
 /***/ },
 
@@ -6737,13 +6783,13 @@ const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, comb
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('***', (0, combinator_1.surround)('', (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)]))), (0, source_1.strs)('*', 3), false, [], ([, bs, cs], context) => {
+exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('***', visibility_1.beforeNonblank, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 3), false, [], ([, bs, cs], context) => {
   const {
     buffer
   } = context;
   switch (cs.head.value) {
     case '***':
-      return bs;
+      return buffer.import(bs);
     case '**':
       return (0, combinator_1.bind)(subemphasis, ds => {
         const {
@@ -6893,7 +6939,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#'), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
+exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(32 /* State.index */, (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.surround)((0, source_1.str)('[#', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.some)((0, combinator_1.inits)([inline_1.inline, exports.signature]), ']', [[']', 1]]))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], ([, bs], context) => context.linebreak === 0 && (0, visibility_1.trimBlankNodeEnd)(bs).length > 0 ? new parser_1.List([new parser_1.Node((0, dom_1.html)('a', {
   'data-index': dataindex(bs)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]) : undefined, undefined)), ns => {
   const el = ns.head.value;
@@ -7155,7 +7201,7 @@ const dom_1 = __webpack_require__(394);
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)(
 // ^はabbrで使用済みだが^:などのようにして分離使用可能
-(0, source_1.str)(/\[[:^|]/y), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+(0, source_1.str)(/\[[:^|]/y, visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('extension', 'syntax', `Invalid start symbol or linebreak`)
 }, context.source.slice(context.position - context.range, context.position)))]), ([as, bs]) => bs && as.import(bs)));
@@ -7302,7 +7348,7 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('++', (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
+exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('++', '', (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -7329,7 +7375,7 @@ const dom_1 = __webpack_require__(394);
 // 可読性のため実際にはオブリーク体を指定する。
 // 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
 // ある程度の長さのある文に使うのが望ましい。
-exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('///', (0, combinator_1.surround)('', (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank)), '///', false, [], ([, bs], {
+exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('///', visibility_1.beforeNonblank, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -7360,7 +7406,7 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.precedence)(1, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)((0, combinator_1.close)('[', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
@@ -7510,16 +7556,16 @@ const indexee_1 = __webpack_require__(7610);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('==', (0, combinator_1.surround)('', (0, visibility_1.beforeNonblank)((0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank))), '==', false, [], ([, bs], {
+exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, util_1.repeat)('==', visibility_1.beforeNonblank, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
 }) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer), (nodes, {
   id,
   state
-}) => {
+}, nest) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)));
-  if (state & 251 /* State.linkers */) return new parser_1.List([new parser_1.Node(el)]);
+  if (state & 251 /* State.linkers */ || nest) return new parser_1.List([new parser_1.Node(el)]);
   (0, dom_1.define)(el, {
     id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el))
   });
@@ -7703,7 +7749,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)((0, source_1.str)('[['), (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, visibility_1.beforeNonblank)((0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
+exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64 /* State.reference */, (0, combinator_1.surround)('[[', (0, combinator_1.precedence)(1, (0, combinator_1.state)(128 /* State.annotation */ | 64 /* State.reference */, (0, combinator_1.subsequence)([abbr, (0, combinator_1.open)(visibility_1.beforeNonblank, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))]))), ']]', false, [2, 1 | 4 /* Backtrack.common */, 3 | 128 /* Backtrack.doublebracket */], ([, ns], context) => {
   const {
     position,
     range,
@@ -7948,7 +7994,7 @@ const source_1 = __webpack_require__(8745);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('**', (source, position, range) => !source.startsWith('*', position + range)), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, visibility_1.beforeNonblank)((0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank), emphasis_1.emphasis]))))), (0, source_1.str)('**'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
+exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('**', (0, visibility_1.beforeNonblankWith)(/(?!\*)/)), (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank), emphasis_1.emphasis])))), (0, source_1.str)('**'), false, [], ([, bs]) => new parser_1.List([new parser_1.Node((0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]), ([as, bs]) => bs && as.import(bs)));
 
 /***/ },
 
@@ -8583,9 +8629,9 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.strs = exports.str = void 0;
 const parser_1 = __webpack_require__(605);
-const combinator_1 = __webpack_require__(3484);
-function str(pattern, verify) {
-  return (0, combinator_1.matcher)(pattern, true, verify);
+const delimiter_1 = __webpack_require__(385);
+function str(pattern, after) {
+  return (0, delimiter_1.matcher)(pattern, true, after ? (0, delimiter_1.tester)(after, false) : undefined);
 }
 exports.str = str;
 function strs(pattern, limit = -1) {
@@ -8908,6 +8954,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.unwrap = void 0;
 const parser_1 = __webpack_require__(605);
+const delimiter_1 = __webpack_require__(385);
 const alias_1 = __webpack_require__(5413);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
@@ -8917,7 +8964,7 @@ function* unwrap(nodes) {
   }
 }
 exports.unwrap = unwrap;
-function repeat(symbol, parser, cons, termination = (nodes, context, prefix, postfix) => {
+function repeat(symbol, after, parser, cons, termination = (nodes, context, prefix, postfix) => {
   const acc = new parser_1.List();
   if (prefix > 0) {
     acc.push(new parser_1.Node(symbol[0].repeat(prefix)));
@@ -8933,6 +8980,7 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
   }
   return acc;
 }) {
+  const test = (0, delimiter_1.tester)(after, false);
   return (0, parser_1.failsafe)(input => {
     const {
       context
@@ -8946,10 +8994,11 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
     let i = symbol.length;
     for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;
+    if (test(input) === undefined) return;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
       if (nodes.length > 0 && source.startsWith(symbol, context.position)) {
-        nodes = cons(nodes, context);
+        nodes = cons(nodes, context, i > symbol.length);
         context.position += symbol.length;
         continue;
       }
@@ -8969,7 +9018,7 @@ function repeat(symbol, parser, cons, termination = (nodes, context, prefix, pos
           state = true;
           continue;
         default:
-          nodes = cons(nodes, context);
+          nodes = cons(nodes, context, i > symbol.length);
           state = true;
           continue;
       }
@@ -9038,7 +9087,7 @@ exports.stringify = stringify;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isNonblankNodeStart = exports.isNonblankFirstLine = exports.beforeNonblank = exports.blankWith = exports.afterNonblank = exports.visualize = void 0;
+exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isNonblankNodeStart = exports.isNonblankFirstLine = exports.beforeNonblankWith = exports.blankWith = exports.afterNonblank = exports.beforeNonblank = exports.visualize = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const normalize_1 = __webpack_require__(4490);
@@ -9052,7 +9101,8 @@ function visualize(parser) {
   return (0, combinator_1.convert)(source => source.replace(blank.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
 }
 exports.visualize = visualize;
-exports.afterNonblank = nonblankWith('');
+exports.beforeNonblank = beforeNonblankWith('');
+exports.afterNonblank = afterNonblankWith('');
 function blankWith(starts, delimiter) {
   return new RegExp([
   // 空行除去
@@ -9060,33 +9110,12 @@ function blankWith(starts, delimiter) {
   String.raw`(?:${starts}(?:\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)*)?`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
 }
 exports.blankWith = blankWith;
-function nonblankWith(delimiter) {
+function beforeNonblankWith(delimiter) {
+  return new RegExp([typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source, String.raw`(?!\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`].join(''), 'y');
+}
+exports.beforeNonblankWith = beforeNonblankWith;
+function afterNonblankWith(delimiter) {
   return new RegExp([String.raw`(?<!\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
-}
-function beforeNonblank(parser) {
-  return input => isNonblankStart(input) ? parser(input) : undefined;
-}
-exports.beforeNonblank = beforeNonblank;
-function isNonblankStart(input) {
-  const {
-    context
-  } = input;
-  const {
-    source,
-    position
-  } = context;
-  if (position === source.length) return true;
-  switch (source[position]) {
-    case ' ':
-    case '　':
-    case '\t':
-    case '\n':
-      return false;
-    default:
-      const reg = blank.unit;
-      reg.lastIndex = position;
-      return !reg.test(source);
-  }
 }
 function isNonblankFirstLine(nodes) {
   if (nodes.length === 0) return true;
