@@ -1,5 +1,5 @@
 import { Parser, Result, List, Node, failsafe } from '../combinator/data/parser';
-import { tester } from '../combinator';
+import { tester } from '../combinator/data/delimiter';
 import { Context, Command } from './context';
 import { min } from 'spica/alias';
 import { define } from 'typed-dom/dom';

@@ -1,5 +1,5 @@
 import { Parser, input, failsafe } from '../../data/parser';
-import { matcher } from '../../../combinator';
+import { matcher } from '../../data/delimiter';
 
 export function focus<P extends Parser>(scope: string | RegExp, parser: P, slice?: boolean): P;
 export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true): Parser<N> {

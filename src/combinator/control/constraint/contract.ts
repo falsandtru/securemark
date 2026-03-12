@@ -1,5 +1,6 @@
 import { Parser, Input, List, Node, Context } from '../../data/parser';
-import { tester, bind } from '../../../combinator';
+import { tester } from '../../data/delimiter';
+import { bind } from '../monad/bind';
 
 //export function contract<P extends Parser>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (nodes: readonly Data<P>[], rest: string) => boolean): P;
 //export function contract<N>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<N>, cond: (nodes: readonly N[], rest: string) => boolean): Parser<N> {

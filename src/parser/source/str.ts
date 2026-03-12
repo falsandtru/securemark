@@ -1,6 +1,6 @@
 import { StrParser } from '../source';
 import { Parser, List, Node } from '../../combinator/data/parser';
-import { matcher, tester } from '../../combinator';
+import { matcher, tester } from '../../combinator/data/delimiter';
 
 export function str(pattern: string | RegExp, after?: string | RegExp): StrParser;
 export function str(pattern: string | RegExp, after?: string | RegExp): Parser<string> {

@@ -1,4 +1,4 @@
-import { Parser, Result, List, Node, Context, Options } from '../../data/parser';
+import { Parser, Result, Context, Options } from '../../data/parser';
 import { min } from 'spica/alias';
 import { clone } from 'spica/assign';
 
@@ -157,80 +157,4 @@ export function constraint<N>(state: number, positive: boolean | Parser<N>, pars
       ? parser(input)
       : undefined;
   };
-}
-
-export function matcher(pattern: string | RegExp, advance: boolean, after?: Parser<string>): Parser<string> {
-  assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
-  const count = typeof pattern === 'object'
-    ? /[^^\\*+][*+]/.test(pattern.source)
-    : false;
-  switch (typeof pattern) {
-    case 'string':
-      if (pattern === '') return () => new List([new Node(pattern)]);
-      return input => {
-        const { context } = input;
-        const { source, position } = context;
-        if (!source.startsWith(pattern, position)) return;
-        if (advance) {
-          context.position += pattern.length;
-        }
-        const next = after?.(input);
-        return after
-          ? next && new List([new Node(pattern)]).import(next)
-          : new List([new Node(pattern)]);
-      };
-    case 'object':
-      assert(pattern.sticky);
-      return input => {
-        const { context } = input;
-        const { source, position } = context;
-        pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const src = source.slice(position, pattern.lastIndex);
-        count && consume(src.length, context);
-        if (advance) {
-          context.position += src.length;
-        }
-        const next = after?.(input);
-        return after
-          ? next && new List([new Node(src)]).import(next)
-          : new List([new Node(src)]);
-      };
-  }
-}
-
-export function tester(pattern: string | RegExp, advance: boolean, after?: Parser<unknown>): Parser<never> {
-  assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
-  const count = typeof pattern === 'object'
-    ? /[^^\\*+][*+]/.test(pattern.source)
-    : false;
-  switch (typeof pattern) {
-    case 'string':
-      if (pattern === '') return () => new List();
-      return input => {
-        const { context } = input;
-        const { source, position } = context;
-        if (!source.startsWith(pattern, position)) return;
-        if (advance) {
-          context.position += pattern.length;
-        }
-        if (after && after(input) === undefined) return;
-        return new List();
-      };
-    case 'object':
-      assert(pattern.sticky);
-      return input => {
-        const { context } = input;
-        const { source, position } = context;
-        pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const len = pattern.lastIndex - position;
-        count && consume(len, context);
-        if (advance) {
-          context.position += len;
-        }
-        if (after && after(input) === undefined) return;
-        return new List();
-      };
-  }
 }

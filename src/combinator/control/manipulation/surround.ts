@@ -1,5 +1,5 @@
 import { Parser, Result, List, Node, Context, failsafe } from '../../data/parser';
-import { tester } from '../../../combinator';
+import { tester } from '../../data/delimiter';
 
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Parser.Context<P>>,
