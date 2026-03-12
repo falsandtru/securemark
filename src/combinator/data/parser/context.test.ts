@@ -23,7 +23,7 @@ describe('Unit: combinator/data/parser/context', () => {
       assert(base.resources?.clock === 3);
       assert(ctx.resources?.clock === undefined);
       assert.throws(() => reset(base, parser)(input('1234', ctx)));
-      assert(ctx.resources?.clock === undefined);
+      assert(ctx.resources?.clock === 0);
     });
 
     it('node', () => {

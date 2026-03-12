@@ -34,7 +34,7 @@ export function parse(source: string, options: Options = {}, context?: Context):
   context.header = true;
   for (const seg of segment(source)) {
     node.append(
-      ...block(input(seg, context))
+      ...block(input(seg, new Context(context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
     // @ts-expect-error
     context.header = false;

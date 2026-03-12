@@ -9,8 +9,7 @@ export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
   const changes = Object.entries(base);
   const values = Array(changes.length);
   return ({ context }) =>
-    // 大域離脱時の汚染回避のため複製
-    apply(parser, { ...context }, changes, values, true);
+    apply(parser, context, changes, values, true);
 }
 
 export function context<P extends Parser>(base: Options, parser: P): P;

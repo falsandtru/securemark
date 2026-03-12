@@ -75,7 +75,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = block(input(seg, context))
+      const es = block(input(seg, new Context(context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
       // @ts-expect-error
       context.header = false;
