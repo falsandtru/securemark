@@ -2,49 +2,63 @@ import { Parser, Result, List, Node, Context, failsafe } from '../../data/parser
 import { matcher, clear } from '../../../combinator';
 
 export function surround<P extends Parser, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: Parser.IntermediateParser<P>, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: Parser.IntermediateParser<P>,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: false,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.SubNode<P>>>, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.SubNode<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: Parser.IntermediateParser<P>, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: Parser.IntermediateParser<P>,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: boolean,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.SubNode<P>>> | undefined, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.SubNode<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: P, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: P,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: false,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>>, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<P extends Parser, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: P, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: P,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: boolean,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<P extends Parser<string>, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: string | RegExp | P, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: string | RegExp | P,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: false,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>>, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<P extends Parser<string>, S = string>(
-  opener: string | RegExp | Parser<S, Parser.Context<P>>, parser: string | RegExp | P, closer: string | RegExp | Parser<S, Parser.Context<P>>,
+  opener: string | RegExp | Parser<S, Parser.Context<P>>,
+  parser: string | RegExp | P,
+  closer: string | RegExp | Parser<S, Parser.Context<P>>,
   optional?: boolean,
   backtracks?: readonly number[],
   f?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined, List<Node<S>>], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
   g?: (rss: [List<Node<S>>, List<Node<Parser.Node<P>>> | undefined], context: Parser.Context<P>) => Result<Parser.Node<P>, Parser.Context<P>, Parser.SubParsers<P>>,
 ): P;
 export function surround<N>(
-  opener: string | RegExp | Parser<N>, parser: string | RegExp | Parser<N>, closer: string | RegExp | Parser<N>,
+  opener: string | RegExp | Parser<N>,
+  parser: string | RegExp | Parser<N>,
+  closer: string | RegExp | Parser<N>,
   optional: boolean = false,
   backtracks: readonly number[] = [],
   f?: (rss: [List<Node<N>>, List<Node<N>>, List<Node<N>>], context: Context) => Result<N>,
