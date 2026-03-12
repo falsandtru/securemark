@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.296.2
+
+- Fix leading blank character validation with nested syntax.
+
 ## 0.296.1
 
 - Fix parsers to disallow leading blank characters.

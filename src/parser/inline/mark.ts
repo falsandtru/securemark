@@ -9,16 +9,16 @@ import { unwrap, repeat } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() =>
-  precedence(0, recursion(Recursion.inline, repeat('==', surround(
+  precedence(0, recursion(Recursion.inline, repeat('==', beforeNonblank, surround(
     '',
-    beforeNonblank(state(State.mark, some(union([inline]), '==', afterNonblank))),
+    state(State.mark, some(union([inline]), '==', afterNonblank)),
     '==',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),
     ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer),
-    (nodes, { id, state }) => {
+    (nodes, { id, state }, nest) => {
       const el = html('mark', defrag(unwrap(nodes)));
-      if (state & State.linkers) return new List([new Node(el)]);
+      if (state & State.linkers || nest) return new List([new Node(el)]);
       define(el, { id: identity('mark', id, signature(el)) });
       return el.id
         ? new List([new Node(el), new Node(html('a', { href: `#${el.id}` }))])

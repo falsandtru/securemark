@@ -1,7 +1,7 @@
 import { ReferenceParser } from '../inline';
 import { State, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, subsequence, some, precedence, state, constraint, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
+import { union, subsequence, some, precedence, state, constraint, surround, open, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
@@ -10,11 +10,11 @@ import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const reference: ReferenceParser = lazy(() => constraint(State.reference, surround(
-  str('[['),
+  '[[',
   precedence(1, state(State.annotation | State.reference,
   subsequence([
     abbr,
-    beforeNonblank(some(inline, ']', [[']', 1]])),
+    open(beforeNonblank, some(inline, ']', [[']', 1]])),
   ]))),
   ']]',
   false,

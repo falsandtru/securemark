@@ -114,6 +114,7 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser, input('******a*b ***', new Context())), [['*****', '<em>a</em>', 'b ', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('******a*b ****', new Context())), [['*****', '<em>a</em>', 'b ', '****'], '']);
       assert.deepStrictEqual(inspect(parser, input('******a*b *****', new Context())), [['*****', '<em>a</em>', 'b ', '*****'], '']);
+      assert.deepStrictEqual(inspect(parser, input('******a*** b***', new Context())), [['<em><strong><em><strong>a</strong></em> b</strong></em>'], '']);
     });
 
   });

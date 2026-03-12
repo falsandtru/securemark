@@ -1,5 +1,5 @@
 import { Input, Context } from './parser';
-import { matcher } from '../../combinator';
+import { tester } from '../../combinator';
 
 interface Delimiter {
   readonly memory: Delimiter[];
@@ -33,11 +33,11 @@ export class Delimiters {
         return () => undefined;
       case 'string':
       case 'object':
-        const match = matcher(pattern, false);
-        const verify = after ? matcher(after, false) : undefined;
+        const test = tester(pattern, false);
+        const verify = after ? tester(after, false) : undefined;
         return verify
-          ? input => match(input) !== undefined && verify(input) !== undefined || undefined
-          : input => match(input) !== undefined || undefined;
+          ? input => test(input) !== undefined && verify(input) !== undefined || undefined
+          : input => test(input) !== undefined || undefined;
     }
   }
   private readonly tree: Record<number, Delimiter[]> = {};

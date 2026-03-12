@@ -13,13 +13,12 @@ import { html, define, defrag } from 'typed-dom/dom';
 import IndexParser = ExtensionParser.IndexParser;
 
 export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(surround(
-  str('[#'),
+  str('[#', beforeNonblank),
   precedence(1, state(State.linkers,
-  beforeNonblank(
   some(inits([
     inline,
     signature,
-  ]), ']', [[']', 1]])))),
+  ]), ']', [[']', 1]]))),
   str(']'),
   false,
   [3 | Backtrack.common],

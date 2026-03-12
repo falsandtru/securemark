@@ -23,9 +23,9 @@ const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(u
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
 export const emstrong: EmStrongParser = lazy(() =>
-  precedence(0, recursion(Recursion.inline, repeat('***', surround(
+  precedence(0, recursion(Recursion.inline, repeat('***', beforeNonblank, surround(
     '',
-    beforeNonblank(some(union([some(inline, '*', afterNonblank)]))),
+    some(union([some(inline, '*', afterNonblank)])),
     strs('*', 3),
     false, [],
     ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {
@@ -33,7 +33,7 @@ export const emstrong: EmStrongParser = lazy(() =>
       const { buffer } = context;
       switch (cs.head!.value) {
         case '***':
-          return bs;
+          return buffer.import(bs);
         case '**':
           return bind<EmphasisParser>(
             subemphasis,

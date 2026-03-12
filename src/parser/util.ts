@@ -1,4 +1,5 @@
 import { Parser, Result, List, Node, failsafe } from '../combinator/data/parser';
+import { tester } from '../combinator';
 import { Context, Command } from './context';
 import { min } from 'spica/alias';
 import { define } from 'typed-dom/dom';
@@ -10,8 +11,8 @@ export function* unwrap<N>(nodes: List<Node<N>> | undefined): Iterable<N> {
   }
 }
 
-export function repeat<P extends Parser<HTMLElement | string, Context>>(symbol: string, parser: P, cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>) => List<Node<Parser.Node<P>>>, termination?: (acc: List<Node<Parser.Node<P>>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
-export function repeat<N extends HTMLElement | string>(symbol: string, parser: Parser<N>, cons: (nodes: List<Node<N>>, context: Context) => List<Node<N>>, termination: (acc: List<Node<N>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | N, Context> = (nodes, context, prefix, postfix) => {
+export function repeat<P extends Parser<HTMLElement | string, Context>>(symbol: string, after: string | RegExp, parser: P, cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>, nest: boolean) => List<Node<Parser.Node<P>>>, termination?: (acc: List<Node<Parser.Node<P>>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | Parser.Node<P>>): P;
+export function repeat<N extends HTMLElement | string>(symbol: string, after: string | RegExp, parser: Parser<N>, cons: (nodes: List<Node<N>>, context: Context, nest: boolean) => List<Node<N>>, termination: (acc: List<Node<N>>, context: Context, prefix: number, postfix: number, state: boolean) => Result<string | N, Context> = (nodes, context, prefix, postfix) => {
   const acc = new List<Node<string | N>>();
   if (prefix > 0) {
     acc.push(new Node(symbol[0].repeat(prefix)));
@@ -24,6 +25,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
   }
   return acc;
 }): Parser<string | N, Context> {
+  const test = tester(after, false);
   return failsafe(input => {
     const { context } = input;
     const { source, position } = context;
@@ -32,10 +34,11 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
     let i = symbol.length;
     for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;
+    if (test(input) === undefined) return;
     let state = false;
     for (; i >= symbol.length; i -= symbol.length) {
       if (nodes.length > 0 && source.startsWith(symbol, context.position)) {
-        nodes = cons(nodes, context);
+        nodes = cons(nodes, context, i > symbol.length);
         context.position += symbol.length;
         continue;
       }
@@ -57,7 +60,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, parser: P
           state = true;
           continue;
         default:
-          nodes = cons(nodes, context);
+          nodes = cons(nodes, context, i > symbol.length);
           state = true;
           continue;
       }

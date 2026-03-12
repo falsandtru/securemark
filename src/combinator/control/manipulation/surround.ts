@@ -1,5 +1,5 @@
 import { Parser, Result, List, Node, Context, failsafe } from '../../data/parser';
-import { matcher, clear } from '../../../combinator';
+import { tester } from '../../../combinator';
 
 export function surround<P extends Parser, S = string>(
   opener: string | RegExp | Parser<S, Parser.Context<P>>,
@@ -67,19 +67,19 @@ export function surround<N>(
   switch (typeof opener) {
     case 'string':
     case 'object':
-      opener = clear(matcher(opener, true));
+      opener = tester(opener, true);
   }
   assert(opener);
   switch (typeof parser) {
     case 'string':
     case 'object':
-      parser = clear(matcher(parser, true));
+      parser = tester(parser, true);
   }
   assert(parser);
   switch (typeof closer) {
     case 'string':
     case 'object':
-      closer = clear(matcher(closer, true));
+      closer = tester(closer, true);
   }
   assert(closer);
   const [blen, rbs, wbs] = reduce(backtracks);

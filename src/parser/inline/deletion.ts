@@ -8,7 +8,7 @@ import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const deletion: DeletionParser = lazy(() =>
-  precedence(0, recursion(Recursion.inline, repeat('~~', surround(
+  precedence(0, recursion(Recursion.inline, repeat('~~', '', surround(
     '',
     some(union([
       some(inline, blankWith('\n', '~~')),

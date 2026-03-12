@@ -1,5 +1,5 @@
-import { Parser, Input, List, Node, failsafe } from '../combinator/data/parser';
-import { Context, Command } from './context';
+import { Parser, List, Node, failsafe } from '../combinator/data/parser';
+import { Command } from './context';
 import { Flag } from './node';
 import { convert, fmap } from '../combinator';
 import { invisibleBlankHTMLEntityNames } from './api/normalize';
@@ -25,7 +25,8 @@ export function visualize<P extends Parser>(parser: P): P {
     parser);
 }
 
-export const afterNonblank = nonblankWith('');
+export const beforeNonblank = beforeNonblankWith('');
+export const afterNonblank = afterNonblankWith('');
 export function blankWith(starts: '\n', delimiter: string | RegExp): RegExp {
   return new RegExp([
     // 空行除去
@@ -36,37 +37,21 @@ export function blankWith(starts: '\n', delimiter: string | RegExp): RegExp {
       : delimiter.source,
   ].join(''), 'y');
 }
-function nonblankWith(delimiter: string | RegExp): RegExp {
+export function beforeNonblankWith(delimiter: string | RegExp): RegExp {
+  return new RegExp([
+    typeof delimiter === 'string'
+      ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
+      : delimiter.source,
+    String.raw`(?!\\?\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`,
+  ].join(''), 'y');
+}
+function afterNonblankWith(delimiter: string | RegExp): RegExp {
   return new RegExp([
     String.raw`(?<!\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`,
     typeof delimiter === 'string'
       ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
       : delimiter.source,
   ].join(''), 'y');
-}
-
-export function beforeNonblank<P extends Parser>(parser: P): P;
-export function beforeNonblank<N>(parser: Parser<N>): Parser<N, Context> {
-  return input =>
-    isNonblankStart(input)
-      ? parser(input)
-      : undefined;
-}
-function isNonblankStart(input: Input<Context>): boolean {
-  const { context } = input;
-  const { source, position } = context;
-  if (position === source.length) return true;
-  switch (source[position]) {
-    case ' ':
-    case '　':
-    case '\t':
-    case '\n':
-      return false;
-    default:
-      const reg = blank.unit;
-      reg.lastIndex = position;
-      return !reg.test(source);
-  }
 }
 
 export function isNonblankFirstLine(nodes: List<Node<HTMLElement | string>>): boolean {

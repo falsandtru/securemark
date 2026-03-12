@@ -14,9 +14,9 @@ import { html } from 'typed-dom/dom';
 
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => surround(
   // ^はabbrで使用済みだが^:などのようにして分離使用可能
-  str(/\[[:^|]/y),
+  str(/\[[:^|]/y, beforeNonblank),
   precedence(1, recursion(Recursion.inline,
-  beforeNonblank(some(union([inline]), ']', [[']', 1]])))),
+  some(union([inline]), ']', [[']', 1]]))),
   str(']'),
   false,
   [3 | Backtrack.common],
