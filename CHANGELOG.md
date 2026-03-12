@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.296.3
+
+- Refactoring.
+
 ## 0.296.2
 
 - Fix leading blank character validation with nested syntax.
