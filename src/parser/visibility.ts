@@ -73,7 +73,7 @@ export function isNonblankLineStart(nodes: List<Node<HTMLElement | string>>): bo
   if (nodes.length === 0) return true;
   for (const node of nodes) {
     if (isNonblank(node)) return true;
-    if (typeof node.value === 'object' && node.value.tagName === 'BR') break;
+    if (node.flags & Flag.blank && typeof node.value === 'object' && node.value.tagName === 'BR') break;
   }
   return false;
 }
