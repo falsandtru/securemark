@@ -14,7 +14,7 @@ export const emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presen
 export const hashtag: AutolinkParser.HashtagParser = lazy(() => constraint(State.autolink, state(State.autolink,
   surround(
     new RegExp([
-      /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source,
+      /(?<![^\p{C}\p{S}\p{P}\s]|emoji|[@#])#/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     verify(
       str(new RegExp([

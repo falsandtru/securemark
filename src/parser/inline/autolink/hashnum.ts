@@ -10,7 +10,7 @@ import { define } from 'typed-dom/dom';
 export const hashnum: AutolinkParser.HashnumParser = lazy(() => constraint(State.autolink, state(State.autolink,
   surround(
     new RegExp([
-      /(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source,
+      /(?<![^\p{C}\p{S}\p{P}\s]|emoji|[@#])#/yu.source,
     ].join('|').replace(/emoji/g, emoji.source), 'yu'),
     str(new RegExp([
       /[0-9]{1,9}(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,

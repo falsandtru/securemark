@@ -13,7 +13,7 @@ import { define } from 'typed-dom/dom';
 export const account: AutolinkParser.AccountParser = lazy(() => constraint(State.autolink, state(State.autolink,
   surround(
     surround(
-      /(?<![0-9a-z])@/yi,
+      /(?<![0-9a-z@#])@/yi,
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
       str(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![_.-]?[0-9a-z@]|>>|:\S)/yi),
       false,

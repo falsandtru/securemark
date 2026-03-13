@@ -18,7 +18,7 @@ import { define } from 'typed-dom/dom';
 
 export const anchor: AutolinkParser.AnchorParser = lazy(() => constraint(State.autolink, state(State.autolink,
   surround(
-    /(?<![0-9a-z])>>/yi,
+    /(?<![0-9a-z@#])>>/yi,
     str(/[0-9a-z]+(?:-[0-9a-z]+)*(?![_.-]?[0-9a-z@#]|>>|:\S)/yi),
     '',
     false,

@@ -228,7 +228,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('#a', new Context())), [['<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('#http://host', new Context())), [['#', 'http', '://host'], '']);
       assert.deepStrictEqual(inspect(parser, input('#a\nb\n#c\n[#d]', new Context())), [['<a class="hashtag" href="/hashtags/a">#a</a>', '<br>', 'b', '<br>', '<a class="hashtag" href="/hashtags/c">#c</a>', '<br>', '<a class="index" href="#index::d">d</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('##a', new Context())), [['#', '<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('_#a', new Context())), [['_', '<a class="hashtag" href="/hashtags/a">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('_#a_', new Context())), [['_', '<a class="hashtag" href="/hashtags/a">#a</a>', '_'], '']);
       assert.deepStrictEqual(inspect(parser, input('_#a_b', new Context())), [['_', '<a class="hashtag" href="/hashtags/a_b">#a_b</a>'], '']);
