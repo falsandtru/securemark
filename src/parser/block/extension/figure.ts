@@ -1,4 +1,5 @@
 import { ExtensionParser } from '../../block';
+import { Segment } from '../../context';
 import { List, Node, subinput } from '../../../combinator/data/parser';
 import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
@@ -44,7 +45,7 @@ export const segment: FigureParser.SegmentParser = block(match(
       ]),
     ]),
     closer),
-  ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)));
+  ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)), true, Segment.figure);
 
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),

@@ -1,11 +1,11 @@
 import { MarkdownParser } from '../../markdown';
-import { Context, Command } from './context';
+import { Context, Segment, Command } from './context';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
-import { contentline, emptyline } from './source';
+import { contentline, emptysegment } from './source';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
@@ -13,7 +13,7 @@ export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB
 export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
 
 const parser: SegmentParser = union([
-  some(emptyline, MAX_SEGMENT_SIZE + 1),
+  some(emptysegment, MAX_SEGMENT_SIZE + 1),
   input => {
     const { context: { source, position } } = input;
     if (position === source.length) return;
@@ -26,21 +26,19 @@ const parser: SegmentParser = union([
         break;
       case '$':
         if (source[position + 1] === '$') return mathblock(input);
-        break;
+        return extension(input);
       case '[':
         if (source[position + 1] === '$') return extension(input);
         break;
       case '#':
         return heading(input);
-      case '$':
-        return extension(input);
     }
   },
   some(contentline, MAX_SEGMENT_SIZE + 1),
 ]) as any;
 
-export function* segment(source: string): Generator<string, undefined, undefined> {
-  if (!validate(source, MAX_INPUT_SIZE)) return yield `${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
+export function* segment(source: string): Generator<readonly [string, Segment], undefined, undefined> {
+  if (!validate(source, MAX_INPUT_SIZE)) return yield [`${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`, Segment.unknown];
   assert(source.length < Number.MAX_SAFE_INTEGER);
   for (let position = 0; position < source.length;) {
     const context = new Context({ source, position });
@@ -51,13 +49,13 @@ export function* segment(source: string): Generator<string, undefined, undefined
       ? result.foldl<string[]>((acc, { value }) => void acc.push(value) || acc, [])
       : [source.slice(position, context.position)];
     assert(segs.join('') === source.slice(position, context.position));
+    position = context.position;
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
       validate(seg, MAX_SEGMENT_SIZE)
-        ? yield seg
-        : yield `${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`
+        ? yield [seg, context.segment]
+        : yield [`${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`, Segment.unknown];
     }
-    position = context.position;
   }
 }
 

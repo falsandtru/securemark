@@ -26,7 +26,7 @@ export const emstrong: EmStrongParser = lazy(() =>
   precedence(0, recursion(Recursion.inline, repeat('***', beforeNonblank, surround(
     '',
     some(union([some(inline, '*', afterNonblank)])),
-    strs('*', 3),
+    strs('*', 1, 3),
     false, [],
     ([, bs, cs], context): Result<Parser.Node<EmStrongParser>, Parser.Context<EmStrongParser>> => {
       assert(cs.length === 1);

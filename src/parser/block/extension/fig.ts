@@ -1,4 +1,5 @@
 import { ExtensionParser } from '../../block';
+import { Segment } from '../../context';
 import { union, sequence, some, block, line, verify, rewrite, close, convert } from '../../../combinator';
 import { contentline } from '../../source';
 import { figure } from './figure';
@@ -23,7 +24,7 @@ export const segment: FigParser.SegmentParser = block(
       seg_placeholder,
       some(contentline),
     ]),
-  ]));
+  ]), true, Segment.fig);
 
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {
@@ -33,6 +34,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
     const { position } = context;
     const result = parser({ context });
     context.position = position;
+    context.segment = Segment.figure | Segment.write;
     return result
       ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
       : `${fence}figure ${source}\n\n${fence}`;

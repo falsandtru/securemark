@@ -7,6 +7,7 @@ export class Context extends Ctx {
   ) {
     super(options);
     const {
+      segment,
       buffer,
       sequential,
       header,
@@ -15,6 +16,7 @@ export class Context extends Ctx {
       id,
       caches,
     } = options;
+    this.segment = segment ?? Segment.unknown;
     this.buffer = buffer ?? new List();
     this.sequential = sequential ?? false;
     this.header = header ?? true;
@@ -23,6 +25,7 @@ export class Context extends Ctx {
     this.id = id;
     this.caches = caches;
   }
+  public override segment: Segment;
   public buffer: List<Node<(string | HTMLElement)>>;
   public sequential: boolean;
   public readonly header: boolean;
@@ -36,6 +39,16 @@ export class Context extends Ctx {
   };
 }
 export type Options = Partial<Context>;
+
+export const enum Segment {
+  unknown = 0,
+  write = 1,
+  nonempty = 0,
+  empty = 1 << 1,
+  heading = 3 << 1,
+  fig = 4 << 1,
+  figure = 5 << 1,
+}
 
 export const enum State {
   annotation = 1 << 7,

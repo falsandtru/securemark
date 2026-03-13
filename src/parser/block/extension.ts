@@ -1,7 +1,6 @@
 import { ExtensionParser } from '../block';
 import { union } from '../../combinator';
-import { figbase } from './extension/figbase';
-import { fig, segment as seg_fig } from './extension/fig';
+import { segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
 import { table, segment as seg_table } from './extension/table';
 import { message } from './extension/message';
@@ -17,8 +16,8 @@ export const segment: ExtensionParser.SegmentParser = union([
 ]);
 
 export const extension: ExtensionParser = union([
-  figbase,
-  fig,
+  //figbase,
+  //fig,
   figure,
   table,
   message,

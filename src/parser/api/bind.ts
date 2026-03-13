@@ -1,5 +1,5 @@
 import { ParserSettings, Progress } from '../../..';
-import { Context } from '../context';
+import { Context, Segment } from '../context';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { block } from '../block';
@@ -47,8 +47,10 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     context.url = url ? new ReadonlyURL(url as ':') : undefined;
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
-    for (const seg of segment(source)) {
+    const sourceSegmentAttrs: Segment[] = [];
+    for (const [seg, attr] of segment(source)) {
       sourceSegments.push(seg);
+      sourceSegmentAttrs.push(attr);
       yield { type: 'segment', value: seg };
     }
     const targetSegments = blocks.map(([seg]) => seg);
@@ -74,12 +76,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     context.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
-      const seg = sourceSegments[index];
-      const es = block(input(seg, new Context(context)))
+      const src = sourceSegments[index];
+      context.segment = sourceSegmentAttrs[index] | Segment.write;
+      const es = block(input(src, new Context(context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
       // @ts-expect-error
       context.header = false;
-      blocks.splice(index, 0, [seg, es, url]);
+      blocks.length === index
+        ? blocks.push([src, es, url])
+        : blocks.splice(index, 0, [src, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.

@@ -1,6 +1,6 @@
 import { ParserOptions } from '../../..';
 import { input } from '../../combinator/data/parser';
-import { Context } from '../context';
+import { Context, Segment } from '../context';
 import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalize';
@@ -32,7 +32,8 @@ export function parse(source: string, options: Options = {}, context?: Context):
   const node = frag();
   // @ts-expect-error
   context.header = true;
-  for (const seg of segment(source)) {
+  for (const [seg, attr] of segment(source)) {
+    context.segment = attr | Segment.write;
     node.append(
       ...block(input(seg, new Context(context)))
         ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);

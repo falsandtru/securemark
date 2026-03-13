@@ -1,10 +1,10 @@
 import { MarkdownParser } from '../../markdown';
-import { Recursion, Command } from './context';
+import { Segment, Recursion, Command } from './context';
 import { List, Node } from '../combinator/data/parser';
-import { union, reset, open, fallback, recover } from '../combinator';
+import { union, reset, firstline, recover } from '../combinator';
 import { MAX_SEGMENT_SIZE } from './segment';
 import { header } from './header';
-import { emptyline } from './source';
+import { emptysegment } from './source';
 import { pagebreak } from './block/pagebreak';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
@@ -15,6 +15,9 @@ import { table } from './block/table';
 import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
+import { figbase } from './block/extension/figbase';
+import { fig } from './block/extension/fig';
+import { figure } from './block/extension/figure';
 import { sidefence } from './block/sidefence';
 import { blockquote } from './block/blockquote';
 import { mediablock } from './block/mediablock';
@@ -57,12 +60,22 @@ export const block: BlockParser = reset(
     backtracks: {},
   },
   error(union([
-    emptyline,
+    emptysegment,
     input => {
-      const { context: { source, position } } = input;
+      const { context: { source, position, segment } } = input;
       if (position === source.length) return;
+      switch (segment ^ Segment.write) {
+        case Segment.heading:
+          return heading(input);
+        case Segment.fig:
+          return fig(input);
+        case Segment.figure:
+          return figure(input);
+      }
       const fst = source[position];
       switch (fst) {
+        case Command.Error:
+          throw new Error(firstline(source, position + 1).trimEnd());
         case '=':
           if (source.startsWith('===', position)) return pagebreak(input);
           break;
@@ -84,7 +97,7 @@ export const block: BlockParser = reset(
         case '[':
           switch (source[position + 1]) {
             case '$':
-              return extension(input);
+              return figbase(input);
             case '!':
               return mediablock(input);
           }
@@ -95,11 +108,9 @@ export const block: BlockParser = reset(
         case '>':
           if (source[position + 1] === '>') return blockquote(input) || reply(input);
           return blockquote(input);
-        case '#':
-          return heading(input);
         case '$':
           if (source[position + 1] === '$') return mathblock(input);
-          return extension(input);
+          return figbase(input);
         case '|':
           return table(input) || sidefence(input);
         case '(':
@@ -113,9 +124,8 @@ export const block: BlockParser = reset(
 
 function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}[^\n]*\n`)
-  return recover<BlockParser>(fallback(
-    open(Command.Error, ({ context: { source, position } }) => { throw new Error(source.slice(position).split('\n', 1)[0]); }),
-    parser),
+  return recover<BlockParser>(
+    parser,
     ({ context: { source, position, id } }, reason) => new List([
       new Node(html('h1',
         {

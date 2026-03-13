@@ -7,18 +7,17 @@ export function str(pattern: string | RegExp, after?: string | RegExp): Parser<s
   return matcher(pattern, true, after ? tester(after, false) : undefined);
 }
 
-export function strs(pattern: string, limit?: number): StrParser;
-export function strs(pattern: string, limit: number = -1): Parser<string> {
-  assert(pattern);
+export function strs(char: string, min?: number, max?: number): StrParser;
+export function strs(char: string, min: number = 1, max: number = -1): Parser<string> {
+  assert(char.length === 1);
   return ({ context }) => {
-    const { source } = context;
-    let acc = '';
-    for (let i = 0; i !== limit && context.position < source.length && source.startsWith(pattern, context.position); ++i) {
-      acc += pattern;
-      context.position += pattern.length;
+    const { source, position } = context;
+    let cnt = 0;
+    for (; cnt !== max && context.position < source.length && source[context.position] === char; ++cnt) {
+      context.position += char.length;
     }
-    return acc
-      ? new List([new Node(acc)])
+    return cnt >= min
+      ? new List([new Node(source.slice(position, context.position))])
       : undefined;
   };
 }

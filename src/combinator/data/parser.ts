@@ -33,6 +33,7 @@ export class Context {
     {
       source,
       position,
+      segment,
       resources,
       delimiters,
       precedence,
@@ -45,6 +46,7 @@ export class Context {
   ) {
     this.source = source ?? '';
     this.position = position ?? 0;
+    this.segment = segment ?? 0;
     this.resources = resources;
     this.precedence = precedence ?? 0;
     this.delimiters = delimiters ?? new Delimiters();
@@ -56,6 +58,7 @@ export class Context {
   }
   public source: string;
   public position: number;
+  public segment: number;
   public readonly resources?: {
     clock: number;
     recursions: number[];
@@ -103,6 +106,10 @@ export class Context {
   public backtracks: Record<number, number>;
 }
 export type Options = Partial<Context>;
+export const enum Segment {
+  unknown = 0,
+  write = 1,
+}
 
 export function input<C extends Context>(source: string, context: C): Input<C> {
   context.source = source;

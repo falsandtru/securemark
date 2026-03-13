@@ -15,12 +15,12 @@ export namespace MarkdownParser {
   export interface SegmentParser extends
     Markdown<'segment'>,
     Parser<string, Context, [
+      SourceParser.EmptySegmentParser,
       BlockParser.HeadingParser.SegmentParser,
       BlockParser.CodeBlockParser.SegmentParser,
       BlockParser.MathBlockParser.SegmentParser,
       BlockParser.ExtensionParser.SegmentParser,
       SourceParser.ContentLineParser,
-      SourceParser.EmptyLineParser,
     ]> {
   }
   export interface HeaderParser extends
@@ -47,7 +47,7 @@ export namespace MarkdownParser {
   export interface BlockParser extends
     Markdown<'block'>,
     Parser<HTMLElement, Context, [
-      SourceParser.EmptyLineParser,
+      SourceParser.EmptySegmentParser,
       BlockParser.PagebreakParser,
       BlockParser.HeadingParser,
       BlockParser.UListParser,
@@ -296,8 +296,8 @@ export namespace MarkdownParser {
       // ~~~
       Block<'extension'>,
       Parser<HTMLElement, Context, [
-        ExtensionParser.FigbaseParser,
-        ExtensionParser.FigParser,
+        //ExtensionParser.FigbaseParser,
+        //ExtensionParser.FigParser,
         ExtensionParser.FigureParser,
         ExtensionParser.TableParser,
         ExtensionParser.MessageParser,
@@ -1194,6 +1194,10 @@ export namespace MarkdownParser {
     }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
+      Parser<never, Context, []> {
+    }
+    export interface EmptySegmentParser extends
+      Source<'emptysegment'>,
       Parser<never, Context, []> {
     }
     export interface AnyLineParser extends
