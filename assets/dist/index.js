@@ -6418,7 +6418,7 @@ const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
 // https://example/@user must be a user page or a redirect page going there.
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
-exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)((0, combinator_1.surround)(/(?<![0-9a-z])@/yi, (0, source_1.str)(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![_.-]?[0-9a-z@]|>>|:\S)/yi), false, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.some)((0, combinator_1.surround)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), ([{
+exports.account = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)((0, combinator_1.surround)(/(?<![0-9a-z@#])@/yi, (0, source_1.str)(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi), (0, source_1.str)(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![_.-]?[0-9a-z@]|>>|:\S)/yi), false, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.some)((0, combinator_1.surround)('#', (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), ([{
   value
 }]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![_.-]?[0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), false, [3 | 8 /* Backtrack.unescapable */])), '', false, [], ([[{
   value: host
@@ -6471,7 +6471,7 @@ const dom_1 = __webpack_require__(394);
 // cid: YYYY-MMDD-HHMM-SSmmm
 // 内部表現はUnixTimeに統一する(時系列順)
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
-exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z])>>/yi, (0, source_1.str)(/[0-9a-z]+(?:-[0-9a-z]+)*(?![_.-]?[0-9a-z@#]|>>|:\S)/yi), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
+exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(/(?<![0-9a-z@#])>>/yi, (0, source_1.str)(/[0-9a-z]+(?:-[0-9a-z]+)*(?![_.-]?[0-9a-z@#]|>>|:\S)/yi), '', false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
 }]], context) => new parser_1.List([new parser_1.Node((0, dom_1.define)((0, link_1.parse)(new parser_1.List([new parser_1.Node(`>>${value}`)]), new parser_1.List([new parser_1.Node(`?at=${value}`)]), context), {
   class: 'anchor'
@@ -6521,7 +6521,7 @@ const link_1 = __webpack_require__(3628);
 const hashtag_1 = __webpack_require__(5764);
 const source_1 = __webpack_require__(8745);
 const dom_1 = __webpack_require__(394);
-exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false,
+exports.hashnum = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji|[@#])#/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu'), (0, source_1.str)(new RegExp([/[0-9]{1,9}(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, hashtag_1.emoji.source), 'yu')), '', false,
 // unescapableを使用するべきだがhashtagとの重複を回避するためescapableを使用する。
 [3 | 16 /* Backtrack.escapable */], ([, [{
   value
@@ -6550,7 +6550,7 @@ const dom_1 = __webpack_require__(394);
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 // https://github.com/tc39/proposal-regexp-unicode-property-escapes#matching-emoji
 exports.emoji = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\u200D/u;
-exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji)#/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu')), ([{
+exports.hashtag = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1 /* State.autolink */, (0, combinator_1.state)(1 /* State.autolink */, (0, combinator_1.surround)(new RegExp([/(?<![^\p{C}\p{S}\p{P}\s]|emoji|[@#])#/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), (0, combinator_1.verify)((0, source_1.str)(new RegExp([/(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu')), ([{
   value
 }]) => /^[0-9]{0,4}[^0-9]/.test(value)), new RegExp([/(?![_.-]?[0-9a-z@#]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source].join('|').replace(/emoji/g, exports.emoji.source), 'yu'), false, [3 | 8 /* Backtrack.unescapable */], ([, [{
   value
@@ -7039,7 +7039,7 @@ function identity(type, id, text) {
   if (typeof text !== 'string') {
     const index = text.getAttribute('data-index') ?? undefined;
     if (index === '' && text.tagName === 'LI') return undefined;
-    return index ? `${type}:${id ?? ''}:${index}` : identity(type, id, signature(text));
+    return index ? `${type}:${id ?? ''}:${index}` : identity(type, id, signature(text.cloneNode(true)));
   }
   text = text.trim();
   if (text === '') return undefined;
@@ -7075,9 +7075,8 @@ function baseR(n, r) {
   } while (n > 0);
   return acc;
 }
-function signature(source) {
-  const target = source.cloneNode(true);
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+function signature(target) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol, .label[data-label]'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'CODE':
@@ -7111,8 +7110,7 @@ function signature(source) {
   return target.textContent.trim();
 }
 exports.signature = signature;
-function text(source) {
-  const target = source.cloneNode(true);
+function text(target) {
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -7600,7 +7598,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, 
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)));
   if (state & 251 /* State.linkers */ || nest) return new parser_1.List([new parser_1.Node(el)]);
   (0, dom_1.define)(el, {
-    id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el))
+    id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el.cloneNode(true)))
   });
   return el.id ? new parser_1.List([new parser_1.Node(el), new parser_1.Node((0, dom_1.html)('a', {
     href: `#${el.id}`
@@ -8234,25 +8232,30 @@ function build(syntax, marker, splitter = '') {
   splitter &&= `${splitter}, .${syntax}s`;
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
-  const memory = (0, memoize_1.memoize)(ref => {
+  const refInfo = (0, memoize_1.memoize)(ref => {
     const content = ref.firstElementChild;
     content.replaceWith(content.cloneNode());
     const abbr = ref.getAttribute('data-abbr') ?? '';
-    const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(content))?.slice(6) || '';
+    const clone = content.cloneNode(true);
+    const txt = (0, indexee_1.text)(clone).trim();
+    const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(clone))?.slice(6) || '';
     return {
       content,
       identifier,
       abbr,
-      text: (0, indexee_1.text)(content).trim()
+      text: txt
     };
   }, new WeakMap());
   return function* (target, note, opts = {}, bottom = null) {
     const defs = new Map();
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
-    const titles = new Map();
-    const defIndexes = new Map();
-    const refSubindexes = new Map();
-    const defSubindexes = new Map();
+    const identifierInfo = (0, memoize_1.memoize)(identifier => ({
+      defIndex: 0,
+      defSubindex: 0,
+      refSubindex: 0,
+      title: '' && 0,
+      queue: []
+    }));
     const scope = target instanceof Element ? ':scope > ' : '';
     const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
     let iSplitters = 0;
@@ -8285,29 +8288,36 @@ function build(syntax, marker, splitter = '') {
         identifier,
         abbr,
         text
-      } = memory(ref);
-      const refSubindex = refSubindexes.get(identifier) + 1 || 1;
-      refSubindexes.set(identifier, refSubindex);
+      } = refInfo(ref);
+      const info = identifierInfo(identifier);
+      const refSubindex = ++info.refSubindex;
       const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
       const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
-      const defSubindex = defSubindexes?.get(identifier) + +initial || 1;
-      initial && defSubindexes?.set(identifier, defSubindex);
+      const defSubindex = initial ? ++info.defSubindex : info.defSubindex;
       const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
       const def = initial ? (0, dom_1.html)('li', {
         id: defId,
         'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
       }, [content.cloneNode(true), (0, dom_1.html)('sup')]) : defs.get(identifier);
       initial && defs.set(identifier, def);
-      const defIndex = initial ? total + defs.size : defIndexes.get(def);
-      initial && defIndexes.set(def, defIndex);
-      const title = initial ? text : titles.get(identifier);
-      initial && titles.set(identifier, title);
+      const defIndex = initial ? info.defIndex = total + defs.size : info.defIndex;
+      const title = info.title ||= text;
       ref.childElementCount > 1 && ref.lastElementChild.remove();
       (0, dom_1.define)(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
         title
       });
+      if (title && info.queue.length > 0) {
+        for (const ref of info.queue) {
+          (0, dom_1.define)(ref, {
+            title
+          });
+          (0, util_1.unmarkInvalid)(ref);
+        }
+        info.queue = [];
+        def.firstElementChild.replaceWith(content.cloneNode(true));
+      }
       switch (ref.getAttribute('data-invalid-syntax')) {
         case 'format':
         case 'content':
@@ -8315,11 +8325,12 @@ function build(syntax, marker, splitter = '') {
       }
       format ??= abbr ? 'abbr' : 'number';
       if (!ref.classList.contains('invalid')) switch (true) {
-        case format === 'number' ? !!abbr : !abbr:
+        case format === 'number' ? abbr !== '' : abbr === '':
           (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
           break;
-        case !title:
+        case title === '':
           (0, util_1.markInvalid)(ref, syntax, 'content', 'Missing the content');
+          info.queue.push(ref);
           break;
       }
       yield ref.appendChild((0, dom_1.html)('a', {
