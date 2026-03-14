@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.297.0
+
+- Enhance annotation parser to allow nested annotations.
+
 ## 0.296.5
 
 - Refactoring.

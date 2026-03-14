@@ -8,7 +8,7 @@ import { str } from '../source';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
+export const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
 const indexF = new RegExp(indexA.source.replace(', ', '[，、]')
   .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)));
 
@@ -38,25 +38,17 @@ const p1 = lazy(() => surround(
   str('('),
   precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
   str(')'),
-  // 唯一の参照者であるAnnotation構文に対してのみバックトラックを記録しその他は記録しない。
-  // 二重括弧構文の内括弧のバックトラックは二重括弧構文自身が記録するため記録不要。
-  // Ruby構文の丸括弧は常にRuby構文が先に到達し記録するため記録不要。
   true, [],
-  ([as, bs = new List(), cs], context) => {
-    const { source, position, range } = context;
-    const head = position - range;
-    if (source[head + 1] === '(' && (context.linebreak !== 0 || source[position - 2] !== ')')) {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head);
-    }
-    const str = source.slice(position - range + 1, position - 1);
-    return indexA.test(str)
+  ([as, bs = [], cs], { source, position, range, linebreak }) => {
+    const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
+    return linebreak === 0 && indexA.test(str)
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
-    const { source, position, range } = context;
-    const str = source.slice(position - range + 1, position);
-    return indexA.test(str)
+    const { source, position, range, linebreak } = context;
+    const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
+    return linebreak === 0 && indexA.test(str)
       ? new List([new Node(as.head!.value), new Node(str)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));
@@ -66,16 +58,16 @@ const p2 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
   str('）'),
   true, [],
-  ([as, bs = [], cs], { source, position, range }) => {
-    const str = source.slice(position - range + 1, position - 1);
-    return indexF.test(str)
+  ([as, bs = [], cs], { source, position, range, linebreak }) => {
+    const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
+    return linebreak === 0 && indexF.test(str)
       ? new List([new Node(as.head!.value), new Node(str), new Node(cs.head!.value)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
-    const { source, position, range } = context;
-    const str = source.slice(position - range + 1, position);
-    return indexF.test(str)
+    const { source, position, range, linebreak } = context;
+    const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
+    return linebreak === 0 && indexF.test(str)
       ? new List([new Node(as.head!.value), new Node(str)])
       : new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));
@@ -87,13 +79,13 @@ const s1 = lazy(() => surround(
   true,
   [2 | Backtrack.common],
   ([as, bs = new List(), cs], context) => {
-    const { source, position, range } = context;
+    const { source, position, range, linebreak } = context;
     const head = position - range;
-    if (source[head + 1] === '[' && (context.linebreak !== 0 || source[position - 2] !== ']')) {
+    if (source[head + 1] === '[' && (linebreak !== 0 || source[position - 2] !== ']')) {
       setBacktrack(context, 2 | Backtrack.doublebracket, head);
     }
     if (context.state & State.link) {
-      if (context.linebreak !== 0) {
+      if (linebreak !== 0) {
         setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
       }
       else if (source[position] !== '{') {

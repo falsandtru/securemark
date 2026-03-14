@@ -91,7 +91,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('[% a"\nb %]', new Context())), [['<span class="remark"><input type="checkbox"><span>[% a"<br>b %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('"<bdi>"a\n""b</bdi>"', new Context())), [['"', '<span class="invalid">&lt;bdi&gt;</span>', '"', 'a', '<br>', '"', '"', 'b', '</bdi', '>', '"'], '']);
       assert.deepStrictEqual(inspect(parser, input('<bdi>*<bdi>a</bdi>*</bdi>', new Context())), [['<bdi><em><bdi>a</bdi></em></bdi>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('<bdi>((<bdi>((a))</bdi>))</bdi>', new Context())), [['<bdi><sup class="annotation"><span><bdi><span class="paren">((a))</span></bdi></span></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<bdi>[[<bdi>[[a]]</bdi>]]</bdi>', new Context())), [['<bdi><sup class="reference"><span><bdi>[[a]]</bdi></span></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser, input('<bdi>[#</bdi>]', new Context())), [['<span class="invalid">&lt;bdi&gt;[#&lt;/bdi&gt;]</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('"<bdi>("")</bdi>', new Context())), [['"', '<span class="invalid">&lt;bdi&gt;(</span>', '"', '"', ')', '</bdi', '>'], '']);
@@ -133,7 +132,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('Di$ney, Micro$oft', new Context())), [['Di', '$ney, Micro', '$oft'], '']);
       assert.deepStrictEqual(inspect(parser, input('(((a))', new Context())), [['<span class="paren">(<sup class="annotation"><span>a</span></sup></span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((((a))', new Context())), [['<span class="paren">(<span class="paren">(<sup class="annotation"><span>a</span></sup></span></span>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('((((a))))', new Context())), [['<sup class="annotation"><span><span class="paren">((a))</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((${))}$', new Context())), [['<span class="paren">(<span class="paren">(<span class="math" translate="no" data-src="${))}$">${))}$</span></span></span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((a\nb))', new Context())), [['<span class="paren">(<span class="paren">(a<br>b)</span>)</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('(((a\nb)))', new Context())), [['<span class="paren">(<span class="paren">(<span class="paren">(a<br>b)</span>)</span>)</span>'], '']);

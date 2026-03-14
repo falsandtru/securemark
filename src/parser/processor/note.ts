@@ -16,55 +16,72 @@ export function* note(
   yield* reference(target, notes?.references, opts, bottom);
 }
 
-export const annotation = build('annotation', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
+export const annotation = build(
+  'annotation',
+  'sup.annotation:not(.annotations .annotation)',
+  n => `*${n}`,
+  'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+export const reference = build(
+  'reference',
+  'sup.reference:not(.references .reference)',
+  (n, abbr) => `[${abbr || n}]`);
 
+// Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
+// 構文ごとに各1回の処理では不可能
 function build(
   syntax: 'annotation' | 'reference',
+  query: `${keyof HTMLElementTagNameMap}.${string}`,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
   splitter &&= `${splitter}, .${syntax}s`;
-  // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
-  // 構文ごとに各1回の処理では不可能
-  const refInfo = memoize((ref: HTMLElement): {
-    readonly content: Element;
-    readonly identifier: string;
-    readonly abbr: string;
-    readonly text: string;
-  } => {
-    const content = ref.firstElementChild!;
-    content.replaceWith(content.cloneNode());
-    const abbr = ref.getAttribute('data-abbr') ?? '';
-    const clone = content.cloneNode(true);
-    const txt = text(clone).trim();
-    const identifier = abbr
-      ? identity(
-          '',
-          undefined,
-          (
-            abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ??
-            abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
-            abbr
-          ))?.slice(2) || ''
-      : identity('mark', undefined, signature(clone))?.slice(6) || '';
-    return {
-      content,
-      identifier,
-      abbr,
-      text: txt,
-    };
-  }, new WeakMap());
+  const refMemoryCaller = memoize((target: Node) =>
+    new Map<HTMLElement, {
+      readonly content: Element;
+      readonly identifier: string;
+      readonly abbr: string;
+      readonly text: string;
+    }>() ?? target,
+    new WeakMap());
   return function* (
     target: ParentNode & Node,
     note?: HTMLOListElement,
     opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+    const refMemory = refMemoryCaller(target);
+    const refInfoCaller = memoize((ref: HTMLElement) => {
+      const content = ref.firstElementChild!;
+      const abbr = ref.getAttribute('data-abbr') ?? '';
+      const clone = content.cloneNode(true);
+      const txt = text(clone).trim();
+      const identifier = abbr
+        ? identity(
+            '',
+            undefined,
+            (
+              abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ??
+              abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
+              abbr
+            ))?.slice(2) || ''
+        : identity('mark', undefined, signature(clone))?.slice(6) || '';
+      return {
+        content,
+        identifier,
+        abbr,
+        text: txt,
+      };
+    }, refMemory);
+    for (const [ref, { content }] of refMemory) {
+      content.replaceWith(content.cloneNode(true));
+      ref.prepend(content);
+      refMemory.delete(ref);
+    }
+    assert(refMemory.size === 0);
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
-    const identifierInfo = memoize((identifier: string) => ({
+    const refs = target.querySelectorAll(`${query}:not(.disabled)`);
+    const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
       refSubindex: 0,
@@ -79,10 +96,6 @@ function build(
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (!target.contains(ref)) {
-        yield;
-        continue;
-      }
       if (splitter) for (
         let el: Element;
         el = splitters[iSplitters],
@@ -105,8 +118,8 @@ function build(
           assert(defs.size === 0);
         }
       }
-      const { content, identifier, abbr, text } = refInfo(ref);
-      const info = identifierInfo(identifier);
+      const { content, identifier, abbr, text } = refInfoCaller(ref);
+      const info = identifierInfoCaller(identifier);
       const refSubindex = ++info.refSubindex;
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}`
@@ -124,7 +137,7 @@ function build(
               id: defId,
               'data-marker': note ? undefined : marker(total + defs.size + 1, abbr),
             },
-            [content.cloneNode(true), html('sup')])
+            [content, html('sup')])
         : defs.get(identifier)!;
       initial && defs.set(identifier, def);
       assert(def.lastElementChild?.matches('sup'));
@@ -133,19 +146,18 @@ function build(
         : info.defIndex;
       const title = info.title ||= text;
       assert(syntax !== 'annotation' || title);
-      ref.childElementCount > 1 && ref.lastElementChild!.remove();
       define(ref, {
         id: refId,
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
         title,
-      });
+      }, []);
       if (title && info.queue.length > 0) {
         for (const ref of info.queue) {
           define(ref, { title });
           unmarkInvalid(ref);
         }
         info.queue = [];
-        def.firstElementChild!.replaceWith(content.cloneNode(true));
+        def.firstElementChild!.replaceWith(content);
       }
       switch (ref.getAttribute('data-invalid-syntax')) {
         case 'format':

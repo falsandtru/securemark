@@ -1,30 +1,57 @@
 import { AnnotationParser } from '../inline';
-import { State, Backtrack } from '../context';
+import { State, Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, precedence, state, constraint, surround, close, setBacktrack, lazy } from '../../combinator';
+import { union, some, recursion, precedence, constraint, surround, close, lazy } from '../../combinator';
 import { inline } from '../inline';
+import { indexA } from './bracket';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, recursion(Recursion.inline, surround(
   close('((', beforeNonblank),
-  precedence(1, state(State.annotation,
-  some(union([inline]), ')', [[')', 1]]))),
+  precedence(1, recursion(Recursion.bracket, recursion(Recursion.bracket,
+  some(union([inline]), ')', [[')', 1]])))),
   '))',
-  false,
-  [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
-  ([, ns], context) =>
-    context.linebreak === 0
-      ? new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))])
-      : undefined,
-  (_, context): undefined => {
+  false, [],
+  ([, ns], context) => {
+    const { linebreak } = context;
+    if (linebreak === 0) {
+      return new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
+    }
+    ns.unshift(new Node('('));
+    ns.push(new Node(')'));
+    return new List([new Node(html('span', { class: 'paren' }, ['(', html('span', { class: 'paren' }, defrag(unwrap(ns))), ')']))]);
+  },
+  ([, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
-    const head = position - range;
-    if (source[position] !== ')') {
-      setBacktrack(context, 2 | Backtrack.common, head + 1);
+    if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object' && bs.head.value.className === 'paren') {
+      const { firstChild, lastChild } = bs.head.value;
+      assert(firstChild instanceof Text);
+      if (firstChild!.nodeValue!.length === 1) {
+        firstChild!.remove();
+      }
+      else {
+        firstChild!.nodeValue = firstChild!.nodeValue!.slice(1);
+      }
+      assert(lastChild instanceof Text);
+      if (lastChild!.nodeValue!.length === 1) {
+        lastChild!.remove();
+      }
+      else {
+        lastChild!.nodeValue = lastChild!.nodeValue!.slice(0, -1);
+      }
+      context.position += 1;
+      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
     }
-    else if (linebreak !== 0) {
-      setBacktrack(context, 2 | Backtrack.doublebracket, head + 1);
+    if (linebreak === 0 && bs.length === 3 && source[position - range + 2] === '(' && source[position] === ')' && source[position - 1] === ')' && source[position - 2] !== '\\') {
+      context.position += 1;
+      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head!.next!.value])])]))]);
     }
-  })));
+    const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
+    if (linebreak === 0 && indexA.test(str)) {
+      return new List([new Node(html('span', { class: 'paren' }, ['((' + str]))]);
+    }
+    bs.unshift(new Node('('));
+    return new List([new Node(html('span', { class: 'paren' }, ['(', html('span', { class: 'paren' }, defrag(unwrap(bs)))]))]);
+  }))));
