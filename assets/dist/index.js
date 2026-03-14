@@ -4302,6 +4302,12 @@ function bind(target, settings) {
         type: 'cancel'
       };
     }
+    yield {
+      type: 'break'
+    };
+    if (rev !== revision) return yield {
+      type: 'cancel'
+    };
     for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.notes, context)) {
       el ? yield {
         type: 'figure',
@@ -6323,7 +6329,7 @@ const bracket_1 = __webpack_require__(4526);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)((0, combinator_1.close)('((', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]))))), '))', false, [], ([, ns], context) => {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)((0, combinator_1.open)('((', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.inline */, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]))))), '))', false, [], ([, ns], context) => {
   const {
     linebreak
   } = context;
@@ -7486,7 +7492,7 @@ const optspec = {
   rel: ['nofollow']
 };
 Object.setPrototypeOf(optspec, null);
-exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)((0, combinator_1.close)('[', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
+exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combinator_1.subsequence)([(0, combinator_1.constraint)(8 /* State.link */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.dup)((0, combinator_1.surround)((0, combinator_1.open)('[', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]])), ']', true, [3 | 4 /* Backtrack.common */ | 64 /* Backtrack.link */, 2 | 32 /* Backtrack.ruby */], ([, ns = new parser_1.List()], context) => {
   if (context.linebreak !== 0) {
     const head = context.position - context.range;
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
@@ -8300,12 +8306,11 @@ function build(syntax, plural, marker, splitter = '') {
     for (const [ref, {
       content
     }] of refMemory) {
-      content.replaceWith(content.cloneNode(true));
       ref.replaceChildren(content);
-      refMemory.delete(ref);
     }
+    refMemory.clear();
     const defs = new Map();
-    const refs = target.querySelectorAll(`.${syntax}:not(.${plural} .${syntax}):not(.disabled)`);
+    const refs = target.querySelectorAll(`.${syntax}:not(.disabled)`);
     const identifierInfoCaller = (0, memoize_1.memoize)(identifier => ({
       defIndex: 0,
       defSubindex: 0,
@@ -8413,30 +8418,13 @@ function* proc(defs, note) {
   const {
     children
   } = note;
-  const size = defs.size;
-  let count = 0;
-  let length = children.length;
-  I: for (const [key, def] of defs) {
-    defs.delete(key);
-    ++count;
-    for (; length > size;) {
-      const node = children[count - 1];
-      if (equal(node, def)) continue I;
-      yield note.removeChild(node);
-      --length;
-    }
-    const node = count <= length ? children[count - 1] : null;
-    if (node && equal(node, def)) continue;
-    yield note.insertBefore(def, node);
-    ++length;
+  for (let defs = note.children, i = defs.length; i--;) {
+    yield note.removeChild(children[i]);
   }
-  for (; length > size;) {
-    yield note.removeChild(children[size]);
-    --length;
+  for (const [, def] of defs) {
+    yield note.appendChild(def);
   }
-}
-function equal(a, b) {
-  return a.id === b.id && a.innerHTML === b.innerHTML;
+  defs.clear();
 }
 
 /***/ },
