@@ -1329,7 +1329,7 @@
   }, {
     rootMargin: '100px',
   });
-  let wait;
+  let revision = 0;
   (async () => {
     await new Promise(requestAnimationFrame);
     log(await display(4));
@@ -1337,10 +1337,8 @@
     editor.on('change', run);
     function run() {
       clearTimeout(timer);
-      wait = wait || new Promise(requestAnimationFrame);
       timer = setTimeout(async function () {
-        await wait;
-        wait = undefined;
+        ++revision;
         log(await display(1));
         //nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
         nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
@@ -1350,15 +1348,16 @@
   })();
   async function display(rate) {
     const { Date } = global;
-    const times = [0, 0];
+    const text = editor.getValue();
+    const rev = revision;
+    const stats = [text.length, 0, 0];
     const start = Date.now();
-    let index = 0;
+    let index = 1;
     let past = Date.now();
     let time = 0;
     let resource = 200 * rate;
     let scroll = window.scrollY;
-    for (const result of parse(editor.getValue())) {
-      if (wait) throw new Error('Cancel.');
+    for (const result of parse(text)) {
       switch (result.type) {
         case 'segment':
           break;
@@ -1371,11 +1370,11 @@
         case 'cancel':
           throw new Error('Cancel.');
         default:
-          if (index === 0) {
-            times[index] = time;
+          if (index === 1) {
+            stats[index] = time;
             time = 0;
           }
-          index = 1;
+          index = 2;
       }
       const now = Date.now();
       const delta = now - past;
@@ -1386,6 +1385,7 @@
       }
       else {
         await new Promise(requestAnimationFrame);
+        if (revision !== rev) throw new Error('Cancel.');
         if (scroll !== window.scrollY) {
           resource = 200;
           scroll = window.scrollY;
@@ -1397,17 +1397,17 @@
       }
     }
     time += Date.now() - past;
-    times[index] = time;
-    times.push(Date.now() - start);
-    return times;
+    stats[index] = time;
+    stats.push(Date.now() - start);
+    return stats;
   }
-  function log(times) {
-    document.getElementById('render-time').textContent = times[0];
-    document.getElementById('proc-time').textContent = times[1];
-    document.getElementById('display-time').textContent = times[2];
+  function log(stats) {
+    document.getElementById('chars').textContent = stats[0];
+    document.getElementById('render-time').textContent = stats[1];
+    document.getElementById('proc-time').textContent = stats[2];
+    document.getElementById('display-time').textContent = stats[3];
   }
   function share() {
-    document.getElementById('chars').textContent = editor.getValue().length;
     // GAにReDoS脆弱性があり長いURLを使用できない
     // /(.*?)(^|&)_gl=([^&]*)&?(.*)/.test('g' + '_'.repeat(54773))
     if (editor.getValue().length > 50000) return;

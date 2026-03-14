@@ -124,6 +124,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
+    yield { type: 'break' };
+    if (rev !== revision) return yield { type: 'cancel' };
     for (const el of figure(next(0)?.parentNode ?? target, settings.notes, context)) {
       assert(rev === revision);
       el
