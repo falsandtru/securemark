@@ -76,9 +76,8 @@ function build(
     for (const [ref, { content }] of refMemory) {
       content.replaceWith(content.cloneNode(true));
       ref.replaceChildren(content);
-      refMemory.delete(ref);
     }
-    assert(refMemory.size === 0);
+    refMemory.clear();
     const defs = new Map<string, HTMLLIElement>();
     const refs = target.querySelectorAll<HTMLElement>(`.${syntax}:not(.${plural} .${syntax}):not(.disabled)`);
     const identifierInfoCaller = memoize((identifier: string) => ({
