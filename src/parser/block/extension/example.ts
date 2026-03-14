@@ -7,7 +7,7 @@ import { unwrap, invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
-export const example: ExtensionParser.ExampleParser = recursion(Recursion.block, block(fmap(
+export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.block, fmap(
   fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   (nodes: List<Node<string>>, context) => {

@@ -7,7 +7,7 @@ import { unwrap, invalid } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
-export const aside: ExtensionParser.AsideParser = recursion(Recursion.block, block(fmap(
+export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.block, fmap(
   fence(/(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   (nodes: List<Node<string>>, context) => {

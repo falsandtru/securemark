@@ -8,10 +8,10 @@ import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, recursion(Recursion.inline, surround(
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
   close('((', beforeNonblank),
-  precedence(1, recursion(Recursion.bracket, recursion(Recursion.bracket,
-  some(union([inline]), ')', [[')', 1]])))),
+  precedence(1, recursion(Recursion.inline, recursion(Recursion.bracket, recursion(Recursion.bracket,
+  some(union([inline]), ')', [[')', 1]]))))),
   '))',
   false, [],
   ([, ns], context) => {
@@ -54,4 +54,4 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     }
     bs.unshift(new Node('('));
     return new List([new Node(html('span', { class: 'paren' }, ['(', html('span', { class: 'paren' }, defrag(unwrap(bs)))]))]);
-  }))));
+  })));

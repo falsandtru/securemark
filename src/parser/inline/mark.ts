@@ -9,13 +9,13 @@ import { unwrap, repeat } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() =>
-  precedence(0, recursion(Recursion.inline, repeat('==', beforeNonblank, surround(
+  precedence(0, repeat('==', beforeNonblank, recursion(Recursion.inline, surround(
     '',
     state(State.mark, some(union([inline]), '==', afterNonblank)),
     '==',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),
-    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer),
+    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer)),
     (nodes, { id, state }, nest) => {
       const el = html('mark', defrag(unwrap(nodes)));
       if (state & State.linkers || nest) return new List([new Node(el)]);
@@ -23,4 +23,4 @@ export const mark: MarkParser = lazy(() =>
       return el.id
         ? new List([new Node(el), new Node(html('a', { href: `#${el.id}` }))])
         : new List([new Node(el)]);
-    }))));
+    })));
