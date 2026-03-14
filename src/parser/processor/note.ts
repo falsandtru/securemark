@@ -37,6 +37,8 @@ function build(
     const content = ref.firstElementChild!;
     content.replaceWith(content.cloneNode());
     const abbr = ref.getAttribute('data-abbr') ?? '';
+    const clone = content.cloneNode(true);
+    const txt = text(clone).trim();
     const identifier = abbr
       ? identity(
           '',
@@ -46,12 +48,12 @@ function build(
             abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ??
             abbr
           ))?.slice(2) || ''
-      : identity('mark', undefined, signature(content))?.slice(6) || '';
+      : identity('mark', undefined, signature(clone))?.slice(6) || '';
     return {
       content,
       identifier,
       abbr,
-      text: text(content).trim(),
+      text: txt,
     };
   }, new WeakMap());
   return function* (

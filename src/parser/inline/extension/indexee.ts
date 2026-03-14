@@ -33,7 +33,7 @@ export function identity(
     if (index === '' && text.tagName === 'LI') return undefined;
     return index
       ? `${type}:${id ?? ''}:${index}`
-      : identity(type, id, signature(text));
+      : identity(type, id, signature(text.cloneNode(true)));
   }
   text = text.trim();
   if (text === '') return undefined;
@@ -106,10 +106,10 @@ assert(baseR(~0 >>> 0, 36) === (~0 >>> 0).toString(36));
 assert(baseR(61, 62) === 'Z');
 assert(baseR(62, 62) === '10');
 
-export function signature(source: Element | DocumentFragment): string {
-  assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))') || source.nodeName === 'MARK');
-  const target = source.cloneNode(true) as typeof source;
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .label[data-label], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
+export function signature(target: Element | DocumentFragment): string {
+  assert(!target.parentNode);
+  assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))') || target.nodeName === 'MARK');
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol, .label[data-label]'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
@@ -144,9 +144,9 @@ export function signature(source: Element | DocumentFragment): string {
   return target.textContent!.trim();
 }
 
-export function text(source: Element | DocumentFragment): string {
-  assert(!navigator.userAgent.includes('Chrome') || !source.querySelector('br:not(:has(+ :is(ul, ol)))'));
-  const target = source.cloneNode(true) as typeof source;
+export function text(target: Element | DocumentFragment): string {
+  assert(!target.parentNode);
+  assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))'));
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];

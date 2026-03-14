@@ -19,7 +19,7 @@ export const mark: MarkParser = lazy(() =>
     (nodes, { id, state }, nest) => {
       const el = html('mark', defrag(unwrap(nodes)));
       if (state & State.linkers || nest) return new List([new Node(el)]);
-      define(el, { id: identity('mark', id, signature(el)) });
+      define(el, { id: identity('mark', id, signature(el.cloneNode(true))) });
       return el.id
         ? new List([new Node(el), new Node(html('a', { href: `#${el.id}` }))])
         : new List([new Node(el)]);
