@@ -255,13 +255,15 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          note.outerHTML,
-          html('ol', [
-            html('li', { id: 'reference::def:a_b' }, [
-              html('span', 'a b'),
-              html('sup', [html('a', { href: '#reference::ref:a_b:1' }, '^1')]),
-            ]),
-          ]).outerHTML);
+          [note.outerHTML],
+          [
+            html('ol', [
+              html('li', { id: 'reference::def:a_b' }, [
+                html('span', 'a b'),
+                html('sup', [html('a', { href: '#reference::ref:a_b:1' }, '^1')]),
+              ]),
+            ]).outerHTML,
+          ]);
       }
     });
 
@@ -289,17 +291,19 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          note.outerHTML,
-          html('ol', [
-            html('li', { id: 'reference::def:A_1' }, [
-              html('span', 'b'),
-              html('sup', [
-                html('a', { href: '#reference::ref:A_1:1', title: 'b' }, '^1'),
-                html('a', { href: '#reference::ref:A_1:2' }, '^2'),
-                html('a', { href: '#reference::ref:A_1:3' }, '^3'),
-              ])
-            ]),
-          ]).outerHTML);
+          [note.outerHTML],
+          [
+            html('ol', [
+              html('li', { id: 'reference::def:A_1' }, [
+                html('span', 'b'),
+                html('sup', [
+                  html('a', { href: '#reference::ref:A_1:1', title: 'b' }, '^1'),
+                  html('a', { href: '#reference::ref:A_1:2' }, '^2'),
+                  html('a', { href: '#reference::ref:A_1:3' }, '^3'),
+                ])
+              ]),
+            ]).outerHTML,
+          ]);
       }
     });
 
@@ -336,16 +340,18 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          note.outerHTML,
-          html('ol', [
-            html('li', { id: 'reference::def:B' }, [
-              html('span', 'c'),
-              html('sup', [
-                html('a', { href: '#reference::ref:B:1', title: 'c' }, '^1'),
-                html('a', { href: '#reference::ref:B:2' }, '^2'),
+          [note.outerHTML],
+          [
+            html('ol', [
+              html('li', { id: 'reference::def:B' }, [
+                html('span', 'c'),
+                html('sup', [
+                  html('a', { href: '#reference::ref:B:1', title: 'c' }, '^1'),
+                  html('a', { href: '#reference::ref:B:2' }, '^2'),
+                ]),
               ]),
-            ]),
-          ]).outerHTML);
+            ]).outerHTML,
+          ]);
         target.lastChild?.remove();
       }
     });
