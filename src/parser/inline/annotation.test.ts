@@ -12,7 +12,7 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('(', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('()', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('((', new Context())), [['<span class="paren">(<span class="paren">(</span></span>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('((', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('(())', new Context())), [['<span class="paren">(<span class="paren">(</span></span>'], '))']);
       assert.deepStrictEqual(inspect(parser, input('(()))', new Context())), [['<span class="paren">(<span class="paren">(</span></span>'], ')))']);
       assert.deepStrictEqual(inspect(parser, input('(("))', new Context())), [['<span class="paren">(<span class="paren">("))</span></span>'], '']);

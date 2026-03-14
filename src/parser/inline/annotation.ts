@@ -1,7 +1,7 @@
 import { AnnotationParser } from '../inline';
 import { State, Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, constraint, surround, close, lazy } from '../../combinator';
+import { union, some, recursion, precedence, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { indexA } from './bracket';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
@@ -9,7 +9,7 @@ import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
-  close('((', beforeNonblank),
+  open('((', beforeNonblank),
   precedence(1, recursion(Recursion.inline, recursion(Recursion.bracket, recursion(Recursion.bracket,
   some(union([inline]), ')', [[')', 1]]))))),
   '))',

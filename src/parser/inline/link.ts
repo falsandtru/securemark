@@ -1,7 +1,7 @@
 import { LinkParser } from '../inline';
 import { Context, State, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, close, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { str } from '../source';
@@ -18,7 +18,7 @@ Object.setPrototypeOf(optspec, null);
 export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
   subsequence([
     constraint(State.link, state(State.linkers, dup(surround(
-      close('[', beforeNonblank),
+      open('[', beforeNonblank),
       precedence(1,
       some(union([inline]), ']', [[']', 1]])),
       ']',
