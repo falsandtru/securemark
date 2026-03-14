@@ -69,6 +69,7 @@ function build(
       defSubindex: 0,
       refSubindex: 0,
       title: '' && identifier,
+      queue: [] as HTMLElement[],
     }));
     const scope = target instanceof Element ? ':scope > ' : '';
     const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
@@ -130,7 +131,7 @@ function build(
       const defIndex = initial
         ? info.defIndex = total + defs.size
         : info.defIndex;
-      const title = initial ? info.title = text : info.title;
+      const title = info.title ||= text;
       assert(syntax !== 'annotation' || title);
       ref.childElementCount > 1 && ref.lastElementChild!.remove();
       define(ref, {
@@ -138,6 +139,14 @@ function build(
         class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
         title,
       });
+      if (title && info.queue.length > 0) {
+        for (const ref of info.queue) {
+          define(ref, { title });
+          unmarkInvalid(ref);
+        }
+        info.queue = [];
+        def.firstElementChild!.replaceWith(content.cloneNode(true));
+      }
       switch (ref.getAttribute('data-invalid-syntax')) {
         case 'format':
         case 'content':
@@ -150,6 +159,7 @@ function build(
           break;
         case title === '':
           markInvalid(ref, syntax, 'content', 'Missing the content');
+          info.queue.push(ref);
           break;
       }
       yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));

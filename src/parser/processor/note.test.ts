@@ -268,7 +268,7 @@ describe('Unit: parser/processor/note', () => {
     });
 
     it('abbr', () => {
-      const target = parse('[[^A 1|b]][[^A 1]][[^A 1]]');
+      const target = parse('[[^A 1]][[^A 1|b]][[^A 1]]');
       const note = html('ol');
       for (let i = 0; i < 3; ++i) {
         [...reference(target, note)];
@@ -297,8 +297,8 @@ describe('Unit: parser/processor/note', () => {
               html('li', { id: 'reference::def:A_1' }, [
                 html('span', 'b'),
                 html('sup', [
-                  html('a', { href: '#reference::ref:A_1:1', title: 'b' }, '^1'),
-                  html('a', { href: '#reference::ref:A_1:2' }, '^2'),
+                  html('a', { href: '#reference::ref:A_1:1' }, '^1'),
+                  html('a', { href: '#reference::ref:A_1:2', title: 'b' }, '^2'),
                   html('a', { href: '#reference::ref:A_1:3' }, '^3'),
                 ])
               ]),
