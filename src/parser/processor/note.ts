@@ -203,37 +203,11 @@ function build(
 
 function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
   const { children } = note;
-  const size = defs.size;
-  let count = 0;
-  let length = children.length;
-  I:
-  for (const [key, def] of defs) {
-    defs.delete(key);
-    ++count;
-    for (; length > size;) {
-      const node = children[count - 1] as HTMLLIElement;
-      if (equal(node, def)) continue I;
-      yield note.removeChild(node);
-      --length;
-      assert(children.length === length);
-    }
-    const node = count <= length
-      ? children[count - 1]
-      : null;
-    if (node && equal(node, def)) continue;
-    assert(def.parentNode !== note);
-    yield note.insertBefore(def, node);
-    ++length;
-    assert(children.length === length);
+  for (let defs = note.children, i = defs.length; i--;) {
+    yield note.removeChild(children[i] as HTMLLIElement);
   }
-  for (; length > size;) {
-    yield note.removeChild(children[size] as HTMLLIElement);
-    --length;
-    assert(children.length === length);
+  for (const [, def] of defs) {
+    yield note.appendChild(def);
   }
-}
-
-function equal(a: Element, b: HTMLElement): boolean {
-  return a.id === b.id
-      && a.innerHTML === b.innerHTML;
+  defs.clear();
 }
