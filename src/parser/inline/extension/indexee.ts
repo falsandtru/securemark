@@ -109,23 +109,9 @@ assert(baseR(62, 62) === '10');
 export function signature(target: Element | DocumentFragment): string {
   assert(!target.parentNode);
   assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))') || target.nodeName === 'MARK');
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol, .label[data-label]'),
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol, .label[data-label]'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    switch (el.tagName) {
-      case 'CODE':
-        el.replaceWith(el.getAttribute('data-src')!);
-        continue;
-      case 'RT':
-      case 'RP':
-      case 'UL':
-      case 'OL':
-        el.remove();
-        continue;
-      case 'BR':
-        el.replaceWith('\n');
-        continue;
-    }
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src')!);
@@ -140,6 +126,21 @@ export function signature(target: Element | DocumentFragment): string {
         el.remove();
         continue;
     }
+    switch (el.tagName) {
+      case 'CODE':
+        el.replaceWith(el.getAttribute('data-src')!);
+        continue;
+      case 'UL':
+      case 'OL':
+      case 'RT':
+      case 'RP':
+      case 'A':
+        el.remove();
+        continue;
+      case 'BR':
+        el.replaceWith('\n');
+        continue;
+    }
   }
   return target.textContent!.trim();
 }
@@ -147,21 +148,9 @@ export function signature(target: Element | DocumentFragment): string {
 export function text(target: Element | DocumentFragment): string {
   assert(!target.parentNode);
   assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))'));
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'),
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    switch (el.tagName) {
-      case 'CODE':
-        el.replaceWith(el.getAttribute('data-src')!);
-        continue;
-      case 'RT':
-      case 'RP':
-      case 'BR':
-      case 'UL':
-      case 'OL':
-        el.remove();
-        continue;
-    }
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src')!);
@@ -170,6 +159,19 @@ export function text(target: Element | DocumentFragment): string {
       case 'remark':
       case 'annotation':
       case 'reference':
+        el.remove();
+        continue;
+    }
+    switch (el.tagName) {
+      case 'CODE':
+        el.replaceWith(el.getAttribute('data-src')!);
+        continue;
+      case 'UL':
+      case 'OL':
+      case 'RT':
+      case 'RP':
+      case 'A':
+      case 'BR':
         el.remove();
         continue;
     }

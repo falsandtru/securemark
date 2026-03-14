@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.297.1
+
+- Fix note processing.
+
 ## 0.297.0
 
 - Enhance annotation parser to allow nested annotations.

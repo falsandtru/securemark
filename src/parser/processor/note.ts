@@ -18,24 +18,24 @@ export function* note(
 
 export const annotation = build(
   'annotation',
-  'sup.annotation:not(.annotations .annotation)',
+  'annotations',
   n => `*${n}`,
   'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 export const reference = build(
   'reference',
-  'sup.reference:not(.references .reference)',
+  'references',
   (n, abbr) => `[${abbr || n}]`);
 
 // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
 // 構文ごとに各1回の処理では不可能
 function build(
-  syntax: 'annotation' | 'reference',
-  query: `${keyof HTMLElementTagNameMap}.${string}`,
+  syntax: string,
+  plural: string,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
-  splitter &&= `${splitter}, .${syntax}s`;
+  splitter &&= `${splitter}, .${plural}`;
   const refMemoryCaller = memoize((target: Node) =>
     new Map<HTMLElement, {
       readonly content: Element;
@@ -54,7 +54,7 @@ function build(
     const refInfoCaller = memoize((ref: HTMLElement) => {
       const content = ref.firstElementChild!;
       const abbr = ref.getAttribute('data-abbr') ?? '';
-      const clone = content.cloneNode(true);
+      const clone = ref.cloneNode(true);
       const txt = text(clone).trim();
       const identifier = abbr
         ? identity(
@@ -75,12 +75,12 @@ function build(
     }, refMemory);
     for (const [ref, { content }] of refMemory) {
       content.replaceWith(content.cloneNode(true));
-      ref.prepend(content);
+      ref.replaceChildren(content);
       refMemory.delete(ref);
     }
     assert(refMemory.size === 0);
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll(`${query}:not(.disabled)`);
+    const refs = target.querySelectorAll<HTMLElement>(`.${syntax}:not(.${plural} .${syntax}):not(.disabled)`);
     const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
@@ -104,7 +104,7 @@ function build(
         if (~iSplitters << 32 - 8 === 0) yield;
         if (!scope && el.parentNode !== target) continue;
         if (el.tagName === 'OL' && (el.nextElementSibling !== splitters[iSplitters + 1] || defs.size === 0)) {
-          assert(el.matches(`.${syntax}s`));
+          assert(el.matches(`.${plural}`));
           el.remove();
           continue;
         }
@@ -112,7 +112,7 @@ function build(
           total += defs.size;
           const note = el.tagName === 'OL'
             ? el as HTMLOListElement
-            : target.insertBefore(html('ol', { class: `${syntax}s` }), el);
+            : target.insertBefore(html('ol', { class: plural }), el);
           assert(note.parentNode);
           yield* proc(defs, note);
           assert(defs.size === 0);
@@ -188,7 +188,7 @@ function build(
       const el = splitters[iSplitters];
       note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1]
         ? (++iSplitters, el as HTMLOListElement)
-        : target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[iSplitters] ?? bottom);
+        : target.insertBefore(html('ol', { class: plural }), splitters[iSplitters] ?? bottom);
       yield* proc(defs, note);
       assert(defs.size === 0);
     }
@@ -196,7 +196,7 @@ function build(
       if (~iSplitters << 32 - 8 === 0) yield;
       if (!scope && el.parentNode !== target) continue;
       if (el.tagName === 'OL') {
-        assert(el.matches(`.${syntax}s`));
+        assert(el.matches(`.${plural}`));
         el.remove();
       }
     }

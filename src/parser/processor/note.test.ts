@@ -222,7 +222,7 @@ describe('Unit: parser/processor/note', () => {
     });
 
     it('nest', () => {
-      const target = parse('((a((b))))((a))((b))');
+      const target = parse('((a((b((c))))))((a))((b))');
       for (let i = 0; i < 3; ++i) {
         [...annotation(target)];
         assert.deepStrictEqual(
@@ -249,21 +249,31 @@ describe('Unit: parser/processor/note', () => {
                 ]),
                 html('sup', [
                   html('a', { href: '#annotation::ref:a:1' }, '^1'),
-                  html('a', { href: '#annotation::ref:a:2' }, '^3'),
+                  html('a', { href: '#annotation::ref:a:2' }, '^4'),
                 ])
               ]),
               html('li', { id: 'annotation::def:b:1', 'data-marker': '*2' }, [
                 html('span', [
                   'b',
+                  html('sup', { class: 'annotation', id: 'annotation::ref:c:1', title: 'c' }, [
+                    html('a', { href: '#annotation::def:c:1' }, '*3')
+                  ]),
                 ]),
                 html('sup', [
                   html('a', { href: '#annotation::ref:b:1' }, '^2'),
-                  html('a', { href: '#annotation::ref:b:2' }, '^4'),
+                  html('a', { href: '#annotation::ref:b:2' }, '^5'),
+                ])
+              ]),
+              html('li', { id: 'annotation::def:c:1', 'data-marker': '*3' }, [
+                html('span', [
+                  'c',
+                ]),
+                html('sup', [
+                  html('a', { href: '#annotation::ref:c:1' }, '^3'),
                 ])
               ]),
             ]).outerHTML,
           ]);
-        target.lastChild?.remove();
       }
     });
 
@@ -376,7 +386,6 @@ describe('Unit: parser/processor/note', () => {
               ]),
             ]).outerHTML,
           ]);
-        target.lastChild?.remove();
       }
     });
 
