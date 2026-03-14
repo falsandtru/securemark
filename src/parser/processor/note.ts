@@ -144,10 +144,10 @@ function build(
       }
       format ??= abbr ? 'abbr' : 'number';
       if (!ref.classList.contains('invalid')) switch (true) {
-        case format === 'number' ? !!abbr : !abbr:
+        case format === 'number' ? abbr !== '' : abbr === '':
           markInvalid(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
           break;
-        case !title:
+        case title === '':
           markInvalid(ref, syntax, 'content', 'Missing the content');
           break;
       }
