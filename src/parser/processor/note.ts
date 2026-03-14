@@ -28,7 +28,7 @@ function build(
   splitter &&= `${splitter}, .${syntax}s`;
   // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
   // 構文ごとに各1回の処理では不可能
-  const memory = memoize((ref: HTMLElement): {
+  const refInfo = memoize((ref: HTMLElement): {
     readonly content: Element;
     readonly identifier: string;
     readonly abbr: string;
@@ -64,10 +64,12 @@ function build(
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
     const refs = target.querySelectorAll(`sup.${syntax}:not(.disabled)`);
-    const titles = new Map<string, string>();
-    const defIndexes = new Map<HTMLLIElement, number>();
-    const refSubindexes = new Map<string, number>();
-    const defSubindexes = new Map<string, number>();
+    const identifierInfo = memoize((identifier: string) => ({
+      defIndex: 0,
+      defSubindex: 0,
+      refSubindex: 0,
+      title: '' && identifier,
+    }));
     const scope = target instanceof Element ? ':scope > ' : '';
     const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
     let iSplitters = 0;
@@ -102,17 +104,16 @@ function build(
           assert(defs.size === 0);
         }
       }
-      const { content, identifier, abbr, text } = memory(ref);
-      const refSubindex = refSubindexes.get(identifier)! + 1 || 1;
-      refSubindexes.set(identifier, refSubindex);
+      const { content, identifier, abbr, text } = refInfo(ref);
+      const info = identifierInfo(identifier);
+      const refSubindex = ++info.refSubindex;
       const refId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}`
         : undefined;
       const initial = splitter
         ? !defs.has(identifier)
         : refSubindex === 1;
-      const defSubindex = defSubindexes?.get(identifier)! + +initial || 1;
-      initial && defSubindexes?.set(identifier, defSubindex);
+      const defSubindex = initial ? ++info.defSubindex : info.defSubindex;
       const defId = opts.id !== ''
         ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}`
         : undefined;
@@ -127,11 +128,9 @@ function build(
       initial && defs.set(identifier, def);
       assert(def.lastElementChild?.matches('sup'));
       const defIndex = initial
-        ? total + defs.size
-        : defIndexes.get(def)!;
-      initial && defIndexes.set(def, defIndex);
-      const title = initial ? text : titles.get(identifier)!;
-      initial && titles.set(identifier, title);
+        ? info.defIndex = total + defs.size
+        : info.defIndex;
+      const title = initial ? info.title = text : info.title;
       assert(syntax !== 'annotation' || title);
       ref.childElementCount > 1 && ref.lastElementChild!.remove();
       define(ref, {
@@ -169,11 +168,9 @@ function build(
         ? (++iSplitters, el as HTMLOListElement)
         : target.insertBefore(html('ol', { class: `${syntax}s` }), splitters[iSplitters] ?? bottom);
       yield* proc(defs, note);
+      assert(defs.size === 0);
     }
-    if (splitter) for (
-      let el: Element;
-      el = splitters[iSplitters];
-      ++iSplitters) {
+    if (splitter) for (let el: Element; el = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (!scope && el.parentNode !== target) continue;
       if (el.tagName === 'OL') {
