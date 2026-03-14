@@ -74,12 +74,11 @@ function build(
       };
     }, refMemory);
     for (const [ref, { content }] of refMemory) {
-      content.replaceWith(content.cloneNode(true));
       ref.replaceChildren(content);
     }
     refMemory.clear();
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll<HTMLElement>(`.${syntax}:not(.${plural} .${syntax}):not(.disabled)`);
+    const refs = target.querySelectorAll<HTMLElement>(`.${syntax}:not(.disabled)`);
     const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
