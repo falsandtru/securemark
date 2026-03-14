@@ -7123,22 +7123,8 @@ function baseR(n, r) {
   return acc;
 }
 function signature(target) {
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol, .label[data-label]'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol, .label[data-label]'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    switch (el.tagName) {
-      case 'CODE':
-        el.replaceWith(el.getAttribute('data-src'));
-        continue;
-      case 'RT':
-      case 'RP':
-      case 'UL':
-      case 'OL':
-        el.remove();
-        continue;
-      case 'BR':
-        el.replaceWith('\n');
-        continue;
-    }
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src'));
@@ -7153,25 +7139,28 @@ function signature(target) {
         el.remove();
         continue;
     }
+    switch (el.tagName) {
+      case 'CODE':
+        el.replaceWith(el.getAttribute('data-src'));
+        continue;
+      case 'UL':
+      case 'OL':
+      case 'RT':
+      case 'RP':
+      case 'A':
+        el.remove();
+        continue;
+      case 'BR':
+        el.replaceWith('\n');
+        continue;
+    }
   }
   return target.textContent.trim();
 }
 exports.signature = signature;
 function text(target) {
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    switch (el.tagName) {
-      case 'CODE':
-        el.replaceWith(el.getAttribute('data-src'));
-        continue;
-      case 'RT':
-      case 'RP':
-      case 'BR':
-      case 'UL':
-      case 'OL':
-        el.remove();
-        continue;
-    }
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src'));
@@ -7180,6 +7169,19 @@ function text(target) {
       case 'remark':
       case 'annotation':
       case 'reference':
+        el.remove();
+        continue;
+    }
+    switch (el.tagName) {
+      case 'CODE':
+        el.replaceWith(el.getAttribute('data-src'));
+        continue;
+      case 'UL':
+      case 'OL':
+      case 'RT':
+      case 'RP':
+      case 'A':
+      case 'BR':
         el.remove();
         continue;
     }
@@ -8273,19 +8275,19 @@ function* note(target, notes, opts = {}, bottom = null) {
   yield* (0, exports.reference)(target, notes?.references, opts, bottom);
 }
 exports.note = note;
-exports.annotation = build('annotation', 'sup.annotation:not(.annotations .annotation)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-exports.reference = build('reference', 'sup.reference:not(.references .reference)', (n, abbr) => `[${abbr || n}]`);
+exports.annotation = build('annotation', 'annotations', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+exports.reference = build('reference', 'references', (n, abbr) => `[${abbr || n}]`);
 // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
 // 構文ごとに各1回の処理では不可能
-function build(syntax, query, marker, splitter = '') {
-  splitter &&= `${splitter}, .${syntax}s`;
+function build(syntax, plural, marker, splitter = '') {
+  splitter &&= `${splitter}, .${plural}`;
   const refMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
   return function* (target, note, opts = {}, bottom = null) {
     const refMemory = refMemoryCaller(target);
     const refInfoCaller = (0, memoize_1.memoize)(ref => {
       const content = ref.firstElementChild;
       const abbr = ref.getAttribute('data-abbr') ?? '';
-      const clone = content.cloneNode(true);
+      const clone = ref.cloneNode(true);
       const txt = (0, indexee_1.text)(clone).trim();
       const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(clone))?.slice(6) || '';
       return {
@@ -8299,11 +8301,11 @@ function build(syntax, query, marker, splitter = '') {
       content
     }] of refMemory) {
       content.replaceWith(content.cloneNode(true));
-      ref.prepend(content);
+      ref.replaceChildren(content);
       refMemory.delete(ref);
     }
     const defs = new Map();
-    const refs = target.querySelectorAll(`${query}:not(.disabled)`);
+    const refs = target.querySelectorAll(`.${syntax}:not(.${plural} .${syntax}):not(.disabled)`);
     const identifierInfoCaller = (0, memoize_1.memoize)(identifier => ({
       defIndex: 0,
       defSubindex: 0,
@@ -8329,7 +8331,7 @@ function build(syntax, query, marker, splitter = '') {
         if (defs.size > 0) {
           total += defs.size;
           const note = el.tagName === 'OL' ? el : target.insertBefore((0, dom_1.html)('ol', {
-            class: `${syntax}s`
+            class: plural
           }), el);
           yield* proc(defs, note);
         }
@@ -8394,7 +8396,7 @@ function build(syntax, query, marker, splitter = '') {
     if (note || defs.size > 0) {
       const el = splitters[iSplitters];
       note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1] ? (++iSplitters, el) : target.insertBefore((0, dom_1.html)('ol', {
-        class: `${syntax}s`
+        class: plural
       }), splitters[iSplitters] ?? bottom);
       yield* proc(defs, note);
     }
