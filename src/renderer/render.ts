@@ -5,7 +5,7 @@ import { media } from './render/media';
 import { reduce } from 'spica/memoize';
 import { querySelectorAllWith } from 'typed-dom/query';
 
-const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
+const selector = ':not(.invalid):is(.media:is(img:not([src])[data-src], a > :not(img).media), pre.code, .math)';
 
 const extend = reduce((opts: RenderingOptions): RenderingOptions =>
   ({ code, math, media: {}, ...opts }));
