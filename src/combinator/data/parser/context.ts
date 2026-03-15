@@ -110,6 +110,28 @@ export function recursion(recursion: number, parser: Parser): Parser {
   };
 }
 
+export function recursions<P extends Parser>(recursions: readonly number[], parser: P): P;
+export function recursions(rs: readonly number[], parser: Parser): Parser {
+  assert(rs.every(r => r >= 0));
+  return input => {
+    const { context } = input;
+    const resources = context.resources ?? { clock: 1, recursions: [4] };
+    const { recursions } = resources;
+    assert(recursions.length > 0);
+    for (const recursion of rs) {
+      const rec = min(recursion, recursions.length - 1);
+      if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
+      rec >= 0 && --recursions[rec];
+    }
+    const result = parser(input);
+    for (const recursion of rs) {
+      const rec = min(recursion, recursions.length - 1);
+      rec >= 0 && ++recursions[rec];
+    }
+    return result;
+  };
+}
+
 export function precedence<P extends Parser>(precedence: number, parser: P): P;
 export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> {
   assert(precedence >= 0);

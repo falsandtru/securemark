@@ -1,7 +1,7 @@
 import { AnnotationParser } from '../inline';
 import { State, Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, constraint, surround, open, lazy } from '../../combinator';
+import { union, some, recursions, precedence, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { indexA } from './bracket';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
@@ -10,8 +10,8 @@ import { html, defrag } from 'typed-dom/dom';
 
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
   open('((', beforeNonblank),
-  precedence(1, recursion(Recursion.inline, recursion(Recursion.bracket, recursion(Recursion.bracket,
-  some(union([inline]), ')', [[')', 1]]))))),
+  precedence(1, recursions([Recursion.inline, Recursion.bracket, Recursion.bracket],
+  some(union([inline]), ')', [[')', 1]]))),
   '))',
   false, [],
   ([, ns], context) => {
@@ -25,6 +25,10 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   },
   ([, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
+    if (linebreak === 0 && bs.length === 3 && source[position - range + 2] === '(' && source[position] === ')' && source[position - 1] === ')') {
+      context.position += 1;
+      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head!.next!.value])])]))]);
+    }
     if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object' && bs.head.value.className === 'paren') {
       const { firstChild, lastChild } = bs.head.value;
       assert(firstChild instanceof Text);
@@ -43,10 +47,6 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       }
       context.position += 1;
       return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
-    }
-    if (linebreak === 0 && bs.length === 3 && source[position - range + 2] === '(' && source[position] === ')' && source[position - 1] === ')' && source[position - 2] !== '\\') {
-      context.position += 1;
-      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head!.next!.value])])]))]);
     }
     const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
     if (linebreak === 0 && indexA.test(str)) {
