@@ -113,11 +113,9 @@ function build(
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (splitter) for (
-        let splitter: Element;
-        splitter = splitters[iSplitters],
-        splitter?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
-        ++iSplitters) {
+      if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
+        const pos = splitter?.compareDocumentPosition(ref) ?? 0;
+        if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
         if (splitter.classList.contains(list) && defs.size === 0) {
           assert(splitter.matches(`.${list}`));
@@ -208,7 +206,7 @@ function build(
         : target.insertBefore(html('ol', { class: list }), splitter ?? bottom)));
       assert(defs.size === 0);
     }
-    if (splitter) for (let splitter: Element; splitter = splitters[iSplitters]; ++iSplitters) {
+    if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (splitter.classList.contains(list)) {
         splitter.remove();
