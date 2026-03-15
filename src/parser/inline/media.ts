@@ -114,13 +114,13 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ')')), str(')'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, () => new List()),
   surround(str('['), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ']')), str(']'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, () => new List()),
   surround(str('{'), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), '}')), str('}'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, () => new List()),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(union([unsafehtmlentity, txt]), '"'))), str('"'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, () => new List()),
 ]));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([

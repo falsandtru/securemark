@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
 import { List, Node } from '../../../combinator/data/parser';
-import { union, tails, some, recursion, precedence, state, constraint, verify, focus, rewrite, surround, open, lazy } from '../../../combinator';
+import { union, tails, some, recursion, precedence, state, constraint, focus, rewrite, surround, open, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { parse } from '../link';
 import { unescsource, str } from '../../source';
@@ -11,7 +11,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     /(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y,
     precedence(0, some(union([
       some(unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y),
-      precedence(1, verify(bracket, ns => ns.length > 0)),
+      precedence(1, bracket),
     ]), [[/[^\x21-\x7E]|\$/y, 9]])),
     false,
     [3 | Backtrack.unescapable]),
@@ -42,11 +42,11 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'),
-    true, [3 | Backtrack.unescapable], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'),
-    true, [3 | Backtrack.unescapable], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable]),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, unescsource]), '}')), str('}'),
-    true, [3 | Backtrack.unescapable], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'),
-    true, [3 | Backtrack.unescapable], undefined, () => new List()),
+    true, [3 | Backtrack.unescapable]),
 ]));

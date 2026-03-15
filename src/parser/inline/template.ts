@@ -1,5 +1,5 @@
 import { TemplateParser } from '../inline';
-import { Recursion, Backtrack } from '../context';
+import { Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
@@ -27,17 +27,16 @@ export const template: TemplateParser = lazy(() => surround(
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
   surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'),
-    true, [3 | Backtrack.escapable], undefined, () => new List()),
+    true, [], undefined, ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
   surround(
     str('"'),
     precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
-    true,
-    [3 | Backtrack.escapable],
+    true, [],
     undefined,
     ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
 ]));
