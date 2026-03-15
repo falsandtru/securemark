@@ -119,15 +119,15 @@ function build(
         el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
         ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (!scope && el.parentNode !== target) continue;
-        if (el.tagName === 'OL' && (el.nextElementSibling !== splitters[iSplitters + 1] || defs.size === 0)) {
+        if (el.classList.contains(plural) && defs.size === 0) {
           assert(el.matches(`.${plural}`));
           el.remove();
           continue;
         }
         if (defs.size > 0) {
           total += defs.size;
-          const note = el.tagName === 'OL'
+          assert(el.parentNode);
+          const note = el.classList.contains(plural)
             ? el as HTMLOListElement
             : target.insertBefore(html('ol', { class: plural }), el);
           assert(note.parentNode);
@@ -202,18 +202,15 @@ function build(
           `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      const el = splitters[iSplitters];
-      note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1]
-        ? (++iSplitters, el as HTMLOListElement)
-        : target.insertBefore(html('ol', { class: plural }), splitters[iSplitters] ?? bottom);
-      yield* proc(defs, note);
+      const el = splitters[iSplitters++];
+      yield* proc(defs, note ?? (el?.classList.contains(plural)
+        ? el as HTMLOListElement
+        : target.insertBefore(html('ol', { class: plural }), el ?? bottom)));
       assert(defs.size === 0);
     }
     if (splitter) for (let el: Element; el = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (!scope && el.parentNode !== target) continue;
-      if (el.tagName === 'OL') {
-        assert(el.matches(`.${plural}`));
+      if (el.classList.contains(plural)) {
         el.remove();
       }
     }
