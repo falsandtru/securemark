@@ -1,4 +1,4 @@
-import { note, annotation, reference } from './note';
+import { note } from './note';
 import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom/dom';
 
@@ -8,7 +8,7 @@ describe('Unit: parser/processor/note', () => {
   describe('annotation', () => {
     it('empty', () => {
       const target = parse('');
-      [...annotation(target)];
+      [...note(target)];
       assert.deepStrictEqual(
         [...target.children].map(el => el.outerHTML),
         []);
@@ -17,7 +17,7 @@ describe('Unit: parser/processor/note', () => {
     it('1', () => {
       const target = parse('((a b))');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target)].length, i === 0 ? 2 : 3);
+        assert.deepStrictEqual([...note(target)].length, i === 0 ? 2 : 3);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -39,7 +39,7 @@ describe('Unit: parser/processor/note', () => {
     it('2', () => {
       const target = parse('((1))((12345678901234567890))');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target)].length, i === 0 ? 4 : 6);
+        assert.deepStrictEqual([...note(target)].length, i === 0 ? 4 : 6);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -68,7 +68,7 @@ describe('Unit: parser/processor/note', () => {
     it('unify', () => {
       const target = parse('((1))((2))((3))((2))((4))');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target)];
+        [...note(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -121,7 +121,7 @@ describe('Unit: parser/processor/note', () => {
         '((4))',
       ].join('\n\n')).children);
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target)];
+        [...note(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -202,7 +202,7 @@ describe('Unit: parser/processor/note', () => {
     it('id', () => {
       const target = parse('((a b))');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, undefined, { id: '0' })].length, i === 0 ? 2 : 3);
+        assert.deepStrictEqual([...note(target, undefined, { id: '0' })].length, i === 0 ? 2 : 3);
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -224,7 +224,7 @@ describe('Unit: parser/processor/note', () => {
     it('nest', () => {
       const target = parse('((a((b((c))))))((a))((b))');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target)];
+        [...note(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -282,9 +282,9 @@ describe('Unit: parser/processor/note', () => {
   describe('reference', () => {
     it('1', () => {
       const target = parse('[[a b]]');
-      const note = html('ol');
+      const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...reference(target, note)];
+        [...note(target, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -295,7 +295,7 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          [note.outerHTML],
+          [notes.references.outerHTML],
           [
             html('ol', [
               html('li', { id: 'reference::def:a_b' }, [
@@ -309,9 +309,9 @@ describe('Unit: parser/processor/note', () => {
 
     it('abbr', () => {
       const target = parse('[[^A 1]][[^A 1|b]][[^A 1]]');
-      const note = html('ol');
+      const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...reference(target, note)];
+        [...note(target, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -328,7 +328,7 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          [note.outerHTML],
+          [notes.references.outerHTML],
           [
             html('ol', [
               html('li', { id: 'reference::def:A_1' }, [
@@ -346,10 +346,9 @@ describe('Unit: parser/processor/note', () => {
 
     it('nest', () => {
       const target = parse('((a[[^B]]))[[^B|c]]');
-      const note = html('ol');
+      const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...annotation(target)];
-        [...reference(target, note)];
+        [...note(target, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
@@ -357,7 +356,7 @@ describe('Unit: parser/processor/note', () => {
               html('sup', { class: 'annotation', id: 'annotation::ref:a:1', title: 'a' }, [
                 html('a', { href: '#annotation::def:a:1' }, '*1')
               ]),
-              html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:1', title: 'c' }, [
+              html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:2', title: 'c' }, [
                 html('a', { href: '#reference::def:B' }, '[B]')
               ]),
             ]).outerHTML,
@@ -365,7 +364,7 @@ describe('Unit: parser/processor/note', () => {
               html('li', { id: 'annotation::def:a:1', 'data-marker': '*1' }, [
                 html('span', [
                   'a',
-                  html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:2', title: 'c' }, [
+                  html('sup', { class: 'reference', 'data-abbr': 'B', id: 'reference::ref:B:1', title: 'c' }, [
                     html('a', { href: '#reference::def:B' }, '[B]')
                   ]),
                 ]),
@@ -374,14 +373,14 @@ describe('Unit: parser/processor/note', () => {
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
-          [note.outerHTML],
+          [notes.references.outerHTML],
           [
             html('ol', [
               html('li', { id: 'reference::def:B' }, [
                 html('span', 'c'),
                 html('sup', [
-                  html('a', { href: '#reference::ref:B:1', title: 'c' }, '^1'),
-                  html('a', { href: '#reference::ref:B:2' }, '^2'),
+                  html('a', { href: '#reference::ref:B:1' }, '^1'),
+                  html('a', { href: '#reference::ref:B:2', title: 'c' }, '^2'),
                 ]),
               ]),
             ]).outerHTML,

@@ -12,18 +12,48 @@ export function* note(
   opts: { readonly id?: string; } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  yield* annotation(target, notes?.annotations, opts, bottom);
-  yield* reference(target, notes?.references, opts, bottom);
+  const referenceRefMemory = referenceRefsMemoryCaller(target);
+  const annotationRefMemory = annotationRefsMemoryCaller(target);
+  for (const memory of [referenceRefMemory, annotationRefMemory]) {
+    for (const [ref, { content }] of memory) {
+      ref.replaceChildren(content);
+    }
+    memory.clear();
+  }
+  yield* reference(referenceRefMemory, target, notes?.references, opts, bottom);
+  yield* annotation(annotationRefMemory, target, notes?.annotations, opts, bottom);
 }
 
-export const annotation = build(
+interface RefMemory {
+  readonly content: Element;
+  readonly identifier: string;
+  readonly abbr: string;
+  readonly text: string;
+}
+
+const annotationRefsMemoryCaller = memoize((target: Node) =>
+  new Map<HTMLElement, RefMemory>() ?? target,
+  new WeakMap());
+
+const referenceRefsMemoryCaller = memoize((target: Node) =>
+  new Map<HTMLElement, {
+    readonly content: Element;
+    readonly identifier: string;
+    readonly abbr: string;
+    readonly text: string;
+  }>() ?? target,
+  new WeakMap());
+
+const annotation = build(
   'annotation',
   'annotations',
+  '.annotation:not(:is(.annotations, .references) .annotation, .disabled)',
   n => `*${n}`,
   'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-export const reference = build(
+const reference = build(
   'reference',
   'references',
+  '.reference:not(:is(.annotations, .references) .reference, .disabled)',
   (n, abbr) => `[${abbr || n}]`);
 
 // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
@@ -31,26 +61,19 @@ export const reference = build(
 function build(
   syntax: string,
   plural: string,
+  query: string,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
   splitter &&= `${splitter}, .${plural}`;
-  const refMemoryCaller = memoize((target: Node) =>
-    new Map<HTMLElement, {
-      readonly content: Element;
-      readonly identifier: string;
-      readonly abbr: string;
-      readonly text: string;
-    }>() ?? target,
-    new WeakMap());
   return function* (
+    memory: Map<HTMLElement, RefMemory>,
     target: ParentNode & Node,
     note?: HTMLOListElement,
     opts: { readonly id?: string } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-    const refMemory = refMemoryCaller(target);
     const refInfoCaller = memoize((ref: HTMLElement) => {
       const content = ref.firstElementChild!;
       const abbr = ref.getAttribute('data-abbr') ?? '';
@@ -72,13 +95,9 @@ function build(
         abbr,
         text: txt,
       };
-    }, refMemory);
-    for (const [ref, { content }] of refMemory) {
-      ref.replaceChildren(content);
-    }
-    refMemory.clear();
+    }, memory);
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll<HTMLElement>(`.${syntax}:not(.disabled)`);
+    const refs = target.querySelectorAll<HTMLElement>(query);
     const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
