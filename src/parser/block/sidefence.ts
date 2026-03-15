@@ -1,7 +1,7 @@
 import { SidefenceParser } from '../block';
 import { Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, block, focus, rewrite, convert, lazy, fmap } from '../../combinator';
+import { union, some, recursion, block, focus, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { unwrap, invalid } from '../util';
@@ -18,12 +18,13 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
   ]))));
 
 const opener = /(?=\|\|+(?:$|[ \n]))/y;
+const indent = open(opener, some(contentline, /\|(?:$|[ \n])/y));
 const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \n])))|\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   recursion(Recursion.block, some(union([
-    focus(
-      /(?:\|\|+(?=$|[ \n])[^\n]*(?:$|\n))+/y,
+    rewrite(
+      indent,
       convert(unindent, source, true)),
     rewrite(
       some(contentline, opener),

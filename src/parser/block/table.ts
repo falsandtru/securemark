@@ -14,7 +14,7 @@ import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
-  /\|[^\n]*(?:\n\|[^\n]*){2}/y,
+  /\|[^\n]*\n\|[-:][^\n]*\n\|/y,
   sequence([
     row(some(head), true),
     row(some(align), false),
