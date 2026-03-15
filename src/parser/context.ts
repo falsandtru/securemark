@@ -28,6 +28,7 @@ export class Context extends Ctx {
   public override segment: Segment;
   public buffer: List<Node<(string | HTMLElement)>>;
   public sequential: boolean;
+  public recursion = new RecursionCounter(5);
   public readonly header: boolean;
   public readonly host?: URL;
   public readonly url?: URL;
@@ -39,6 +40,20 @@ export class Context extends Ctx {
   };
 }
 export type Options = Partial<Context>;
+
+class RecursionCounter {
+  constructor(private readonly limit: number) {
+  }
+  private readonly stack: number[] = [];
+  private index = 0;
+  public add(depth: number): void {
+    const { stack } = this
+    for (; this.index > 0 && stack[this.index - 1] <= depth; --this.index);
+    if (this.index === this.limit) throw new Error('Too much recursion');
+    stack[this.index] = depth;
+    ++this.index;
+  }
+}
 
 export const enum Segment {
   unknown = 0,
@@ -74,6 +89,7 @@ export const enum Recursion {
   blockquote,
   listitem,
   inline,
+  annotation,
   bracket,
   terminal,
 }

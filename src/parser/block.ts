@@ -53,6 +53,7 @@ export const block: BlockParser = reset(
         20 || Recursion.blockquote,
         40 || Recursion.listitem,
         20 || Recursion.inline,
+        20 || Recursion.annotation,
         20 || Recursion.bracket,
         20 || Recursion.terminal,
       ],

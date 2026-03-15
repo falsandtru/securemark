@@ -323,6 +323,42 @@ describe('Unit: parser/api/parse', () => {
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
           `<pre class="error" translate="no">${'['.repeat(21)}0</pre>`,
         ]);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}!${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(6)}!${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`(${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`(${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`(${'(('.repeat(5)}!${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`(${'(('.repeat(6)}!${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(9)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(9)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
     });
 
     it('recovery', () => {

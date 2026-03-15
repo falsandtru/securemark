@@ -177,7 +177,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser, input('[[![]{a}]{a}]{a}', new Context())), [['<a class="link" href="a">[![]{a}]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[![]{a}]{a}]{b}', new Context())), [['<a class="link" href="b">[![]{a}]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[![]{a}]{b}]{b}', new Context())), [['<a class="link" href="b">[![]{a}]{b}</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[((a))]{b}', new Context())), [['<a class="link" href="b"><span class="bracket">((a))</span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[((a))]{b}', new Context())), [['<a class="link" href="b"><span class="bracket">(<span class="paren">(a)</span>)</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[[a]]]{b}', new Context())), [['<a class="link" href="b">[[a]]</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#a]{b}', new Context())), [['<a class="link" href="b">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[@a]{b}', new Context())), [['<a class="link" href="b">@a</a>'], '']);

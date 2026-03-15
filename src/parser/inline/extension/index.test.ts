@@ -72,7 +72,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser, input('[#!http://host]', new Context())), [['<a class="index" href="#index::!http://host">!http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#[%  %]]', new Context())), [['<a class="index"><span class="remark"><input type="checkbox"><span>[% %]</span></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#[% a %]]', new Context())), [['<a class="index"><span class="remark"><input type="checkbox"><span>[% a %]</span></span></a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[#a((b))]', new Context())), [['<a class="index" href="#index::a((b))">a<span class="bracket">((b))</span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[#a((b))]', new Context())), [['<a class="index" href="#index::a((b))">a<span class="bracket">(<span class="paren">(b)</span>)</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#a[[b]]]', new Context())), [['<a class="index" href="#index::a[[b]]">a[[b]]</a>'], '']);
     });
 

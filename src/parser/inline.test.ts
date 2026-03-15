@@ -20,7 +20,7 @@ describe('Unit: parser/inline', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser, input('あ（Ａ）', new Context())), [['あ', '（', 'Ａ', '）'], '']);
+      assert.deepStrictEqual(inspect(parser, input('あ（Ａ）', new Context())), [['あ', '<span class="paren">（Ａ）</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('あ（い）', new Context())), [['あ', '<span class="bracket">（い）</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('* a*', new Context())), [['* a', '*'], '']);
       assert.deepStrictEqual(inspect(parser, input('** a**', new Context())), [['**', ' a', '**'], '']);
@@ -106,9 +106,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('[[#a]]', new Context())), [['<sup class="reference"><span><a class="hashtag" href="/hashtags/a">#a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[$-1]]', new Context())), [['<sup class="reference"><span><a class="label" data-label="$-1">$-1</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[#-1]]{b}', new Context())), [['<sup class="reference"><span>#-1</span></sup>', '<a class="url" href="b">b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[[#-1]](b)', new Context())), [['<sup class="reference"><span>#-1</span></sup>', '(', 'b', ')'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[[#-1]](b)', new Context())), [['<sup class="reference"><span>#-1</span></sup>', '<span class="paren">(b)</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[#-1]a]{b}', new Context())), [['<a class="link" href="b">[#-1]a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[[#-1]a](b)', new Context())), [['[', '<a class="index" href="#index::-1">-1</a>', 'a', ']', '(', 'b', ')'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[[#-1]a](b)', new Context())), [['[', '<a class="index" href="#index::-1">-1</a>', 'a', ']', '<span class="paren">(b)</span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#a]{b}', new Context())), [['<a class="index" href="#index::a">a</a>', '<a class="url" href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[@a]{b}', new Context())), [['<a class="link" href="b">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[http://host]{http://evil}', new Context())), [['<a class="invalid">http://host</a>'], '']);
