@@ -110,7 +110,7 @@ export function signature(target: Element | DocumentFragment): string {
   assert(!target.parentNode);
   assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))') || target.nodeName === 'MARK');
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol, .label[data-label]'),
-           len = es.length, i = 0; i < len; ++i) {
+           i = es.length; i--;) {
     const el = es[i];
     switch (el.className) {
       case 'math':
@@ -119,10 +119,15 @@ export function signature(target: Element | DocumentFragment): string {
       case 'label':
         el.replaceWith(`[$${el.getAttribute('data-label')!.replace('$', '')}]`);
         continue;
+      case 'annotation':
+        el.replaceWith(`((${el.textContent}))`);
+        continue;
+      case 'reference':
+        const abbr = el.getAttribute('data-abbr');
+        el.replaceWith(`[[${abbr ? `^${abbr}` : el.textContent}]]`);
+        continue;
       case 'checkbox':
       case 'remark':
-      case 'annotation':
-      case 'reference':
         el.remove();
         continue;
     }
@@ -149,16 +154,21 @@ export function text(target: Element | DocumentFragment): string {
   assert(!target.parentNode);
   assert(!target.querySelector('br:not(:has(+ :is(ul, ol)))'));
   for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol'),
-           len = es.length, i = 0; i < len; ++i) {
+           i = es.length; i--;) {
     const el = es[i];
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src')!);
         continue;
+      case 'annotation':
+        el.replaceWith(`((${el.textContent}))`);
+        continue;
+      case 'reference':
+        const abbr = el.getAttribute('data-abbr');
+        el.replaceWith(`[[${abbr ? `^${abbr}` : el.textContent}]]`);
+        continue;
       case 'checkbox':
       case 'remark':
-      case 'annotation':
-      case 'reference':
         el.remove();
         continue;
     }

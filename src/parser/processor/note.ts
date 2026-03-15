@@ -56,8 +56,6 @@ const reference = build(
   '.reference:not(:is(.annotations, .references) .reference, .disabled)',
   (n, abbr) => `[${abbr || n}]`);
 
-// Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
-// 構文ごとに各1回の処理では不可能
 function build(
   syntax: string,
   list: string,
