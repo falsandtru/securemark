@@ -49,7 +49,7 @@ export const block: BlockParser = reset(
       // バックトラックのせいで文字数制限を受けないようにする。
       clock: MAX_SEGMENT_SIZE * 6 + 1,
       recursions: [
-        10 || Recursion.block,
+        5 || Recursion.block,
         20 || Recursion.blockquote,
         40 || Recursion.listitem,
         20 || Recursion.inline,
