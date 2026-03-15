@@ -101,11 +101,11 @@ export function recursion(recursion: number, parser: Parser): Parser {
     const resources = context.resources ?? { clock: 1, recursions: [1] };
     const { recursions } = resources;
     assert(recursions.length > 0);
-    const rec = min(recursion, recursions.length);
-    if (rec > 0 && recursions[rec - 1] < 1) throw new Error('Too much recursion');
-    rec > 0 && --recursions[rec - 1];
+    const rec = min(recursion, recursions.length - 1);
+    if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
+    rec >= 0 && --recursions[rec];
     const result = parser(input);
-    rec > 0 && ++recursions[rec - 1];
+    rec >= 0 && ++recursions[rec];
     return result;
   };
 }

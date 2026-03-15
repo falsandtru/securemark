@@ -70,8 +70,7 @@ export const enum State {
 }
 
 export const enum Recursion {
-  //ignore,
-  block = 1,
+  block,
   blockquote,
   listitem,
   inline,
