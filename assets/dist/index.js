@@ -7129,7 +7129,7 @@ function baseR(n, r) {
   return acc;
 }
 function signature(target) {
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol, .label[data-label]'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol, .label[data-label]'), i = es.length; i--;) {
     const el = es[i];
     switch (el.className) {
       case 'math':
@@ -7138,10 +7138,15 @@ function signature(target) {
       case 'label':
         el.replaceWith(`[$${el.getAttribute('data-label').replace('$', '')}]`);
         continue;
+      case 'annotation':
+        el.replaceWith(`((${el.textContent}))`);
+        continue;
+      case 'reference':
+        const abbr = el.getAttribute('data-abbr');
+        el.replaceWith(`[[${abbr ? `^${abbr}` : el.textContent}]]`);
+        continue;
       case 'checkbox':
       case 'remark':
-      case 'annotation':
-      case 'reference':
         el.remove();
         continue;
     }
@@ -7165,16 +7170,21 @@ function signature(target) {
 }
 exports.signature = signature;
 function text(target) {
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol'), len = es.length, i = 0; i < len; ++i) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], .remark, rt, rp, br, .annotation, .reference, :is(.annotation, .reference) > a, .checkbox, ul, ol'), i = es.length; i--;) {
     const el = es[i];
     switch (el.className) {
       case 'math':
         el.replaceWith(el.getAttribute('data-src'));
         continue;
+      case 'annotation':
+        el.replaceWith(`((${el.textContent}))`);
+        continue;
+      case 'reference':
+        const abbr = el.getAttribute('data-abbr');
+        el.replaceWith(`[[${abbr ? `^${abbr}` : el.textContent}]]`);
+        continue;
       case 'checkbox':
       case 'remark':
-      case 'annotation':
-      case 'reference':
         el.remove();
         continue;
     }
@@ -8271,25 +8281,33 @@ function capitalize(label) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.reference = exports.annotation = exports.note = void 0;
+exports.note = void 0;
 const indexee_1 = __webpack_require__(7610);
 const util_1 = __webpack_require__(4992);
 const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
 function* note(target, notes, opts = {}, bottom = null) {
-  yield* (0, exports.annotation)(target, notes?.annotations, opts, bottom);
-  yield* (0, exports.reference)(target, notes?.references, opts, bottom);
+  const referenceRefMemory = referenceRefsMemoryCaller(target);
+  const annotationRefMemory = annotationRefsMemoryCaller(target);
+  for (const memory of [referenceRefMemory, annotationRefMemory]) {
+    for (const [ref, {
+      content
+    }] of memory) {
+      ref.replaceChildren(content);
+    }
+    memory.clear();
+  }
+  yield* reference(referenceRefMemory, target, notes?.references, opts, bottom);
+  yield* annotation(annotationRefMemory, target, notes?.annotations, opts, bottom);
 }
 exports.note = note;
-exports.annotation = build('annotation', 'annotations', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-exports.reference = build('reference', 'references', (n, abbr) => `[${abbr || n}]`);
-// Referenceを含むAnnotationの重複排除は両構文が互いに処理済みであることを必要とするため
-// 構文ごとに各1回の処理では不可能
-function build(syntax, plural, marker, splitter = '') {
-  splitter &&= `${splitter}, .${plural}`;
-  const refMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
-  return function* (target, note, opts = {}, bottom = null) {
-    const refMemory = refMemoryCaller(target);
+const annotationRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
+const referenceRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
+const annotation = build('annotation', 'annotations', '.annotation:not(:is(.annotations, .references) .annotation, .disabled)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+const reference = build('reference', 'references', '.reference:not(:is(.annotations, .references) .reference, .disabled)', (n, abbr) => `[${abbr || n}]`);
+function build(syntax, list, query, marker, splitter = '') {
+  splitter &&= `${splitter}, .${list}`;
+  return function* (memory, target, note, opts = {}, bottom = null) {
     const refInfoCaller = (0, memoize_1.memoize)(ref => {
       const content = ref.firstElementChild;
       const abbr = ref.getAttribute('data-abbr') ?? '';
@@ -8302,15 +8320,9 @@ function build(syntax, plural, marker, splitter = '') {
         abbr,
         text: txt
       };
-    }, refMemory);
-    for (const [ref, {
-      content
-    }] of refMemory) {
-      ref.replaceChildren(content);
-    }
-    refMemory.clear();
+    }, memory);
     const defs = new Map();
-    const refs = target.querySelectorAll(`.${syntax}:not(.disabled)`);
+    const refs = target.querySelectorAll(query);
     const identifierInfoCaller = (0, memoize_1.memoize)(identifier => ({
       defIndex: 0,
       defSubindex: 0,
@@ -8326,18 +8338,19 @@ function build(syntax, plural, marker, splitter = '') {
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
-      if (splitter) for (let el; el = splitters[iSplitters], el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING; ++iSplitters) {
+      if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
+        const pos = splitter?.compareDocumentPosition(ref) ?? 0;
+        if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (!scope && el.parentNode !== target) continue;
-        if (el.tagName === 'OL' && (el.nextElementSibling !== splitters[iSplitters + 1] || defs.size === 0)) {
-          el.remove();
+        if (splitter.classList.contains(list) && defs.size === 0) {
+          splitter.remove();
           continue;
         }
         if (defs.size > 0) {
           total += defs.size;
-          const note = el.tagName === 'OL' ? el : target.insertBefore((0, dom_1.html)('ol', {
-            class: plural
-          }), el);
+          const note = splitter.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
+            class: list
+          }), splitter);
           yield* proc(defs, note);
         }
       }
@@ -8399,17 +8412,15 @@ function build(syntax, plural, marker, splitter = '') {
       }, `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      const el = splitters[iSplitters];
-      note ??= el?.tagName === 'OL' && el.nextElementSibling == splitters[iSplitters + 1] ? (++iSplitters, el) : target.insertBefore((0, dom_1.html)('ol', {
-        class: plural
-      }), splitters[iSplitters] ?? bottom);
-      yield* proc(defs, note);
+      const splitter = splitters[iSplitters++];
+      yield* proc(defs, note ?? (splitter?.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
+        class: list
+      }), splitter ?? bottom)));
     }
-    if (splitter) for (let el; el = splitters[iSplitters]; ++iSplitters) {
+    if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (!scope && el.parentNode !== target) continue;
-      if (el.tagName === 'OL') {
-        el.remove();
+      if (splitter.classList.contains(list)) {
+        splitter.remove();
       }
     }
   };
@@ -9345,7 +9356,7 @@ const math_1 = __webpack_require__(3165);
 const media_1 = __webpack_require__(3567);
 const memoize_1 = __webpack_require__(6925);
 const query_1 = __webpack_require__(2282);
-const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
+const selector = ':not(.invalid):is(.media:is(img:not([src])[data-src], a > :not(img).media), pre.code, .math)';
 const extend = (0, memoize_1.reduce)(opts => ({
   code: code_1.code,
   math: math_1.math,
