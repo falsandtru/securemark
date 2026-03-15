@@ -1329,7 +1329,6 @@
   }, {
     rootMargin: '100px',
   });
-  let revision = 0;
   (async () => {
     await new Promise(requestAnimationFrame);
     log(await display(4));
@@ -1338,7 +1337,6 @@
     function run() {
       clearTimeout(timer);
       timer = setTimeout(async function () {
-        ++revision;
         log(await display(1));
         //nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
         nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
@@ -1349,7 +1347,6 @@
   async function display(rate) {
     const { Date } = global;
     const text = editor.getValue();
-    const rev = revision;
     const stats = [text.length, 0, 0];
     const start = Date.now();
     let index = 1;
@@ -1385,7 +1382,6 @@
       }
       else {
         await new Promise(requestAnimationFrame);
-        if (revision !== rev) throw new Error('Cancel.');
         if (scroll !== window.scrollY) {
           resource = 200;
           scroll = window.scrollY;
