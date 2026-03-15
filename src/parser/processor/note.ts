@@ -114,22 +114,22 @@ function build(
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       if (splitter) for (
-        let el: Element;
-        el = splitters[iSplitters],
-        el?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
+        let splitter: Element;
+        splitter = splitters[iSplitters],
+        splitter?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
         ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (el.classList.contains(plural) && defs.size === 0) {
-          assert(el.matches(`.${plural}`));
-          el.remove();
+        if (splitter.classList.contains(plural) && defs.size === 0) {
+          assert(splitter.matches(`.${plural}`));
+          splitter.remove();
           continue;
         }
         if (defs.size > 0) {
           total += defs.size;
-          assert(el.parentNode);
-          const note = el.classList.contains(plural)
-            ? el as HTMLOListElement
-            : target.insertBefore(html('ol', { class: plural }), el);
+          assert(splitter.parentNode);
+          const note = splitter.classList.contains(plural)
+            ? splitter as HTMLOListElement
+            : target.insertBefore(html('ol', { class: plural }), splitter);
           assert(note.parentNode);
           yield* proc(defs, note);
           assert(defs.size === 0);
@@ -202,16 +202,16 @@ function build(
           `^${++refIndex}`));
     }
     if (note || defs.size > 0) {
-      const el = splitters[iSplitters++];
-      yield* proc(defs, note ?? (el?.classList.contains(plural)
-        ? el as HTMLOListElement
-        : target.insertBefore(html('ol', { class: plural }), el ?? bottom)));
+      const splitter = splitters[iSplitters++];
+      yield* proc(defs, note ?? (splitter?.classList.contains(plural)
+        ? splitter as HTMLOListElement
+        : target.insertBefore(html('ol', { class: plural }), splitter ?? bottom)));
       assert(defs.size === 0);
     }
-    if (splitter) for (let el: Element; el = splitters[iSplitters]; ++iSplitters) {
+    if (splitter) for (let splitter: Element; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (el.classList.contains(plural)) {
-        el.remove();
+      if (splitter.classList.contains(plural)) {
+        splitter.remove();
       }
     }
   }
