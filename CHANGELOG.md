@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.297.4
+
+- Refactoring.
+
 ## 0.297.3
 
 - Fix note processing.
