@@ -60,13 +60,13 @@ const reference = build(
 // 構文ごとに各1回の処理では不可能
 function build(
   syntax: string,
-  plural: string,
+  list: string,
   query: string,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
   assert(syntax.match(/^[a-z]+$/));
-  splitter &&= `${splitter}, .${plural}`;
+  splitter &&= `${splitter}, .${list}`;
   return function* (
     memory: Map<HTMLElement, RefMemory>,
     target: ParentNode & Node,
@@ -119,17 +119,17 @@ function build(
         splitter?.compareDocumentPosition(ref) & Node.DOCUMENT_POSITION_FOLLOWING;
         ++iSplitters) {
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (splitter.classList.contains(plural) && defs.size === 0) {
-          assert(splitter.matches(`.${plural}`));
+        if (splitter.classList.contains(list) && defs.size === 0) {
+          assert(splitter.matches(`.${list}`));
           splitter.remove();
           continue;
         }
         if (defs.size > 0) {
           total += defs.size;
           assert(splitter.parentNode);
-          const note = splitter.classList.contains(plural)
+          const note = splitter.classList.contains(list)
             ? splitter as HTMLOListElement
-            : target.insertBefore(html('ol', { class: plural }), splitter);
+            : target.insertBefore(html('ol', { class: list }), splitter);
           assert(note.parentNode);
           yield* proc(defs, note);
           assert(defs.size === 0);
@@ -203,14 +203,14 @@ function build(
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
-      yield* proc(defs, note ?? (splitter?.classList.contains(plural)
+      yield* proc(defs, note ?? (splitter?.classList.contains(list)
         ? splitter as HTMLOListElement
-        : target.insertBefore(html('ol', { class: plural }), splitter ?? bottom)));
+        : target.insertBefore(html('ol', { class: list }), splitter ?? bottom)));
       assert(defs.size === 0);
     }
     if (splitter) for (let splitter: Element; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
-      if (splitter.classList.contains(plural)) {
+      if (splitter.classList.contains(list)) {
         splitter.remove();
       }
     }
