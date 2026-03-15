@@ -307,7 +307,7 @@ describe('Unit: parser/api/parse', () => {
       //  ]);
       assert.deepStrictEqual(
         [...parse(`${'('.repeat(20)}0`).children].map(el => el.outerHTML),
-        [`<p>${'<span class="paren">('.repeat(19)}(0${'</span>'.repeat(19)}</p>`]);
+        [`<p>${'<span class="bracket">('.repeat(19)}(0${'</span>'.repeat(19)}</p>`]);
       assert.deepStrictEqual(
         [...parse(`${'('.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [

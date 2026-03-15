@@ -48,8 +48,8 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser, input('**a*b*c**', new Context())), [['<strong>a<em>b</em>c</strong>'], '']);
       assert.deepStrictEqual(inspect(parser, input('**a*b*c**d', new Context())), [['<strong>a<em>b</em>c</strong>'], 'd']);
       assert.deepStrictEqual(inspect(parser, input('**`a`**', new Context())), [['<strong><code data-src="`a`">a</code></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('**(*a*)**', new Context())), [['<strong><span class="paren">(<em>a</em>)</span></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('**(**a**)**', new Context())), [['<strong><span class="paren">(<strong>a</strong>)</span></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('**(*a*)**', new Context())), [['<strong><span class="bracket">(<em>a</em>)</span></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('**(**a**)**', new Context())), [['<strong><span class="bracket">(<strong>a</strong>)</span></strong>'], '']);
     });
 
   });

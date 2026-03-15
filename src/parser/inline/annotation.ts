@@ -21,15 +21,15 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     }
     ns.unshift(new Node('('));
     ns.push(new Node(')'));
-    return new List([new Node(html('span', { class: 'paren' }, ['(', html('span', { class: 'paren' }, defrag(unwrap(ns))), ')']))]);
+    return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))]);
   },
   ([, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
     if (linebreak === 0 && bs.length === 3 && source[position - range + 2] === '(' && source[position] === ')' && source[position - 1] === ')') {
       context.position += 1;
-      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head!.next!.value])])]))]);
+      return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head!.next!.value])])]))]);
     }
-    if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object' && bs.head.value.className === 'paren') {
+    if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object' && bs.head.value.className === 'bracket') {
       const { firstChild, lastChild } = bs.head.value;
       assert(firstChild instanceof Text);
       if (firstChild!.nodeValue!.length === 1) {
@@ -46,12 +46,12 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         lastChild!.nodeValue = lastChild!.nodeValue!.slice(0, -1);
       }
       context.position += 1;
-      return new List([new Node(html('span', { class: 'paren' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
+      return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
     }
     const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
     if (linebreak === 0 && indexA.test(str)) {
-      return new List([new Node(html('span', { class: 'paren' }, ['((' + str]))]);
+      return new List([new Node(html('span', { class: 'bracket' }, ['((' + str]))]);
     }
     bs.unshift(new Node('('));
-    return new List([new Node(html('span', { class: 'paren' }, ['(', html('span', { class: 'paren' }, defrag(unwrap(bs)))]))]);
+    return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(bs)))]))]);
   })));
