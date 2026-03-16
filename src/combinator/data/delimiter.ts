@@ -133,7 +133,7 @@ export class Delimiters {
     }
   }
   public match(input: Input): boolean {
-    const { precedence } = input.context;
+    const { precedence } = input;
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
@@ -160,7 +160,7 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
     case 'string':
       if (pattern === '') return () => new List([new Node(pattern)]);
       return input => {
-        const { context } = input;
+        const context = input;
         const { source, position } = context;
         if (!source.startsWith(pattern, position)) return;
         if (advance) {
@@ -174,7 +174,7 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
     case 'object':
       assert(pattern.sticky);
       return input => {
-        const { context } = input;
+        const context = input;
         const { source, position } = context;
         pattern.lastIndex = position;
         if (!pattern.test(source)) return;
@@ -200,7 +200,7 @@ export function tester(pattern: string | RegExp, advance: boolean, after?: Parse
     case 'string':
       if (pattern === '') return () => new List();
       return input => {
-        const { context } = input;
+        const context = input;
         const { source, position } = context;
         if (!source.startsWith(pattern, position)) return;
         if (advance) {
@@ -212,7 +212,7 @@ export function tester(pattern: string | RegExp, advance: boolean, after?: Parse
     case 'object':
       assert(pattern.sticky);
       return input => {
-        const { context } = input;
+        const context = input;
         const { source, position } = context;
         pattern.lastIndex = position;
         if (!pattern.test(source)) return;

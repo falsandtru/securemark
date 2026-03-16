@@ -6,7 +6,7 @@ import { push } from 'spica/array';
 export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
   assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     opener.lastIndex = position;

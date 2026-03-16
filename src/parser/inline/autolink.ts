@@ -12,7 +12,7 @@ import { isAlphanumeric } from '../source/text';
 export const autolink: AutolinkParser = lazy(() =>
   state(~State.autolink,
   input => {
-    const { context: { source, position } } = input;
+    const { source, position } = input;
     if (position === source.length) return;
     const fst = source[position];
     switch (fst) {

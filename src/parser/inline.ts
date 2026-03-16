@@ -52,7 +52,7 @@ const stars = strs('*');
 
 export const inline: InlineParser = lazy(() => union([
   input => {
-    const { context: { source, position } } = input;
+    const { source, position } = input;
     if (position === source.length) return;
     switch (source[position]) {
       case '(':

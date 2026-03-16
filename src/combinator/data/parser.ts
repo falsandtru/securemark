@@ -12,9 +12,7 @@ export namespace Parser {
   type ExtractSubNode<D extends Parser[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
   type ExtractSubParser<D extends Parser[]> = D extends (infer P)[] ? P extends Parser ? P : never : never;
 }
-export interface Input<C extends Context = Context> {
-  readonly context: C;
-}
+export type Input<C extends Context = Context> = C;
 export type Result<N, C extends Context = Context, D extends Parser<unknown, C>[] = any>
   = List<Node<N>, C, D>
   | undefined;
@@ -114,28 +112,24 @@ export const enum Segment {
 export function input<C extends Context>(source: string, context: C): Input<C> {
   context.source = source;
   context.position = 0;
-  return {
-    context,
-  };
+  return context;
 }
 
 export function subinput<C extends Context>(source: string, context: C): Input<C> {
   return {
-    context: {
-      ...context,
-      source,
-      position: 0,
-      offset: 0,
-      backtracks: {},
-    }
+    ...context,
+    source,
+    position: 0,
+    offset: 0,
+    backtracks: {},
   };
 }
 
 export function failsafe<P extends Parser>(parser: P): P;
 export function failsafe<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
-  return input => {
-    const position = input.context.position;
-    return parser(input) ?? (input.context.position = position, undefined);
+  return context => {
+    const position = context.position;
+    return parser(context) ?? (context.position = position, undefined);
   };
 }

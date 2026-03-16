@@ -34,8 +34,8 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   ]))));
 
 export const ilistitem = rewrite(
-  inits([contentline, indent<Parser<string>>(({ context: { source } }) => new List([new Node(source)]))]),
-  ({ context: { source } }) => new List([
+  inits([contentline, indent<Parser<string>>(({ source }) => new List([new Node(source)]))]),
+  ({ source }) => new List([
     new Node(''),
     new Node(html('span', {
       class: 'invalid',

@@ -28,7 +28,7 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
     precedence,
   }));
   return input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     //assert(context.backtracks ??= {});
     let nodes: List<Node<N>> | undefined;

@@ -7,7 +7,7 @@ export function bind<U, P extends Parser>(parser: P, f: (nodes: List<Node<Parser
 export function bind<N, U>(parser: Parser<N>, f: (nodes: List<Node<N>>, context: Context) => Result<U>): Parser<U> {
   assert(parser);
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     const result = parser(input);

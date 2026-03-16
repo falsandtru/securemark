@@ -11,7 +11,7 @@ import { html, defrag } from 'typed-dom/dom';
 export const segment: HeadingParser.SegmentParser = block(focus(
   /#+ +\S[^\n]*(?:\n#+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
   input => {
-    const { context } = input;
+    const context = input;
     const { source, range } = context;
     const acc = new List<Node<string>>();
     for (const len = context.position + range; context.position < len;) {

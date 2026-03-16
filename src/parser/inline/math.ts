@@ -26,7 +26,7 @@ export const math: MathParser = lazy(() => rewrite(
       false,
       [3 | Backtrack.escapable]),
   ]),
-  ({ context: { source, caches: { math: cache } = {} } }) => new List([
+  ({ source, caches: { math: cache } = {} }) => new List([
     new Node(cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)

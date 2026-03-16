@@ -15,7 +15,7 @@ export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
 const parser: SegmentParser = union([
   some(emptysegment, MAX_SEGMENT_SIZE + 1),
   input => {
-    const { context: { source, position } } = input;
+    const { source, position } = input;
     if (position === source.length) return;
     switch (source[position]) {
       case '`':
@@ -42,7 +42,7 @@ export function* segment(source: string): Generator<readonly [string, Segment], 
   assert(source.length < Number.MAX_SAFE_INTEGER);
   for (let position = 0; position < source.length;) {
     const context = new Context({ source, position });
-    const result = parser({ context })!;
+    const result = parser(context)!;
     assert(result);
     assert(context.position > position);
     const segs = result.length > 0

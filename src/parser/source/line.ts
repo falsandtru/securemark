@@ -3,7 +3,7 @@ import { Segment } from '../context';
 import { List } from '../../combinator/data/parser';
 
 export const anyline: AnyLineParser = input => {
-  const { context } = input;
+  const context = input;
   const { source, position } = context;
   if (position === source.length) return;
   context.position = source.indexOf('\n', position) + 1 || source.length;
@@ -12,7 +12,7 @@ export const anyline: AnyLineParser = input => {
 
 const regEmptyline = /[^\S\n]*(?:$|\n)/y;
 export const emptyline: EmptyLineParser = input => {
-  const { context } = input;
+  const context = input;
   const { source, position } = context;
   if (position === source.length) return;
   const i = eoel(source, position);
@@ -21,7 +21,7 @@ export const emptyline: EmptyLineParser = input => {
   return new List();
 };
 export const emptysegment: EmptySegmentParser = input => {
-  const { context } = input;
+  const context = input;
   const { source, position, segment } = context;
   if (position === source.length) return;
   if (segment & Segment.write) {
@@ -44,7 +44,7 @@ function eoel(source: string, position: number): number {
 
 const regContentline = /[^\S\n]*\S[^\n]*(?:$|\n)/y;
 export const contentline: ContentLineParser = input => {
-  const { context } = input;
+  const context = input;
   const { source, position } = context;
   if (position === source.length) return;
   if (source[position] === '\n') return;

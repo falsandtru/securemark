@@ -91,7 +91,7 @@ export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Pa
 function trimBlankStart<P extends Parser>(parser: P): P;
 function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     const reg = blank.start;

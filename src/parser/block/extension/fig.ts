@@ -32,7 +32,7 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
     const fence = (/^[^\n]*\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/gm) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     const { position } = context;
-    const result = parser({ context });
+    const result = parser(context);
     context.position = position;
     context.segment = Segment.figure | Segment.write;
     return result

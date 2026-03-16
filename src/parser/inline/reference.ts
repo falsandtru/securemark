@@ -45,7 +45,7 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       assert(~context.state & State.link);
       context.position += 1;
       assert(!isBacktrack(context, 1 | Backtrack.link));
-      if (!textlink({ context })) {
+      if (!textlink(context)) {
         setBacktrack(context, 2 | Backtrack.link, head + 1);
       }
       context.position = position;

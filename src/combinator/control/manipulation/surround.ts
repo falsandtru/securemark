@@ -84,7 +84,7 @@ export function surround<N>(
   assert(closer);
   const [blen, rbs, wbs] = reduce(backtracks);
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     const { linebreak } = context;

@@ -27,7 +27,7 @@ export function repeat<N extends HTMLElement | string>(symbol: string, after: st
 }): Parser<string | N, Context> {
   const test = tester(after, false);
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (!source.startsWith(symbol, context.position)) return;
     let nodes = new List<Node<N>>();

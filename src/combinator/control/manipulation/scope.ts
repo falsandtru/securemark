@@ -5,16 +5,15 @@ export function focus<P extends Parser>(scope: string | RegExp, parser: P, slice
 export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true): Parser<N> {
   assert(parser);
   const match = matcher(scope, false);
-  return failsafe(arg => {
-    const { context } = arg;
+  return failsafe(context => {
     const { source, position } = context;
     if (position === source.length) return;
-    const src = match({ context })?.head?.value ?? '';
+    const src = match(context)?.head?.value ?? '';
     assert(source.startsWith(src, position));
     if (src === '') return;
     const range = context.range = src.length;
     if (!slice) {
-      const result = parser(arg);
+      const result = parser(context);
       context.position += result && context.position === position ? range : 0;
       return result;
     }
@@ -33,17 +32,16 @@ export function rewrite<P extends Parser>(scope: Parser<unknown, Parser.Context<
 export function rewrite<N>(scope: Parser, parser: Parser<N>, slice = true): Parser<N> {
   assert(scope);
   assert(parser);
-  return failsafe(arg => {
-    const { context } = arg;
+  return failsafe(context => {
     const { source, position } = context;
     if (position === source.length) return;
-    const res1 = scope({ context });
+    const res1 = scope(context);
     assert(context.position > position || !res1);
     if (res1 === undefined || context.position < position) return;
     const range = context.range = context.position - position;
     if (!slice) {
       context.position = position;
-      const res2 = parser(arg);
+      const res2 = parser(context);
       context.position += res2 && context.position === position ? range : 0;
       return res2;
     }

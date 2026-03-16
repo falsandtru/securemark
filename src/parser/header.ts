@@ -11,7 +11,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   inits([
     block(
       union([
-        validate(({ context }) => context.header,
+        validate(context => context.header,
         focus(/(---+)[^\S\n]*\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\n]*\n){1,100}\1[^\S\n]*(?:$|\n)/yi,
         convert(source =>
           normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))),
@@ -24,7 +24,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
                   defrag(unwrap(ns.unshift(new Node(html('summary', 'Header'))) && ns))),
               ])),
             ]))))),
-        ({ context }) => {
+        context => {
           const { source, position } = context;
           context.position += source.length;
           return new List([
@@ -39,7 +39,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
     clear(str(/[^\S\n]*\n/y)),
   ])));
 
-const field: MarkdownParser.HeaderParser.FieldParser = line(({ context: { source, position } }) => {
+const field: MarkdownParser.HeaderParser.FieldParser = line(({ source, position }) => {
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
   return new List([

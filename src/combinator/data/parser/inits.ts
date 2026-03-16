@@ -5,7 +5,7 @@ export function inits<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, 
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return input => {
-    const { context } = input;
+    const context = input;
     const { source } = context;
     let nodes: List<Node<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {

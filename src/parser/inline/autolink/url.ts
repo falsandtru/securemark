@@ -16,7 +16,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     false,
     [3 | Backtrack.unescapable]),
   union([
-    constraint(State.autolink, state(State.autolink, ({ context }) =>
+    constraint(State.autolink, state(State.autolink, context =>
       new List([new Node(parse(new List(), new List([new Node(context.source)]), context))]))),
     open(str(/[^:]+/y), some(inline)),
   ])));
@@ -26,7 +26,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
   tails([
     str('!'),
     union([
-      constraint(State.autolink, state(State.autolink, ({ context }) => {
+      constraint(State.autolink, state(State.autolink, context => {
         const { source, position } = context;
         context.position -= source[0] === '!' ? 1 : 0;
         return new List([

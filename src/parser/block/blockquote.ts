@@ -39,7 +39,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
       convert(unindent, markdown, true)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, ({ context }) => {
+      convert(unindent, context => {
         consume(10, context);
         const { source } = context;
         const references = html('ol', { class: 'references' });

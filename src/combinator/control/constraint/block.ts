@@ -5,7 +5,7 @@ export function block<P extends Parser>(parser: P, separation?: boolean, segment
 export function block<N>(parser: Parser<N>, separation = true, segment = 0): Parser<N> {
   assert(parser);
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     if (segment !== 0 && context.segment & Segment.write) {

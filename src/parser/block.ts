@@ -63,7 +63,7 @@ export const block: BlockParser = reset(
   error(union([
     emptysegment,
     input => {
-      const { context: { source, position, segment } } = input;
+      const { source, position, segment } = input;
       if (position === source.length) return;
       switch (segment ^ Segment.write) {
         case Segment.heading:
@@ -127,7 +127,7 @@ function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}[^\n]*\n`)
   return recover<BlockParser>(
     parser,
-    ({ context: { source, position, id } }, reason) => new List([
+    ({ source, position, id }, reason) => new List([
       new Node(html('h1',
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,

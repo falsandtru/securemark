@@ -5,7 +5,7 @@ import { inspect } from '../../../debug.test';
 describe('Unit: combinator/indent', () => {
   describe('indent', () => {
     it('valid', () => {
-      const parser = indent(({ context }) => { context.position = context.source.length; return new List([new Node(context.source)]); });
+      const parser = indent(context => { context.position = context.source.length; return new List([new Node(context.source)]); });
       assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input(' ', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('  ', new Context())), undefined);

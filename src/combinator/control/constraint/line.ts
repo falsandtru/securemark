@@ -3,7 +3,7 @@ import { Parser, input, failsafe } from '../../data/parser';
 export function line<P extends Parser>(parser: P): P;
 export function line<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
-  return failsafe(({ context }) => {
+  return failsafe(context => {
     const { source, position } = context;
     if (position === source.length) return;
     const line = firstline(source, position);

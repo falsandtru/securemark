@@ -3,7 +3,7 @@ import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
 export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>, input: Input, until: number | string = Infinity): [string[], string] | undefined {
-  const { context } = input;
+  const context = input;
   const result = parser(input);
   return result && [
     result.foldl<string[]>((acc, { value: node }) => {

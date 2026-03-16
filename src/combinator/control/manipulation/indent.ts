@@ -21,7 +21,7 @@ export function indent<N>(opener: RegExp | Parser<N>, parser: Parser<N> | boolea
     opener,
     memoize(
     ([indent]) =>
-      some(line(open(indent, ({ context }) => {
+      some(line(open(indent, context => {
         const { source, position } = context;
         context.position = source.length;
         return new List([new Node(source.slice(position))]);

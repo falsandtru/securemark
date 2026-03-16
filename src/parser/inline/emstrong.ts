@@ -52,7 +52,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                 return prepend('*', buffer);
               }
             })
-            ({ context }) ?? prepend('*', buffer.import(new List([new Node(html('strong', defrag(unwrap(bs)))), new Node(Command.Separator)])));
+            (context) ?? prepend('*', buffer.import(new List([new Node(html('strong', defrag(unwrap(bs)))), new Node(Command.Separator)])));
         case '*':
           return bind<StrongParser>(
             substrong,
@@ -71,7 +71,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                 return prepend('**', buffer);
               }
             })
-            ({ context }) ?? prepend('**', buffer.import(new List([new Node(html('em', defrag(unwrap(bs)))), new Node(Command.Separator)])));
+            (context) ?? prepend('**', buffer.import(new List([new Node(html('em', defrag(unwrap(bs)))), new Node(Command.Separator)])));
       }
       assert(false);
     },
@@ -112,7 +112,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                   return prepend('*', nodes.import(ds));
                 }
               })
-              ({ context }) ?? prepend('*', nodes);
+              (context) ?? prepend('*', nodes);
             prefix -= 1;
             break;
           case 2:
@@ -128,7 +128,7 @@ export const emstrong: EmStrongParser = lazy(() =>
                   return prepend('**', nodes.import(ds));
                 }
               })
-              ({ context }) ?? prepend('**', nodes);
+              (context) ?? prepend('**', nodes);
             prefix -= 2;
             break;
         }

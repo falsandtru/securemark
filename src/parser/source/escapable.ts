@@ -8,7 +8,7 @@ import { html } from 'typed-dom/dom';
 
 const delimiter = /(?=[\\$"`\[\](){}\r\n]|\s\$|:\/\/)/g;
 
-export const escsource: EscapableSourceParser = ({ context }) => {
+export const escsource: EscapableSourceParser = context => {
   const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];

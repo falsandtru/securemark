@@ -82,7 +82,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       ? new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(bs))))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
     bs.unshift(new Node('('));
-    const cs = parser({ context });
+    const cs = parser(context);
     if (source[context.position] === ')') {
       cs && bs.import(cs);
       bs.push(new Node(')'));

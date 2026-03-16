@@ -9,11 +9,11 @@ describe('Unit: combinator/line', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input(' ', new Context())), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n', new Context())), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n\n', new Context())), [[], '\n']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
-      assert.deepStrictEqual(inspect(line(({ context }) => { context.position = context.source.length - 1; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(context => { context.position = context.source.length; return new List<Node<string>>(); }), input(' ', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(context => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(context => { context.position = context.source.length; return new List<Node<string>>(); }), input('\n\n', new Context())), [[], '\n']);
+      assert.deepStrictEqual(inspect(line(context => { context.position = context.source.length; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
+      assert.deepStrictEqual(inspect(line(context => { context.position = context.source.length - 1; return new List<Node<string>>(); }), input(' \n', new Context())), [[], '']);
     });
 
   });

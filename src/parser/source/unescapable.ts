@@ -8,7 +8,7 @@ import { html } from 'typed-dom/dom';
 
 export const delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
 
-export const unescsource: UnescapableSourceParser = ({ context }) => {
+export const unescsource: UnescapableSourceParser = context => {
   const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];

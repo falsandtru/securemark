@@ -20,6 +20,6 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
     ])),
   ]),
   ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
-  focus(/\[%+(?=[ \n])/y, ({ context: { source } }) => new List([
+  focus(/\[%+(?=[ \n])/y, ({ source }) => new List([
     new Node(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
   ]))));

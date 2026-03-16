@@ -13,7 +13,7 @@ export function headers(source: string): string[] {
 
 function parse(source: string): [HTMLElement, number] | [] {
   const context = new Context({ source });
-  const result = h({ context });
+  const result = h(context);
   const el = result?.head?.value;
   return el?.tagName === 'ASIDE'
     ? [el, context.position]

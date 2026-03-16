@@ -8,7 +8,7 @@ export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     ? /[^^\\*+][*+]/.test(pattern.source)
     : false;
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     pattern.lastIndex = position;

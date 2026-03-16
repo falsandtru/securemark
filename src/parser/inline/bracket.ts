@@ -14,7 +14,7 @@ const indexF = new RegExp(indexA.source.replace(', ', '[，、]')
 
 export const bracket: BracketParser = lazy(() => union([
   input => {
-    const { context: { source, position } } = input;
+    const { source, position } = input;
     switch (source[position]) {
       case '(':
         return p1(input);
@@ -92,7 +92,7 @@ const s1 = lazy(() => surround(
         setBacktrack(context, 2 | Backtrack.link, head);
       }
       else {
-        if (!isBacktrack(context, 1 | Backtrack.link) && !textlink({ context })) {
+        if (!isBacktrack(context, 1 | Backtrack.link) && !textlink(context)) {
           setBacktrack(context, 2 | Backtrack.link, head);
         }
         context.position = position;

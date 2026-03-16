@@ -65,7 +65,7 @@ export const ruby: RubyParser = lazy(() => bind(
 const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\n/y;
 
 const text: RubyParser.TextParser = input => {
-  const { context } = input;
+  const context = input;
   const { source } = context;
   const acc = new List([new Node('')]);
   let state = false;

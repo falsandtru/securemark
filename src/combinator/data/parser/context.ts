@@ -5,7 +5,7 @@ import { clone } from 'spica/assign';
 export function reset<P extends Parser>(base: Options, parser: P): P;
 export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
   return input => {
-    const { context } = input;
+    const context = input;
     // @ts-expect-error
     context.resources ??= {
       clock: base.resources?.clock,
@@ -18,7 +18,7 @@ export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return ({ context }) =>
+  return context =>
     apply(parser, context, changes, values, true);
 }
 
@@ -28,7 +28,7 @@ export function context<N>(base: Context, parser: Parser<N>): Parser<N> {
   assert(Object.freeze(base));
   const changes = Object.entries(base);
   const values = Array(changes.length);
-  return ({ context }) =>
+  return context =>
     apply(parser, context, changes, values);
 }
 
@@ -55,7 +55,7 @@ function apply<N>(parser: Parser<N>, context: Context, changes: readonly [string
     values[i] = context[prop];
     context[prop] = change[1];
   }
-  const result = parser({ context });
+  const result = parser(context);
   for (let i = 0; i < changes.length; ++i) {
     const change = changes[i];
     const prop = change[0];
@@ -76,7 +76,7 @@ export function creation<P extends Parser>(cost: number, parser: P): P;
 export function creation(cost: number, parser: Parser): Parser {
   assert(cost >= 0);
   return input => {
-    const { context } = input;
+    const context = input;
     const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
     const { recursions } = resources;
     assert(recursions.length > 0);
@@ -97,7 +97,7 @@ export function recursion<P extends Parser>(recursion: number, parser: P): P;
 export function recursion(recursion: number, parser: Parser): Parser {
   assert(recursion >= 0);
   return input => {
-    const { context } = input;
+    const context = input;
     const resources = context.resources ?? { clock: 1, recursions: [1] };
     const { recursions } = resources;
     assert(recursions.length > 0);
@@ -114,7 +114,7 @@ export function recursions<P extends Parser>(recursions: readonly number[], pars
 export function recursions(rs: readonly number[], parser: Parser): Parser {
   assert(rs.every(r => r >= 0));
   return input => {
-    const { context } = input;
+    const context = input;
     const resources = context.resources ?? { clock: 1, recursions: [4] };
     const { recursions } = resources;
     assert(recursions.length > 0);
@@ -136,7 +136,7 @@ export function precedence<P extends Parser>(precedence: number, parser: P): P;
 export function precedence<N>(precedence: number, parser: Parser<N>): Parser<N> {
   assert(precedence >= 0);
   return input => {
-    const { context } = input;
+    const context = input;
     const { delimiters, precedence: p } = context;
     const shift = delimiters && precedence > p;
     context.precedence = precedence;
@@ -159,7 +159,7 @@ export function state<N>(state: number, positive: boolean | Parser<N>, parser?: 
   assert(state);
   assert(parser = parser!);
   return input => {
-    const { context } = input;
+    const context = input;
     const s = context.state ?? 0;
     context.state = positive
       ? s | state
@@ -180,7 +180,7 @@ export function constraint<N>(state: number, positive: boolean | Parser<N>, pars
   assert(state);
   assert(parser = parser!);
   return input => {
-    const { context } = input;
+    const context = input;
     const s = positive
       ? state & context.state
       : state & ~context.state;

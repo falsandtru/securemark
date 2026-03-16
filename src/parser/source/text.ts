@@ -8,7 +8,7 @@ import { html } from 'typed-dom/dom';
 export const nonWhitespace = /[^ \t　]/g;
 
 export const text: TextParser = input => {
-  const { context } = input;
+  const context = input;
   const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];

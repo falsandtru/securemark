@@ -16,7 +16,7 @@ export const mediablock: MediaBlockParser = block(fmap(
       medialink,
       media,
       lineshortmedia,
-    ]), ({ context: { source } }) => new List([
+    ]), ({ source }) => new List([
       new Node(html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),

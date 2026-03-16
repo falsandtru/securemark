@@ -4,7 +4,7 @@ export function convert<P extends Parser>(conv: (source: string, context: Parser
 export function convert<N>(conv: (source: string, context: Context) => string, parser: Parser<N>, empty = false): Parser<N> {
   assert(parser);
   return failsafe(input => {
-    const { context } = input;
+    const context = input;
     const { source, position } = context;
     if (position === source.length) return;
     const src = conv(source.slice(position), context);
