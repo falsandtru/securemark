@@ -19,7 +19,6 @@ export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
 }
 
 function render_(base: string, source: HTMLElement, opts: RenderingOptions): void {
-  if (source.classList.contains('invalid')) return;
   try {
     switch (true) {
       case !!opts.code
