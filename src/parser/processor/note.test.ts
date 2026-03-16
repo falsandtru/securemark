@@ -222,72 +222,50 @@ describe('Unit: parser/processor/note', () => {
     });
 
     it('nest', () => {
-      const target = parse('((a((b((c))))))((a))((b))((c))');
+      const target = parse('((a((b))))((a))((b))');
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: 'annotation', id: 'annotation::ref:a((b((c)))):1', title: 'a((b((c))))' }, [
-                html('a', { href: '#annotation::def:a((b((c)))):1' }, '*1')
+              html('sup', { class: 'annotation', id: 'annotation::ref:a((b)):1', title: 'a((b))' }, [
+                html('a', { href: '#annotation::def:a((b)):1' }, '*1')
               ]),
               html('sup', { class: 'annotation', id: 'annotation::ref:a:1', title: 'a' }, [
-                html('a', { href: '#annotation::def:a:1' }, '*4')
+                html('a', { href: '#annotation::def:a:1' }, '*3')
               ]),
-              html('sup', { class: 'annotation', id: 'annotation::ref:b:1', title: 'b' }, [
-                html('a', { href: '#annotation::def:b:1' }, '*5')
-              ]),
-              html('sup', { class: 'annotation', id: 'annotation::ref:c:2', title: 'c' }, [
-                html('a', { href: '#annotation::def:c:1' }, '*3')
+              html('sup', { class: 'annotation', id: 'annotation::ref:b:2', title: 'b' }, [
+                html('a', { href: '#annotation::def:b:1' }, '*2')
               ]),
             ]).outerHTML,
             html('ol', { class: 'annotations' }, [
-              html('li', { id: 'annotation::def:a((b((c)))):1', 'data-marker': '*1' }, [
+              html('li', { id: 'annotation::def:a((b)):1', 'data-marker': '*1' }, [
                 html('span', [
                   'a',
-                  html('sup', { class: 'annotation', id: 'annotation::ref:b((c)):1', title: 'b((c))' }, [
-                    html('a', { href: '#annotation::def:b((c)):1' }, '*2')
+                  html('sup', { class: 'annotation', id: 'annotation::ref:b:1', title: 'b' }, [
+                    html('a', { href: '#annotation::def:b:1' }, '*2')
                   ]),
                 ]),
                 html('sup', [
-                  html('a', { href: '#annotation::ref:a((b((c)))):1' }, '^1'),
+                  html('a', { href: '#annotation::ref:a((b)):1' }, '^1'),
                 ])
               ]),
-              html('li', { id: 'annotation::def:b((c)):1', 'data-marker': '*2' }, [
-                html('span', [
-                  'b',
-                  html('sup', { class: 'annotation', id: 'annotation::ref:c:1', title: 'c' }, [
-                    html('a', { href: '#annotation::def:c:1' }, '*3')
-                  ]),
-                ]),
-                html('sup', [
-                  html('a', { href: '#annotation::ref:b((c)):1' }, '^2'),
-                ])
-              ]),
-              html('li', { id: 'annotation::def:c:1', 'data-marker': '*3' }, [
-                html('span', [
-                  'c',
-                ]),
-                html('sup', [
-                  html('a', { href: '#annotation::ref:c:1' }, '^3'),
-                  html('a', { href: '#annotation::ref:c:2' }, '^6'),
-                ])
-              ]),
-              html('li', { id: 'annotation::def:a:1', 'data-marker': '*4' }, [
-                html('span', [
-                  'a',
-                ]),
-                html('sup', [
-                  html('a', { href: '#annotation::ref:a:1' }, '^4'),
-                ])
-              ]),
-              html('li', { id: 'annotation::def:b:1', 'data-marker': '*5' }, [
+              html('li', { id: 'annotation::def:b:1', 'data-marker': '*2' }, [
                 html('span', [
                   'b',
                 ]),
                 html('sup', [
-                  html('a', { href: '#annotation::ref:b:1' }, '^5'),
+                  html('a', { href: '#annotation::ref:b:1' }, '^2'),
+                  html('a', { href: '#annotation::ref:b:2' }, '^4'),
+                ])
+              ]),
+              html('li', { id: 'annotation::def:a:1', 'data-marker': '*3' }, [
+                html('span', [
+                  'a',
+                ]),
+                html('sup', [
+                  html('a', { href: '#annotation::ref:a:1' }, '^3'),
                 ])
               ]),
             ]).outerHTML,

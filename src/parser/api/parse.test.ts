@@ -324,40 +324,40 @@ describe('Unit: parser/api/parse', () => {
           `<pre class="error" translate="no">${'['.repeat(21)}0</pre>`,
         ]);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}!${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}!${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(6)}!${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(3)}!${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`(${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`(${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(5)}!${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`(${'(('.repeat(2)}!${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(6)}!${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`(${'(('.repeat(3)}!${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(5)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(6)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(9)}0${'))'.repeat(5)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(5)}0${'))'.repeat(5)}${'(('.repeat(9)}0${'))'.repeat(6)}`).children].map(el => el.tagName),
+        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
     });
 
