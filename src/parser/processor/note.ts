@@ -154,6 +154,9 @@ function build(
         : defs.get(identifier)!;
       initial && defs.set(identifier, def);
       assert(def.lastElementChild?.matches('sup'));
+      if (!initial && content.innerHTML.length > def.firstElementChild!.innerHTML.length) {
+        def.firstElementChild!.replaceWith(content);
+      }
       const defIndex = initial
         ? info.defIndex = total + defs.size
         : info.defIndex;
