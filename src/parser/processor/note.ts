@@ -187,7 +187,7 @@ function build(
           info.queue.push(ref);
           break;
       }
-      yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
+      ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
       assert(ref.title || ref.matches('.invalid'));
       def.lastElementChild!.appendChild(
         html('a',
@@ -196,6 +196,7 @@ function build(
             title: abbr && text || undefined,
           },
           `^${++refIndex}`));
+      yield;
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
