@@ -88,6 +88,8 @@ assert(hash('\x00') !== '0');
 assert(hash('\x01') !== '0');
 assert(hash('\x00') !== hash(String.fromCharCode(1 << 15)));
 // 62も64も最大6桁
+assert(Math.ceil(Math.log(~0 >>> 0) / Math.log(62)) === 6);
+assert(Math.ceil(Math.log(~0 >>> 0) / Math.log(64)) === 6);
 function baseR(n: number, r: number): string {
   assert(n >= 0);
   assert(Math.floor(n) === n);
@@ -104,6 +106,7 @@ function baseR(n: number, r: number): string {
 }
 assert(baseR(0, 36) === (0).toString(36));
 assert(baseR(~0 >>> 0, 36) === (~0 >>> 0).toString(36));
+assert(baseR(0, 62) === '0');
 assert(baseR(61, 62) === 'Z');
 assert(baseR(62, 62) === '10');
 
