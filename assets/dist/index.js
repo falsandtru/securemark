@@ -6111,7 +6111,7 @@ const parser_1 = __webpack_require__(605);
 class Context extends parser_1.Context {
   constructor(options = {}) {
     super(options);
-    this.recursion = new RecursionCounter(5);
+    this.recursion = new RecursionCounter('annotation', 2);
     const {
       segment,
       buffer,
@@ -6134,7 +6134,8 @@ class Context extends parser_1.Context {
 }
 exports.Context = Context;
 class RecursionCounter {
-  constructor(limit) {
+  constructor(syntax, limit) {
+    this.syntax = syntax;
     this.limit = limit;
     this.stack = [];
     this.index = 0;
@@ -6144,7 +6145,8 @@ class RecursionCounter {
       stack
     } = this;
     for (; this.index > 0 && stack[this.index - 1] <= depth; --this.index);
-    if (this.index === this.limit) throw new Error('Too much recursion');
+    // 内側から数えるので無効化処理できずエラーを投げるしかない。
+    if (this.index === this.limit) throw new Error(`Too much ${this.syntax} recursion`);
     stack[this.index] = depth;
     ++this.index;
   }
@@ -6377,17 +6379,26 @@ const dom_1 = __webpack_require__(394);
 // 動的計画法を適用するか再帰数を制限する必要がある。
 // 動的計画法においては再帰的記録により指数空間計算量にならないよう下位の記録を消しながら記録しなければならない。
 // トリムも再帰的に行わないよう前後のトリムサイズの記録を要する。
-// しかし理論的には再帰数の制限はないがポップアップテキストの記録やハッシュの計算を行う言語仕様から指数計算量を
+// しかし理論的には無制限の再帰が可能だがホバーテキストの記録やハッシュの計算を行う言語仕様から指数計算量を
 // 避けられないためAnnotation構文に限り再帰数の制限が必要となる。
-// シグネチャやハッシュは分割計算可能にすれば解決するがポップアップテキストは記録せず動的に再計算して
+// シグネチャやハッシュは分割計算可能にすれば解決するがホバーテキストは記録せず動的に再計算して
 // 表示しなければ指数空間計算量を避けられない。
-// 注釈は本来再帰的に行うものではないため再帰数を制限して機能を優先するのが合理的となる。
+// 注釈を除外すると重複排除により参照元が消滅し欠番が生じるため少なくとも直接注釈は残す必要があるが間接注釈は
+// 除外できる。しかしこれを効率的に行うことは難しいため最大再帰数を1回に制限することで間接注釈を行えない
+// ようにするのが合理的だろう。
+// 原理的には逆順処理により圧縮後正順で再附番すればすべて解決するはずだがテキストとシグネチャとハッシュも
+// 修正する必要があるためほぼ完全な二重処理が必要になり三重以上の注釈という不適切な使用のために
+// 常に非常に非効率な処理を行い常時低速化するより三重以上の注釈を禁止して効率性を維持するのが妥当である。
+const MAX_DEPTH = 20;
 exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)((0, combinator_1.open)('((', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursions)([4 /* Recursion.annotation */, 3 /* Recursion.inline */, 5 /* Recursion.bracket */, 5 /* Recursion.bracket */], (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]))), '))', false, [], ([, ns], context) => {
   const {
-    linebreak
+    linebreak,
+    recursion,
+    resources
   } = context;
+  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
   if (linebreak === 0) {
-    context.recursion.add(20 - (context.resources?.recursions[4 /* Recursion.annotation */] ?? context.resources?.recursions.at(-1) ?? 20));
+    recursion.add(depth);
     return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
       class: 'annotation'
     }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
@@ -6404,8 +6415,11 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     source,
     position,
     range,
-    linebreak
+    linebreak,
+    recursion,
+    resources
   } = context;
+  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
   if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
     const {
       className
@@ -6426,7 +6440,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
         lastChild.nodeValue = lastChild.nodeValue.slice(0, -1);
       }
       context.position += 1;
-      context.recursion.add(20 - (context.resources?.recursions[4 /* Recursion.annotation */] ?? context.resources?.recursions.at(-1) ?? 20));
+      recursion.add(depth);
       return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
         class: 'bracket'
       }, ['(', (0, dom_1.html)('sup', {
@@ -6435,7 +6449,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     }
     if (className === 'annotation' && deepunwrap(bs)) {
       context.position += 1;
-      context.recursion.add(20 - (context.resources?.recursions[4 /* Recursion.annotation */] ?? context.resources?.recursions.at(-1) ?? 20));
+      recursion.add(depth);
       return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
         class: 'bracket'
       }, ['(', (0, dom_1.html)('sup', {
@@ -8498,13 +8512,14 @@ function build(syntax, list, query, marker, splitter = '') {
           info.queue.push(ref);
           break;
       }
-      yield ref.appendChild((0, dom_1.html)('a', {
+      ref.appendChild((0, dom_1.html)('a', {
         href: refId && defId && `#${defId}`
       }, marker(defIndex, abbr)));
       def.lastElementChild.appendChild((0, dom_1.html)('a', {
         href: refId && `#${refId}`,
         title: abbr && text || undefined
       }, `^${++refIndex}`));
+      yield;
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
@@ -9467,7 +9482,6 @@ function render(source, opts = {}) {
 }
 exports.render = render;
 function render_(base, source, opts) {
-  if (source.classList.contains('invalid')) return;
   try {
     switch (true) {
       case !!opts.code && !source.firstElementChild && source.matches('pre.code'):
