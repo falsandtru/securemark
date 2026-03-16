@@ -4518,6 +4518,7 @@ function parse(source, options = {}, context) {
     host: options.host ?? context?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
     url: url ? new url_1.ReadonlyURL(url) : context?.url,
     id: options.id ?? context?.id,
+    local: options.local ?? context?.local,
     caches: context?.caches,
     resources: context?.resources
   });
@@ -4713,7 +4714,8 @@ const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combina
     class: 'references'
   });
   const document = (0, parse_1.parse)(source, {
-    id: '',
+    local: true,
+    id: context.id === '' ? '' : (0, util_1.randomID)(),
     notes: {
       references
     }
@@ -4867,7 +4869,8 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.recursion)(0 /* Recursi
     class: 'references'
   });
   const document = (0, parse_1.parse)(body.slice(0, -1), {
-    id: '',
+    local: true,
+    id: context.id === '' ? '' : (0, util_1.randomID)(),
     notes: {
       references
     }
@@ -4918,7 +4921,8 @@ exports.example = (0, combinator_1.block)((0, combinator_1.recursion)(0 /* Recur
           class: 'references'
         });
         const document = (0, parse_1.parse)(body.slice(0, -1), {
-          id: '',
+          local: true,
+          id: context.id === '' ? '' : (0, util_1.randomID)(),
           notes: {
             references
           }
@@ -6014,8 +6018,9 @@ class Context extends parser_1.Context {
     this.recursion = new RecursionCounter('annotation', 2);
     const {
       segment,
-      buffer,
+      local,
       sequential,
+      buffer,
       header,
       host,
       url,
@@ -6023,8 +6028,9 @@ class Context extends parser_1.Context {
       caches
     } = options;
     this.segment = segment ?? 0 /* Segment.unknown */;
-    this.buffer = buffer ?? new parser_1.List();
+    this.local = local ?? false;
     this.sequential = sequential ?? false;
+    this.buffer = buffer ?? new parser_1.List();
     this.header = header ?? true;
     this.host = host;
     this.url = url;
@@ -7069,18 +7075,20 @@ const combinator_1 = __webpack_require__(3484);
 const dom_1 = __webpack_require__(394);
 function indexee(parser) {
   return (0, combinator_1.fmap)(parser, (ns, {
-    id
+    id,
+    local
   }) => ns.length === 1 ? new parser_1.List([new parser_1.Node((0, dom_1.define)(ns.head.value, {
     id: identity('index', id, ns.head.value),
+    class: local ? `${ns.head.value.className} local`.trimStart() : undefined,
     'data-index': null
   }))]) : ns);
 }
 exports.indexee = indexee;
-const MAX = 60;
+const table = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '='].join('');
+const MAX = 64 - '='.length - Math.ceil(Math.log(~0 >>> 0) / Math.log(table.length));
 const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
-const table = [...[...Array(36)].map((_, i) => i.toString(36)), ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26), '-', '='].join('');
 function identity(type, id, text) {
   if (id === '') return undefined;
   if (typeof text !== 'string') {
@@ -7112,7 +7120,9 @@ function hash(source) {
   }
   return baseR(x >>> 0, 62);
 }
+
 // 62も64も最大6桁
+
 function baseR(n, r) {
   let acc = '';
   do {
@@ -8137,7 +8147,7 @@ const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const query_1 = __webpack_require__(2282);
 function* figure(target, notes, opts = {}) {
-  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.disabled)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.disabled)') || []).map(el => [el.getAttribute('data-label'), el]));
+  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.local)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.local)') || []).map(el => [el.getAttribute('data-label'), el]));
   const labels = new Set();
   const numbers = new Map();
   const scope = target instanceof Element ? ':scope > ' : '';
@@ -8219,10 +8229,9 @@ function* figure(target, notes, opts = {}) {
         (0, util_1.unmarkInvalid)(ref);
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
-      yield (0, dom_1.define)(ref, opts.id !== '' ? {
-        href: `#${def.id}`
-      } : {
-        class: `${ref.className} disabled`
+      yield (0, dom_1.define)(ref, {
+        class: opts.local ? `${ref.className} local` : undefined,
+        href: opts.id !== '' ? `#${def.id}` : undefined
       }, figindex);
     }
   }
@@ -8289,8 +8298,8 @@ function* note(target, notes, opts = {}, bottom = null) {
 exports.note = note;
 const annotationRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
 const referenceRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
-const annotation = build('annotation', 'annotations', '.annotation:not(:is(.annotations, .references) .annotation, .disabled)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-const reference = build('reference', 'references', '.reference:not(:is(.annotations, .references) .reference, .disabled)', (n, abbr) => `[${abbr || n}]`);
+const annotation = build('annotation', 'annotations', '.annotation:not(:is(.annotations, .references) .annotation, .local)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+const reference = build('reference', 'references', '.reference:not(:is(.annotations, .references) .reference, .local)', (n, abbr) => `[${abbr || n}]`);
 function build(syntax, list, query, marker, splitter = '') {
   splitter &&= `${splitter}, .${list}`;
   return function* (memory, target, note, opts = {}, bottom = null) {
@@ -8364,7 +8373,7 @@ function build(syntax, list, query, marker, splitter = '') {
       const title = info.title ||= text;
       (0, dom_1.define)(ref, {
         id: refId,
-        class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
+        class: opts.local ? `${ref.className} local` : undefined,
         title
       }, []);
       if (title && info.queue.length > 0) {
@@ -9046,10 +9055,11 @@ exports.unescsource = unescsource;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.unwrap = void 0;
+exports.randomID = exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.unwrap = void 0;
 const parser_1 = __webpack_require__(605);
 const delimiter_1 = __webpack_require__(385);
 const alias_1 = __webpack_require__(5413);
+const random_1 = __webpack_require__(3158);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
   if (nodes === undefined) return;
@@ -9167,6 +9177,10 @@ function stringify(nodes) {
   return acc;
 }
 exports.stringify = stringify;
+function randomID() {
+  return `random-${(0, random_1.rnd0Z)(6)}`;
+}
+exports.randomID = randomID;
 
 /***/ },
 
@@ -9868,7 +9882,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.toc = void 0;
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
-const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
+const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]:not(.local)';
 function toc(source) {
   const hs = [];
   for (let es = source.querySelectorAll(selector), len = es.length, i = 0; i < len; ++i) {
