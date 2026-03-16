@@ -17,6 +17,7 @@ import { html, defrag } from 'typed-dom/dom';
 // シグネチャやハッシュは分割計算可能にすれば解決するがホバーテキストは記録せず動的に再計算して
 // 表示しなければ指数空間計算量を避けられない。
 // 注釈は本来再帰的に行うものではないため再帰数を制限して機能を優先するのが合理的となる。
+const MAX_DEPTH = 20;
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
   open('((', beforeNonblank),
   precedence(1, recursions([Recursion.annotation, Recursion.inline, Recursion.bracket, Recursion.bracket],
@@ -24,9 +25,10 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   '))',
   false, [],
   ([, ns], context) => {
-    const { linebreak } = context;
+    const { linebreak, recursion, resources } = context;
+    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
     if (linebreak === 0) {
-      context.recursion.add(20 - (context.resources?.recursions[Recursion.annotation] ?? context.resources?.recursions.at(-1) ?? 20));
+      recursion.add(depth);
       return new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
     }
     ns.unshift(new Node('('));
@@ -34,7 +36,8 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))]);
   },
   ([, bs = new List()], context) => {
-    const { source, position, range, linebreak } = context;
+    const { source, position, range, linebreak, recursion, resources } = context;
+    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
     if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
       const { className } = bs.head.value;
       if (className === 'paren' || className === 'bracket') {
@@ -54,12 +57,12 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
           lastChild!.nodeValue = lastChild!.nodeValue!.slice(0, -1);
         }
         context.position += 1;
-        context.recursion.add(20 - (context.resources?.recursions[Recursion.annotation] ?? context.resources?.recursions.at(-1) ?? 20));
+        recursion.add(depth);
         return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
       }
       if (className === 'annotation' && deepunwrap(bs)) {
         context.position += 1;
-        context.recursion.add(20 - (context.resources?.recursions[Recursion.annotation] ?? context.resources?.recursions.at(-1) ?? 20));
+        recursion.add(depth);
         return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))]);
       }
     }
