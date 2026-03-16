@@ -6396,21 +6396,21 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     recursion,
     resources
   } = context;
-  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-  if (linebreak === 0) {
-    recursion.add(depth);
-    return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
-      class: 'annotation'
-    }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
+  if (linebreak !== 0) {
+    ns.unshift(new parser_1.Node('('));
+    ns.push(new parser_1.Node(')'));
+    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+      class: 'bracket'
+    }, ['(', (0, dom_1.html)('span', {
+      class: 'bracket'
+    }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))), ')']))]);
   }
-  ns.unshift(new parser_1.Node('('));
-  ns.push(new parser_1.Node(')'));
-  return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-    class: 'bracket'
-  }, ['(', (0, dom_1.html)('span', {
-    class: 'bracket'
-  }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))), ')']))]);
-}, ([, bs = new parser_1.List()], context) => {
+  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
+  recursion.add(depth);
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
+    class: 'annotation'
+  }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
+}, ([, bs], context) => {
   const {
     source,
     position,
@@ -6420,7 +6420,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     resources
   } = context;
   const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-  if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
+  if (linebreak === 0 && bs && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
     const {
       className
     } = bs.head.value;
@@ -6457,19 +6457,32 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
       }, [(0, dom_1.html)('span', [bs.head.value])])]))]);
     }
   }
-  const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
-  if (linebreak === 0 && bracket_1.indexA.test(str)) {
-    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-      class: 'bracket'
-    }, ['((' + str]))]);
-  }
+  bs ??= new parser_1.List();
   bs.unshift(new parser_1.Node('('));
+  if (source[context.position] === ')') {
+    bs.push(new parser_1.Node(')'));
+    context.position += 1;
+  }
+  const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
+  bs = linebreak === 0 && (str === '' || bracket_1.indexA.test(str)) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+    class: 'paren'
+  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+    class: 'bracket'
+  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]);
+  bs.unshift(new parser_1.Node('('));
+  const cs = parser({
+    context
+  });
+  if (source[context.position] === ')') {
+    cs && bs.import(cs);
+    bs.push(new parser_1.Node(')'));
+    context.position += 1;
+  }
   return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'bracket'
-  }, ['(', (0, dom_1.html)('span', {
-    class: 'bracket'
-  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs)))]))]);
+  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]);
 })));
+const parser = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]])));
 function deepunwrap(list) {
   let bottom = list.head.value;
   for (; bottom;) {
@@ -6800,7 +6813,7 @@ const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   linebreak
 }) => {
   const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-  return linebreak === 0 && exports.indexA.test(str) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+  return linebreak === 0 && (str === '' || exports.indexA.test(str)) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, `(${str})`))]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'bracket'
@@ -6813,7 +6826,7 @@ const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     linebreak
   } = context;
   const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-  return linebreak === 0 && exports.indexA.test(str) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+  return linebreak === 0 && (str === '' || exports.indexA.test(str)) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, `(${str}`))]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'bracket'
@@ -6826,7 +6839,7 @@ const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   linebreak
 }) => {
   const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-  return linebreak === 0 && indexF.test(str) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+  return linebreak === 0 && (str === '' || indexF.test(str)) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, `（${str}）`))]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'bracket'
@@ -6839,7 +6852,7 @@ const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
     linebreak
   } = context;
   const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-  return linebreak === 0 && indexF.test(str) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+  return linebreak === 0 && (str === '' || indexF.test(str)) ? new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'paren'
   }, `（${str}`))]) : new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
     class: 'bracket'
@@ -7960,12 +7973,12 @@ exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(64
     range,
     linebreak
   } = context;
-  if (linebreak === 0) {
-    return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
-  } else {
-    const head = position - range;
+  const head = position - range;
+  if (linebreak !== 0) {
     (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */, head, 2);
+    return;
   }
+  return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', attributes(ns), [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
 }, (_, context) => {
   const {
     source,
@@ -8480,6 +8493,9 @@ function build(syntax, list, query, marker, splitter = '') {
         'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
       }, [content, (0, dom_1.html)('sup')]) : defs.get(identifier);
       initial && defs.set(identifier, def);
+      if (!initial && content.innerHTML.length > def.firstElementChild.innerHTML.length) {
+        def.firstElementChild.replaceWith(content);
+      }
       const defIndex = initial ? info.defIndex = total + defs.size : info.defIndex;
       const title = info.title ||= text;
       (0, dom_1.define)(ref, {
