@@ -8,11 +8,14 @@ import { querySelectorAll } from 'typed-dom/query';
 export function* figure(
   target: ParentNode & Node,
   notes?: { readonly references: HTMLOListElement; },
-  opts: { readonly id?: string; } = {},
+  opts: {
+    readonly id?: string;
+    readonly local?: boolean;
+  } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiQueue<string, HTMLAnchorElement>(push(
-    querySelectorAll(target, 'a.label:not(.disabled)[data-label]'),
-    notes && querySelectorAll(notes.references, 'a.label:not(.disabled)') || [])
+    querySelectorAll(target, 'a.label:not(.local)[data-label]'),
+    notes && querySelectorAll(notes.references, 'a.label:not(.local)') || [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
@@ -117,7 +120,10 @@ export function* figure(
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield define(ref,
-        opts.id !== '' ? { href: `#${def.id}` } : { class: `${ref.className} disabled` },
+        {
+          class: opts.local ? `${ref.className} local` : undefined,
+          href: opts.id !== '' ? `#${def.id}` : undefined,
+        },
         figindex);
     }
   }

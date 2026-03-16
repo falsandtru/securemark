@@ -11,6 +11,7 @@ import { ReadonlyURL } from 'spica/url';
 import { frag } from 'typed-dom/dom';
 
 interface Options extends ParserOptions {
+  readonly local?: boolean;
   readonly test?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function parse(source: string, options: Options = {}, context?: Context):
     host: options.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
     url: url ? new ReadonlyURL(url as ':') : context?.url,
     id: options.id ?? context?.id,
+    local: options.local ?? context?.local,
     caches: context?.caches,
     resources: context?.resources,
   });

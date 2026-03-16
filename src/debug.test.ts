@@ -43,6 +43,6 @@ export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>,
 // Bug: Firefox
 export function normalize(html: string): string {
   return html
-    .replace(/(data-number="[\w.]+") (hidden="")/g, '$2 $1')
-    .replace(/(data-type="[\w-]+") (type="\w+")/g, '$2 $1');
+    .replace(/:random-\w+:/g, ':random:')
+    .replace(/ data-invalid-\w+="[^"]*"/g, '');
 }

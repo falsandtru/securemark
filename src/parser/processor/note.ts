@@ -9,7 +9,10 @@ export function* note(
     readonly annotations?: HTMLOListElement;
     readonly references: HTMLOListElement;
   },
-  opts: { readonly id?: string; } = {},
+  opts: {
+    readonly id?: string;
+    readonly local?: boolean;
+  } = {},
   bottom: Node | null = null,
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   const referenceRefMemory = referenceRefsMemoryCaller(target);
@@ -47,13 +50,13 @@ const referenceRefsMemoryCaller = memoize((target: Node) =>
 const annotation = build(
   'annotation',
   'annotations',
-  '.annotation:not(:is(.annotations, .references) .annotation, .disabled)',
+  '.annotation:not(:is(.annotations, .references) .annotation, .local)',
   n => `*${n}`,
   'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 const reference = build(
   'reference',
   'references',
-  '.reference:not(:is(.annotations, .references) .reference, .disabled)',
+  '.reference:not(:is(.annotations, .references) .reference, .local)',
   (n, abbr) => `[${abbr || n}]`);
 
 function build(
@@ -69,7 +72,10 @@ function build(
     memory: Map<HTMLElement, RefMemory>,
     target: ParentNode & Node,
     note?: HTMLOListElement,
-    opts: { readonly id?: string } = {},
+    opts: {
+      readonly id?: string;
+      readonly local?: boolean;
+    } = {},
     bottom: Node | null = null,
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const refInfoCaller = memoize((ref: HTMLElement) => {
@@ -164,7 +170,7 @@ function build(
       assert(syntax !== 'annotation' || title);
       define(ref, {
         id: refId,
-        class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
+        class: opts.local ? `${ref.className} local` : undefined,
         title,
       }, []);
       if (title && info.queue.length > 0) {

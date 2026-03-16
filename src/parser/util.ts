@@ -2,6 +2,7 @@ import { Parser, Result, List, Node, failsafe } from '../combinator/data/parser'
 import { tester } from '../combinator/data/delimiter';
 import { Context, Command } from './context';
 import { min } from 'spica/alias';
+import { rnd0Z } from 'spica/random';
 import { define } from 'typed-dom/dom';
 
 export function* unwrap<N>(nodes: List<Node<N>> | undefined): Iterable<N> {
@@ -128,4 +129,8 @@ export function stringify(nodes: Iterable<HTMLElement | string>): string {
     }
   }
   return acc;
+}
+
+export function randomID(): string {
+  return `random-${rnd0Z(6)}`;
 }

@@ -1,7 +1,7 @@
 import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
-const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]';
+const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]:not(.local)';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs: HTMLHeadingElement[] = [];

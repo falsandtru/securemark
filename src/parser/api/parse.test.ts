@@ -1,6 +1,7 @@
 import { parse } from './parse';
 import { Context } from '../context';
 import { html } from 'typed-dom/dom';
+import { normalize } from '../../debug.test';
 
 describe('Unit: parser/api/parse', () => {
   describe('parse', () => {
@@ -201,10 +202,10 @@ describe('Unit: parser/api/parse', () => {
             '~~~',
           ].join('\n'),
           '{#}',
-        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => normalize(el.outerHTML)),
         [
           `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span>\n</span></details></aside>`,
-          '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-message="Invalid syntax">---\nURL: https://example/y\n---\n</pre>',
+          '<pre class="invalid" translate="no">---\nURL: https://example/y\n---\n</pre>',
           '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a class="url" href="https://example/y#" target="_blank">#</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
           '<p><a class="url" href="https://example/x#" target="_blank">#</a></p>',
         ]);

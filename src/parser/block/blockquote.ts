@@ -4,7 +4,7 @@ import { List, Node } from '../../combinator/data/parser';
 import { union, some, consume, recursion, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
-import { unwrap } from '../util';
+import { unwrap, randomID } from '../util';
 import { parse } from '../api/parse';
 import { html, defrag } from 'typed-dom/dom';
 
@@ -44,7 +44,8 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
         const { source } = context;
         const references = html('ol', { class: 'references' });
         const document = parse(source, {
-          id: '',
+          local: true,
+          id: context.id === '' ? '' : randomID(),
           notes: {
             references,
           },

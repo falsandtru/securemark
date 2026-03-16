@@ -3,7 +3,7 @@ import { Recursion } from '../../context';
 import { List, Node } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
-import { unwrap, invalid } from '../../util';
+import { unwrap, invalid, randomID } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
@@ -26,12 +26,12 @@ export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.bloc
     ]);
     const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
-      id: '',
+      local: true,
+      id: context.id === '' ? '' : randomID(),
       notes: {
         references,
       },
     }, context);
-    assert(!document.querySelector('[id]'));
     const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName!) && document.firstElementChild as HTMLHeadingElement;
     if (!heading) return new List([
       new Node(html('pre', {

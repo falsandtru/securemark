@@ -8,6 +8,7 @@ export class Context extends Ctx {
     super(options);
     const {
       segment,
+      local,
       sequential,
       buffer,
       header,
@@ -17,6 +18,7 @@ export class Context extends Ctx {
       caches,
     } = options;
     this.segment = segment ?? Segment.unknown;
+    this.local = local ?? false;
     this.sequential = sequential ?? false;
     this.buffer = buffer ?? new List();
     this.header = header ?? true;
@@ -26,6 +28,7 @@ export class Context extends Ctx {
     this.caches = caches;
   }
   public override segment: Segment;
+  public local: boolean;
   public sequential: boolean;
   public buffer: List<Node<(string | HTMLElement)>>;
   public recursion = new RecursionCounter('annotation', 2);

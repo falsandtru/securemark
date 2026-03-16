@@ -3,7 +3,7 @@ import { Recursion } from '../../context';
 import { List, Node, subinput } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
-import { unwrap, invalid } from '../../util';
+import { unwrap, invalid, randomID } from '../../util';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom/dom';
 
@@ -28,12 +28,12 @@ export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.
       case 'markdown': {
         const references = html('ol', { class: 'references' });
         const document = parse(body.slice(0, -1), {
-          id: '',
+          local: true,
+          id: context.id === '' ? '' : randomID(),
           notes: {
             references,
           },
         }, context);
-        assert(!document.querySelector('[id]'));
         return new List([
           new Node(html('aside', { class: 'example', 'data-type': 'markdown' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
