@@ -15,17 +15,18 @@ export function indexee(parser: Parser<HTMLElement, Context>): Parser<HTMLElemen
       : ns);
 }
 
-const MAX = 60;
-const ELLIPSIS = '...';
-const PART = (MAX - ELLIPSIS.length) / 2 | 0;
-const REM = MAX - PART * 2 - ELLIPSIS.length;
-assert(PART * 2 + REM + ELLIPSIS.length === MAX);
 const table = [
   ...[...Array(36)].map((_, i) => i.toString(36)),
   ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26),
   '-', '=',
 ].join('');
 assert(table.length === 64);
+const MAX = 64 - '='.length - Math.ceil(Math.log(~0 >>> 0) / Math.log(table.length));
+assert(MAX === 57);
+const ELLIPSIS = '...';
+const PART = (MAX - ELLIPSIS.length) / 2 | 0;
+const REM = MAX - PART * 2 - ELLIPSIS.length;
+assert(PART * 2 + REM + ELLIPSIS.length === MAX);
 export function identity(
   type: 'index' | 'mark' | '',
   id: string | undefined,
@@ -72,10 +73,10 @@ assert.deepStrictEqual(
   `${'0'.repeat(MAX - 1)}1`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX / 2)}${'2'.repeat(MAX / 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=MYkmc`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=E0deO`);
 assert.deepStrictEqual(
   identity('index', undefined, `0${'1'.repeat(MAX * 2)}${'2'.repeat(MAX * 2)}3`)!.slice(7),
-  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=3bF8VU`);
+  `0${'1'.repeat(PART + REM - 1)}${ELLIPSIS}${'2'.repeat(PART - 1)}3=2RHwOS`);
 function hash(source: string): string {
   let x = 0;
   for (let i = 0; i < source.length; ++i) {
