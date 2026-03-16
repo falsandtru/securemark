@@ -15,6 +15,7 @@ const MAX = 60;
 const ELLIPSIS = '...';
 const PART = (MAX - ELLIPSIS.length) / 2 | 0;
 const REM = MAX - PART * 2 - ELLIPSIS.length;
+assert(PART * 2 + REM + ELLIPSIS.length === MAX);
 const table = [
   ...[...Array(36)].map((_, i) => i.toString(36)),
   ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26),
