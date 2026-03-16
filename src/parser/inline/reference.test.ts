@@ -15,6 +15,9 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser, input('[[', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[[]]', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[[]]]', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('[[a', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('[[a]', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('[[a]b]', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[["]]', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[[(]]', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('[[[%]]', new Context())), undefined);
@@ -51,6 +54,7 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser, input('[[@a]]', new Context())), [['<sup class="reference"><span><a class="account" href="/@a">@a</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[http://host]]', new Context())), [['<sup class="reference"><span><a class="url" href="http://host" target="_blank">http://host</a></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[![]{a}]]', new Context())), [['<sup class="reference"><span>!<a class="url" href="a">a</a></span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[[a[[]]]]', new Context())), [['<sup class="reference"><span>a[[]]</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[[a]]]', new Context())), [['<sup class="reference"><span>[a]</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[[[a]]]]', new Context())), [['<sup class="reference"><span>[[a]]</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[((a))]]', new Context())), [['<sup class="reference"><span><span class="bracket">(<span class="paren">(a)</span>)</span></span></sup>'], '']);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.297.7
+
+- Fix annotation parser.
+
 ## 0.297.6
 
 - Refactoring.

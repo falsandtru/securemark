@@ -31,19 +31,19 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
   false, [],
   ([, ns], context) => {
     const { linebreak, recursion, resources } = context;
-    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-    if (linebreak === 0) {
-      recursion.add(depth);
-      return new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
+    if (linebreak !== 0) {
+      ns.unshift(new Node('('));
+      ns.push(new Node(')'));
+      return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))]);
     }
-    ns.unshift(new Node('('));
-    ns.push(new Node(')'));
-    return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))]);
+    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
+    recursion.add(depth);
+    return new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
   },
-  ([, bs = new List()], context) => {
+  ([, bs], context) => {
     const { source, position, range, linebreak, recursion, resources } = context;
     const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-    if (linebreak === 0 && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
+    if (linebreak === 0 && bs && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
       const { className } = bs.head.value;
       if (className === 'paren' || className === 'bracket') {
         const { firstChild, lastChild } = bs.head.value;
@@ -71,13 +71,27 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))]);
       }
     }
-    const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
-    if (linebreak === 0 && indexA.test(str)) {
-      return new List([new Node(html('span', { class: 'bracket' }, ['((' + str]))]);
-    }
+    bs ??= new List();
     bs.unshift(new Node('('));
-    return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(bs)))]))]);
+    if (source[context.position] === ')') {
+      bs.push(new Node(')'));
+      context.position += 1;
+    }
+    const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
+    bs = linebreak === 0 && (str === '' || indexA.test(str))
+      ? new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(bs))))])
+      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
+    bs.unshift(new Node('('));
+    const cs = parser({ context });
+    if (source[context.position] === ')') {
+      cs && bs.import(cs);
+      bs.push(new Node(')'));
+      context.position += 1;
+    }
+    return new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
   })));
+
+const parser = lazy(() => precedence(1, some(inline, ')', [[')', 1]])));
 
 function deepunwrap(list: List<Node<string | HTMLElement>>): boolean {
   let bottom = list.head!.value as HTMLElement;

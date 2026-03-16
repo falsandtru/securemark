@@ -41,14 +41,14 @@ const p1 = lazy(() => surround(
   true, [],
   ([as, bs = [], cs], { source, position, range, linebreak }) => {
     const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-    return linebreak === 0 && indexA.test(str)
+    return linebreak === 0 && (str === '' || indexA.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `(${str})`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
     const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-    return linebreak === 0 && indexA.test(str)
+    return linebreak === 0 && (str === '' || indexA.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `(${str}`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));
@@ -60,14 +60,14 @@ const p2 = lazy(() => surround(
   true, [],
   ([as, bs = [], cs], { source, position, range, linebreak }) => {
     const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-    return linebreak === 0 && indexF.test(str)
+    return linebreak === 0 && (str === '' || indexF.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `（${str}）`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
     const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-    return linebreak === 0 && indexF.test(str)
+    return linebreak === 0 && (str === '' || indexF.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `（${str}`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));

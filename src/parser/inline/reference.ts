@@ -21,13 +21,12 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
   ([, ns], context) => {
     const { position, range, linebreak } = context;
-    if (linebreak === 0) {
-      return new List([new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
-    }
-    else {
-      const head = position - range;
+    const head = position - range;
+    if (linebreak !== 0) {
       setBacktrack(context, 2 | Backtrack.link, head, 2);
+      return;
     }
+    return new List([new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
   },
   (_, context): undefined => {
     const { source, position, range, linebreak } = context;
