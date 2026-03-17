@@ -22,10 +22,10 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
   }
   assert(parser);
   assert(delimiter !== '');
-  const match = Delimiters.matcher(delimiter as string, after as string);
+  const match = Delimiters.tester(delimiter as string, after as string);
   const delims = delimiters?.map(([delimiter, precedence]) => ({
     signature: Delimiters.signature(delimiter),
-    matcher: Delimiters.matcher(delimiter),
+    tester: Delimiters.tester(delimiter),
     precedence,
   }));
   return input => {
@@ -37,7 +37,7 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
     // whileは数倍遅い
     for (const len = source.length; context.position < len;) {
       if (match(input)) break;
-      if (context.delimiters.match(input)) break;
+      if (context.delimiters.test(input)) break;
       const result = parser(input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;

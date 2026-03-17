@@ -10,7 +10,7 @@ export function sequence<N, D extends Parser<N>[]>(parsers: D): Parser<N, Contex
     let nodes: List<Node<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) return;
-      if (context.delimiters.match(input)) return;
+      if (context.delimiters.test(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
       nodes = nodes?.import(result) ?? result;

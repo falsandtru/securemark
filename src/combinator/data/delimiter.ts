@@ -4,7 +4,7 @@ import { consume } from './parser/context';
 interface Delimiter {
   readonly memory: Delimiter[];
   readonly index: number;
-  readonly matcher: (input: Input) => boolean | undefined;
+  readonly tester: (input: Input) => boolean | undefined;
   readonly precedence: number;
   state: boolean;
 }
@@ -24,7 +24,7 @@ export class Delimiters {
         return `r/${pattern.source}`;
     }
   }
-  public static matcher(pattern: string | RegExp | undefined, after?: string | RegExp): (input: Input<Context>) => true | undefined {
+  public static tester(pattern: string | RegExp | undefined, after?: string | RegExp): (input: Input<Context>) => true | undefined {
     switch (typeof pattern) {
       case 'undefined':
         return () => undefined;
@@ -57,7 +57,7 @@ export class Delimiters {
   public push(
     delims: readonly {
       readonly signature: number | string;
-      readonly matcher: (input: Input) => boolean | undefined;
+      readonly tester: (input: Input) => boolean | undefined;
       readonly precedence: number;
     }[]
   ): void {
@@ -65,7 +65,7 @@ export class Delimiters {
     // シグネチャ数以下
     assert(delimiters.length < 100);
     for (let i = 0; i < delims.length; ++i) {
-      const { signature, matcher, precedence } = delims[i];
+      const { signature, tester, precedence } = delims[i];
       const memory = this.registry(signature);
       const index = memory[0]?.index ?? delimiters.length;
       assert(memory.length === 0 || precedence === delimiters[index].precedence);
@@ -73,7 +73,7 @@ export class Delimiters {
         const delimiter: Delimiter = {
           memory,
           index,
-          matcher,
+          tester,
           precedence,
           state: true,
         };
@@ -128,13 +128,13 @@ export class Delimiters {
       delimiters[indexes[i]].state = true;
     }
   }
-  public match(input: Input): boolean {
+  public test(input: Input): boolean {
     const { precedence } = input;
     const { delimiters } = this;
     for (let i = delimiters.length; i--;) {
       const delimiter = delimiters[i];
       if (delimiter.precedence <= precedence || !delimiter.state) continue;
-      switch (delimiter.matcher(input)) {
+      switch (delimiter.tester(input)) {
         case true:
           return true;
         case false:

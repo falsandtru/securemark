@@ -10,7 +10,7 @@ export function inits<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, 
     let nodes: List<Node<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) break;
-      if (context.delimiters.match(input)) break;
+      if (context.delimiters.test(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
