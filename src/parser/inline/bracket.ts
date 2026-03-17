@@ -8,19 +8,18 @@ import { str } from '../source';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const indexA = /[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/y;
+export const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
 const indexF = new RegExp(
   indexA.source.replace(', ', '[，、]')
     .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)),
-  'y');
+  '');
 export function bracketname(context: Context, syntax: RegExp, opener: number, closer: number): string {
   const { source, position, range, linebreak } = context;
   syntax.lastIndex = position - range + opener;
   return range - opener - closer === 0
       || linebreak === 0 &&
          range - opener - closer <= 16 &&
-         syntax.test(source) &&
-         syntax.lastIndex === position - closer
+         syntax.test(source.slice(position - range + opener, position - closer))
     ? 'paren'
     : 'bracket';
 }
