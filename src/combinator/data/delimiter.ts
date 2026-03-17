@@ -82,10 +82,10 @@ export class Delimiters {
         stack.push(index);
       }
       else {
+        // 現状各優先順位は固定
+        assert(memory.length === 1);
         stack.push(-1);
       }
-      // 現状各優先順位は固定
-      assert(memory.length === 1);
     }
   }
   public pop(count: number): void {
@@ -117,7 +117,7 @@ export class Delimiters {
       const delimiter = delimiters[i];
       if (delimiter.precedence >= precedence || !delimiter.state) continue;
       delimiter.state = false;
-      indexes.push(i)
+      indexes.push(i);
     }
     this.states.push(indexes);
   }
