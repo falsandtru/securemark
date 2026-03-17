@@ -4,12 +4,14 @@ import { clone } from 'spica/assign';
 
 export function reset<P extends Parser>(base: Options, parser: P): P;
 export function reset<N>(base: Context, parser: Parser<N>): Parser<N> {
+  const clock = base.resources?.clock;
+  const recursions = base.resources?.recursions;
   return input => {
     const context = input;
     // @ts-expect-error
     context.resources ??= {
-      clock: base.resources?.clock,
-      recursions: base.resources?.recursions.slice(),
+      clock,
+      recursions: recursions?.slice(),
     };
     context.backtracks = {};
     return parser(input);

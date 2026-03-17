@@ -58,7 +58,6 @@ export const block: BlockParser = reset(
         20 || Recursion.terminal,
       ],
     },
-    backtracks: {},
   },
   error(union([
     emptysegment,
