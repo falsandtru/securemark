@@ -1,4 +1,4 @@
-import { html } from './html';
+import { html, TAGS } from './html';
 import { some } from '../../combinator';
 import { input } from '../../combinator/data/parser';
 import { Context } from '../context';
@@ -7,6 +7,10 @@ import { inspect } from '../../debug.test';
 describe('Unit: parser/inline/html', () => {
   describe('html', () => {
     const parser = some(html);
+
+    it('hash', () => {
+      assert(TAGS.every(tag => parser(input(`<${tag}>`, new Context()))));
+    });
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser, input('<script>', new Context())), [['<span class="invalid">&lt;script&gt;</span>'], '']);

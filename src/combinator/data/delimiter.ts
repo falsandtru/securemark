@@ -9,19 +9,35 @@ interface Delimiter {
   state: boolean;
 }
 
+const indexes = new Map();
+function index(source: string): number {
+  let x = 0;
+  for (let i = 0; i < source.length; ++i) {
+    const c = source.charCodeAt(i);
+    x = x ^ c << 1 || ~x ^ c << 1; // 16+1bit
+    assert(x !== 0);
+    x ^= x << 13; // shift <= 32-17bit
+    x ^= x >>> 17;
+    x ^= x << 15;
+  }
+  x >>>= 3;
+  x &= ~0 >>> 32 - 4;
+  assert(x !== 0);
+  assert(indexes.has(source) ? indexes.get(source) === x : indexes.set(source, x));
+  return x;
+}
+
 export class Delimiters {
   // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
-  public static signature(pattern: undefined | string | RegExp): number | string {
+  public static signature(pattern: undefined | string | RegExp): number {
     switch (typeof pattern) {
       case 'undefined':
         return 0;
       case 'string':
         assert(pattern !== '');
-        assert(pattern !== '\x00');
-        if (pattern.length === 1) return pattern.charCodeAt(0);
-        return `s:${pattern}`;
+        return index(`'${pattern}`);
       case 'object':
-        return `r/${pattern.source}`;
+        return index(`/${pattern.source}`);
     }
   }
   public static tester(pattern: string | RegExp | undefined, after?: string | RegExp): (input: Input<Context>) => true | undefined {
@@ -37,26 +53,19 @@ export class Delimiters {
           : input => test(input) !== undefined || undefined;
     }
   }
-  private readonly tree: Record<number, Delimiter[]> = {};
-  private readonly map: Map<string, Delimiter[]> = new Map();
-  private registry(signature: number | string): Delimiter[] {
-    if (typeof signature === 'number') {
-      return this.tree[signature] ??= [];
-    }
-    else {
-      const ds = this.map.get(signature);
-      if (ds) return ds;
-      const blank: Delimiter[] = [];
-      this.map.set(signature, blank);
-      return blank;
-    }
+  private readonly memories: Delimiter[][] = [];
+  private registry(signature: number): Delimiter[] {
+    assert(signature >= 0);
+    assert(signature >>> 0 === signature);
+    assert(signature >>> 16 === 0);
+    return this.memories[signature] ??= [];
   }
   private readonly delimiters: Delimiter[] = [];
   private readonly stack: number[] = [];
   private readonly states: (readonly number[])[] = [];
   public push(
     delims: readonly {
-      readonly signature: number | string;
+      readonly signature: number;
       readonly tester: (input: Input) => boolean | undefined;
       readonly precedence: number;
     }[]

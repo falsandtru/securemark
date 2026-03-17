@@ -145,7 +145,7 @@ export function attributes(
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 // [...document.querySelectorAll('tbody > tr > td:first-child')].map(el => el.textContent.slice(1, -1))
-const TAGS: readonly string[] = [
+export const TAGS: readonly string[] = [
   "html",
   "base",
   "head",
