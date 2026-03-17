@@ -20,58 +20,57 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() =>
-  union([
-    surround(
-      // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y),
-      precedence(9, some(union([attribute]))),
-      open(str(/ ?/y), str('>'), true),
-      true, [],
-      ([as, bs = new List(), cs], context) =>
-        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context), as.head!.value === '<wbr' ? Flag.blank : Flag.none)]),
-      ([as, bs = new List()], context) =>
-        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
-    match(
-      new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'),
-      memoize(
-      ([, tag]) =>
-        surround<HTMLParser.TagParser, string>(
-          surround(
-            str(`<${tag}`),
-            precedence(9, some(attribute)),
-            open(str(/ ?/y), str('>'), true),
-            true, [],
-            ([as, bs = new List(), cs]) => as.import(bs).import(cs),
-            ([as, bs = new List()]) => as.import(bs)),
-          // 不可視のHTML構造が可視構造を変化させるべきでない。
-          // 可視のHTMLは優先度変更を検討する。
-          // このため`<>`記号は将来的に共通構造を変化させる可能性があり
-          // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
-          precedence(0, recursion(Recursion.inline,
-          some(union([
-            some(inline, blankWith('\n', `</${tag}>`)),
-            open('\n', some(inline, `</${tag}>`), true),
-          ])))),
-          str(`</${tag}>`),
+export const html: HTMLParser = lazy(() => union([
+  surround(
+    // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+    str(/<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(?=[ >])/y),
+    precedence(9, some(union([attribute]))),
+    open(str(/ ?/y), str('>'), true),
+    true, [],
+    ([as, bs = new List(), cs], context) =>
+      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context), as.head!.value === '<wbr' ? Flag.blank : Flag.none)]),
+    ([as, bs = new List()], context) =>
+      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+  match(
+    new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'),
+    memoize(
+    ([, tag]) =>
+      surround<HTMLParser.TagParser, string>(
+        surround(
+          str(`<${tag}`),
+          precedence(9, some(attribute)),
+          open(str(/ ?/y), str('>'), true),
           true, [],
-          ([as, bs = new List(), cs], context) =>
-            new List([new Node(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
-          ([as, bs = new List()], context) =>
-            new List([new Node(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
-      ([, tag]) => tag2index(tag),
-      Array(TAGS.length))),
-    surround(
-      // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
-      str(/<[a-z]+(?=[ >])/yi),
-      precedence(9, some(union([attribute]))),
-      open(str(/ ?/y), str('>'), true),
-      true, [],
-      ([as, bs = new List(), cs], context) =>
-        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
-      ([as, bs = new List()], context) =>
-        new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
-  ]));
+          ([as, bs = new List(), cs]) => as.import(bs).import(cs),
+          ([as, bs = new List()]) => as.import(bs)),
+        // 不可視のHTML構造が可視構造を変化させるべきでない。
+        // 可視のHTMLは優先度変更を検討する。
+        // このため`<>`記号は将来的に共通構造を変化させる可能性があり
+        // 共通構造を変化させない非構造文字列としては依然としてエスケープを要する。
+        precedence(0, recursion(Recursion.inline,
+        some(union([
+          some(inline, blankWith('\n', `</${tag}>`)),
+          open('\n', some(inline, `</${tag}>`), true),
+        ])))),
+        str(`</${tag}>`),
+        true, [],
+        ([as, bs = new List(), cs], context) =>
+          new List([new Node(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
+        ([as, bs = new List()], context) =>
+          new List([new Node(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
+    ([, tag]) => tag2index(tag),
+    Array(TAGS.length))),
+  surround(
+    // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+    str(/<[a-z]+(?=[ >])/yi),
+    precedence(9, some(union([attribute]))),
+    open(str(/ ?/y), str('>'), true),
+    true, [],
+    ([as, bs = new List(), cs], context) =>
+      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
+    ([as, bs = new List()], context) =>
+      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+]));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi),
