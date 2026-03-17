@@ -226,7 +226,7 @@ function build(
         splitter.remove();
       }
     }
-  }
+  };
 }
 
 function* proc(note: HTMLOListElement, defs?: Map<string, HTMLLIElement>): Generator<HTMLLIElement | undefined, undefined, undefined> {
