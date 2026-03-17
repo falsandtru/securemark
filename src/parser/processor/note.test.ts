@@ -116,11 +116,11 @@ describe('Unit: parser/processor/note', () => {
     });
 
     it('separation', () => {
-      const target = html('blockquote', parse([
+      const target = parse([
         '!>> ((1))\n> ((2))\n~~~',
         '~~~~example/markdown\n((3))\n~~~~',
         '((4))',
-      ].join('\n\n')).children);
+      ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
