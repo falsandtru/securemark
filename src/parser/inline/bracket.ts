@@ -40,15 +40,15 @@ const p1 = lazy(() => surround(
   str(')'),
   true, [],
   ([as, bs = [], cs], { source, position, range, linebreak }) => {
-    const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-    return linebreak === 0 && (str === '' || indexA.test(str))
+    const str = linebreak === 0 && range - 2 <= 16 ? source.slice(position - range + 1, position - 1) : undefined;
+    return str !== undefined && (str === '' || indexA.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `(${str})`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
-    const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-    return linebreak === 0 && (str === '' || indexA.test(str))
+    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 1, position) : undefined;
+    return str !== undefined && (str === '' || indexA.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `(${str}`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));
@@ -59,15 +59,15 @@ const p2 = lazy(() => surround(
   str('）'),
   true, [],
   ([as, bs = [], cs], { source, position, range, linebreak }) => {
-    const str = linebreak === 0 ? source.slice(position - range + 1, position - 1) : '';
-    return linebreak === 0 && (str === '' || indexF.test(str))
+    const str = linebreak === 0 && range - 2 <= 16 ? source.slice(position - range + 1, position - 1) : undefined;
+    return str !== undefined && (str === '' || indexF.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `（${str}）`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
   },
   ([as, bs = new List()], context) => {
     const { source, position, range, linebreak } = context;
-    const str = linebreak === 0 ? source.slice(position - range + 1, position) : '';
-    return linebreak === 0 && (str === '' || indexF.test(str))
+    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 1, position) : undefined;
+    return str !== undefined && (str === '' || indexF.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, `（${str}`))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
   }));

@@ -77,8 +77,8 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       bs.push(new Node(')'));
       context.position += 1;
     }
-    const str = linebreak === 0 ? source.slice(position - range + 2, position) : '';
-    bs = linebreak === 0 && (str === '' || indexA.test(str))
+    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 2, position) : undefined;
+    bs = str !== undefined && (str === '' || indexA.test(str))
       ? new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(bs))))])
       : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
     bs.unshift(new Node('('));
