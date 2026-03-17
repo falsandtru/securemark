@@ -111,8 +111,8 @@ function build(
     }));
     const splitters = splitter
       ? target instanceof Element
-        ? target.querySelectorAll(`:scope > :is(${splitter})`)
-        : target.querySelectorAll(`:is(${splitter}):not(* > *)`)
+        ? target.querySelectorAll(`:scope > :is(${splitter}, .${list})`)
+        : target.querySelectorAll(`:is(${splitter}, .${list}):not(* > *)`)
       : [];
     let iSplitters = 0;
     let total = 0;
@@ -125,8 +125,8 @@ function build(
         const pos = splitter?.compareDocumentPosition(ref) ?? 0;
         if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
-        if (splitter.classList.contains(list) && defs.size === 0) {
-          assert(splitter.matches(`.${list}`));
+        if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
+          yield* proc(splitter as HTMLOListElement);
           splitter.remove();
           continue;
         }
@@ -137,7 +137,7 @@ function build(
             ? splitter as HTMLOListElement
             : target.insertBefore(html('ol', { class: list }), splitter);
           assert(note.parentNode);
-          yield* proc(defs, note);
+          yield* proc(note, defs);
           assert(defs.size === 0);
         }
       }
@@ -216,22 +216,24 @@ function build(
       note ??= splitter?.classList.contains(list)
         ? splitter as HTMLOListElement
         : target.insertBefore(html('ol', { class: list }), splitter ?? bottom);
-      yield* proc(defs, note);
+      yield* proc(note, defs);
       assert(defs.size === 0);
     }
     if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (splitter.classList.contains(list)) {
+        yield* proc(splitter as HTMLOListElement);
         splitter.remove();
       }
     }
   }
 }
 
-function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
+function* proc(note: HTMLOListElement, defs?: Map<string, HTMLLIElement>): Generator<HTMLLIElement | undefined, undefined, undefined> {
   for (let defs = note.children, i = defs.length; i--;) {
     yield note.removeChild(defs[i] as HTMLLIElement);
   }
+  if (!defs) return;
   for (const [, def] of defs) {
     yield note.appendChild(def);
   }
