@@ -24,7 +24,7 @@ import FigureParser = ExtensionParser.FigureParser;
 export const segment: FigureParser.SegmentParser = block(match(
   /(~{3,})(?:figure )?(?=\[?\$)/y,
   memoize(
-  ([, fence], closer = new RegExp(String.raw`${fence}[^\S\n]*(?:$|\n)`, 'y')) => close(
+  ([, fence], closer = new RegExp(String.raw`${fence}[^\S\r\n]*(?:$|\r?\n)`, 'y')) => close(
     sequence([
       contentline,
       inits([

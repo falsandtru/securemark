@@ -56,7 +56,7 @@ export const message: MessageParser = block(fmap(
           class: `message`,
           'data-type': type,
         },
-        [...segment(body)].reduce(
+        [...segment(body, false)].reduce(
           (acc, [seg]) =>
             push(acc, unwrap(content(subinput(seg, context)))),
           [html('h1', title(type))])))

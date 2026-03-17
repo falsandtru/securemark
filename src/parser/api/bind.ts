@@ -3,7 +3,6 @@ import { Context, Segment } from '../context';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { block } from '../block';
-import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../processor/figure';
 import { note } from '../processor/note';
@@ -42,13 +41,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   function* parse(source: string): Generator<Progress, undefined, undefined> {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-    source = normalize(source);
     // @ts-expect-error
     context.url = url ? new ReadonlyURL(url as ':') : undefined;
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     const sourceSegmentAttrs: Segment[] = [];
-    for (const [seg, attr] of segment(source)) {
+    for (const [seg, attr] of segment(source, !context.local)) {
       sourceSegments.push(seg);
       sourceSegmentAttrs.push(attr);
       yield { type: 'segment', value: seg };

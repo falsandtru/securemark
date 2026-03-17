@@ -5,7 +5,7 @@ import { autolink } from '../autolink';
 import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-const opener = /(`{3,})(?!`)([^\n]*)(?:$|\n)/y;
+const opener = /(`{3,})(?!`)([^\r\n]*)(?:$|\r?\n)/y;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 
 export const segment: CodeBlockParser.SegmentParser = block(

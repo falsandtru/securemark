@@ -9,7 +9,7 @@ import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: HeadingParser.SegmentParser = block(focus(
-  /#+ +\S[^\n]*(?:\n#+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
+  /#+ +\S[^\r\n]*(?:\r?\n#+(?=$| |\r?\n)[^\r\n]*)*(?:$|\r?\n)/y,
   input => {
     const context = input;
     const { source, range } = context;

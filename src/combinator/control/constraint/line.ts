@@ -27,7 +27,7 @@ export function firstline(source: string, position: number): string {
     : source.slice(position, i + 1);
 }
 
-const emptyline = /[^\S\n]*(?:$|\n)/y;
+const emptyline = /[^\S\r\n]*(?:$|\r?\n)/y;
 export function isEmptyline(source: string, position: number): boolean {
   emptyline.lastIndex = position;
   return source.length === position

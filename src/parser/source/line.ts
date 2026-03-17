@@ -10,7 +10,7 @@ export const anyline: AnyLineParser = input => {
   return new List();
 };
 
-const regEmptyline = /[^\S\n]*(?:$|\n)/y;
+const regEmptyline = /[^\S\r\n]*(?:$|\r?\n)/y;
 export const emptyline: EmptyLineParser = input => {
   const context = input;
   const { source, position } = context;
@@ -36,18 +36,20 @@ export const emptysegment: EmptySegmentParser = input => {
   return new List();
 };
 function eoel(source: string, position: number): number {
-  if (source[position] === '\n') return position + 1;
+  const char = source[position];
+  if (char === '\n' || char === '\r' && source[position + 1] === '\n') return position + 1;
   regEmptyline.lastIndex = position;
   regEmptyline.test(source);
   return regEmptyline.lastIndex || position;
 }
 
-const regContentline = /[^\S\n]*\S[^\n]*(?:$|\n)/y;
+const regContentline = /[^\S\r\n]*\S[^\r\n]*(?:$|\r?\n)/y;
 export const contentline: ContentLineParser = input => {
   const context = input;
   const { source, position } = context;
   if (position === source.length) return;
-  if (source[position] === '\n') return;
+  const char = source[position];
+  if (char === '\n' || char === '\r' && source[position + 1] === '\n') return;
   regContentline.lastIndex = position;
   regContentline.test(source);
   const i = regContentline.lastIndex;

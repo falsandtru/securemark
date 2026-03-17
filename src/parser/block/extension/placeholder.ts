@@ -4,7 +4,7 @@ import { block, fence, clear, fmap } from '../../../combinator';
 import { unwrap, invalid } from '../../util';
 import { html } from 'typed-dom/dom';
 
-const opener = /(~{3,})(?!~)[^\n]*(?:$|\n)/y;
+const opener = /(~{3,})(?!~)[^\r\n]*(?:$|\r?\n)/y;
 
 export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(
   clear(fence(opener, 300)));

@@ -6,6 +6,7 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptysegment } from './source';
+import { normalize } from './api';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
@@ -37,8 +38,8 @@ const parser: SegmentParser = union([
   some(contentline, MAX_SEGMENT_SIZE + 1),
 ]);
 
-export function* segment(source: string): Generator<readonly [string, Segment], undefined, undefined> {
-  if (!validate(source, MAX_INPUT_SIZE)) return yield [`${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`, Segment.unknown];
+export function* segment(source: string, initial = true): Generator<readonly [string, Segment], undefined, undefined> {
+  if (initial && !validate(source, MAX_INPUT_SIZE)) return yield [`${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`, Segment.unknown];
   assert(source.length < Number.MAX_SAFE_INTEGER);
   for (let position = 0; position < source.length;) {
     const context = new Context({ source, position });
@@ -52,9 +53,9 @@ export function* segment(source: string): Generator<readonly [string, Segment], 
     position = context.position;
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
-      validate(seg, MAX_SEGMENT_SIZE)
-        ? yield [seg, context.segment]
-        : yield [`${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`, Segment.unknown];
+      initial && !validate(seg, MAX_SEGMENT_SIZE)
+        ? yield [`${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`, Segment.unknown]
+        : yield [initial ? normalize(seg) : seg, context.segment];
     }
   }
 }

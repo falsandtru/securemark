@@ -15,7 +15,7 @@ import FigParser = ExtensionParser.FigParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
-    line(close(seg_label, /(?!\S).*\n/y)),
+    line(close(seg_label, /(?!\S).*\r?\n/y)),
     union([
       seg_code,
       seg_math,

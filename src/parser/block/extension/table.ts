@@ -14,7 +14,7 @@ import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
-const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\n]*)(?:$|\n)/y;
+const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y;
 
 export const segment: TableParser.SegmentParser = block(
   clear(fence(opener, 10000)));

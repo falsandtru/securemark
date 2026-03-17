@@ -8,7 +8,7 @@ export function header(source: string): string {
 
 export function headers(source: string): string[] {
   const [el] = parse(source);
-  return el?.textContent!.trimEnd().slice(el.firstChild!.firstChild!.textContent!.length).split('\n') ?? [];
+  return el?.textContent!.trimEnd().slice(el.firstChild!.firstChild!.textContent!.length).split(/\r?\n/) ?? [];
 }
 
 function parse(source: string): [HTMLElement, number] | [] {
