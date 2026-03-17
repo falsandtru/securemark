@@ -17,10 +17,10 @@ export function bracketname(context: Context, syntax: RegExp, opener: number, cl
   const { source, position, range, linebreak } = context;
   syntax.lastIndex = position - range + opener;
   return range - opener - closer === 0
-      || linebreak === 0
-      && range - opener - closer <= 16
-      && syntax.test(source)
-      && syntax.lastIndex === position - closer
+      || linebreak === 0 &&
+         range - opener - closer <= 16 &&
+         syntax.test(source) &&
+         syntax.lastIndex === position - closer
     ? 'paren'
     : 'bracket';
 }
