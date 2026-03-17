@@ -50,19 +50,19 @@ const referenceRefsMemoryCaller = memoize((target: Node) =>
 const annotation = build(
   'annotation',
   'annotations',
-  '.annotation:not(:is(.annotations, .references) .annotation, .local)',
+  '.annotation:not(:is(.annotations, .references) &, .local)',
   n => `*${n}`,
   'h1, h2, h3, h4, h5, h6, aside.aside, hr');
 const reference = build(
   'reference',
   'references',
-  '.reference:not(:is(.annotations, .references) .reference, .local)',
+  '.reference:not(:is(.annotations, .references) &, .local)',
   (n, abbr) => `[${abbr || n}]`);
 
 function build(
   syntax: string,
   list: string,
-  query: string,
+  selector: string,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
@@ -101,7 +101,7 @@ function build(
       };
     }, memory);
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll<HTMLElement>(query);
+    const refs = target.querySelectorAll<HTMLElement>(selector);
     const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
@@ -109,8 +109,11 @@ function build(
       title: '' && identifier,
       queue: [] as HTMLElement[],
     }));
-    const scope = target instanceof Element ? ':scope > ' : '';
-    const splitters = splitter ? target.querySelectorAll(`${scope}:is(${splitter})`) : [];
+    const splitters = splitter
+      ? target instanceof Element
+        ? target.querySelectorAll(`:scope > :is(${splitter})`)
+        : target.querySelectorAll(`:is(${splitter}):not(* > *)`)
+      : [];
     let iSplitters = 0;
     let total = 0;
     let format: 'number' | 'abbr';
@@ -118,6 +121,7 @@ function build(
     for (let len = refs.length, i = 0; i < len; ++i) {
       const ref = refs[i];
       if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
+        assert(splitter.parentNode === target || !splitter.parentNode);
         const pos = splitter?.compareDocumentPosition(ref) ?? 0;
         if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
@@ -209,9 +213,10 @@ function build(
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
-      yield* proc(defs, note ?? (splitter?.classList.contains(list)
+      note ??= splitter?.classList.contains(list)
         ? splitter as HTMLOListElement
-        : target.insertBefore(html('ol', { class: list }), splitter ?? bottom)));
+        : target.insertBefore(html('ol', { class: list }), splitter ?? bottom);
+      yield* proc(defs, note);
       assert(defs.size === 0);
     }
     if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
@@ -224,9 +229,8 @@ function build(
 }
 
 function* proc(defs: Map<string, HTMLLIElement>, note: HTMLOListElement): Generator<HTMLLIElement | undefined, undefined, undefined> {
-  const { children } = note;
   for (let defs = note.children, i = defs.length; i--;) {
-    yield note.removeChild(children[i] as HTMLLIElement);
+    yield note.removeChild(defs[i] as HTMLLIElement);
   }
   for (const [, def] of defs) {
     yield note.appendChild(def);

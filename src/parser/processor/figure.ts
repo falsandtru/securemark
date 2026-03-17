@@ -13,22 +13,24 @@ export function* figure(
     readonly local?: boolean;
   } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
+  const selector = ':is(figure[data-label], h1, h2)';
   const refs = new MultiQueue<string, HTMLAnchorElement>(push(
     querySelectorAll(target, 'a.label:not(.local)[data-label]'),
     notes && querySelectorAll(notes.references, 'a.label:not(.local)') || [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
-  const scope = target instanceof Element ? ':scope > ' : '';
   let base = '0';
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   for (
-    let defs = target.querySelectorAll(`${scope}:is(figure[data-label], h1, h2)`),
+    let defs = target instanceof Element
+          ? target.querySelectorAll(`:scope > ${selector}`)
+          : target.querySelectorAll(`${selector}:not(* > *)`),
         len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
-    if (!scope && def.parentNode !== target) continue;
+    assert(def.parentNode === target || !def.parentNode);
     const { tagName } = def;
     if (bases.length === 1 && tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
