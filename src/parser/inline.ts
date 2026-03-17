@@ -92,7 +92,8 @@ export const inline: InlineParser = lazy(() => union([
       case '｛':
         return bracket(input);
       case '<':
-        return html(input);
+        if (isAlphabet(source[position + 1])) return html(input);
+        break;
       case '$':
         if (source[position + 1] === '{') return math(input);
         return label(input)
@@ -131,3 +132,8 @@ export { dataindex } from './inline/extension/index';
 export { medialink } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia, lineshortmedia } from './inline/shortmedia';
+
+function isAlphabet(char: string): boolean {
+  assert(char.length === 1);
+  return 'a' <= char && char <= 'z';
+}

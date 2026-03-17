@@ -2,7 +2,7 @@ import { HTMLParser } from '../inline';
 import { Recursion } from '../context';
 import { List, Node, Context } from '../../combinator/data/parser';
 import { Flag } from '../node';
-import { union, some, recursion, precedence, validate, surround, open, match, lazy } from '../../combinator';
+import { union, some, recursion, precedence, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { isNonblankFirstLine, blankWith } from '../visibility';
@@ -20,7 +20,7 @@ const attrspecs = {
 Object.setPrototypeOf(attrspecs, null);
 Object.values(attrspecs).forEach(o => Object.setPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
+export const html: HTMLParser = lazy(() =>
   union([
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
@@ -59,8 +59,8 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
             new List([new Node(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
           ([as, bs = new List()], context) =>
             new List([new Node(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
-      ([, tag]) => tag,
-      new Map())),
+      ([, tag]) => tag2index(tag),
+      Array(TAGS.length))),
     surround(
       // https://html.spec.whatwg.org/multipage/syntax.html#void-elements
       str(/<[a-z]+(?=[ >])/yi),
@@ -71,7 +71,7 @@ export const html: HTMLParser = lazy(() => validate(/<[a-z]+(?=[ >])/yi,
         new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
       ([as, bs = new List()], context) =>
         new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
-  ])));
+  ]));
 
 export const attribute: HTMLParser.AttributeParser = union([
   str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi),
@@ -284,3 +284,12 @@ const TAGS: readonly string[] = [
   "tt",
   "xmp",
 ];
+
+const tag2index: (tag: string) => number = eval([
+  'tag => {',
+  'switch(tag){',
+  TAGS.map((tag, i) => `case '${tag}':return ${i};`).join(''),
+  'default: throw new Error();',
+  '}',
+  '}',
+].join(''));
