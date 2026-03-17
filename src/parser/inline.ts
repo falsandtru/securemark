@@ -123,7 +123,7 @@ export const inline: InlineParser = lazy(() => union([
   },
   autolink,
   text
-])) as any;
+]));
 
 export { indexee } from './inline/extension/indexee';
 export { indexer } from './inline/extension/indexer';

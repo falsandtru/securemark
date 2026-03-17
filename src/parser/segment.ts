@@ -35,7 +35,7 @@ const parser: SegmentParser = union([
     }
   },
   some(contentline, MAX_SEGMENT_SIZE + 1),
-]) as any;
+]);
 
 export function* segment(source: string): Generator<readonly [string, Segment], undefined, undefined> {
   if (!validate(source, MAX_INPUT_SIZE)) return yield [`${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`, Segment.unknown];

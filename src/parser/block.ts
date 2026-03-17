@@ -121,7 +121,7 @@ export const block: BlockParser = reset(
       }
     },
     paragraph
-  ]) as any));
+  ])));
 
 function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}[^\n]*\n`)

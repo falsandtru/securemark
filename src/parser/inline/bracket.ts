@@ -32,7 +32,7 @@ export const bracket: BracketParser = lazy(() => union([
         return d1(input);
     }
   }
-])) as any;
+]));
 
 const p1 = lazy(() => surround(
   str('('),
