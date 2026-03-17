@@ -4,7 +4,6 @@ import { consume } from './parser/context';
 interface Delimiter {
   readonly memory: Delimiter[];
   readonly index: number;
-  readonly signature: number | string;
   readonly matcher: (input: Input) => boolean | undefined;
   readonly precedence: number;
   state: boolean;
@@ -12,16 +11,14 @@ interface Delimiter {
 
 export class Delimiters {
   // 手間を惜しまなければ規定のパターンはすべて配列のインデクスに変換可能。
-  public static signature(pattern: string | RegExp | undefined): number | string {
+  public static signature(pattern: undefined | string | RegExp): number | string {
     switch (typeof pattern) {
       case 'undefined':
-        return 1 << 7;
+        return 0;
       case 'string':
+        assert(pattern !== '');
         assert(pattern !== '\x00');
-        if (pattern.length === 1) {
-          const code = pattern.charCodeAt(0);
-          return code;
-        }
+        if (pattern.length === 1) return pattern.charCodeAt(0);
         return `s:${pattern}`;
       case 'object':
         return `r/${pattern.source}`;
@@ -76,7 +73,6 @@ export class Delimiters {
         const delimiter: Delimiter = {
           memory,
           index,
-          signature,
           matcher,
           precedence,
           state: true,

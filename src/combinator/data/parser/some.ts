@@ -21,6 +21,7 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
     after = undefined;
   }
   assert(parser);
+  assert(delimiter !== '');
   const match = Delimiters.matcher(delimiter as string, after as string);
   const delims = delimiters?.map(([delimiter, precedence]) => ({
     signature: Delimiters.signature(delimiter),
