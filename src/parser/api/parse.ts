@@ -36,11 +36,12 @@ export function parse(source: string, options: Options = {}, context?: Context):
   context.header = true;
   for (const [seg, attr] of segment(source)) {
     context.segment = attr | Segment.write;
-    node.append(
-      ...block(input(seg, new Context(context)))
-        ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? []);
+    const es = block(input(seg, new Context(context)))!
+      .foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, [])
     // @ts-expect-error
     context.header = false;
+    if (es.length === 0) continue;
+    node.append(...es);
   }
   assert(options.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (options.test) return node;

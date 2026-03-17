@@ -76,15 +76,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     context.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
-      const src = sourceSegments[index];
+      const seg = sourceSegments[index];
       context.segment = sourceSegmentAttrs[index] | Segment.write;
-      const es = block(input(src, new Context(context)))
-        ?.foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []) ?? [];
+      const es = block(input(seg, new Context(context)))!
+        .foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []);
       // @ts-expect-error
       context.header = false;
       blocks.length === index
-        ? blocks.push([src, es, url])
-        : blocks.splice(index, 0, [src, es, url]);
+        ? blocks.push([seg, es, url])
+        : blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
