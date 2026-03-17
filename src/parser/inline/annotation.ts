@@ -3,7 +3,7 @@ import { State, Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursions, precedence, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { indexA } from './bracket';
+import { bracketname, indexA } from './bracket';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -47,7 +47,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     ]);
   },
   ([, bs], context) => {
-    const { source, position, range, linebreak, recursion, resources } = context;
+    const { source, position, linebreak, recursion, resources } = context;
     const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
     if (linebreak === 0 && bs && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
       const { className } = bs.head.value;
@@ -90,11 +90,13 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     if (source[context.position] === ')') {
       bs.push(new Node(')'));
       context.position += 1;
+      context.range += 1;
     }
-    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 2, position) : undefined;
-    bs = str !== undefined && (str === '' || indexA.test(str))
-      ? new List([new Node(html('span', { class: 'paren' }, defrag(unwrap(bs))))])
-      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
+    bs = new List([
+      new Node(html('span',
+        { class: bracketname(context, indexA, 2, context.position - position) },
+        defrag(unwrap(bs))))
+    ]);
     bs.unshift(new Node('('));
     const cs = parser(context);
     if (source[context.position] === ')') {

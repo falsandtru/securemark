@@ -1,5 +1,5 @@
 import { BracketParser } from '../inline';
-import { State, Recursion, Backtrack } from '../context';
+import { Context, State, Recursion, Backtrack } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursion, precedence, surround, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
@@ -8,9 +8,22 @@ import { str } from '../source';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
-const indexF = new RegExp(indexA.source.replace(', ', '[，、]')
-  .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)));
+export const indexA = /[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*/y;
+const indexF = new RegExp(
+  indexA.source.replace(', ', '[，、]')
+    .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)),
+  'y');
+export function bracketname(context: Context, syntax: RegExp, opener: number, closer: number): string {
+  const { source, position, range, linebreak } = context;
+  syntax.lastIndex = position - range + opener;
+  return range - opener - closer === 0
+      || linebreak === 0
+      && range - opener - closer <= 16
+      && syntax.test(source)
+      && syntax.lastIndex === position - closer
+    ? 'paren'
+    : 'bracket';
+}
 
 export const bracket: BracketParser = lazy(() => union([
   input => {
@@ -39,38 +52,32 @@ const p1 = lazy(() => surround(
   precedence(1, recursion(Recursion.bracket, some(inline, ')', [[')', 1]]))),
   str(')'),
   true, [],
-  ([as, bs = [], cs], { source, position, range, linebreak }) => {
-    const str = linebreak === 0 && range - 2 <= 16 ? source.slice(position - range + 1, position - 1) : undefined;
-    return str !== undefined && (str === '' || indexA.test(str))
-      ? new List([new Node(html('span', { class: 'paren' }, `(${str})`))])
-      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
-  },
-  ([as, bs = new List()], context) => {
-    const { source, position, range, linebreak } = context;
-    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 1, position) : undefined;
-    return str !== undefined && (str === '' || indexA.test(str))
-      ? new List([new Node(html('span', { class: 'paren' }, `(${str}`))])
-      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
-  }));
+  ([as, bs = new List(), cs], context) => new List([
+    new Node(html('span',
+      { class: bracketname(context, indexA, 1, 1) },
+      defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))
+  ]),
+  ([as, bs = new List()], context) => new List([
+    new Node(html('span',
+      { class: bracketname(context, indexA, 1, 0) },
+      defrag(unwrap(as.import(bs as List<Node<string>>)))))
+  ])));
 
 const p2 = lazy(() => surround(
   str('（'),
   precedence(1, recursion(Recursion.bracket, some(inline, '）', [['）', 1]]))),
   str('）'),
   true, [],
-  ([as, bs = [], cs], { source, position, range, linebreak }) => {
-    const str = linebreak === 0 && range - 2 <= 16 ? source.slice(position - range + 1, position - 1) : undefined;
-    return str !== undefined && (str === '' || indexF.test(str))
-      ? new List([new Node(html('span', { class: 'paren' }, `（${str}）`))])
-      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))]);
-  },
-  ([as, bs = new List()], context) => {
-    const { source, position, range, linebreak } = context;
-    const str = linebreak === 0 && range - 1 <= 16 ? source.slice(position - range + 1, position) : undefined;
-    return str !== undefined && (str === '' || indexF.test(str))
-      ? new List([new Node(html('span', { class: 'paren' }, `（${str}`))])
-      : new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(as.import(bs as List<Node<string>>)))))]);
-  }));
+  ([as, bs = new List(), cs], context) => new List([
+    new Node(html('span',
+      { class: bracketname(context, indexF, 1, 1) },
+      defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))
+  ]),
+  ([as, bs = new List()], context) => new List([
+    new Node(html('span',
+      { class: bracketname(context, indexF, 1, 0) },
+      defrag(unwrap(as.import(bs as List<Node<string>>)))))
+  ])));
 
 const s1 = lazy(() => surround(
   str('['),
