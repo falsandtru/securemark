@@ -31,7 +31,6 @@ export const escsource: EscapableSourceParser = context => {
           return new List([new Node(source.slice(position, position + 2))]);
       }
     case '\r':
-      consume(-1, context);
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;

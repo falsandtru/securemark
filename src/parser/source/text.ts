@@ -29,7 +29,6 @@ export const text: TextParser = input => {
           return new List([new Node(source.slice(position + 1, context.position))]);
       }
     case '\r':
-      consume(-1, context);
       return new List();
     case '\n':
       context.linebreak ||= source.length - position;
