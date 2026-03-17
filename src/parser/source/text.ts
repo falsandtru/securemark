@@ -177,8 +177,8 @@ export function isAlphanumeric(char: string): boolean {
 
 function seek(source: string, position: number, state: number): number {
   for (let i = position + 1; i < source.length; ++i) {
-    const fst = source[i];
-    switch (fst) {
+    const char = source[i];
+    switch (char) {
       case '\\':
       case '!':
       case '$':
@@ -210,10 +210,10 @@ function seek(source: string, position: number, state: number): number {
       case '+':
       case '~':
       case '=':
-        if (source[i + 1] === fst) return i;
+        if (source[i + 1] === char) return i;
         continue;
       case '/':
-        if (source[i + 1] === fst && source[i + 2] === fst) return i;
+        if (source[i + 1] === char && source[i + 2] === char) return i;
         continue;
       case '%':
         if (source[i + 1] === ']' && isWhitespace(source[i - 1], true)) return i;

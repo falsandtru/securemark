@@ -72,8 +72,8 @@ export const block: BlockParser = reset(
         case Segment.figure:
           return figure(input);
       }
-      const fst = source[position];
-      switch (fst) {
+      const char = source[position];
+      switch (char) {
         case Command.Error:
           throw new Error(firstline(source, position + 1).trimEnd());
         case '=':
@@ -116,7 +116,7 @@ export const block: BlockParser = reset(
         case '(':
           return olist(input);
         default:
-          if ('0' <= fst && fst <= '9') return olist(input);
+          if ('0' <= char && char <= '9') return olist(input);
       }
     },
     paragraph

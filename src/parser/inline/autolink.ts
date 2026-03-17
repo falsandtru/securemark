@@ -14,8 +14,8 @@ export const autolink: AutolinkParser = lazy(() =>
   input => {
     const { source, position } = input;
     if (position === source.length) return;
-    const fst = source[position];
-    switch (fst) {
+    const char = source[position];
+    switch (char) {
       case '@':
         return account(input);
       case '#':
@@ -41,6 +41,6 @@ export const autolink: AutolinkParser = lazy(() =>
         }
         return url(input) || email(input);
       default:
-        if (isAlphanumeric(fst)) return email(input);
+        if (isAlphanumeric(char)) return email(input);
     }
   }));
