@@ -34,11 +34,17 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     if (linebreak !== 0) {
       ns.unshift(new Node('('));
       ns.push(new Node(')'));
-      return new List([new Node(html('span', { class: 'bracket' }, ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))]);
+      return new List([
+        new Node(html('span',
+          { class: 'bracket' },
+          ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))
+      ]);
     }
     const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
     recursion.add(depth);
-    return new List([new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
+    return new List([
+      new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))
+    ]);
   },
   ([, bs], context) => {
     const { source, position, range, linebreak, recursion, resources } = context;
@@ -63,12 +69,20 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         }
         context.position += 1;
         recursion.add(depth);
-        return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))]);
+        return new List([
+          new Node(html('span',
+            { class: 'bracket' },
+            ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))
+        ]);
       }
       if (className === 'annotation' && deepunwrap(bs)) {
         context.position += 1;
         recursion.add(depth);
-        return new List([new Node(html('span', { class: 'bracket' }, ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))]);
+        return new List([
+          new Node(html('span',
+            { class: 'bracket' },
+            ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))
+        ]);
       }
     }
     bs ??= new List();
