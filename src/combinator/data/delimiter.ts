@@ -154,7 +154,7 @@ export class Delimiters {
 export function matcher(pattern: string | RegExp, advance: boolean, after?: Parser<string>): Parser<string> {
   assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
   const count = typeof pattern === 'object'
-    ? /[^^\\*+][*+]/.test(pattern.source)
+    ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source)
     : false;
   switch (typeof pattern) {
     case 'string':
@@ -194,7 +194,7 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
 export function tester(pattern: string | RegExp, advance: boolean, after?: Parser<unknown>): Parser<never> {
   assert(pattern instanceof RegExp ? !pattern.flags.match(/[gm]/) && pattern.sticky && !pattern.source.startsWith('^') : true);
   const count = typeof pattern === 'object'
-    ? /[^^\\*+][*+]/.test(pattern.source)
+    ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source)
     : false;
   switch (typeof pattern) {
     case 'string':
