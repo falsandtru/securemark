@@ -60,6 +60,6 @@ export function* segment(source: string): Generator<readonly [string, Segment], 
 }
 
 export function validate(source: string, size: number): boolean {
-  return source.length <= size / 4
+  return source.length <= size / 2
       || source.length <= size && new Blob([source]).size <= size;
 }
