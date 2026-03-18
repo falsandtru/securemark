@@ -41,14 +41,14 @@ const parser: SegmentParser = union([
 export function* segment(source: string, initial = true): Generator<readonly [string, Segment], undefined, undefined> {
   if (initial && !validate(source, MAX_INPUT_SIZE)) return yield [`${Command.Error}Too large input over ${MAX_INPUT_SIZE.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`, Segment.unknown];
   assert(source.length < Number.MAX_SAFE_INTEGER);
-  for (let position = 0; position < source.length;) {
+  for (let position = 0, len = source.length; position < len;) {
     const context = new Context({ source, position });
     const result = parser(context)!;
     assert(result);
     assert(context.position > position);
-    const segs = result.length > 0
-      ? result.foldl<string[]>((acc, { value }) => void acc.push(value) || acc, [])
-      : [source.slice(position, context.position)];
+    const segs = result.length === 0
+      ? [source.slice(position, context.position)]
+      : result.foldl<string[]>((acc, { value }) => (acc.push(value), acc), []);
     assert(segs.join('') === source.slice(position, context.position));
     position = context.position;
     for (let i = 0; i < segs.length; ++i) {
