@@ -1323,11 +1323,12 @@
   const intersection = new IntersectionObserver(function (changes) {
     changes
       .forEach(function (change) {
+        if (!change.isIntersecting) return;
         intersection.unobserve(change.target);
         render(change.target, { caches });
       });
   }, {
-    rootMargin: '100px',
+    rootMargin: '100%',
   });
   (async () => {
     await new Promise(requestAnimationFrame);
