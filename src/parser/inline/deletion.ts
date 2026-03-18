@@ -8,7 +8,7 @@ import { unwrap, repeat } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const deletion: DeletionParser = lazy(() =>
-  precedence(0, repeat('~~', '', recursion(Recursion.inline, surround(
+  repeat('~~', '', precedence(0, recursion(Recursion.inline, surround(
     '',
     some(union([
       some(inline, blankWith('\n', '~~')),
@@ -17,5 +17,5 @@ export const deletion: DeletionParser = lazy(() =>
     '~~',
     false, [],
     ([, bs], { buffer }) => buffer.import(bs),
-    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer)),
-    nodes => new List([new Node(html('del', defrag(unwrap(nodes))))]))));
+    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer))),
+    nodes => new List([new Node(html('del', defrag(unwrap(nodes))))])));
