@@ -38,8 +38,10 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
     for (const len = source.length; context.position < len;) {
       if (match(input)) break;
       if (context.delimiters.test(input)) break;
+      const pos = context.position;
       const result = parser(input);
       if (result === undefined) break;
+      if (context.position === pos) break;
       nodes = nodes?.import(result) ?? result;
       if (limit >= 0 && context.position - position > limit) break;
     }
