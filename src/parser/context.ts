@@ -1,6 +1,9 @@
 import { List, Node, Context as Ctx } from '../../src/combinator/data/parser';
 import { Dict } from 'spica/dict';
 
+export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB)
+export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
+
 export class Context extends Ctx {
   constructor(
     options: Partial<Context> = {},
@@ -17,6 +20,19 @@ export class Context extends Ctx {
       id,
       caches,
     } = options;
+    this.resources ??= {
+      // バックトラックのせいで文字数制限を受けないようにする。
+      clock: MAX_SEGMENT_SIZE * (6 + 1),
+      recursions: [
+        5 || Recursion.block,
+        20 || Recursion.blockquote,
+        40 || Recursion.listitem,
+        20 || Recursion.inline,
+        20 || Recursion.annotation,
+        20 || Recursion.bracket,
+        20 || Recursion.terminal,
+      ],
+    };
     this.segment = segment ?? Segment.unknown;
     this.local = local ?? false;
     this.sequential = sequential ?? false;
@@ -27,6 +43,10 @@ export class Context extends Ctx {
     this.id = id;
     this.caches = caches;
   }
+  public override readonly resources?: {
+    clock: number;
+    recursions: number[];
+  };
   public override segment: Segment;
   public local: boolean;
   public sequential: boolean;

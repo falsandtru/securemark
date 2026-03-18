@@ -1,5 +1,5 @@
 import { ParserSettings, Progress } from '../../..';
-import { Context, Segment } from '../context';
+import { Context, Options, Segment } from '../context';
 import { input } from '../../combinator/data/parser';
 import { segment } from '../segment';
 import { block } from '../block';
@@ -17,15 +17,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (position: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 } {
-  const context = new Context({
+  const options: Options = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
-  });
-  assert(!context.offset);
-  assert(!context.precedence);
-  assert(!context.state);
-  if (context.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
-  if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
+  };
+  if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
+  if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
   const blocks: Block[] = [];
   const adds: (readonly [HTMLElement, Node | null])[] = [];
@@ -42,11 +39,11 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     // @ts-expect-error
-    context.url = url ? new ReadonlyURL(url as ':') : undefined;
+    options.url = url ? new ReadonlyURL(url as ':') : undefined;
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     const sourceSegmentAttrs: Segment[] = [];
-    for (const [seg, attr] of segment(source, !context.local)) {
+    for (const [seg, attr] of segment(source, true)) {
       sourceSegments.push(seg);
       sourceSegmentAttrs.push(attr);
       yield { type: 'segment', value: seg };
@@ -71,15 +68,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     const base = next(head);
     let index = head;
     // @ts-expect-error
-    context.header = true;
+    options.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      context.segment = sourceSegmentAttrs[index] | Segment.write;
-      const es = block(input(seg, new Context(context)))!
+      options.segment = sourceSegmentAttrs[index] | Segment.write;
+      const es = block(input(seg, new Context(options)))!
         .foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []);
       // @ts-expect-error
-      context.header = false;
+      options.header = false;
       blocks.length === index
         ? blocks.push([seg, es, url])
         : blocks.splice(index, 0, [seg, es, url]);
@@ -124,14 +121,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     yield { type: 'break' };
     if (rev !== revision) return yield { type: 'cancel' };
-    for (const el of figure(next(0)?.parentNode ?? target, settings.notes, context)) {
+    for (const el of figure(next(0)?.parentNode ?? target, settings.notes, options)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of note(next(0)?.parentNode ?? target, settings.notes, context, bottom)) {
+    for (const el of note(next(0)?.parentNode ?? target, settings.notes, options, bottom)) {
       assert(rev === revision);
       el
         ? yield { type: 'note', value: el }

@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown';
-import { Context, Segment, Command } from './context';
+import { MAX_INPUT_SIZE, MAX_SEGMENT_SIZE, Context, Segment, Command } from './context';
 import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
@@ -9,9 +9,6 @@ import { contentline, emptysegment } from './source';
 import { normalize } from './api';
 
 import SegmentParser = MarkdownParser.SegmentParser;
-
-export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB)
-export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
 
 const parser: SegmentParser = union([
   some(emptysegment, MAX_SEGMENT_SIZE + 1),

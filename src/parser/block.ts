@@ -1,8 +1,7 @@
 import { MarkdownParser } from '../../markdown';
-import { Segment, Recursion, Command } from './context';
+import { Segment, Command } from './context';
 import { List, Node } from '../combinator/data/parser';
-import { union, reset, firstline, recover } from '../combinator';
-import { MAX_SEGMENT_SIZE } from './segment';
+import { union, firstline, recover } from '../combinator';
 import { header } from './header';
 import { emptysegment } from './source';
 import { pagebreak } from './block/pagebreak';
@@ -43,84 +42,68 @@ export import MediaBlockParser = BlockParser.MediaBlockParser;
 export import ReplyParser = BlockParser.ReplyParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = reset(
-  {
-    resources: {
-      // バックトラックのせいで文字数制限を受けないようにする。
-      clock: MAX_SEGMENT_SIZE * 6 + 1,
-      recursions: [
-        5 || Recursion.block,
-        20 || Recursion.blockquote,
-        40 || Recursion.listitem,
-        20 || Recursion.inline,
-        20 || Recursion.annotation,
-        20 || Recursion.bracket,
-        20 || Recursion.terminal,
-      ],
-    },
+export const block: BlockParser = error(union([
+  emptysegment,
+  input => {
+    const { source, position, segment } = input;
+    if (position === source.length) return;
+    switch (segment ^ Segment.write) {
+      case Segment.heading:
+        return heading(input);
+      case Segment.fig:
+        return fig(input);
+      case Segment.figure:
+        return figure(input);
+    }
+    const char = source[position];
+    switch (char) {
+      case Command.Error:
+        throw new Error(firstline(source, position + 1).trimEnd());
+      case '=':
+        if (source.startsWith('===', position)) return pagebreak(input);
+        break;
+      case '`':
+        if (source.startsWith('```', position)) return codeblock(input);
+        break;
+      case '~':
+        if (source.startsWith('~~~', position)) return extension(input);
+        if (source[position + 1] === ' ') return dlist(input);
+        break;
+      case '-':
+        if (source.startsWith('---', position)) return header(input);
+        if (source[position + 1] === ' ') return ulist(input) || ilist(input);
+        break;
+      case '+':
+      case '*':
+        if (source[position + 1] === ' ') return ilist(input);
+        break;
+      case '[':
+        switch (source[position + 1]) {
+          case '$':
+            return figbase(input);
+          case '!':
+            return mediablock(input);
+        }
+        break;
+      case '!':
+        if (source[position + 1] === '>') return blockquote(input);
+        return mediablock(input);
+      case '>':
+        if (source[position + 1] === '>') return blockquote(input) || reply(input);
+        return blockquote(input);
+      case '$':
+        if (source[position + 1] === '$') return mathblock(input);
+        return figbase(input);
+      case '|':
+        return table(input) || sidefence(input);
+      case '(':
+        return olist(input);
+      default:
+        if ('0' <= char && char <= '9') return olist(input);
+    }
   },
-  error(union([
-    emptysegment,
-    input => {
-      const { source, position, segment } = input;
-      if (position === source.length) return;
-      switch (segment ^ Segment.write) {
-        case Segment.heading:
-          return heading(input);
-        case Segment.fig:
-          return fig(input);
-        case Segment.figure:
-          return figure(input);
-      }
-      const char = source[position];
-      switch (char) {
-        case Command.Error:
-          throw new Error(firstline(source, position + 1).trimEnd());
-        case '=':
-          if (source.startsWith('===', position)) return pagebreak(input);
-          break;
-        case '`':
-          if (source.startsWith('```', position)) return codeblock(input);
-          break;
-        case '~':
-          if (source.startsWith('~~~', position)) return extension(input);
-          if (source[position + 1] === ' ') return dlist(input);
-          break;
-        case '-':
-          if (source.startsWith('---', position)) return header(input);
-          if (source[position + 1] === ' ') return ulist(input) || ilist(input);
-          break;
-        case '+':
-        case '*':
-          if (source[position + 1] === ' ') return ilist(input);
-          break;
-        case '[':
-          switch (source[position + 1]) {
-            case '$':
-              return figbase(input);
-            case '!':
-              return mediablock(input);
-          }
-          break;
-        case '!':
-          if (source[position + 1] === '>') return blockquote(input);
-          return mediablock(input);
-        case '>':
-          if (source[position + 1] === '>') return blockquote(input) || reply(input);
-          return blockquote(input);
-        case '$':
-          if (source[position + 1] === '$') return mathblock(input);
-          return figbase(input);
-        case '|':
-          return table(input) || sidefence(input);
-        case '(':
-          return olist(input);
-        default:
-          if ('0' <= char && char <= '9') return olist(input);
-      }
-    },
-    paragraph
-  ])));
+  paragraph
+]));
 
 function error(parser: BlockParser): BlockParser {
   const reg = new RegExp(String.raw`^${Command.Error}[^\r\n]*\r?\n`)
