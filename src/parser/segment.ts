@@ -60,7 +60,7 @@ export function* segment(source: string, initial = true): Generator<readonly [st
   }
 }
 
-export function validate(source: string, size: number): boolean {
+function validate(source: string, size: number): boolean {
   return source.length <= size / 2
       || source.length <= size && new Blob([source]).size <= size;
 }
