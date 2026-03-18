@@ -122,13 +122,15 @@ export function recursions(rs: readonly number[], parser: Parser): Parser {
     assert(recursions.length > 0);
     for (const recursion of rs) {
       const rec = min(recursion, recursions.length - 1);
-      if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
-      rec >= 0 && --recursions[rec];
+      if (rec === -1) continue;
+      if (recursions[rec] < 1) throw new Error('Too much recursion');
+      --recursions[rec];
     }
     const result = parser(input);
     for (const recursion of rs) {
       const rec = min(recursion, recursions.length - 1);
-      rec >= 0 && ++recursions[rec];
+      if (rec === -1) continue;
+      ++recursions[rec];
     }
     return result;
   };
