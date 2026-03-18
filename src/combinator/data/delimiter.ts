@@ -161,13 +161,20 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
   const count = typeof pattern === 'object'
     ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source)
     : false;
+  let sid = 0, pos = 0, index = -1;
   switch (typeof pattern) {
     case 'string':
       if (pattern === '') return () => new List([new Node(pattern)]);
       return input => {
         const context = input;
-        const { source, position } = context;
-        if (!source.startsWith(pattern, position)) return;
+        const { SID, source, position } = context;
+        const hit = SID === sid && position === pos;
+        index = hit
+          ? index
+          : source.startsWith(pattern, position) ? position : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
         if (advance) {
           context.position += pattern.length;
         }
@@ -180,13 +187,19 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
       assert(pattern.sticky);
       return input => {
         const context = input;
-        const { source, position } = context;
+        const { SID, source, position } = context;
+        const hit = SID === sid && position === pos;
         pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const src = source.slice(position, pattern.lastIndex);
-        count && consume(src.length, context);
+        index = hit
+          ? index
+          : pattern.test(source) ? pattern.lastIndex : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
+        const src = source.slice(position, index);
+        count && !hit && consume(src.length, context);
         if (advance) {
-          context.position += src.length;
+          context.position = index;
         }
         const next = after?.(input);
         return after
@@ -201,13 +214,20 @@ export function tester(pattern: string | RegExp, advance: boolean, after?: Parse
   const count = typeof pattern === 'object'
     ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source)
     : false;
+  let sid = 0, pos = 0, index = -1;
   switch (typeof pattern) {
     case 'string':
       if (pattern === '') return () => new List();
       return input => {
         const context = input;
-        const { source, position } = context;
-        if (!source.startsWith(pattern, position)) return;
+        const { SID, source, position } = context;
+        const hit = SID === sid && position === pos;
+        index = hit
+          ? index
+          : source.startsWith(pattern, position) ? position : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
         if (advance) {
           context.position += pattern.length;
         }
@@ -218,13 +238,19 @@ export function tester(pattern: string | RegExp, advance: boolean, after?: Parse
       assert(pattern.sticky);
       return input => {
         const context = input;
-        const { source, position } = context;
+        const { SID, source, position } = context;
+        const hit = SID === sid && position === pos;
         pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const len = pattern.lastIndex - position;
-        count && consume(len, context);
+        index = hit
+          ? index
+          : pattern.test(source) ? pattern.lastIndex : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
+        const len = index - position;
+        count && !hit && consume(len, context);
         if (advance) {
-          context.position += len;
+          context.position = index;
         }
         if (after && after(input) === undefined) return;
         return new List();

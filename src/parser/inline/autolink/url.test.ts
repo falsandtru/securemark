@@ -83,6 +83,7 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser, input(' http://host>', new Context())), [['<a class="url" href="http://host" target="_blank">http://host</a>'], '>']);
       assert.deepStrictEqual(inspect(parser, input(' http://host（', new Context())), [['<a class="url" href="http://host" target="_blank">http://host</a>'], '（']);
       assert.deepStrictEqual(inspect(parser, input(' http://host）', new Context())), [['<a class="url" href="http://host" target="_blank">http://host</a>'], '）']);
+      assert.deepStrictEqual(inspect(parser, input(` http://host${'+'.repeat(5e5)}`, new Context())), [['<a class="url" href="http://host" target="_blank">http://host</a>'], '+'.repeat(5e5)]);
     });
 
     it('trailing entities', () => {

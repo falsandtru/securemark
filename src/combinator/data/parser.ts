@@ -26,6 +26,10 @@ export class Node<N> implements List.Node {
   public next?: this = undefined;
   public prev?: this = undefined;
 }
+let SID = 0;
+function sid(): number {
+  return SID = ++SID >>> 0 || 1;
+}
 export class Context {
   constructor(
     {
@@ -54,6 +58,7 @@ export class Context {
     this.offset = offset ?? 0;
     this.backtracks = backtracks ?? {};
   }
+  public SID: number = sid();
   public source: string;
   public position: number;
   public segment: number;
@@ -110,6 +115,7 @@ export const enum Segment {
 }
 
 export function input<C extends Context>(source: string, context: C): Input<C> {
+  context.SID = sid();
   context.source = source;
   context.position = 0;
   return context;
@@ -118,6 +124,7 @@ export function input<C extends Context>(source: string, context: C): Input<C> {
 export function subinput<C extends Context>(source: string, context: C): Input<C> {
   return {
     ...context,
+    SID: sid(),
     source,
     position: 0,
     offset: 0,
