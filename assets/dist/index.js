@@ -3376,16 +3376,24 @@ class Delimiters {
 exports.Delimiters = Delimiters;
 function matcher(pattern, advance, after) {
   const count = typeof pattern === 'object' ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source) : false;
+  let sid = 0,
+    pos = 0,
+    index = -1;
   switch (typeof pattern) {
     case 'string':
       if (pattern === '') return () => new parser_1.List([new parser_1.Node(pattern)]);
       return input => {
         const context = input;
         const {
+          SID,
           source,
           position
         } = context;
-        if (!source.startsWith(pattern, position)) return;
+        const hit = SID === sid && position === pos;
+        index = hit ? index : source.startsWith(pattern, position) ? position : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
         if (advance) {
           context.position += pattern.length;
         }
@@ -3396,15 +3404,20 @@ function matcher(pattern, advance, after) {
       return input => {
         const context = input;
         const {
+          SID,
           source,
           position
         } = context;
+        const hit = SID === sid && position === pos;
         pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const src = source.slice(position, pattern.lastIndex);
-        count && (0, context_1.consume)(src.length, context);
+        index = hit ? index : pattern.test(source) ? pattern.lastIndex : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
+        const src = source.slice(position, index);
+        count && !hit && (0, context_1.consume)(src.length, context);
         if (advance) {
-          context.position += src.length;
+          context.position = index;
         }
         const next = after?.(input);
         return after ? next && new parser_1.List([new parser_1.Node(src)]).import(next) : new parser_1.List([new parser_1.Node(src)]);
@@ -3414,16 +3427,24 @@ function matcher(pattern, advance, after) {
 exports.matcher = matcher;
 function tester(pattern, advance, after) {
   const count = typeof pattern === 'object' ? /[^^\\*+][*+]|{\d+,}/.test(pattern.source) : false;
+  let sid = 0,
+    pos = 0,
+    index = -1;
   switch (typeof pattern) {
     case 'string':
       if (pattern === '') return () => new parser_1.List();
       return input => {
         const context = input;
         const {
+          SID,
           source,
           position
         } = context;
-        if (!source.startsWith(pattern, position)) return;
+        const hit = SID === sid && position === pos;
+        index = hit ? index : source.startsWith(pattern, position) ? position : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
         if (advance) {
           context.position += pattern.length;
         }
@@ -3434,15 +3455,20 @@ function tester(pattern, advance, after) {
       return input => {
         const context = input;
         const {
+          SID,
           source,
           position
         } = context;
+        const hit = SID === sid && position === pos;
         pattern.lastIndex = position;
-        if (!pattern.test(source)) return;
-        const len = pattern.lastIndex - position;
-        count && (0, context_1.consume)(len, context);
+        index = hit ? index : pattern.test(source) ? pattern.lastIndex : -1;
+        sid = SID;
+        pos = position;
+        if (index === -1) return;
+        const len = index - position;
+        count && !hit && (0, context_1.consume)(len, context);
         if (advance) {
-          context.position += len;
+          context.position = index;
         }
         if (after && after(input) === undefined) return;
         return new parser_1.List();
@@ -3625,6 +3651,10 @@ class Node {
   }
 }
 exports.Node = Node;
+let SID = 0;
+function sid() {
+  return SID = ++SID >>> 0 || 1;
+}
 class Context {
   constructor({
     source,
@@ -3639,6 +3669,7 @@ class Context {
     offset,
     backtracks
   } = {}) {
+    this.SID = sid();
     this.source = source ?? '';
     this.position = position ?? 0;
     this.segment = segment ?? 0;
@@ -3654,6 +3685,7 @@ class Context {
 }
 exports.Context = Context;
 function input(source, context) {
+  context.SID = sid();
   context.source = source;
   context.position = 0;
   return context;
@@ -3662,6 +3694,7 @@ exports.input = input;
 function subinput(source, context) {
   return {
     ...context,
+    SID: sid(),
     source,
     position: 0,
     offset: 0,
@@ -3808,13 +3841,15 @@ function recursions(rs, parser) {
     } = resources;
     for (const recursion of rs) {
       const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
-      rec >= 0 && --recursions[rec];
+      if (rec === -1) continue;
+      if (recursions[rec] < 1) throw new Error('Too much recursion');
+      --recursions[rec];
     }
     const result = parser(input);
     for (const recursion of rs) {
       const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      rec >= 0 && ++recursions[rec];
+      if (rec === -1) continue;
+      ++recursions[rec];
     }
     return result;
   };
@@ -3975,8 +4010,10 @@ function some(parser, delimiter, after, delimiters, limit = -1) {
     for (const len = source.length; context.position < len;) {
       if (match(input)) break;
       if (context.delimiters.test(input)) break;
+      const pos = context.position;
       const result = parser(input);
       if (result === undefined) break;
+      if (context.position === pos) break;
       nodes = nodes?.import(result) ?? result;
       if (limit >= 0 && context.position - position > limit) break;
     }
@@ -4043,7 +4080,7 @@ function union(parsers) {
     case 1:
       return parsers[0];
     default:
-      return eval(['((', parsers.map((_, i) => `parser${i},`).join(''), ') =>', 'input =>', parsers.map((_, i) => `|| parser${i}(input)`).join('').slice(2), ')'].join(''))(...parsers);
+      return eval(['(', parsers.map((_, i) => `parser${i},`).join(''), ') =>', 'input =>', parsers.map((_, i) => `|| parser${i}(input)`).join('').slice(2)].join(''))(...parsers);
   }
 }
 exports.union = union;
@@ -6790,11 +6827,11 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('~~', '', (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
+exports.deletion = (0, combinator_1.lazy)(() => (0, util_1.repeat)('~~', '', (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -6844,7 +6881,7 @@ const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, comb
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('***', visibility_1.beforeNonblank, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
+exports.emstrong = (0, combinator_1.lazy)(() => (0, util_1.repeat)('***', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
   const {
     buffer
   } = context;
@@ -6888,7 +6925,7 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, 
   }
 }, ([, bs], {
   buffer
-}) => bs && buffer.import(bs) && buffer.push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)),
+}) => bs && buffer.import(bs) && buffer.push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))),
 // 3以上の`*`に対してemの適用を保証する
 nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)))]))]), (nodes, context, prefix, postfix, state) => {
   context.position += postfix;
@@ -6943,7 +6980,7 @@ nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.h
     nodes = prepend('*'.repeat(prefix - postfix), nodes);
   }
   return nodes;
-})));
+}));
 function prepend(prefix, nodes) {
   if (typeof nodes.head?.value === 'string') {
     nodes.head.value = prefix + nodes.head.value;
@@ -7416,11 +7453,11 @@ const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('++', '', (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
+exports.insertion = (0, combinator_1.lazy)(() => (0, util_1.repeat)('++', '', (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -7443,11 +7480,11 @@ const dom_1 = __webpack_require__(394);
 // 可読性のため実際にはオブリーク体を指定する。
 // 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
 // ある程度の長さのある文に使うのが望ましい。
-exports.italic = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('///', visibility_1.beforeNonblank, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
+exports.italic = (0, combinator_1.lazy)(() => (0, util_1.repeat)('///', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]))));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -7624,11 +7661,11 @@ const indexee_1 = __webpack_require__(7610);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, util_1.repeat)('==', visibility_1.beforeNonblank, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
+exports.mark = (0, combinator_1.lazy)(() => (0, util_1.repeat)('==', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), (nodes, {
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), (nodes, {
   id,
   state
 }, nest) => {
@@ -7640,7 +7677,7 @@ exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(0, (0, 
   return el.id ? new parser_1.List([new parser_1.Node(el), new parser_1.Node((0, dom_1.html)('a', {
     href: `#${el.id}`
   }))]) : new parser_1.List([new parser_1.Node(el)]);
-})));
+}));
 
 /***/ },
 
