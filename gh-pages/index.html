@@ -1354,6 +1354,7 @@
     let past = Date.now();
     let time = 0;
     let resource = 200 * rate;
+    let queue = [];
     let scroll = window.scrollY;
     for (const result of parse(text)) {
       switch (result.type) {
@@ -1361,10 +1362,7 @@
           break;
         case 'block':
         case 'note':
-          const el = result.value;
-          el.parentNode
-            ? intersection.observe(el)
-            : intersection.unobserve(el);
+          queue.push(result.value);
           break;
         case 'cancel':
           throw new Error('Cancel.');
@@ -1391,13 +1389,24 @@
         else {
           resource = 200 * rate;
         }
+        render(queue);
         past = Date.now();
       }
     }
     time += Date.now() - past;
     stats[index] = time;
     stats.push(Date.now() - start);
+    render(queue);
     return stats;
+
+    function render(queue) {
+      for (const el of queue) {
+        el.parentNode
+          ? intersection.observe(el)
+          : intersection.unobserve(el);
+      }
+      queue = [];
+    }
   }
   function log(stats) {
     document.getElementById('chars').textContent = stats[0];
