@@ -9091,7 +9091,6 @@ function repeat(symbol, after, parser, cons, termination = (nodes, context, pref
       }
       break;
     }
-    if (nodes.length === 0) return;
     const prefix = i;
     i = 0;
     for (let len = (0, alias_1.min)(prefix, source.length - context.position); i < len && source[context.position + i] === symbol[0];) {
