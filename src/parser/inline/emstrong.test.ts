@@ -9,7 +9,7 @@ describe('Unit: parser/inline/emstrong', () => {
     const parser = some(emstrong);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser, input('***', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('***', new Context())), [['***'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a', new Context())), [['***a'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a ***', new Context())), [['***a ', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a  ***', new Context())), [['***a', ' ', '***'], '']);
@@ -85,7 +85,7 @@ describe('Unit: parser/inline/emstrong', () => {
       assert.deepStrictEqual(inspect(parser, input('***a***b', new Context())), [['<em><strong>a</strong></em>'], 'b']);
       assert.deepStrictEqual(inspect(parser, input('***a****', new Context())), [['<em><strong>a</strong></em>'], '*']);
       assert.deepStrictEqual(inspect(parser, input('***a*****', new Context())), [['<em><strong>a</strong></em>'], '**']);
-      assert.deepStrictEqual(inspect(parser, input('***a******', new Context())), [['<em><strong>a</strong></em>'], '***']);
+      assert.deepStrictEqual(inspect(parser, input('***a******', new Context())), [['<em><strong>a</strong></em>', '***'], '']);
       assert.deepStrictEqual(inspect(parser, input('****a***', new Context())), [['*', '<em><strong>a</strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('****a***b', new Context())), [['*', '<em><strong>a</strong></em>', 'b'], '']);
       assert.deepStrictEqual(inspect(parser, input('****a***b*', new Context())), [['<em><em><strong>a</strong></em>b</em>'], '']);

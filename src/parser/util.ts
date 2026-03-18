@@ -67,7 +67,6 @@ export function repeat<N extends HTMLElement | string>(symbol: string, after: st
       }
       break;
     }
-    if (nodes.length === 0) return;
     const prefix = i;
     i = 0;
     for (let len = min(prefix, source.length - context.position); i < len && source[context.position + i] === symbol[0];) {

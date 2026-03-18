@@ -9,7 +9,7 @@ describe('Unit: parser/inline/italic', () => {
     const parser = some(italic);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser, input('///', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('///', new Context())), [['///'], '']);
       assert.deepStrictEqual(inspect(parser, input('///a', new Context())), [['///', 'a'], '']);
       assert.deepStrictEqual(inspect(parser, input('///a ///', new Context())), [['///', 'a ', '///'], '']);
       assert.deepStrictEqual(inspect(parser, input('///a  ///', new Context())), [['///', 'a', ' ', '///'], '']);

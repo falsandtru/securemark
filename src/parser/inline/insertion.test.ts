@@ -11,7 +11,7 @@ describe('Unit: parser/inline/insertion', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
       assert.deepStrictEqual(inspect(parser, input('+', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('++', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('++', new Context())), [['++'], '']);
       assert.deepStrictEqual(inspect(parser, input('++a', new Context())), [['++', 'a'], '']);
       assert.deepStrictEqual(inspect(parser, input('++a+', new Context())), [['++', 'a+'], '']);
       assert.deepStrictEqual(inspect(parser, input(' ++a++', new Context())), undefined);
