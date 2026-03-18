@@ -67,7 +67,7 @@ describe('Unit: parser/inline/italic', () => {
       assert.deepStrictEqual(inspect(parser, input('///a&Tab;///b//////', new Context())), [['<i>a\t<i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser, input('///a<wbr>///b//////', new Context())), [['<i>a<wbr><i>b</i></i>'], '']);
       assert.deepStrictEqual(inspect(parser, input('///`a`///', new Context())), [['<i><code data-src="`a`">a</code></i>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('///(///a///)///', new Context())), [['<i><span class="bracket">(<i>a</i>)</span></i>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('///(///a///)///', new Context())), [['<i><span class="paren">(<i>a</i>)</span></i>'], '']);
       assert.deepStrictEqual(inspect(parser, input('///{http://host/}///', new Context())), [['<i><a class="url" href="http://host/" target="_blank">http://host/</a></i>'], '']);
     });
 

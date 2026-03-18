@@ -37,9 +37,9 @@ describe('Unit: parser/inline/emstrong', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser, input('***`a`***', new Context())), [['<em><strong><code data-src="`a`">a</code></strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***(*a*)***', new Context())), [['<em><strong><span class="bracket">(<em>a</em>)</span></strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***(**a**)***', new Context())), [['<em><strong><span class="bracket">(<strong>a</strong>)</span></strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('***(***a***)***', new Context())), [['<em><strong><span class="bracket">(<em><strong>a</strong></em>)</span></strong></em>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***(*a*)***', new Context())), [['<em><strong><span class="paren">(<em>a</em>)</span></strong></em>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***(**a**)***', new Context())), [['<em><strong><span class="paren">(<strong>a</strong>)</span></strong></em>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('***(***a***)***', new Context())), [['<em><strong><span class="paren">(<em><strong>a</strong></em>)</span></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*', new Context())), [['**', '<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*b', new Context())), [['**', '<em>a</em>', 'b'], '']);
       assert.deepStrictEqual(inspect(parser, input('***a*b*', new Context())), [['**', '<em>a</em>', 'b'], '*']);

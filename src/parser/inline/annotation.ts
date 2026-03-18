@@ -3,7 +3,7 @@ import { State, Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { union, some, recursions, precedence, constraint, surround, open, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { bracketname, indexA } from './bracket';
+import { bracketname } from './bracket';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -36,8 +36,8 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       ns.push(new Node(')'));
       return new List([
         new Node(html('span',
-          { class: 'bracket' },
-          ['(', html('span', { class: 'bracket' }, defrag(unwrap(ns))), ')']))
+          { class: bracketname(context, 1, 1) },
+          ['(', html('span', { class: bracketname(context, 2, 2) }, defrag(unwrap(ns))), ')']))
       ]);
     }
     const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
@@ -71,7 +71,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         recursion.add(depth);
         return new List([
           new Node(html('span',
-            { class: 'bracket' },
+            { class: 'paren' },
             ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))
         ]);
       }
@@ -80,7 +80,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         recursion.add(depth);
         return new List([
           new Node(html('span',
-            { class: 'bracket' },
+            { class: 'paren' },
             ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))
         ]);
       }
@@ -94,7 +94,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     }
     bs = new List([
       new Node(html('span',
-        { class: bracketname(context, indexA, 2, context.position - position) },
+        { class: bracketname(context, 2, context.position - position) },
         defrag(unwrap(bs))))
     ]);
     bs.unshift(new Node('('));
@@ -103,8 +103,11 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       cs && bs.import(cs);
       bs.push(new Node(')'));
       context.position += 1;
+      context.range += 1;
     }
-    return new List([new Node(html('span', { class: 'bracket' }, defrag(unwrap(bs))))]);
+    return new List([new Node(html('span',
+      { class: bracketname(context, 1, context.position - position) },
+      defrag(unwrap(bs))))]);
   })));
 
 const parser = lazy(() => precedence(1, some(inline, ')', [[')', 1]])));

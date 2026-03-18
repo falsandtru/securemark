@@ -8,18 +8,9 @@ import { str } from '../source';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const indexA = /^[0-9A-Za-z]+(?:(?:[.-]|, )[0-9A-Za-z]+)*$/;
-const indexF = new RegExp(
-  indexA.source.replace(', ', '[，、]')
-    .replace(/[09AZaz.]|\-(?!\w)/g, c => String.fromCodePoint(c.codePointAt(0)! + 0xFEE0)),
-  '');
-export function bracketname(context: Context, syntax: RegExp, opener: number, closer: number): string {
-  const { source, position, range, linebreak } = context;
-  syntax.lastIndex = position - range + opener;
-  return range - opener - closer === 0
-      || linebreak === 0 &&
-         range - opener - closer <= 16 &&
-         syntax.test(source.slice(position - range + opener, position - closer))
+export function bracketname(context: Context, opener: number, closer: number): string {
+  const { range, linebreak } = context;
+  return range - opener - closer === 0 || linebreak === 0 && range - opener - closer <= 16
     ? 'paren'
     : 'bracket';
 }
@@ -53,12 +44,12 @@ const p1 = lazy(() => surround(
   true, [],
   ([as, bs = new List(), cs], context) => new List([
     new Node(html('span',
-      { class: bracketname(context, indexA, 1, 1) },
+      { class: bracketname(context, 1, 1) },
       defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))
   ]),
   ([as, bs = new List()], context) => new List([
     new Node(html('span',
-      { class: bracketname(context, indexA, 1, 0) },
+      { class: bracketname(context, 1, 0) },
       defrag(unwrap(as.import(bs as List<Node<string>>)))))
   ])));
 
@@ -69,12 +60,12 @@ const p2 = lazy(() => surround(
   true, [],
   ([as, bs = new List(), cs], context) => new List([
     new Node(html('span',
-      { class: bracketname(context, indexF, 1, 1) },
+      { class: bracketname(context, 1, 1) },
       defrag(unwrap(as.import(bs as List<Node<string>>).import(cs)))))
   ]),
   ([as, bs = new List()], context) => new List([
     new Node(html('span',
-      { class: bracketname(context, indexF, 1, 0) },
+      { class: bracketname(context, 1, 0) },
       defrag(unwrap(as.import(bs as List<Node<string>>)))))
   ])));
 

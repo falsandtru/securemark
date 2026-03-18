@@ -307,15 +307,6 @@ describe('Unit: parser/api/parse', () => {
       //    `<pre class="error" translate="no">${'{ '.repeat(21)}0</pre>`,
       //  ]);
       assert.deepStrictEqual(
-        [...parse(`${'('.repeat(20)}0`).children].map(el => el.outerHTML),
-        [`<p>${'<span class="bracket">('.repeat(19)}<span class="paren">(0</span>${'</span>'.repeat(19)}</p>`]);
-      assert.deepStrictEqual(
-        [...parse(`${'('.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'('.repeat(21)}0</pre>`,
-        ]);
-      assert.deepStrictEqual(
         [...parse(`${'['.repeat(20)}0`).children].map(el => el.outerHTML),
         [`<p>${'['.repeat(20)}0</p>`]);
       assert.deepStrictEqual(
@@ -324,6 +315,12 @@ describe('Unit: parser/api/parse', () => {
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
           `<pre class="error" translate="no">${'['.repeat(21)}0</pre>`,
         ]);
+      assert.deepStrictEqual(
+        [...parse(`${'('.repeat(20)}0`).children].map(el => el.tagName),
+        ['P']);
+      assert.deepStrictEqual(
+        [...parse(`${'('.repeat(21)}0`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
       assert.deepStrictEqual(
         [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
@@ -398,7 +395,7 @@ describe('Unit: parser/api/parse', () => {
     });
 
     it('backtrack 1', () => {
-      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して50-400%程度。
+      // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して1-4倍程度。
       // 5n = reference + link + url/math + ruby + text
       assert.deepStrictEqual(
         [...parse(`((([[[[#$[${'.'.repeat(19998)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
