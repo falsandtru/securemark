@@ -6,7 +6,7 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true
   assert(parser);
   const match = matcher(scope, false);
   return failsafe(context => {
-    const { source, position } = context;
+    const { SID, source, position } = context;
     if (position === source.length) return;
     const src = match(context)?.head?.value ?? '';
     assert(source.startsWith(src, position));
@@ -19,9 +19,10 @@ export function focus<N>(scope: string | RegExp, parser: Parser<N>, slice = true
     }
     context.offset += position;
     const result = parser(input(src, context));
+    context.source = source;
+    context.SID = SID;
     context.position += position;
     context.position += result && context.position === position ? src.length : 0;
-    context.source = source;
     context.offset -= position;
     return result;
   });
@@ -33,7 +34,7 @@ export function rewrite<N>(scope: Parser, parser: Parser<N>, slice = true): Pars
   assert(scope);
   assert(parser);
   return failsafe(context => {
-    const { source, position } = context;
+    const { SID, source, position } = context;
     if (position === source.length) return;
     const res1 = scope(context);
     assert(context.position > position || !res1);
@@ -50,9 +51,10 @@ export function rewrite<N>(scope: Parser, parser: Parser<N>, slice = true): Pars
     assert(source.startsWith(src, position));
     context.offset += position;
     const res2 = parser(input(src, context));
+    context.SID = SID;
+    context.source = source;
     context.position += position;
     context.position += res2 && context.position === position ? src.length : 0;
-    context.source = source;
     context.offset -= position;
     return res2;
   });

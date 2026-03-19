@@ -9,9 +9,9 @@ export function line<N>(parser: Parser<N>): Parser<N> {
     const line = firstline(source, position);
     context.offset += position;
     const result = parser(input(line, context));
+    context.source = source;
     context.position += position;
     context.position += result && context.position === position ? line.length : 0;
-    context.source = source;
     context.offset -= position;
     if (result === undefined) return;
     if (context.position < position + line.length && !isEmptyline(source, context.position)) return;

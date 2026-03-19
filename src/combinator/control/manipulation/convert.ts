@@ -5,7 +5,7 @@ export function convert<N>(conv: (source: string, context: Context) => string, p
   assert(parser);
   return failsafe(input => {
     const context = input;
-    const { source, position } = context;
+    const { source, position, offset } = context;
     if (position === source.length) return;
     const src = conv(source.slice(position), context);
     assert(context.position === position);
@@ -14,12 +14,10 @@ export function convert<N>(conv: (source: string, context: Context) => string, p
       context.position = source.length;
       return new List();
     }
-    const { offset, backtracks } = context;
     const result = parser(subinput(src, context));
     context.position = context.source.length
-    assert(context.offset === offset);
     assert(context.source === source);
-    assert(context.backtracks === backtracks);
+    assert(context.offset === offset);
     return result;
   });
 }
