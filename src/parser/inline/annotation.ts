@@ -51,7 +51,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       assert(postfix === 0);
       for (let i = 0; i < prefix; ++i) {
         nodes.unshift(new Node('('));
-        nodes = new List([new Node(html('span', { class: bracketname(context, 1, 0) }, defrag(unwrap(nodes))))]);
+        nodes = new List([new Node(html('span', { class: bracketname(context, 0, 0) }, defrag(unwrap(nodes))))]);
         context.range += 1;
       }
       return nodes;

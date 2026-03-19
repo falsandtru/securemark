@@ -118,7 +118,7 @@ export function repeat<N extends HTMLElement | string>(
       ++i;
     }
     const postfix = i;
-    context.range = context.position - position - prefix - postfix;
+    context.range = context.position - position - prefix;
     return termination(nodes, context, prefix, postfix, state);
   });
 }
