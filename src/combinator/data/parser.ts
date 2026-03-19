@@ -107,6 +107,10 @@ export class Context {
   //     入力内の最大セグメントサイズの10%前後である。
   //
   public backtracks: Record<number, number>;
+  public clone(): this {
+    // @ts-ignore
+    return new this.constructor(this);
+  }
 }
 export type Options = Partial<Context>;
 export const enum Segment {
@@ -122,14 +126,12 @@ export function input<C extends Context>(source: string, context: C): Input<C> {
 }
 
 export function subinput<C extends Context>(source: string, context: C): Input<C> {
-  return {
-    ...context,
-    SID: sid(),
-    source,
-    position: 0,
-    offset: 0,
-    backtracks: {},
-  };
+  const c = context.clone();
+  c.source = source;
+  c.position = 0;
+  c.offset = 0;
+  c.backtracks = {};
+  return c;
 }
 
 export function failsafe<P extends Parser>(parser: P): P;
