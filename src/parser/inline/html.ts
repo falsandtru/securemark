@@ -73,7 +73,7 @@ export const html: HTMLParser = lazy(() => union([
 ]));
 
 export const attribute: HTMLParser.AttributeParser = union([
-  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ >])/yi),
+  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\r\n]|[^\\\r\n"])*")?(?=[ >])/yi),
   str(/ [^\s<>]+/y),
 ]);
 

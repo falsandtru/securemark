@@ -62,7 +62,7 @@ export const ruby: RubyParser = lazy(() => bind(
     }
   }));
 
-const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\n/y;
+const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\r?\n/y;
 
 const text: RubyParser.TextParser = input => {
   const context = input;

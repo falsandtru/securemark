@@ -20,7 +20,7 @@ import { html } from 'typed-dom/dom';
 import MessageParser = ExtensionParser.MessageParser;
 
 export const message: MessageParser = block(fmap(
-  fence(/(~{3,})message\/(\S+)(?!\S)([^\n]*)(?:$|\n)/y, 300),
+  fence(/(~{3,})message\/(\S+)(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
   // Bug: Type mismatch between outer and inner.
   (nodes: List<Node<string>>, context) => {
     const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);

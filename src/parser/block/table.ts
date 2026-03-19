@@ -14,7 +14,7 @@ import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
-  /\|[^\n]*\n\|[-:][^\n]*\n\|/y,
+  /\|[^\r\n]*\r?\n\|[-:][^\r\n]*\r?\n\|/y,
   sequence([
     row(some(head), true),
     row(some(align), false),
@@ -34,7 +34,7 @@ const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): 
     new Node(html('tr', {
       class: 'invalid',
       ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
-    }, [html('td', source.replace('\n', ''))]))
+    }, [html('td', source.replace(/\r?\n/, ''))]))
   ])));
 
 const align: AlignParser = fmap(open(

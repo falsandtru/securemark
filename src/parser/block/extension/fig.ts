@@ -15,7 +15,7 @@ import FigParser = ExtensionParser.FigParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
-    line(close(seg_label, /(?!\S).*\r?\n/y)),
+    line(close(seg_label, /(?!\S)[^\r\n]*\r?\n/y)),
     union([
       seg_code,
       seg_math,
@@ -29,21 +29,21 @@ export const segment: FigParser.SegmentParser = block(
 export const fig: FigParser = block(rewrite(segment, verify(convert(
   (source, context) => {
     // Bug: TypeScript
-    const fence = (/^[^\n]*\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\n]*$)/gm) as string[] || [])
+    const fence = (/^[^\r\n]*\r?\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\r\n]*$)/gm) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     const { position } = context;
     const result = parser(context);
     context.position = position;
     context.segment = Segment.figure | Segment.write;
     return result
-      ? `${fence}figure ${source.replace(/^(.+\n.+\n)([\S\s]+?)\n?$/, '$1\n$2')}\n${fence}`
+      ? `${fence}figure ${source.replace(/^([^\r\n]+\r?\n[^\r\n]+\r?\n)(.+?)\r?\n?$/s, '$1\n$2')}\n${fence}`
       : `${fence}figure ${source}\n\n${fence}`;
   },
   union([figure])),
   ([{ value: el }]) => el.tagName === 'FIGURE')));
 
 const parser = sequence([
-  line(close(seg_label, /(?!\S).*\n/y)),
+  line(close(seg_label, /(?!\S)[^\r\n]*\r?\n/y)),
   line(union([
     media,
     lineshortmedia,

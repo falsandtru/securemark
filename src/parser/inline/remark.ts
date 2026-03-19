@@ -8,7 +8,7 @@ import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 export const remark: RemarkParser = lazy(() => fallback(surround(
-  str(/\[%(?=[ \n])/y),
+  str(/\[%(?=[ \r\n])/y),
   precedence(3, recursion(Recursion.inline,
   some(union([inline]), /[ \n]%\]/y, [[/[ \n]%\]/y, 3]]))),
   close(text, str('%]')),
@@ -20,6 +20,6 @@ export const remark: RemarkParser = lazy(() => fallback(surround(
     ])),
   ]),
   ([as, bs]) => bs && as.import(bs as List<Node<string>>)),
-  focus(/\[%+(?=[ \n])/y, ({ source }) => new List([
+  focus(/\[%+(?=[ \r\n])/y, ({ source }) => new List([
     new Node(html('span', { class: 'invalid', ...invalid('remark', 'syntax', 'Invalid start symbol') }, source))
   ]))));

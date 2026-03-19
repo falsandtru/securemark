@@ -16,11 +16,11 @@ export const ilist: IListParser = lazy(() => block(validate(
   ilist_)));
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
-  /[-+*](?:$|[ \n])/y,
+  /[-+*](?:$|[ \r\n])/y,
   recursion(Recursion.listitem, some(union([
     fmap(fallback(
       inits([
-        line(open(/[-+*](?:$|[ \n])/y, visualize(trimBlank(some(inline))), true)),
+        line(open(/[-+*](?:$|[ \r\n])/y, visualize(trimBlank(some(inline))), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
@@ -40,5 +40,5 @@ export const ilistitem = rewrite(
     new Node(html('span', {
       class: 'invalid',
       ...invalid('list', 'syntax', 'Fix the indent or the head of the list item'),
-    }, source.replace('\n', '')))
+    }, source.replace(/\r?\n/, '')))
   ]));

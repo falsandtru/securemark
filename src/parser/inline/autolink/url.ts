@@ -22,7 +22,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   ])));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
-  /(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\n]*(?=$|\n))/y,
+  /(?<=^|[\r\n])!?https?:\/\/\S+(?=[^\S\r\n]*(?=$|\r?\n))/y,
   tails([
     str('!'),
     union([

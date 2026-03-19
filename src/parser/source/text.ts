@@ -47,6 +47,7 @@ export const text: TextParser = input => {
       assert(i > position);
       const lineend = 0
         || s && i === source.length
+        || s && source[i] === '\r'
         || s && source[i] === '\n';
       i -= position;
       i = lineend ? i : i - +s || 1;

@@ -39,7 +39,9 @@ describe('Unit: parser/source/text', () => {
       assert.deepStrictEqual(inspect(parser, input('  ', new Context())), [[], '']);
       assert.deepStrictEqual(inspect(parser, input('   ', new Context())), [[], '']);
       assert.deepStrictEqual(inspect(parser, input(' \n', new Context())), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input(' \r\n', new Context())), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('  \n', new Context())), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('  \r\n', new Context())), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input(' \\\n', new Context())), [[' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('  \\\n', new Context())), [[' ', ' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input(' a', new Context())), [[' a'], '']);
@@ -48,7 +50,9 @@ describe('Unit: parser/source/text', () => {
       assert.deepStrictEqual(inspect(parser, input('a ', new Context())), [['a'], '']);
       assert.deepStrictEqual(inspect(parser, input('a  ', new Context())), [['a'], '']);
       assert.deepStrictEqual(inspect(parser, input('a \n', new Context())), [['a', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a \r\n', new Context())), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a  \n', new Context())), [['a', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a  \r\n', new Context())), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a \\\n', new Context())), [['a', ' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a  \\\n', new Context())), [['a', ' ', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser, input('a b', new Context())), [['a b'], '']);

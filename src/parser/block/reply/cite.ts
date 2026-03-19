@@ -7,7 +7,7 @@ import { str } from '../../source';
 import { invalid } from '../../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const syntax = />*(?=>>[^>\s]\S*[^\S\n]*(?:$|\n))/y;
+export const syntax = />*(?=>>[^>\s]\S*[^\S\r\n]*(?:$|\r?\n))/y;
 
 export const cite: ReplyParser.CiteParser = line(fmap(
   open(

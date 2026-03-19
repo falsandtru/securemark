@@ -20,6 +20,6 @@ export const mediablock: MediaBlockParser = block(fmap(
       new Node(html('span', {
       class: 'invalid',
       ...invalid('mediablock', 'syntax', 'Not media syntax'),
-    }, source.replace('\n', '')))
+    }, source.replace(/\r?\n/, '')))
     ]))))]),
   ns => new List([new Node(html('div', unwrap(ns)))])));

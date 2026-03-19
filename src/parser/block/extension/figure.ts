@@ -50,7 +50,7 @@ export const segment: FigureParser.SegmentParser = block(match(
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
   convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(sequence([label, str(/(?!\S).*\n/y)])),
+    line(sequence([label, str(/(?!\S)[^\r\n]*\r?\n/y)])),
     inits([
       block(union([
         ulist,
@@ -84,7 +84,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
     ]);
   })),
   fmap(
-    fence(/(~{3,})(?:figure(?=$|[ \n])|\[?\$)[^\n]*(?:$|\n)/y, 300),
+    fence(/(~{3,})(?:figure(?=$|[ \r\n])|\[?\$)[^\r\n]*(?:$|\r?\n)/y, 300),
     (nodes, context) => {
       const [body, overflow, closer, opener, delim] = unwrap<string>(nodes);
       const violation =
@@ -100,7 +100,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'label',
           'Invalid label',
         ] ||
-        /^~+(?:figure )?(\[?\$\S+)[^\S\n]+\S/.test(opener) && [
+        /^~+(?:figure )?(\[?\$\S+)[^\S\r\n]+\S/.test(opener) && [
           'argument',
           'Invalid argument',
         ] ||

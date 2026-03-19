@@ -14,11 +14,11 @@ export const ulist: UListParser = lazy(() => block(validate(
   ulist_)));
 
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
-  /-(?=$|[ \n])/y,
+  /-(?=$|[ \r\n])/y,
   recursion(Recursion.listitem, some(union([
     indexee(fmap(fallback(
       inits([
-        line(open(/-(?:$|[ \n])/y, subsequence([
+        line(open(/-(?:$|[ \r\n])/y, subsequence([
           checkbox,
           visualize(trimBlank(some(union([indexer, inline])))),
         ]), true)),
@@ -30,7 +30,7 @@ export const ulist_: UListParser = lazy(() => block(fmap(validate(
   ns => new List([new Node(format(html('ul', unwrap(ns))))]))));
 
 export const checkbox = focus(
-  /\[[xX ]\](?=$|[ \n])/y,
+  /\[[xX ]\](?=$|[ \r\n])/y,
   ({ source, position }) => new List([
     new Node(html('span', { class: 'checkbox' }, source[position + 1].trimStart() ? '☑' : '☐')),
   ]), false);

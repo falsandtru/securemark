@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.299.0
+
+- Add support for CRLF linebreaks.
+
 ## 0.298.7
 
 - Fix annotation parser.

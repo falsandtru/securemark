@@ -11,7 +11,7 @@ export const shortmedia: ShortMediaParser = constraint(State.media, rewrite(
     union([media]))));
 
 export const lineshortmedia: ShortMediaParser.LineShortMediaParser = constraint(State.media, focus(
-  /(?<=^|[\r\n])!https?:\/\/\S+(?=[^\S\n]*(?:$|\n))/y,
+  /(?<=^|[\r\n])!https?:\/\/\S+(?=[^\S\r\n]*(?:$|\r?\n))/y,
   convert(
     source => `!{ ${source.slice(1)} }`,
     union([media]))));

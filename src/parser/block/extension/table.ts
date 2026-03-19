@@ -77,16 +77,16 @@ const row: RowParser = lazy(() => dup(fmap(
   ]),
   ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Node([[]])) && ns)));
 
-const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)/y;
+const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\r\n]*\r?\n)/y;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([{ value }]) => new List([new Node(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
 
-const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\n]*\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y;
+const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\r\n]*\r?\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \r\n])/y;
 
 const head: CellParser.HeadParser = block(fmap(open(
-  str(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y),
+  str(/#(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \r\n])/y),
   rewrite(
     inits([
       anyline,
@@ -100,15 +100,15 @@ const head: CellParser.HeadParser = block(fmap(open(
           media,
           lineshortmedia,
         ]),
-        /[^\S\n]*(?:$|\n)/y)),
-      open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlank(some(inline))), true),
+        /[^\S\r\n]*(?:$|\r?\n)/y)),
+      open(/(?:[^\S\r\n]*\r?\n|\s)/y, visualize(trimBlank(some(inline))), true),
     ])),
   true),
   ns => new List([new Node(html('th', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),
   false);
 
 const data: CellParser.DataParser = block(fmap(open(
-  str(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \n])/y),
+  str(/:(?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \r\n])/y),
   rewrite(
     inits([
       anyline,
@@ -122,8 +122,8 @@ const data: CellParser.DataParser = block(fmap(open(
           media,
           lineshortmedia,
         ]),
-        /[^\S\n]*(?:$|\n)/y)),
-      open(/(?:[^\S\n]*\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
+        /[^\S\r\n]*(?:$|\r?\n)/y)),
+      open(/(?:[^\S\r\n]*\r?\n|\s)/y, visualize(trimBlankEnd(some(inline))), true),
     ])),
   true),
   ns => new List([new Node(html('td', attributes(ns.shift()!.value as string), defrag(unwrap(ns))))])),

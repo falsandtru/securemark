@@ -5,7 +5,7 @@ import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = match(
-  /(`+)(?!`)([^\n]*?)(?:((?<!`)\1(?!`))|(?=$|\n))/y,
+  /(`+)(?!`)([^\r\n]*?)(?:((?<!`)\1(?!`))|(?=$|\r?\n))/y,
   ([whole, opener, body, closer]) => () =>
     closer
       ? new List([new Node(html('code', { 'data-src': whole }, format(body)))])

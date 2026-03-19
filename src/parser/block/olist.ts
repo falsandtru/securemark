@@ -11,8 +11,8 @@ import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const openers = {
-  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?=$|[0-9\n])[0-9]*)*(?:\.?(?:$|[\n])|\. )/y,
-  '(': /\((?=$|[0-9a-z\n])([0-9]*|[a-z]*)(?=$|[)\n])\)?(?:-(?=$|[0-9\n])[0-9]*)*(?:$|[ \n])/y,
+  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?=$|[0-9\r\n])[0-9]*)*(?:\.?(?:$|[\r\n])|\. )/y,
+  '(': /\((?=$|[0-9a-z\r\n])([0-9]*|[a-z]*)(?=$|[)\r\n])\)?(?:-(?=$|[0-9\r\n])[0-9]*)*(?:$|[ \r\n])/y,
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(

@@ -8,7 +8,7 @@ import { unwrap, invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
-  /\|+ [^\n]*(?:\n\|+(?=$|[ \n])[^\n]*)*(?:$|\n)/y,
+  /\|+ [^\r\n]*(?:\r?\n\|+(?=$|[ \r\n])[^\r\n]*)*(?:$|\r?\n)/y,
   union([source])),
   ([{ value }]) => new List([
     new Node(define(value, {
@@ -17,9 +17,9 @@ export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
     })),
   ]))));
 
-const opener = /(?=\|\|+(?:$|[ \n]))/y;
-const indent = open(opener, some(contentline, /\|(?:$|[ \n])/y));
-const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \n])))|\n$/g, '');
+const opener = /(?=\|\|+(?:$|[ \r\n]))/y;
+const indent = open(opener, some(contentline, /\|(?:$|[ \r\n])/y));
+const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \r\n])))|\r?\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   recursion(Recursion.block, some(union([

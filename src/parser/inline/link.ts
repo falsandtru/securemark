@@ -96,7 +96,7 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/ nofollow(?=[ }])/y), () => new List([new Node(' rel="nofollow"')])),
-  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\\\n"])*")?(?=[ }])/yi),
+  str(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\r\n]|[^\\\r\n"])*")?(?=[ }])/yi),
   str(/ [^\s{}]+/y),
 ]);
 
