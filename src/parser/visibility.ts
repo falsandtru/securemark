@@ -2,23 +2,20 @@ import { Parser, List, Node } from '../combinator/data/parser';
 import { Command } from './context';
 import { Flag } from './node';
 import { convert, fmap } from '../combinator';
-import { invisibleBlankHTMLEntityNames, invisibleBlankCharacters } from './api/normalize';
+import { invisibleBlankHTMLEntityNames } from './api/normalize';
 
 namespace blank {
   export const line = new RegExp(
-    /((?:^|\n)[^\S\r\n]*(?=\S))((?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)+(?=$|\r?\n))/g.source
-      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`)
-      .replace('IBC', `${invisibleBlankCharacters.join('')}`),
+    /((?:^|\n)[^\S\r\n]*(?=\S))((?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+(?=$|\r?\n))/g.source
+      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`),
     'g');
   export const start = new RegExp(
-    /(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)+/y.source
-      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`)
-      .replace('IBC', `${invisibleBlankCharacters.join('')}`),
+    /(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+/y.source
+      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`),
     'y');
   export const unit = new RegExp(
-    /(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)/y.source
-      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`)
-      .replace('IBC', `${invisibleBlankCharacters.join('')}`),
+    /(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)/y.source
+      .replace('IBHN', `(?:${invisibleBlankHTMLEntityNames.join('|')})`),
     'y');
 }
 
@@ -34,7 +31,7 @@ export function blankWith(starts: '\n', delimiter: string | RegExp): RegExp {
   return new RegExp([
     // 空行除去
     // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
-    String.raw`(?:${starts}(?:\\?\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|[${invisibleBlankCharacters.join('')}]|<wbr ?>)*)?`,
+    String.raw`(?:${starts}(?:\\?\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)*)?`,
     typeof delimiter === 'string'
       ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
       : delimiter.source,
@@ -45,12 +42,12 @@ export function beforeNonblankWith(delimiter: string | RegExp): RegExp {
     typeof delimiter === 'string'
       ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
       : delimiter.source,
-    String.raw`(?!\\?\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|[${invisibleBlankCharacters.join('')}]|<wbr ?>)`,
+    String.raw`(?!\\?\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`,
   ].join(''), 'y');
 }
 function afterNonblankWith(delimiter: string | RegExp): RegExp {
   return new RegExp([
-    String.raw`(?<!\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|[${invisibleBlankCharacters.join('')}]|<wbr ?>)`,
+    String.raw`(?<!\s|&(?:${invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`,
     typeof delimiter === 'string'
       ? delimiter.replace(/[*+()\[\]]/g, '\\$&')
       : delimiter.source,

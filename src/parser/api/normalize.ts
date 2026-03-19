@@ -65,8 +65,7 @@ const parser = (el => (entity: string): string => {
 })(html('span'));
 export const invisibleBlankHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames
   .filter(name => parser(`&${name};`).trimStart() === '');
-export const invisibleBlankCharacters: readonly string[] = invisibleBlankHTMLEntityNames
-  .map(name => parser(`&${name};`));
+assert(invisibleBlankHTMLEntityNames.every(name => /^\s$/.test(parser(`&${name};`))));
 export const invisibleGraphHTMLEntityNames: readonly string[] = invisibleHTMLEntityNames
   .filter(name => parser(`&${name};`).trimStart() !== '');
 const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => ![
