@@ -38,7 +38,6 @@ export function some<N>(parser: Parser<N>, delimiter?: number | string | RegExp 
   return input => {
     const context = input;
     const { source, position } = context;
-    //assert(context.backtracks ??= {});
     let nodes: List<Node<N>> | undefined;
     delims && context.delimiters.push(delims);
     // whileは数倍遅い
