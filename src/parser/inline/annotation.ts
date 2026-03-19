@@ -41,17 +41,22 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
           new Node(html('span', { class: bracketname(context, 1, 1) }, defrag(unwrap(nodes))))
         ]);
       }
-      recursion.add(MAX_DEPTH - (resources?.recursions[Recursion.bracket] ?? resources?.recursions.at(-1) ?? MAX_DEPTH));
+      recursion.add(
+        MAX_DEPTH - (resources?.recursions[Recursion.bracket] ?? resources?.recursions.at(-1) ?? MAX_DEPTH));
       context.position += 1;
       return new List([
-        new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))]))
+        new Node(html('sup', { class: 'annotation' }, [
+          html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))
+        ]))
       ]);
     },
     (nodes, context, prefix, postfix) => {
       assert(postfix === 0);
       for (let i = 0; i < prefix; ++i) {
         nodes.unshift(new Node('('));
-        nodes = new List([new Node(html('span', { class: bracketname(context, 0, 0) }, defrag(unwrap(nodes))))]);
+        nodes = new List([
+          new Node(html('span', { class: bracketname(context, 0, 0) }, defrag(unwrap(nodes))))
+        ]);
         context.range += 1;
       }
       return nodes;
