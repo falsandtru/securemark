@@ -2,13 +2,12 @@ import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
 import { List, Node } from '../../../combinator/data/parser';
 import { union, tails, some, recursion, precedence, state, constraint, focus, rewrite, surround, open, lazy } from '../../../combinator';
-import { inline } from '../../inline';
 import { parse } from '../link';
 import { unescsource, str } from '../../source';
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   open(
-    /(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[\x21-\x7E])/y,
+    /(?<![0-9A-Za-z][.+-]?|[@#])https?:\/\/(?=[[0-9A-Za-z])/y,
     precedence(0, some(union([
       some(unescsource, /(?<![-+*=~^_,.;:!?]|\/{3})(?:[-+*=~^_,.;:!?]|\/{3,}(?!\/))*(?=[\\$"`\[\](){}<>（）［］｛｝|]|[^\x21-\x7E]|$)/y),
       precedence(1, bracket),
@@ -18,7 +17,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   union([
     constraint(State.autolink, state(State.autolink, context =>
       new List([new Node(parse(new List(), new List([new Node(context.source)]), context))]))),
-    open(str(/[^:]+/y), some(inline)),
+    context => new List([new Node(context.source)]),
   ])));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
@@ -36,7 +35,7 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
             context))
         ]);
       })),
-      str(/[^:]+/y),
+      context => new List([new Node(context.source)]),
     ]),
   ])));
 

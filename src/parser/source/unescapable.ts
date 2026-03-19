@@ -1,12 +1,10 @@
 import { UnescapableSourceParser } from '../source';
-import { Command } from '../context';
+import { State, Command } from '../context';
 import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
 import { consume } from '../../combinator';
-import { nonWhitespace, canSkip, next } from './text';
+import { nonWhitespace, canSkip, backToUrlHead, backToEmailHead } from './text';
 import { html } from 'typed-dom/dom';
-
-export const delimiter = /(?=(?=[\x00-\x7F])[^0-9A-Za-z]|(?<=[\x00-\x7F])[^\x00-\x7F])/g;
 
 export const unescsource: UnescapableSourceParser = context => {
   const { source, position, state } = context;
@@ -32,7 +30,7 @@ export const unescsource: UnescapableSourceParser = context => {
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : next(source, position, state, delimiter);
+        : next(source, position, state);
       assert(i > position);
       i -= position;
       consume(i - 1, context);
@@ -40,3 +38,86 @@ export const unescsource: UnescapableSourceParser = context => {
       return new List([new Node(source.slice(position, context.position))]);
   }
 };
+
+function next(source: string, position: number, state: number): number {
+  let index= seek(source, position, state);
+  assert(index > position);
+  if (index === source.length) return source.length;
+  const char = source[index];
+  switch (char) {
+    case ':':
+      index = source.startsWith('//', index + 1)
+        ? backToUrlHead(source, position, index)
+        : index;
+      break;
+    case '@':
+      index = ~state & State.autolink
+        ? backToEmailHead(source, position, index)
+        : index;
+      break;
+  }
+  assert(index > position);
+  return index;
+}
+
+function seek(source: string, position: number, state: number): number {
+  const cat = category(source[position]);
+  for (let i = position + 1; i < source.length; ++i) {
+    const char = source[i];
+    switch (char) {
+      case '\\':
+      case '!':
+      case '$':
+      case '"':
+      case '`':
+      case '[':
+      case ']':
+      case '(':
+      case ')':
+      case '{':
+      case '}':
+      case '<':
+      case '>':
+      case '（':
+      case '）':
+      case '［':
+      case '］':
+      case '｛':
+      case '｝':
+      case '-':
+      case '+':
+      case '*':
+      case '=':
+      case '~':
+      case '^':
+      case '_':
+      case ',':
+      case '.':
+      case ';':
+      case ':':
+      case '!':
+      case '?':
+      case '/':
+      case '|':
+      case '\r':
+      case '\n':
+        return i;
+      case '@':
+      case '#':
+        if (~state & State.autolink) return i;
+        continue;
+      case ':':
+        if (source[i + 1] === '/' && source[i + 2] === '/') return i;
+        continue;
+      default:
+        if (cat && !category(char)) return i;
+        continue;
+    }
+    assert(false);
+  }
+  return source.length;
+}
+
+function category(char: string): boolean {
+  return '\x21' <= char && char <= '\x7E';
+}

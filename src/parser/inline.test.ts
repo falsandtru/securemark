@@ -167,7 +167,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser, input('"[% "*"* %]', new Context())), [['"', '<span class="remark"><input type="checkbox"><span>[% "*"* %]</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser, input('"{{""}}', new Context())), [['"', '{', '<a class="url" href="&quot;&quot;">""</a>', '}'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#http://host/(<bdi>)]</bdi>', new Context())), [['<a class="index" href="#index::http://host/(&lt;bdi&gt;)">http://host/<span class="paren">(<span class="invalid">&lt;bdi&gt;</span>)</span></a>', '</bdi', '>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('[#@a/http://host/(<bdi>)]</bdi>', new Context())), [['<a class="index" href="#index::@a/http://host/(&lt;bdi&gt;)">@a/http://host/<span class="paren">(<span class="invalid">&lt;bdi&gt;</span>)</span></a>', '</bdi', '>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('[#@a/http://host/(<bdi>)]</bdi>', new Context())), [['<a class="index" href="#index::@a/http://host/(&lt;bdi&gt;)">@a/http://host/(&lt;bdi&gt;)</a>', '</bdi', '>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[#a|<bdi>]</bdi>', new Context())), [['<a class="index" href="#index::a|&lt;bdi&gt;">a|<span class="invalid">&lt;bdi&gt;</span></a>', '</bdi', '>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[[#a|<bdi>]</bdi>', new Context())), [['[', '<a class="index" href="#index::a|&lt;bdi&gt;">a|<span class="invalid">&lt;bdi&gt;</span></a>', '</bdi', '>'], '']);
       assert.deepStrictEqual(inspect(parser, input('[*==*]{a}', new Context())), [['<a class="link" href="a">*==*</a>'], '']);

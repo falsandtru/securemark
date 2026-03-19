@@ -15,7 +15,7 @@ describe('Unit: parser/source/unescapable', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser, input('a', new Context())), [['a'], '']);
       assert.deepStrictEqual(inspect(parser, input('ab', new Context())), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser, input('a b c', new Context())), [['a', ' b', ' c'], '']);
+      assert.deepStrictEqual(inspect(parser, input('a b c', new Context())), [['a', ' b c'], '']);
       assert.deepStrictEqual(inspect(parser, input('09あいAZaz', new Context())), [['09', 'あいAZaz'], '']);
     });
 

@@ -83,28 +83,20 @@ function isWhitespace(char: string, linebreak: boolean): boolean {
   }
 }
 
-export function next(source: string, position: number, state: number, delimiter?: RegExp): number {
-  let index: number;
-  if (delimiter) {
-    delimiter.lastIndex = position + 1;
-    delimiter.test(source);
-    index = delimiter.lastIndex || position;
-  }
-  else {
-    index = seek(source, position, state);
-  }
-  if (index === position || index === source.length) return source.length;
+function next(source: string, position: number, state: number): number {
+  let index= seek(source, position, state);
   assert(index > position);
+  if (index === source.length) return source.length;
   const char = source[index];
   switch (char) {
     case '%':
-      assert(source.startsWith('%]', index) && isWhitespace(source[index - 1], true) || delimiter);
-      index += !delimiter && index - 1 > position
+      assert(source.startsWith('%]', index) && isWhitespace(source[index - 1], true));
+      index += index - 1 > position
         ? -1
         : 0;
       break;
     case '[':
-      index += !delimiter && index - 1 > position && source.startsWith(' [|', index - 1)
+      index += index - 1 > position && source.startsWith(' [|', index - 1)
         ? -1
         : 0;
       break;
@@ -122,7 +114,7 @@ export function next(source: string, position: number, state: number, delimiter?
   assert(index > position);
   return index;
 }
-function backToUrlHead(source: string, position: number, index: number): number {
+export function backToUrlHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
   for (let i = index - 1; i >= position; --i) {
@@ -145,7 +137,7 @@ function backToUrlHead(source: string, position: number, index: number): number 
     ? delim
     : index;
 }
-function backToEmailHead(source: string, position: number, index: number): number {
+export function backToEmailHead(source: string, position: number, index: number): number {
   const delim = index;
   let state = false;
   for (let i = index - 1; i >= position; --i) {

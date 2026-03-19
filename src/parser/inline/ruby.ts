@@ -20,13 +20,12 @@ export const ruby: RubyParser = lazy(() => bind(
       })),
     dup(surround(
       '(', text, ')',
-      false,
-      [3 | Backtrack.ruby])),
+      false)),
   ]),
   ([{ value: texts }, { value: rubies = undefined } = {}], context) => {
     if (rubies === undefined) {
       const head = context.position - context.range;
-      return void setBacktrack(context, 2 | Backtrack.ruby, head);
+      return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
     }
     switch (true) {
       case texts.length >= rubies.length:

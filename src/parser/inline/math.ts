@@ -6,7 +6,7 @@ import { escsource, str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
-const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])|:\/\//i;
+const forbiddenCommand = /\\(?:begin|tiny|huge|large)(?![a-z])/i;
 
 export const math: MathParser = lazy(() => rewrite(
   union([
@@ -19,7 +19,7 @@ export const math: MathParser = lazy(() => rewrite(
     surround(
       /\$(?![\s{}])/y,
       precedence(2, some(union([
-        some(escsource, /\$|[`"{}\r\n]/y),
+        some(escsource, /[`"{}$\r\n]|(?<=[0-9A-Za-z]):\/\/[[0-9A-Za-z]/y),
         precedence(4, bracket),
       ]))),
       /(?<!\s)\$(?![-0-9A-Za-z])/y,
@@ -45,7 +45,7 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
   recursion(Recursion.terminal,
   some(union([
     bracket,
-    some(escsource, /[{}$\r\n]/y),
+    some(escsource, /[{}$\r\n]|(?<=[0-9A-Za-z]):\/\/[[0-9A-Za-z]/y),
   ]))),
   str('}'),
   true));

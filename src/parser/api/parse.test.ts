@@ -380,28 +380,28 @@ describe('Unit: parser/api/parse', () => {
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して1-4倍程度。
       // 5n = reference + link + url/math + ruby + text
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$[${'.'.repeat(19998)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$http://[${'.'.repeat(19992)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['P']);
     });
 
     it('backtrack 1 error', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$[${'.'.repeat(19998 + 1)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$http://[${'.'.repeat(19992 + 1)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['H1', 'PRE']);
     });
 
     it('backtrack 2', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$[${'.'.repeat(19998)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$http://[${'.'.repeat(33324)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['P', 'OL']);
     });
 
     it('backtrack 2 error', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$[${'.'.repeat(19998 + 1)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...parse(`((([[[[#$http://[${'.'.repeat(33324 + 1)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
           .map(el => el.tagName),
         ['H1', 'PRE']);
     });

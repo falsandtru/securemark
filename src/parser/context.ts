@@ -22,7 +22,7 @@ export class Context extends Ctx {
     } = options;
     this.resources ??= {
       // バックトラックのせいで文字数制限を受けないようにする。
-      clock: MAX_SEGMENT_SIZE * (6 + 1),
+      clock: MAX_SEGMENT_SIZE * (5 + 1),
       recursions: [
         5 || Recursion.block,
         20 || Recursion.blockquote,

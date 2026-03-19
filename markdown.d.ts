@@ -1082,7 +1082,7 @@ export namespace MarkdownParser {
         Inline<'url'>,
         Parser<string | HTMLElement, Context, [
           Parser<HTMLAnchorElement, Context, []>,
-          InlineParser,
+          Parser<string, Context, []>,
         ]> {
       }
       export namespace UrlParser {
@@ -1092,7 +1092,7 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
             Parser<string | HTMLElement, Context, [
               Parser<HTMLAnchorElement, Context, []>,
-              SourceParser.StrParser,
+              Parser<string, Context, []>,
             ]>,
           ]> {
         }
