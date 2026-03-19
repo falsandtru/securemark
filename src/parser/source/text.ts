@@ -20,6 +20,7 @@ export const text: TextParser = input => {
       switch (source[position + 1]) {
         case undefined:
           return new List();
+        case '\r':
         case '\n':
           assert(char !== Command.Escape);
           return new List();

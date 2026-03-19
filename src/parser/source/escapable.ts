@@ -22,7 +22,7 @@ export const escsource: EscapableSourceParser = context => {
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return new List([new Node(char)]);
+        case '\r':
         case '\n':
           return new List([new Node(char)]);
         default:
