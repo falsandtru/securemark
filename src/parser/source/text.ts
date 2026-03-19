@@ -86,7 +86,7 @@ function isWhitespace(char: string, linebreak: boolean): boolean {
 function next(source: string, position: number, state: number): number {
   let index= seek(source, position, state);
   assert(index > position);
-  if (index === source.length) return source.length;
+  if (index === source.length) return index;
   const char = source[index];
   switch (char) {
     case '%':
