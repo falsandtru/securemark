@@ -68,10 +68,10 @@ export function repeat<N extends HTMLElement | string>(
         follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
         nodes = cons(nodes, context, lead, follow);
         if (context.position > pos) {
-          const advance = opener.length * (context.position - pos) / closer.length | 0;
+          const advance = context.position - pos;
           i -= advance;
           follow -= advance;
-          depth -= advance;
+          depth -= advance / closer.length | 0;
         }
         continue;
       }
@@ -100,10 +100,10 @@ export function repeat<N extends HTMLElement | string>(
           nodes = cons(nodes, context, lead, follow);
           state = true;
           if (context.position > pos) {
-            const advance = opener.length * (context.position - pos) / closer.length | 0;
+            const advance = context.position - pos;
             i -= advance;
             follow -= advance;
-            depth -= advance;
+            depth -= advance / closer.length | 0;
           }
           continue;
       }
