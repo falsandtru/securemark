@@ -1,9 +1,10 @@
 import { AnnotationParser } from '../inline';
-import { State, Recursion } from '../context';
+import { State, Recursion, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursions, precedence, constraint, surround, open, lazy } from '../../combinator';
+import { union, some, precedence, constraint, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { bracketname } from './bracket';
+import { repeat } from '../repeat';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -23,118 +24,35 @@ import { html, defrag } from 'typed-dom/dom';
 // 修正する必要があるためほぼ完全な二重処理が必要になり三重以上の注釈という不適切な使用のために
 // 常に非常に非効率な処理を行い常時低速化するより三重以上の注釈を禁止して効率性を維持するのが妥当である。
 const MAX_DEPTH = 20;
-export const annotation: AnnotationParser = lazy(() => constraint(State.annotation, surround(
-  open('((', beforeNonblank),
-  precedence(1, recursions([Recursion.annotation, Recursion.inline, Recursion.bracket, Recursion.bracket],
-  some(union([inline]), ')', [[')', 1]]))),
-  '))',
-  false, [],
-  ([, ns], context) => {
-    const { linebreak, recursion, resources } = context;
-    if (linebreak !== 0) {
-      ns.unshift(new Node('('));
-      ns.push(new Node(')'));
+export const annotation: AnnotationParser = lazy(() => constraint(State.annotation,
+  repeat('(', beforeNonblank, ')', [Recursion.bracket], precedence(1, surround(
+    '',
+    some(union([inline]), ')', [[')', 1]]),
+    ')',
+    false, [],
+    ([, bs], { buffer }) => buffer.import(bs),
+    ([, bs], { buffer }) => bs && buffer.import(bs).push(new Node(Command.Cancel)) && buffer)),
+    (nodes, context, lead, follow) => {
+      const { linebreak, recursion, resources } = context;
+      if (linebreak !== 0 || nodes.length === 0 || lead === 0 || follow % 2 === 0) {
+        nodes.unshift(new Node('('));
+        nodes.push(new Node(')'));
+        return new List([
+          new Node(html('span', { class: bracketname(context, 1, 1) }, defrag(unwrap(nodes))))
+        ]);
+      }
+      recursion.add(MAX_DEPTH - (resources?.recursions[Recursion.bracket] ?? resources?.recursions.at(-1) ?? MAX_DEPTH));
+      context.position += 1;
       return new List([
-        new Node(html('span',
-          { class: bracketname(context, 1, 1) },
-          ['(', html('span', { class: bracketname(context, 2, 2) }, defrag(unwrap(ns))), ')']))
+        new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))]))
       ]);
-    }
-    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-    recursion.add(depth);
-    return new List([
-      new Node(html('sup', { class: 'annotation' }, [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))
-    ]);
-  },
-  ([, bs], context) => {
-    const { source, position, linebreak, recursion, resources } = context;
-    const depth = MAX_DEPTH - (resources?.recursions[Recursion.annotation] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-    if (linebreak === 0 && bs && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
-      const { className } = bs.head.value;
-      if (className === 'paren' || className === 'bracket') {
-        const { firstChild, lastChild } = bs.head.value;
-        assert(firstChild instanceof Text);
-        if (firstChild!.nodeValue!.length === 1) {
-          firstChild!.remove();
-        }
-        else {
-          firstChild!.nodeValue = firstChild!.nodeValue!.slice(1);
-        }
-        assert(lastChild instanceof Text);
-        if (lastChild!.nodeValue!.length === 1) {
-          lastChild!.remove();
-        }
-        else {
-          lastChild!.nodeValue = lastChild!.nodeValue!.slice(0, -1);
-        }
-        context.position += 1;
-        recursion.add(depth);
-        return new List([
-          new Node(html('span',
-            { class: 'paren' },
-            ['(', html('sup', { class: 'annotation' }, [html('span', bs.head.value.childNodes)])]))
-        ]);
+    },
+    (nodes, context, prefix, postfix) => {
+      assert(postfix === 0);
+      for (let i = 0; i < prefix; ++i) {
+        nodes.unshift(new Node('('));
+        nodes = new List([new Node(html('span', { class: bracketname(context, 1, 0) }, defrag(unwrap(nodes))))]);
+        context.range += 1;
       }
-      if (className === 'annotation' && deepunwrap(bs)) {
-        context.position += 1;
-        recursion.add(depth);
-        return new List([
-          new Node(html('span',
-            { class: 'paren' },
-            ['(', html('sup', { class: 'annotation' }, [html('span', [bs.head.value])])]))
-        ]);
-      }
-    }
-    bs ??= new List();
-    bs.unshift(new Node('('));
-    if (source[context.position] === ')') {
-      bs.push(new Node(')'));
-      context.position += 1;
-      context.range += 1;
-    }
-    bs = new List([
-      new Node(html('span',
-        { class: bracketname(context, 2, context.position - position) },
-        defrag(unwrap(bs))))
-    ]);
-    bs.unshift(new Node('('));
-    const cs = parser(context);
-    if (source[context.position] === ')') {
-      cs && bs.import(cs);
-      bs.push(new Node(')'));
-      context.position += 1;
-      context.range += 1;
-    }
-    return new List([new Node(html('span',
-      { class: bracketname(context, 1, context.position - position) },
-      defrag(unwrap(bs))))]);
-  })));
-
-const parser = lazy(() => precedence(1, some(inline, ')', [[')', 1]])));
-
-function deepunwrap(list: List<Node<string | HTMLElement>>): boolean {
-  let bottom = list.head!.value as HTMLElement;
-  for (; bottom;) {
-    const el = bottom.firstChild!.firstChild;
-    if (el !== el?.parentNode?.lastChild) break;
-    if (el instanceof HTMLElement === false) break;
-    if (el?.className !== 'annotation') break;
-    bottom = el;
-  }
-  const el = bottom.firstChild!.firstChild;
-  if (el instanceof Element === false) return false;
-  if (el === el?.parentNode?.lastChild) {
-    const { className, firstChild, lastChild } = el;
-    if (className === 'paren' || className === 'bracket') {
-      firstChild!.nodeValue!.length === 1
-        ? firstChild!.remove()
-        : firstChild!.nodeValue = firstChild!.nodeValue!.slice(1);
-      lastChild!.nodeValue!.length === 1
-        ? lastChild!.remove()
-        : lastChild!.nodeValue = lastChild!.nodeValue!.slice(0, -1);
-      el.replaceWith(...el.childNodes);
-      return true;
-    }
-  }
-  return false;
-}
+      return nodes;
+    })));

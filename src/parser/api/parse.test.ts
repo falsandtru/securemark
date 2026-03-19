@@ -297,15 +297,6 @@ describe('Unit: parser/api/parse', () => {
     });
 
     it('recursion', () => {
-      //assert.deepStrictEqual(
-      //  [...parse(`${'{ '.repeat(20)}0`).children].map(el => el.tagName),
-      //  ['P']);
-      //assert.deepStrictEqual(
-      //  [...parse(`${'{ '.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-      //  [
-      //    '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-      //    `<pre class="error" translate="no">${'{ '.repeat(21)}0</pre>`,
-      //  ]);
       assert.deepStrictEqual(
         [...parse(`${'['.repeat(20)}0`).children].map(el => el.outerHTML),
         [`<p>${'['.repeat(20)}0</p>`]);
@@ -328,22 +319,10 @@ describe('Unit: parser/api/parse', () => {
         [...parse(`${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}!${'))'.repeat(2)}`).children].map(el => el.tagName),
-        ['P', 'OL']);
-      assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(3)}!${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
-      assert.deepStrictEqual(
         [...parse(`(${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
         [...parse(`(${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
-      assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(2)}!${'))'.repeat(2)}`).children].map(el => el.tagName),
-        ['P', 'OL']);
-      assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(3)}!${'))'.repeat(3)}`).children].map(el => el.tagName),
         ['H1', 'PRE']);
       assert.deepStrictEqual(
         [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
@@ -356,6 +335,9 @@ describe('Unit: parser/api/parse', () => {
         ['P', 'OL']);
       assert.deepStrictEqual(
         [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
+        ['H1', 'PRE']);
+      assert.deepStrictEqual(
+        [...parse(`${'(('.repeat(3)}0))((1))))))`).children].map(el => el.tagName),
         ['H1', 'PRE']);
     });
 

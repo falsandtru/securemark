@@ -28,7 +28,6 @@ export class Context extends Ctx {
         20 || Recursion.blockquote,
         40 || Recursion.listitem,
         20 || Recursion.inline,
-        20 || Recursion.annotation,
         20 || Recursion.bracket,
         20 || Recursion.terminal,
       ],
@@ -116,7 +115,6 @@ export const enum Recursion {
   blockquote,
   listitem,
   inline,
-  annotation,
   bracket,
   terminal,
 }

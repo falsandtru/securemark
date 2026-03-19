@@ -1,13 +1,14 @@
 import { EmStrongParser, EmphasisParser, StrongParser } from '../inline';
 import { Recursion, Command } from '../context';
 import { Parser, Result, List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, surround, lazy, bind } from '../../combinator';
+import { union, some, precedence, surround, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { strong } from './strong';
 import { emphasis } from './emphasis';
 import { strs } from '../source';
+import { repeat } from '../repeat';
 import { beforeNonblank, afterNonblank } from '../visibility';
-import { unwrap, repeat } from '../util';
+import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 const substrong: Parser.IntermediateParser<StrongParser> = lazy(() => some(union([
@@ -23,7 +24,7 @@ const subemphasis: Parser.IntermediateParser<EmphasisParser> = lazy(() => some(u
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
 export const emstrong: EmStrongParser = lazy(() =>
-  repeat('***', beforeNonblank, precedence(0, recursion(Recursion.inline, surround(
+  repeat('***', beforeNonblank, '***', [Recursion.inline], precedence(0, surround(
     '',
     some(union([some(inline, '*', afterNonblank)])),
     strs('*', 1, 3),
@@ -75,11 +76,12 @@ export const emstrong: EmStrongParser = lazy(() =>
       }
       assert(false);
     },
-    ([, bs], { buffer }) => bs && buffer.import(bs) && buffer.push(new Node(Command.Cancel)) && buffer))),
+    ([, bs], { buffer }) => bs && buffer.import(bs) && buffer.push(new Node(Command.Cancel)) && buffer)),
     // 3以上の`*`に対してemの適用を保証する
     nodes => new List([new Node(html('em', [html('strong', defrag(unwrap(nodes)))]))]),
     (nodes, context, prefix, postfix, state) => {
       context.position += postfix;
+      context.range += postfix;
       assert(postfix < 3);
       if (state) {
         switch (postfix) {
@@ -96,6 +98,7 @@ export const emstrong: EmStrongParser = lazy(() =>
         }
         prefix -= postfix;
         postfix -= postfix;
+        context.range += postfix;
         switch (prefix) {
           case 0:
             break;
@@ -114,6 +117,7 @@ export const emstrong: EmStrongParser = lazy(() =>
               })
               (context) ?? prepend('*', nodes);
             prefix -= 1;
+            context.range += 1;
             break;
           case 2:
             nodes = bind<StrongParser>(
@@ -130,11 +134,14 @@ export const emstrong: EmStrongParser = lazy(() =>
               })
               (context) ?? prepend('**', nodes);
             prefix -= 2;
+            context.range += 2;
             break;
         }
       }
       if (prefix > postfix) {
         nodes = prepend('*'.repeat(prefix - postfix), nodes);
+        prefix = 0;
+        context.range += prefix - postfix;
       }
       return nodes;
     }));
