@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.299.1
+
+- Refactoring.
+
 ## 0.299.0
 
 - Add support for CRLF linebreaks.
