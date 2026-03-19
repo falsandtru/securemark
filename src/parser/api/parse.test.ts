@@ -125,7 +125,7 @@ describe('Unit: parser/api/parse', () => {
           '!{../../a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
-          '<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span>\n</span></details></aside>',
+          '<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span></div></details></aside>',
           '<p><a class="account" href="https://source/@a" target="_blank">@a</a></p>',
           '<p><a class="account" href="https://domain/@a" target="_blank">@domain/a</a></p>',
           '<p><a class="channel" href="https://source/@a?ch=b" target="_blank">@a#b</a></p>',
@@ -158,7 +158,7 @@ describe('Unit: parser/api/parse', () => {
           '{./a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) }).children].map(el => el.outerHTML),
         [
-          '<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span>\n</span></details></aside>',
+          '<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span></div></details></aside>',
           '<p><a class="url" href="/a">^/a</a></p>',
           '<p><a class="url" href="https://source/x/a" target="_blank">./a</a></p>',
         ]);
@@ -173,7 +173,7 @@ describe('Unit: parser/api/parse', () => {
           '{./a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
-          `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="${location.origin}/x/y"><span class="field-name">URL</span>: <span class="field-value">${location.origin}/x/y</span>\n</span></details></aside>`,
+          `<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="${location.origin}/x/y"><span class="field-name">URL</span>: <span class="field-value">${location.origin}/x/y</span></div></details></aside>`,
           '<p><a class="url" href="/z/a">^/a</a></p>',
           '<p><a class="url" href="/x/a">./a</a></p>',
         ]);
@@ -204,9 +204,9 @@ describe('Unit: parser/api/parse', () => {
           '{#}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => normalize(el.outerHTML)),
         [
-          `<aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span>\n</span></details></aside>`,
+          `<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span></div></details></aside>`,
           '<pre class="invalid" translate="no">---\nURL: https://example/y\n---\n</pre>',
-          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><span class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span>\n</span></details></aside><p><a class="url" href="https://example/y#" target="_blank">#</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
+          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span></div></details></aside><p><a class="url" href="https://example/y#" target="_blank">#</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
           '<p><a class="url" href="https://example/x#" target="_blank">#</a></p>',
         ]);
     });

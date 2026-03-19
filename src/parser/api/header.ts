@@ -8,7 +8,11 @@ export function header(source: string): string {
 
 export function headers(source: string): string[] {
   const [el] = parse(source);
-  return el?.textContent!.trimEnd().slice(el.firstChild!.firstChild!.textContent!.length).split(/\r?\n/) ?? [];
+  const acc = [];
+  for (let field = el?.firstChild?.firstChild; field = field?.nextSibling;) {
+    acc.push(field.textContent!);
+  }
+  return acc;
 }
 
 function parse(source: string): [HTMLElement, number] | [] {

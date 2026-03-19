@@ -42,11 +42,10 @@ const field: MarkdownParser.HeaderParser.FieldParser = line(({ source, position 
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
   return new List([
-    new Node(html('span', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
+    new Node(html('div', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
       ': ',
       html('span', { class: 'field-value' }, value),
-      '\n',
     ])),
   ]);
 });
