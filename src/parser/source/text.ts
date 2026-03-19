@@ -163,10 +163,9 @@ export function backToEmailHead(source: string, position: number, index: number)
 }
 export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
-  if (char < '0' || '\x7F' < char) return false;
-  return '0' <= char && char <= '9'
-      || 'A' <= char && char <= 'Z'
-      || 'a' <= char && char <= 'z';
+  if (char < '0' || 'z' < char) return false;
+  if (char <= '9' || 'a' <= char) return true;
+  return 'A' <= char && char <= 'Z';
 }
 
 function seek(source: string, position: number, state: number): number {

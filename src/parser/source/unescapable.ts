@@ -119,5 +119,5 @@ function seek(source: string, position: number, state: number): number {
 }
 
 function category(char: string): boolean {
-  return '\x21' <= char && char <= '\x7E';
+  return char <= '\x7E' && '\x21' <= char;
 }

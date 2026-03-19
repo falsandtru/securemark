@@ -135,5 +135,5 @@ export { shortmedia, lineshortmedia } from './inline/shortmedia';
 
 function isAlphabet(char: string): boolean {
   assert(char.length === 1);
-  return 'a' <= char && char <= 'z';
+  return char <= 'z' && 'a' <= char;
 }

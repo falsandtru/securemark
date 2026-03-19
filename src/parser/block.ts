@@ -99,7 +99,7 @@ export const block: BlockParser = error(union([
       case '(':
         return olist(input);
       default:
-        if ('0' <= char && char <= '9') return olist(input);
+        if (char <= '9' && '0' <= char) return olist(input);
     }
   },
   paragraph
