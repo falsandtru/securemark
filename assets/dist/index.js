@@ -4224,7 +4224,7 @@ function parse(source) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.escape = exports.invisibleGraphHTMLEntityNames = exports.invisibleBlankCharacters = exports.invisibleBlankHTMLEntityNames = exports.normalize = void 0;
+exports.escape = exports.invisibleGraphHTMLEntityNames = exports.invisibleBlankHTMLEntityNames = exports.normalize = void 0;
 const dom_1 = __webpack_require__(394);
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 function normalize(source) {
@@ -4251,7 +4251,6 @@ const parser = (el => entity => {
   return el.textContent;
 })((0, dom_1.html)('span'));
 exports.invisibleBlankHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() === '');
-exports.invisibleBlankCharacters = exports.invisibleBlankHTMLEntityNames.map(name => parser(`&${name};`));
 exports.invisibleGraphHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() !== '');
 const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
 const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => parser(`&${name};`));
@@ -8962,9 +8961,9 @@ const combinator_1 = __webpack_require__(3484);
 const normalize_1 = __webpack_require__(4490);
 var blank;
 (function (blank) {
-  blank.line = new RegExp(/((?:^|\n)[^\S\r\n]*(?=\S))((?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)+(?=$|\r?\n))/g.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`).replace('IBC', `${normalize_1.invisibleBlankCharacters.join('')}`), 'g');
-  blank.start = new RegExp(/(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)+/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`).replace('IBC', `${normalize_1.invisibleBlankCharacters.join('')}`), 'y');
-  blank.unit = new RegExp(/(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|[IBC]|<wbr ?>)/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`).replace('IBC', `${normalize_1.invisibleBlankCharacters.join('')}`), 'y');
+  blank.line = new RegExp(/((?:^|\n)[^\S\r\n]*(?=\S))((?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+(?=$|\r?\n))/g.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'g');
+  blank.start = new RegExp(/(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'y');
+  blank.unit = new RegExp(/(?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)/y.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'y');
 })(blank || (blank = {}));
 function visualize(parser) {
   return (0, combinator_1.convert)(source => source.replace(blank.line, `$1${"\u001B" /* Command.Escape */}$2`), parser);
@@ -8976,15 +8975,15 @@ function blankWith(starts, delimiter) {
   return new RegExp([
   // 空行除去
   // 完全な空行はエスケープ済みなので再帰的バックトラックにはならない。
-  String.raw`(?:${starts}(?:\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|[${normalize_1.invisibleBlankCharacters.join('')}]|<wbr ?>)*)?`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
+  String.raw`(?:${starts}(?:\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)*)?`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
 }
 exports.blankWith = blankWith;
 function beforeNonblankWith(delimiter) {
-  return new RegExp([typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source, String.raw`(?!\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|[${normalize_1.invisibleBlankCharacters.join('')}]|<wbr ?>)`].join(''), 'y');
+  return new RegExp([typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source, String.raw`(?!\\?\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`].join(''), 'y');
 }
 exports.beforeNonblankWith = beforeNonblankWith;
 function afterNonblankWith(delimiter) {
-  return new RegExp([String.raw`(?<!\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|[${normalize_1.invisibleBlankCharacters.join('')}]|<wbr ?>)`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
+  return new RegExp([String.raw`(?<!\s|&(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')});|<wbr ?>)`, typeof delimiter === 'string' ? delimiter.replace(/[*+()\[\]]/g, '\\$&') : delimiter.source].join(''), 'y');
 }
 function isNonblankFirstLine(nodes) {
   if (nodes.length === 0) return true;
