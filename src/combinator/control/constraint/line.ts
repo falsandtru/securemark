@@ -1,23 +1,29 @@
-import { Parser, input, failsafe } from '../../data/parser';
+import { Parser, input } from '../../data/parser';
 
 export function line<P extends Parser>(parser: P): P;
 export function line<N>(parser: Parser<N>): Parser<N> {
   assert(parser);
-  return failsafe(context => {
+  return context => {
     const { source, position } = context;
     if (position === source.length) return;
     const line = firstline(source, position);
     context.offset += position;
     const result = parser(input(line, context));
     context.source = source;
-    context.position += position;
-    context.position += result && context.position === position ? line.length : 0;
+    context.position = result
+      ? context.position === 0
+        ? position + line.length
+        : position + context.position
+      : position;
     context.offset -= position;
-    if (result === undefined) return;
-    if (context.position < position + line.length && !isEmptyline(source, context.position)) return;
+    if (result === undefined ||
+        context.position < position + line.length && !isEmptyline(source, context.position)) {
+      context.position = position;
+      return;
+    }
     context.position = position + line.length;
     return result;
-  });
+  };
 }
 
 export function firstline(source: string, position: number): string {

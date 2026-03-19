@@ -1,9 +1,9 @@
-import { Parser, List, Context, subinput, failsafe } from '../../data/parser';
+import { Parser, List, Context, subinput } from '../../data/parser';
 
 export function convert<P extends Parser>(conv: (source: string, context: Parser.Context<P>) => string, parser: P): P;
 export function convert<N>(conv: (source: string, context: Context) => string, parser: Parser<N>): Parser<N> {
   assert(parser);
-  return failsafe(input => {
+  return input => {
     const context = input;
     const { source, position, offset } = context;
     if (position === source.length) return;
@@ -14,9 +14,9 @@ export function convert<N>(conv: (source: string, context: Context) => string, p
       return new List();
     }
     const result = parser(subinput(src, context));
-    context.position = context.source.length
+    context.position = result ? context.source.length : position;
     assert(context.source === source);
     assert(context.offset === offset);
     return result;
-  });
+  };
 }

@@ -1,4 +1,4 @@
-import { Parser, Result, List, Node, failsafe } from '../combinator/data/parser';
+import { Parser, Result, List, Node } from '../combinator/data/parser';
 import { tester } from '../combinator/data/delimiter';
 import { Context, Recursion, Command } from './context';
 import { min } from 'spica/alias';
@@ -33,7 +33,7 @@ export function repeat<N extends HTMLElement | string>(
     },
 ): Parser<string | N, Context> {
   const test = tester(after, false);
-  return failsafe(input => {
+  return input => {
     const context = input;
     const { source, position, resources: { recursions } = {} } = context;
     if (!source.startsWith(opener, context.position)) return;
@@ -41,7 +41,10 @@ export function repeat<N extends HTMLElement | string>(
     let i = opener.length;
     for (; source[context.position + i] === source[context.position];) ++i;
     context.position += i;
-    if (test(input) === undefined) return;
+    if (test(input) === undefined) {
+      context.position = position;
+      return;
+    }
     let depth = i / opener.length + 1 | 0;
     if (recursions) for (const recursion of rs) {
       const rec = min(recursion, recursions.length - 1);
@@ -120,7 +123,7 @@ export function repeat<N extends HTMLElement | string>(
     const postfix = i;
     context.range = context.position - position - prefix;
     return termination(nodes, context, prefix, postfix, state);
-  });
+  };
 }
 
 function countFollows(source: string, position: number, closer: string, limit: number): number {

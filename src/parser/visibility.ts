@@ -1,4 +1,4 @@
-import { Parser, List, Node, failsafe } from '../combinator/data/parser';
+import { Parser, List, Node } from '../combinator/data/parser';
 import { Command } from './context';
 import { Flag } from './node';
 import { convert, fmap } from '../combinator';
@@ -90,7 +90,7 @@ export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Pa
 }
 function trimBlankStart<P extends Parser>(parser: P): P;
 function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
-  return failsafe(input => {
+  return input => {
     const context = input;
     const { source, position } = context;
     if (position === source.length) return;
@@ -101,7 +101,7 @@ function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
     return context.position === source.length
       ? new List()
       : parser(input);
-  });
+  };
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<string | N> {
