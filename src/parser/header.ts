@@ -11,7 +11,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
     block(
       union([
         validate(context => context.header,
-        focus(/(---+)[^\S\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,100}\1[^\S\r\n]*(?:$|\r?\n)/yi,
+        focus(/(---+)[^\S\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,32}\1[^\S\r\n]*(?:$|\r?\n)/yi,
         convert(source =>
           source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n')),
           fmap(
