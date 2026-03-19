@@ -6063,7 +6063,7 @@ class Context extends parser_1.Context {
     this.resources ??= {
       // バックトラックのせいで文字数制限を受けないようにする。
       clock: exports.MAX_SEGMENT_SIZE * (6 + 1),
-      recursions: [5 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.annotation */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
+      recursions: [5 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
     };
     this.segment = segment ?? 0 /* Segment.unknown */;
     this.local = local ?? false;
@@ -6312,6 +6312,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const bracket_1 = __webpack_require__(4526);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
@@ -6330,121 +6331,38 @@ const dom_1 = __webpack_require__(394);
 // 修正する必要があるためほぼ完全な二重処理が必要になり三重以上の注釈という不適切な使用のために
 // 常に非常に非効率な処理を行い常時低速化するより三重以上の注釈を禁止して効率性を維持するのが妥当である。
 const MAX_DEPTH = 20;
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, combinator_1.surround)((0, combinator_1.open)('((', visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursions)([4 /* Recursion.annotation */, 3 /* Recursion.inline */, 5 /* Recursion.bracket */, 5 /* Recursion.bracket */], (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]))), '))', false, [], ([, ns], context) => {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, repeat_1.repeat)('(', visibility_1.beforeNonblank, ')', [4 /* Recursion.bracket */], (0, combinator_1.precedence)(1, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]), ')', false, [], ([, bs], {
+  buffer
+}) => buffer.import(bs), ([, bs], {
+  buffer
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), (nodes, context, lead, follow) => {
   const {
     linebreak,
     recursion,
     resources
   } = context;
-  if (linebreak !== 0) {
-    ns.unshift(new parser_1.Node('('));
-    ns.push(new parser_1.Node(')'));
+  if (linebreak !== 0 || nodes.length === 0 || lead === 0 || follow % 2 === 0) {
+    nodes.unshift(new parser_1.Node('('));
+    nodes.push(new parser_1.Node(')'));
     return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
       class: (0, bracket_1.bracketname)(context, 1, 1)
-    }, ['(', (0, dom_1.html)('span', {
-      class: (0, bracket_1.bracketname)(context, 2, 2)
-    }, (0, dom_1.defrag)((0, util_1.unwrap)(ns))), ')']))]);
+    }, (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
   }
-  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-  recursion.add(depth);
+  recursion.add(MAX_DEPTH - (resources?.recursions[4 /* Recursion.bracket */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH));
+  context.position += 1;
   return new parser_1.List([new parser_1.Node((0, dom_1.html)('sup', {
     class: 'annotation'
-  }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(ns))))]))]);
-}, ([, bs], context) => {
-  const {
-    source,
-    position,
-    linebreak,
-    recursion,
-    resources
-  } = context;
-  const depth = MAX_DEPTH - (resources?.recursions[4 /* Recursion.annotation */] ?? resources?.recursions.at(-1) ?? MAX_DEPTH);
-  if (linebreak === 0 && bs && bs.length === 1 && source[position] === ')' && typeof bs.head?.value === 'object') {
-    const {
-      className
-    } = bs.head.value;
-    if (className === 'paren' || className === 'bracket') {
-      const {
-        firstChild,
-        lastChild
-      } = bs.head.value;
-      if (firstChild.nodeValue.length === 1) {
-        firstChild.remove();
-      } else {
-        firstChild.nodeValue = firstChild.nodeValue.slice(1);
-      }
-      if (lastChild.nodeValue.length === 1) {
-        lastChild.remove();
-      } else {
-        lastChild.nodeValue = lastChild.nodeValue.slice(0, -1);
-      }
-      context.position += 1;
-      recursion.add(depth);
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-        class: 'paren'
-      }, ['(', (0, dom_1.html)('sup', {
-        class: 'annotation'
-      }, [(0, dom_1.html)('span', bs.head.value.childNodes)])]))]);
-    }
-    if (className === 'annotation' && deepunwrap(bs)) {
-      context.position += 1;
-      recursion.add(depth);
-      return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-        class: 'paren'
-      }, ['(', (0, dom_1.html)('sup', {
-        class: 'annotation'
-      }, [(0, dom_1.html)('span', [bs.head.value])])]))]);
-    }
-  }
-  bs ??= new parser_1.List();
-  bs.unshift(new parser_1.Node('('));
-  if (source[context.position] === ')') {
-    bs.push(new parser_1.Node(')'));
-    context.position += 1;
+  }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(nodes))))]))]);
+}, (nodes, context, prefix, postfix) => {
+  for (let i = 0; i < prefix; ++i) {
+    nodes.unshift(new parser_1.Node('('));
+    nodes = new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+      class: (0, bracket_1.bracketname)(context, 1, 0)
+    }, (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
     context.range += 1;
   }
-  bs = new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-    class: (0, bracket_1.bracketname)(context, 2, context.position - position)
-  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]);
-  bs.unshift(new parser_1.Node('('));
-  const cs = parser(context);
-  if (source[context.position] === ')') {
-    cs && bs.import(cs);
-    bs.push(new parser_1.Node(')'));
-    context.position += 1;
-    context.range += 1;
-  }
-  return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-    class: (0, bracket_1.bracketname)(context, 1, context.position - position)
-  }, (0, dom_1.defrag)((0, util_1.unwrap)(bs))))]);
+  return nodes;
 })));
-const parser = (0, combinator_1.lazy)(() => (0, combinator_1.precedence)(1, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]])));
-function deepunwrap(list) {
-  let bottom = list.head.value;
-  for (; bottom;) {
-    const el = bottom.firstChild.firstChild;
-    if (el !== el?.parentNode?.lastChild) break;
-    if (el instanceof HTMLElement === false) break;
-    if (el?.className !== 'annotation') break;
-    bottom = el;
-  }
-  const el = bottom.firstChild.firstChild;
-  if (el instanceof Element === false) return false;
-  if (el === el?.parentNode?.lastChild) {
-    const {
-      className,
-      firstChild,
-      lastChild
-    } = el;
-    if (className === 'paren' || className === 'bracket') {
-      firstChild.nodeValue.length === 1 ? firstChild.remove() : firstChild.nodeValue = firstChild.nodeValue.slice(1);
-      lastChild.nodeValue.length === 1 ? lastChild.remove() : lastChild.nodeValue = lastChild.nodeValue.slice(0, -1);
-      el.replaceWith(...el.childNodes);
-      return true;
-    }
-  }
-  return false;
-}
 
 /***/ },
 
@@ -6689,7 +6607,7 @@ exports.lineurl = (0, combinator_1.lazy)(() => (0, combinator_1.focus)(/(?<=^|[\
   context.position -= source[0] === '!' ? 1 : 0;
   return new parser_1.List([new parser_1.Node((0, link_1.parse)(new parser_1.List(), new parser_1.List([new parser_1.Node(source.slice(position))]), context))]);
 })), (0, source_1.str)(/[^:]+/y)])])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.unescapable */])]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ')')), (0, source_1.str)(')'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), ']')), (0, source_1.str)(']'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.unescsource]), '}')), (0, source_1.str)('}'), true, [3 | 8 /* Backtrack.unescapable */]), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)(source_1.unescsource, '"'))), (0, source_1.str)('"'), true, [3 | 8 /* Backtrack.unescapable */])]));
 
 /***/ },
 
@@ -6740,17 +6658,17 @@ exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([input =>
       return d1(input);
   }
 }]));
-const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+const p1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ')', [[')', 1]]))), (0, source_1.str)(')'), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: bracketname(context, 1, 1)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: bracketname(context, 1, 0)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs)))))])));
-const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+const p2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('（'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '）', [['）', 1]]))), (0, source_1.str)('）'), true, [], ([as, bs = new parser_1.List(), cs], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: bracketname(context, 1, 1)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs).import(cs)))))]), ([as, bs = new parser_1.List()], context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: bracketname(context, 1, 0)
 }, (0, dom_1.defrag)((0, util_1.unwrap)(as.import(bs)))))])));
-const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, [2 | 4 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], context) => {
+const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, ']', [[']', 1]]))), (0, source_1.str)(']'), true, [2 | 4 /* Backtrack.common */], ([as, bs = new parser_1.List(), cs], context) => {
   const {
     source,
     position,
@@ -6776,12 +6694,12 @@ const s1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.
   }
   return as.import(bs).import(cs);
 }, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const s2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const c1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
-const c2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const s2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('［'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '］', [['］', 1]]))), (0, source_1.str)('］'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const c1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '}', [['}', 1]]))), (0, source_1.str)('}'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+const c2 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('｛'), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, '｝', [['｝', 1]]))), (0, source_1.str)('｝'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
 const d1 = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('"'),
 // 改行の優先度を構文ごとに変える場合シグネチャの優先度対応が必要
-(0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
+(0, combinator_1.precedence)(2, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)(inline_1.inline, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [], undefined, ([as, bs = new parser_1.List()]) => as.import(bs)));
 
 /***/ },
 
@@ -6824,14 +6742,15 @@ exports.deletion = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.deletion = (0, combinator_1.lazy)(() => (0, util_1.repeat)('~~', '', (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
+exports.deletion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('~~', '', '~~', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('del', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -6873,6 +6792,7 @@ const inline_1 = __webpack_require__(7973);
 const strong_1 = __webpack_require__(6591);
 const emphasis_1 = __webpack_require__(1354);
 const source_1 = __webpack_require__(8745);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
@@ -6881,7 +6801,7 @@ const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, comb
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-exports.emstrong = (0, combinator_1.lazy)(() => (0, util_1.repeat)('***', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
+exports.emstrong = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('***', visibility_1.beforeNonblank, '***', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
   const {
     buffer
   } = context;
@@ -6925,10 +6845,11 @@ exports.emstrong = (0, combinator_1.lazy)(() => (0, util_1.repeat)('***', visibi
   }
 }, ([, bs], {
   buffer
-}) => bs && buffer.import(bs) && buffer.push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))),
+}) => bs && buffer.import(bs) && buffer.push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)),
 // 3以上の`*`に対してemの適用を保証する
 nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.html)('strong', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)))]))]), (nodes, context, prefix, postfix, state) => {
   context.position += postfix;
+  context.range += postfix;
   if (state) {
     switch (postfix) {
       case 0:
@@ -6943,6 +6864,7 @@ nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.h
     }
     prefix -= postfix;
     postfix -= postfix;
+    context.range += postfix;
     switch (prefix) {
       case 0:
         break;
@@ -6959,6 +6881,7 @@ nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.h
           }
         })(context) ?? prepend('*', nodes);
         prefix -= 1;
+        context.range += 1;
         break;
       case 2:
         nodes = (0, combinator_1.bind)(substrong, ds => {
@@ -6973,11 +6896,14 @@ nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('em', [(0, dom_1.h
           }
         })(context) ?? prepend('**', nodes);
         prefix -= 2;
+        context.range += 2;
         break;
     }
   }
   if (prefix > postfix) {
     nodes = prepend('*'.repeat(prefix - postfix), nodes);
+    prefix = 0;
+    context.range += prefix - postfix;
   }
   return nodes;
 }));
@@ -7305,7 +7231,7 @@ const dom_1 = __webpack_require__(394);
 // All syntax surrounded by square brackets shouldn't contain line breaks.
 exports.placeholder = (0, combinator_1.lazy)(() => (0, combinator_1.surround)(
 // ^はabbrで使用済みだが^:などのようにして分離使用可能
-(0, source_1.str)(/\[[:^|]/y, visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+(0, source_1.str)(/\[[:^|]/y, visibility_1.beforeNonblank), (0, combinator_1.precedence)(1, (0, combinator_1.recursion)(4 /* Recursion.bracket */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ']', [[']', 1]]))), (0, source_1.str)(']'), false, [3 | 4 /* Backtrack.common */], (_, context) => new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
   class: 'invalid',
   ...(0, util_1.invalid)('extension', 'syntax', `Invalid start symbol or linebreak`)
 }, context.source.slice(context.position - context.range, context.position)))]), ([as, bs]) => bs && as.import(bs)));
@@ -7450,14 +7376,15 @@ exports.insertion = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.insertion = (0, combinator_1.lazy)(() => (0, util_1.repeat)('++', '', (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
+exports.insertion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('++', '', '++', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('ins', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -7474,17 +7401,18 @@ exports.italic = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
 // 可読性のため実際にはオブリーク体を指定する。
 // 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
 // ある程度の長さのある文に使うのが望ましい。
-exports.italic = (0, combinator_1.lazy)(() => (0, util_1.repeat)('///', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
+exports.italic = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('///', visibility_1.beforeNonblank, '///', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), nodes => new parser_1.List([new parser_1.Node((0, dom_1.html)('i', (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))])));
 
 /***/ },
 
@@ -7658,19 +7586,20 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
 const indexee_1 = __webpack_require__(7610);
+const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.mark = (0, combinator_1.lazy)(() => (0, util_1.repeat)('==', visibility_1.beforeNonblank, (0, combinator_1.precedence)(0, (0, combinator_1.recursion)(3 /* Recursion.inline */, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
+exports.mark = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('==', visibility_1.beforeNonblank, '==', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
-}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer))), (nodes, {
+}) => bs && buffer.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && buffer)), (nodes, {
   id,
   state
-}, nest) => {
+}, lead) => {
   const el = (0, dom_1.html)('mark', (0, dom_1.defrag)((0, util_1.unwrap)(nodes)));
-  if (state & 251 /* State.linkers */ || nest) return new parser_1.List([new parser_1.Node(el)]);
+  if (state & 251 /* State.linkers */ || lead >= 2) return new parser_1.List([new parser_1.Node(el)]);
   (0, dom_1.define)(el, {
     id: (0, indexee_1.identity)('mark', id, (0, indexee_1.signature)(el.cloneNode(true)))
   });
@@ -7711,7 +7640,7 @@ exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.rewrite)((0, combin
   translate: 'no',
   ...(0, util_1.invalid)('math', 'content', `"${source.match(forbiddenCommand)[0]}" command is forbidden`)
 }, source))])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /[{}$\n]/y)]))), (0, source_1.str)('}'), true));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, (0, combinator_1.some)(source_1.escsource, /[{}$\n]/y)]))), (0, source_1.str)('}'), true));
 
 /***/ },
 
@@ -7798,7 +7727,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     target: '_blank'
   }, [el]))]);
 }))));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')')), (0, source_1.str)(')'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), (0, source_1.str)(']'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}')), (0, source_1.str)('}'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"'))), (0, source_1.str)('"'), true, [], undefined, () => new parser_1.List())]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ')')), (0, source_1.str)(')'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), ']')), (0, source_1.str)(']'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, bracket, source_1.txt]), '}')), (0, source_1.str)('}'), true, [], undefined, () => new parser_1.List()), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([htmlentity_1.unsafehtmlentity, source_1.txt]), '"'))), (0, source_1.str)('"'), true, [], undefined, () => new parser_1.List())]));
 const option = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, combinator_1.open)(/ /y, (0, source_1.str)(/[1-9][0-9]*/y)), (0, source_1.str)(/[x:]/y), (0, source_1.str)(/[1-9][0-9]*(?=[ }])/y), false, [], ([[{
   value: a
 }], [{
@@ -8116,7 +8045,7 @@ exports.template = (0, combinator_1.lazy)(() => (0, combinator_1.surround)((0, s
   class: 'invalid',
   ...(0, util_1.invalid)('template', 'syntax', `Missing the closing symbol "}}"`)
 }, context.source.slice(context.position - context.range, context.position)))])));
-const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(6 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [], undefined, ([as, bs]) => bs && as.import(bs))]));
+const bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([(0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ')')), (0, source_1.str)(')'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('['), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), ']')), (0, source_1.str)(']'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('{'), (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)((0, combinator_1.union)([bracket, source_1.escsource]), '}')), (0, source_1.str)('}'), true, [], undefined, ([as, bs]) => bs && as.import(bs)), (0, combinator_1.surround)((0, source_1.str)('"'), (0, combinator_1.precedence)(2, (0, combinator_1.recursion)(5 /* Recursion.terminal */, (0, combinator_1.some)(source_1.escsource, /["\n]/y, [['"', 2], ['\n', 3]]))), (0, source_1.str)('"'), true, [], undefined, ([as, bs]) => bs && as.import(bs))]));
 
 /***/ },
 
@@ -8439,6 +8368,143 @@ function* proc(note, defs) {
     yield note.appendChild(def);
   }
   defs.clear();
+}
+
+/***/ },
+
+/***/ 8019
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.repeat = void 0;
+const parser_1 = __webpack_require__(605);
+const delimiter_1 = __webpack_require__(385);
+const alias_1 = __webpack_require__(5413);
+function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, context, prefix, postfix) => {
+  const acc = new parser_1.List();
+  if (prefix > 0) {
+    acc.push(new parser_1.Node(opener[0].repeat(prefix)));
+    context.range += prefix;
+  }
+  acc.import(nodes);
+  if (postfix > 0) {
+    const {
+      source,
+      position
+    } = context;
+    acc.push(new parser_1.Node(source.slice(position, position + postfix)));
+    context.position += postfix;
+    context.range += postfix;
+  }
+  return acc;
+}) {
+  const test = (0, delimiter_1.tester)(after, false);
+  return (0, parser_1.failsafe)(input => {
+    const context = input;
+    const {
+      source,
+      position,
+      resources: {
+        recursions
+      } = {}
+    } = context;
+    if (!source.startsWith(opener, context.position)) return;
+    let nodes = new parser_1.List();
+    let i = opener.length;
+    for (; source[context.position + i] === source[context.position];) ++i;
+    context.position += i;
+    if (test(input) === undefined) return;
+    let depth = i / opener.length + 1 | 0;
+    if (recursions) for (const recursion of rs) {
+      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
+      if (rec === -1) continue;
+      if (recursions[rec] < depth - 1) throw new Error('Too much recursion');
+      recursions[rec] -= depth;
+    }
+    let state = false;
+    let follow = 0;
+    for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
+      if (recursions) for (const recursion of rs) {
+        const rec = (0, alias_1.min)(recursion, recursions.length - 1);
+        if (rec === -1) continue;
+        recursions[rec] += 1;
+      }
+      depth -= 1;
+      const lead = i - opener.length;
+      if (source.startsWith(closer, context.position)) {
+        context.position += closer.length;
+        const pos = context.position;
+        follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
+        nodes = cons(nodes, context, lead, follow);
+        if (context.position > pos) {
+          const advance = opener.length * (context.position - pos) / closer.length | 0;
+          i -= advance;
+          follow -= advance;
+          depth -= advance;
+        }
+        continue;
+      }
+      const buf = context.buffer;
+      context.buffer = nodes;
+      const result = parser(input);
+      context.buffer = buf;
+      context.range = context.position - position - i + opener.length;
+      if (result === undefined) break;
+      const pos = context.position;
+      nodes = result;
+      switch (nodes.last?.value) {
+        case "\u0018" /* Command.Cancel */:
+          nodes.pop();
+          state = false;
+          break;
+        case "\u001F" /* Command.Separator */:
+          follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          nodes.pop();
+          state = true;
+          continue;
+        default:
+          follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          nodes = cons(nodes, context, lead, follow);
+          state = true;
+          if (context.position > pos) {
+            const advance = opener.length * (context.position - pos) / closer.length | 0;
+            i -= advance;
+            follow -= advance;
+            depth -= advance;
+          }
+          continue;
+      }
+      break;
+    }
+    if (recursions) for (let i = 0; i < depth; ++i) for (const recursion of rs) {
+      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
+      if (rec === -1) continue;
+      recursions[rec] += depth;
+    }
+    depth = 0;
+    const prefix = i;
+    i = 0;
+    for (let len = (0, alias_1.min)(prefix, source.length - context.position); i < len && source[context.position + i] === closer[0];) {
+      ++i;
+    }
+    const postfix = i;
+    context.range = context.position - position - prefix - postfix;
+    return termination(nodes, context, prefix, postfix, state);
+  });
+}
+exports.repeat = repeat;
+function countFollows(source, position, closer, limit) {
+  if (closer.length === 0) return 0;
+  let pos = position;
+  for (let i = 0; i < limit && pos < source.length; ++i, pos += closer.length) {
+    if (!source.startsWith(closer, pos)) break;
+  }
+  return pos - position;
 }
 
 /***/ },
@@ -9057,10 +9123,7 @@ exports.unescsource = unescsource;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.randomID = exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.repeat = exports.unwrap = void 0;
-const parser_1 = __webpack_require__(605);
-const delimiter_1 = __webpack_require__(385);
-const alias_1 = __webpack_require__(5413);
+exports.randomID = exports.stringify = exports.unmarkInvalid = exports.markInvalid = exports.invalid = exports.unwrap = void 0;
 const random_1 = __webpack_require__(3158);
 const dom_1 = __webpack_require__(394);
 function* unwrap(nodes) {
@@ -9070,75 +9133,6 @@ function* unwrap(nodes) {
   }
 }
 exports.unwrap = unwrap;
-function repeat(symbol, after, parser, cons, termination = (nodes, context, prefix, postfix) => {
-  const acc = new parser_1.List();
-  if (prefix > 0) {
-    acc.push(new parser_1.Node(symbol[0].repeat(prefix)));
-  }
-  acc.import(nodes);
-  if (postfix > 0) {
-    const {
-      source,
-      position
-    } = context;
-    acc.push(new parser_1.Node(source.slice(position, position + postfix)));
-    context.position += postfix;
-  }
-  return acc;
-}) {
-  const test = (0, delimiter_1.tester)(after, false);
-  return (0, parser_1.failsafe)(input => {
-    const context = input;
-    const {
-      source,
-      position
-    } = context;
-    if (!source.startsWith(symbol, context.position)) return;
-    let nodes = new parser_1.List();
-    let i = symbol.length;
-    for (; source[context.position + i] === source[context.position];) ++i;
-    context.position += i;
-    if (test(input) === undefined) return;
-    let state = false;
-    for (; i >= symbol.length; i -= symbol.length) {
-      if (nodes.length > 0 && source.startsWith(symbol, context.position)) {
-        nodes = cons(nodes, context, i > symbol.length);
-        context.position += symbol.length;
-        continue;
-      }
-      const buf = context.buffer;
-      context.buffer = nodes;
-      const result = parser(input);
-      context.buffer = buf;
-      if (result === undefined) break;
-      nodes = result;
-      switch (nodes.last?.value) {
-        case "\u0018" /* Command.Cancel */:
-          nodes.pop();
-          state = false;
-          break;
-        case "\u001F" /* Command.Separator */:
-          nodes.pop();
-          state = true;
-          continue;
-        default:
-          nodes = cons(nodes, context, i > symbol.length);
-          state = true;
-          continue;
-      }
-      break;
-    }
-    const prefix = i;
-    i = 0;
-    for (let len = (0, alias_1.min)(prefix, source.length - context.position); i < len && source[context.position + i] === symbol[0];) {
-      ++i;
-    }
-    const postfix = i;
-    context.range = context.position - position;
-    return termination(nodes, context, prefix, postfix, state);
-  });
-}
-exports.repeat = repeat;
 function invalid(syntax, type, message) {
   return {
     'data-invalid-syntax': syntax,
