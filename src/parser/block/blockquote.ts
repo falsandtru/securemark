@@ -25,10 +25,10 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   recursion(Recursion.blockquote, some(union([
     rewrite(
       indent,
-      convert(unindent, source, true)),
+      convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => new List([new Node(html('pre', defrag(unwrap(ns))))])), true)),
+      convert(unindent, fmap(autolink, ns => new List([new Node(html('pre', defrag(unwrap(ns))))])))),
   ]))),
   ns => new List([new Node(html('blockquote', unwrap(ns)))])));
 
@@ -36,7 +36,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
   recursion(Recursion.blockquote, some(union([
     rewrite(
       indent,
-      convert(unindent, markdown, true)),
+      convert(unindent, markdown)),
     rewrite(
       some(contentline, opener),
       convert(unindent, context => {
@@ -52,6 +52,6 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
         }, context);
         context.position = source.length;
         return new List([new Node(html('section', [document, html('h2', 'References'), references]))]);
-      }, true)),
+      })),
   ]))),
   ns => new List([new Node(html('blockquote', unwrap(ns)))])));

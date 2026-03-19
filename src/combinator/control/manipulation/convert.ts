@@ -1,7 +1,7 @@
 import { Parser, List, Context, subinput, failsafe } from '../../data/parser';
 
-export function convert<P extends Parser>(conv: (source: string, context: Parser.Context<P>) => string, parser: P, empty?: boolean): P;
-export function convert<N>(conv: (source: string, context: Context) => string, parser: Parser<N>, empty = false): Parser<N> {
+export function convert<P extends Parser>(conv: (source: string, context: Parser.Context<P>) => string, parser: P): P;
+export function convert<N>(conv: (source: string, context: Context) => string, parser: Parser<N>): Parser<N> {
   assert(parser);
   return failsafe(input => {
     const context = input;
@@ -10,7 +10,6 @@ export function convert<N>(conv: (source: string, context: Context) => string, p
     const src = conv(source.slice(position), context);
     assert(context.position === position);
     if (src === '') {
-      if (!empty) return;
       context.position = source.length;
       return new List();
     }
