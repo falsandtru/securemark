@@ -2,7 +2,7 @@ import { TextParser, TxtParser } from '../source';
 import { State, Command } from '../context';
 import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
-import { union, consume } from '../../combinator';
+import { union, spend } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 export const nonWhitespace = /[^ \t　]/g;
@@ -12,7 +12,7 @@ export const text: TextParser = input => {
   const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];
-  consume(1, context);
+  spend(context, 1);
   context.position += 1;
   switch (char) {
     case Command.Escape:
@@ -25,7 +25,7 @@ export const text: TextParser = input => {
           assert(char !== Command.Escape);
           return new List();
         default:
-          consume(1, context);
+          spend(context, 1);
           context.position += 1;
           return new List([new Node(source.slice(position + 1, context.position))]);
       }
@@ -51,7 +51,7 @@ export const text: TextParser = input => {
         || s && source[i] === '\n';
       i -= position;
       i = lineend ? i : i - +s || 1;
-      consume(i - 1, context);
+      spend(context, i - 1);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
       if (position === context.position || s && !linestart || lineend) return new List();

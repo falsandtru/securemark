@@ -2,7 +2,7 @@ import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
 import { Flag } from '../node';
-import { union, inits, tails, some, consume, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, spend, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -59,7 +59,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       text = text.trim();
       if (text === '' || text[0] !== tmp[0]) return;
     }
-    consume(100, context);
+    spend(context, 100);
     if (params.last!.value === Command.Cancel) {
       params.pop();
       return new List([

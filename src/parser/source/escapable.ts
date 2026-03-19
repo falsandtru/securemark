@@ -2,18 +2,18 @@ import { EscapableSourceParser } from '../source';
 import { Command } from '../context';
 import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
-import { consume } from '../../combinator';
+import { spend } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 export const escsource: EscapableSourceParser = context => {
   const { source, position } = context;
   if (position === source.length) return;
   const char = source[position];
-  consume(1, context);
+  spend(context, 1);
   context.position += 1;
   switch (char) {
     case Command.Escape:
-      consume(1, context);
+      spend(context, 1);
       context.position += 1;
       return new List([new Node(source.slice(position + 1, position + 2))]);
     case '\\':
@@ -23,7 +23,7 @@ export const escsource: EscapableSourceParser = context => {
         case '\n':
           return new List([new Node(char)]);
         default:
-          consume(1, context);
+          spend(context, 1);
           context.position += 1;
           return new List([new Node(source.slice(position, position + 2))]);
       }
@@ -38,7 +38,7 @@ export const escsource: EscapableSourceParser = context => {
       let i = seek(source, position);
       assert(i > position);
       i -= position;
-      consume(i - 1, context);
+      spend(context, i - 1);
       context.position += i - 1;
       return new List([new Node(source.slice(position, context.position))]);
   }

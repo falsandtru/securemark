@@ -1,5 +1,5 @@
 import { Parser, List, Node, Context, failsafe } from '../../data/parser';
-import { consume } from '../../../combinator';
+import { spend } from '../../../combinator';
 import { firstline, isEmptyline } from '../constraint/line';
 import { push } from 'spica/array';
 
@@ -13,7 +13,7 @@ export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener:
     const matches = opener.exec(source);
     if (!matches) return;
     assert(matches[0] === firstline(source, position));
-    consume(matches[0].length, context);
+    spend(context, matches[0].length);
     const delim = matches[1];
     assert(delim && delim === delim.trim());
     if (matches[0].includes(delim, delim.length)) return;

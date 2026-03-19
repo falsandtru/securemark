@@ -1,7 +1,7 @@
 import { BlockquoteParser } from '../block';
 import { Recursion } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, some, consume, recursion, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
+import { union, some, spend, recursion, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { unwrap, randomID } from '../util';
@@ -40,7 +40,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
     rewrite(
       some(contentline, opener),
       convert(unindent, context => {
-        consume(10, context);
+        spend(context, 10);
         const { source } = context;
         const references = html('ol', { class: 'references' });
         const document = parse(source, {

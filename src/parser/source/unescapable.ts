@@ -2,7 +2,7 @@ import { UnescapableSourceParser } from '../source';
 import { State, Command } from '../context';
 import { Flag } from '../node';
 import { List, Node } from '../../combinator/data/parser';
-import { consume } from '../../combinator';
+import { spend } from '../../combinator';
 import { nonWhitespace, canSkip, backToUrlHead, backToEmailHead } from './text';
 import { html } from 'typed-dom/dom';
 
@@ -10,11 +10,11 @@ export const unescsource: UnescapableSourceParser = context => {
   const { source, position, state } = context;
   if (position === source.length) return;
   const char = source[position];
-  consume(1, context);
+  spend(context, 1);
   context.position += 1;
   switch (char) {
     case Command.Escape:
-      consume(1, context);
+      spend(context, 1);
       context.position += 1;
       return new List([new Node(source.slice(position + 1, position + 2))]);
     case '\r':
@@ -33,7 +33,7 @@ export const unescsource: UnescapableSourceParser = context => {
         : next(source, position, state);
       assert(i > position);
       i -= position;
-      consume(i - 1, context);
+      spend(context, i - 1);
       context.position += i - 1;
       return new List([new Node(source.slice(position, context.position))]);
   }

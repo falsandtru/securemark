@@ -1,5 +1,5 @@
 import { Parser } from '../../data/parser';
-import { consume } from '../../../combinator';
+import { spend } from '../../../combinator';
 
 export function match<P extends Parser>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;
 export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<N>): Parser<N> {
@@ -15,7 +15,7 @@ export function match<N>(pattern: RegExp, f: (matched: RegExpMatchArray) => Pars
     const params = pattern.exec(source);
     if (!params) return;
     assert(source.startsWith(params[0], position));
-    count && consume(params[0].length, context);
+    count && spend(context, params[0].length);
     const result = f(params)(input);
     context.position += result
       ? context.position === position

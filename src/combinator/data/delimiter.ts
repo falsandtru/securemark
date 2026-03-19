@@ -1,5 +1,5 @@
 import { Parser, Input, List, Node, Context } from './parser';
-import { consume } from './parser/context';
+import { spend } from './parser/context';
 
 interface Delimiter {
   readonly memory: Delimiter[];
@@ -199,7 +199,7 @@ export function matcher(pattern: string | RegExp, advance: boolean, after?: Pars
         pos = position;
         if (index === -1) return;
         const src = source.slice(position, index);
-        count && !hit && consume(src.length, context);
+        count && !hit && spend(context, src.length);
         if (advance) {
           context.position = index;
         }
@@ -250,7 +250,7 @@ export function tester(pattern: string | RegExp, advance: boolean, after?: Parse
         pos = position;
         if (index === -1) return;
         const len = index - position;
-        count && !hit && consume(len, context);
+        count && !hit && spend(context, len);
         if (advance) {
           context.position = index;
         }

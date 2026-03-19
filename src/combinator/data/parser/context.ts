@@ -6,61 +6,35 @@ export function creation(cost: number, parser: Parser): Parser {
   assert(cost >= 0);
   return input => {
     const context = input;
-    const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
-    const { recursions } = resources;
-    assert(recursions.length > 0);
     const result = parser(input);
     if (result === undefined) return;
-    consume(cost, context);
+    spend(context, cost);
     return result;
   };
 }
-export function consume(cost: number, context: Context): void {
-  const { resources } = context;
-  if (!resources) return;
+export function spend(context: Context, cost: number): void {
+  const resources = context.resources ?? { clock: cost || 1, recursions: [1] };
   if (resources.clock < cost) throw new Error('Too many creations');
   resources.clock -= cost;
 }
 
-export function recursion<P extends Parser>(recursion: number, parser: P): P;
-export function recursion(recursion: number, parser: Parser): Parser {
-  assert(recursion >= 0);
+export function recursion<P extends Parser>(index: number, parser: P): P;
+export function recursion(index: number, parser: Parser): Parser {
+  assert(index >= 0);
   return input => {
     const context = input;
     const resources = context.resources ?? { clock: 1, recursions: [1] };
     const { recursions } = resources;
-    assert(recursions.length > 0);
-    const rec = min(recursion, recursions.length - 1);
-    if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
-    rec >= 0 && --recursions[rec];
+    recur(recursions, index, 1);
     const result = parser(input);
-    rec >= 0 && ++recursions[rec];
+    recur(recursions, index, -1);
     return result;
   };
 }
-
-export function recursions<P extends Parser>(recursions: readonly number[], parser: P): P;
-export function recursions(rs: readonly number[], parser: Parser): Parser {
-  assert(rs.every(r => r >= 0));
-  return input => {
-    const context = input;
-    const resources = context.resources ?? { clock: 1, recursions: [4] };
-    const { recursions } = resources;
-    assert(recursions.length > 0);
-    for (const recursion of rs) {
-      const rec = min(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      if (recursions[rec] < 1) throw new Error('Too much recursion');
-      --recursions[rec];
-    }
-    const result = parser(input);
-    for (const recursion of rs) {
-      const rec = min(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      ++recursions[rec];
-    }
-    return result;
-  };
+export function recur(recursions: number[], index: number, size: number, force: boolean = false): void {
+  index = min(index, recursions.length && recursions.length - 1);
+  if (recursions[index] < size - +force) throw new Error('Too much recursion');
+  recursions[index] -= size;
 }
 
 export function precedence<P extends Parser>(precedence: number, parser: P): P;

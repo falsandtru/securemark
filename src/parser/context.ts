@@ -20,7 +20,7 @@ export class Context extends Ctx {
       id,
       caches,
     } = options;
-    this.resources ??= {
+    this.resources = options.resources ?? {
       // バックトラックのせいで文字数制限を受けないようにする。
       clock: MAX_SEGMENT_SIZE * (5 + 1),
       recursions: [
@@ -42,7 +42,7 @@ export class Context extends Ctx {
     this.id = id;
     this.caches = caches;
   }
-  public override readonly resources?: {
+  public override readonly resources: {
     clock: number;
     recursions: number[];
   };
@@ -50,7 +50,7 @@ export class Context extends Ctx {
   public local: boolean;
   public sequential: boolean;
   public buffer: List<Node<(string | HTMLElement)>>;
-  public recursion = new RecursionCounter('annotation', 2);
+  public recursion = new RecursionCounter(2);
   public readonly header: boolean;
   public readonly host?: URL;
   public readonly url?: URL;
@@ -65,7 +65,6 @@ export type Options = Partial<Context>;
 
 class RecursionCounter {
   constructor(
-    private readonly syntax: string,
     private readonly limit: number,
   ) {
   }
@@ -75,7 +74,7 @@ class RecursionCounter {
     const { stack } = this
     for (; this.index > 0 && stack[this.index - 1] <= depth; --this.index);
     // 内側から数えるので無効化処理できずエラーを投げるしかない。
-    if (this.index === this.limit) throw new Error(`Too much ${this.syntax} recursion`);
+    if (this.index === this.limit) throw new Error(`Too much recursion`);
     stack[this.index] = depth;
     ++this.index;
   }

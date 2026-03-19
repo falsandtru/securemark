@@ -1,5 +1,6 @@
 import { Parser, Result, List, Node } from '../combinator/data/parser';
 import { tester } from '../combinator/data/delimiter';
+import { recur } from '../combinator';
 import { Context, Recursion, Command } from './context';
 import { min } from 'spica/alias';
 
@@ -35,7 +36,7 @@ export function repeat<N extends HTMLElement | string>(
   const test = tester(after, false);
   return input => {
     const context = input;
-    const { source, position, resources: { recursions } = {} } = context;
+    const { source, position, resources: { recursions } } = context;
     if (!source.startsWith(opener, context.position)) return;
     let nodes = new List<Node<N>>();
     let i = opener.length;
@@ -46,19 +47,14 @@ export function repeat<N extends HTMLElement | string>(
       return;
     }
     let depth = i / opener.length + 1 | 0;
-    if (recursions) for (const recursion of rs) {
-      const rec = min(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      if (recursions[rec] < depth - 1) throw new Error('Too much recursion');
-      recursions[rec] -= depth;
+    for (const index of rs) {
+      recur(recursions, index, depth, true);
     }
     let state = false;
     let follow = 0;
     for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
-      if (recursions) for (const recursion of rs) {
-        const rec = min(recursion, recursions.length - 1);
-        if (rec === -1) continue;
-        recursions[rec] += 1;
+      for (const index of rs) {
+        recur(recursions, index, -1);
       }
       depth -= 1;
       const lead = i - opener.length;
@@ -109,10 +105,8 @@ export function repeat<N extends HTMLElement | string>(
       }
       break;
     }
-    if (recursions) for (let i = 0; i < depth; ++i) for (const recursion of rs) {
-      const rec = min(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      recursions[rec] += depth;
+    for (const index of rs) {
+      recur(recursions, index, -depth);
     }
     depth = 0;
     const prefix = i;

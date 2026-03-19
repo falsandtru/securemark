@@ -1,7 +1,7 @@
 import { LinkParser } from '../inline';
 import { Context, State, Backtrack, Command } from '../context';
 import { List, Node } from '../../combinator/data/parser';
-import { union, inits, sequence, subsequence, some, consume, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, sequence, subsequence, some, spend, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { str } from '../source';
@@ -109,7 +109,7 @@ export function parse(
   const INSECURE_URI = params.shift()!.value;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
-  consume(10, context);
+  spend(context, 10);
   let uri: ReadonlyURL | undefined;
   try{
     uri = new ReadonlyURL(
