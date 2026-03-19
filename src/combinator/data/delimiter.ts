@@ -37,6 +37,8 @@ export class Delimiters {
         assert(pattern !== '');
         return index(`'${pattern}`);
       case 'object':
+        assert(pattern.flags.includes('y'));
+        assert(/^yu?$/.test(pattern.flags));
         return index(`/${pattern.source}`);
     }
   }
