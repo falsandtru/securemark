@@ -6,7 +6,6 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptysegment } from './source';
-import { normalize } from './api';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
@@ -52,7 +51,7 @@ export function* segment(source: string, initial = true): Generator<readonly [st
       const seg = segs[i];
       initial && !validate(seg, MAX_SEGMENT_SIZE)
         ? yield [`${Command.Error}Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`, Segment.unknown]
-        : yield [initial ? normalize(seg) : seg, context.segment];
+        : yield [seg, context.segment];
     }
   }
 }

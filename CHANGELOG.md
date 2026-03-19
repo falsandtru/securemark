@@ -3,6 +3,7 @@
 ## 0.299.0
 
 - Add support for CRLF linebreaks.
+- Change preprocessing not to normalize input texts.
 
 ## 0.298.7
 

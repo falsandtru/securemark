@@ -3,7 +3,6 @@ import { List, Node } from '../combinator/data/parser';
 import { union, inits, some, block, line, validate, focus, clear, convert, lazy, fmap } from '../combinator';
 import { str } from './source';
 import { unwrap, invalid } from './util';
-import { normalize } from './api/normalize';
 import { html, defrag } from 'typed-dom/dom';
 
 export const header: MarkdownParser.HeaderParser = lazy(() => validate(
@@ -14,7 +13,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
         validate(context => context.header,
         focus(/(---+)[^\S\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,100}\1[^\S\r\n]*(?:$|\r?\n)/yi,
         convert(source =>
-          normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))),
+          source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n')),
           fmap(
             some(union([field])),
             ns => new List([
@@ -32,7 +31,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
               class: 'invalid',
               translate: 'no',
               ...invalid('header', 'syntax', 'Invalid syntax'),
-            }, normalize(source.slice(position)))),
+            }, source.slice(position))),
           ]);
         },
       ])),
