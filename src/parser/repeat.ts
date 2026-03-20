@@ -5,14 +5,14 @@ import { Context, Recursion, Command } from './context';
 import { min } from 'spica/alias';
 
 export function repeat<P extends Parser<HTMLElement | string, Context>>(
-  opener: string, after: string | RegExp, closer: string, recursions: readonly Recursion[], parser: P,
+  opener: string, after: string | RegExp, closer: string, recursion: Recursion, parser: P,
   cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>, lead: number, follow: number) =>
     List<Node<Parser.Node<P>>>,
   termination?: (acc: List<Node<Parser.Node<P>>>, context: Context, prefix: number, postfix: number, state: boolean) =>
     Result<string | Parser.Node<P>>,
 ): P;
 export function repeat<N extends HTMLElement | string>(
-  opener: string, after: string | RegExp, closer: string, rs: readonly Recursion[], parser: Parser<N>,
+  opener: string, after: string | RegExp, closer: string, recursion: Recursion, parser: Parser<N>,
   cons: (nodes: List<Node<N>>, context: Context, lead: number, follow: number) =>
     List<Node<N>>,
   termination: (acc: List<Node<N>>, context: Context, prefix: number, postfix: number, state: boolean) =>
@@ -47,15 +47,11 @@ export function repeat<N extends HTMLElement | string>(
       return;
     }
     let depth = i / opener.length + 1 | 0;
-    for (const index of rs) {
-      recur(recursions, index, depth, true);
-    }
+    recur(recursions, recursion, depth, true);
     let state = false;
     let follow = 0;
     for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
-      for (const index of rs) {
-        recur(recursions, index, -1);
-      }
+      recur(recursions, recursion, -1);
       depth -= 1;
       const lead = i - opener.length;
       if (source.startsWith(closer, context.position)) {
@@ -105,9 +101,7 @@ export function repeat<N extends HTMLElement | string>(
       }
       break;
     }
-    for (const index of rs) {
-      recur(recursions, index, -depth);
-    }
+    recur(recursions, recursion, -depth);
     depth = 0;
     const prefix = i;
     i = 0;

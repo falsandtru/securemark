@@ -25,7 +25,7 @@ import { html, defrag } from 'typed-dom/dom';
 // 常に非常に非効率な処理を行い常時低速化するより三重以上の注釈を禁止して効率性を維持するのが妥当である。
 const MAX_DEPTH = 20;
 export const annotation: AnnotationParser = lazy(() => constraint(State.annotation,
-  repeat('(', beforeNonblank, ')', [Recursion.bracket], precedence(1, surround(
+  repeat('(', beforeNonblank, ')', Recursion.bracket, precedence(1, surround(
     '',
     some(union([inline]), ')', [[')', 1]]),
     ')',

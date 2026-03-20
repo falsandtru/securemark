@@ -10,7 +10,7 @@ import { unwrap } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
 export const mark: MarkParser = lazy(() =>
-  repeat('==', beforeNonblank, '==', [Recursion.inline], precedence(0, surround(
+  repeat('==', beforeNonblank, '==', Recursion.inline, precedence(0, surround(
     '',
     state(State.mark, some(union([inline]), '==', afterNonblank)),
     '==',
