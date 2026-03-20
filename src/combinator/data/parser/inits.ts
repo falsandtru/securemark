@@ -1,7 +1,7 @@
 import { Parser, List, Node, Context } from '../parser';
 
-export function inits<P extends Parser>(parsers: Parser.SubParsers<P>): Parser.SubNode<P> extends Parser.Node<P> ? P : Parser<Parser.SubNode<P>, Parser.Context<P>, Parser.SubParsers<P>>;
-export function inits<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, D> {
+export function inits<P extends Parser>(parsers: Parser.SubParsers<P>, delimitation?: boolean): Parser.SubNode<P> extends Parser.Node<P> ? P : Parser<Parser.SubNode<P>, Parser.Context<P>, Parser.SubParsers<P>>;
+export function inits<N, D extends Parser<N>[]>(parsers: D, delimitation = false): Parser<N, Context, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return input => {
@@ -10,7 +10,7 @@ export function inits<N, D extends Parser<N>[]>(parsers: D): Parser<N, Context, 
     let nodes: List<Node<N>> | undefined;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) break;
-      if (context.delimiters.test(input)) break;
+      if (delimitation && context.delimiters.test(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
