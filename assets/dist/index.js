@@ -6074,7 +6074,7 @@ const dom_1 = __webpack_require__(394);
 // 修正する必要があるためほぼ完全な二重処理が必要になり三重以上の注釈という不適切な使用のために
 // 常に非常に非効率な処理を行い常時低速化するより三重以上の注釈を禁止して効率性を維持するのが妥当である。
 const MAX_DEPTH = 20;
-exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, repeat_1.repeat)('(', visibility_1.beforeNonblank, ')', [4 /* Recursion.bracket */], (0, combinator_1.precedence)(1, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]), ')', false, [], ([, bs], {
+exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(128 /* State.annotation */, (0, repeat_1.repeat)('(', visibility_1.beforeNonblank, ')', 4 /* Recursion.bracket */, (0, combinator_1.precedence)(1, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), ')', [[')', 1]]), ')', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -6488,7 +6488,7 @@ const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.deletion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('~~', '', '~~', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
+exports.deletion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('~~', '', '~~', 3 /* Recursion.inline */, (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '~~')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '~'), true)])), '~~', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -6543,7 +6543,7 @@ const subemphasis = (0, combinator_1.lazy)(() => (0, combinator_1.some)((0, comb
 // 開閉が明示的でない構文は開閉の不明確な記号による再帰的適用を行わず
 // 可能な限り早く閉じるよう解析しなければならない。
 // このため終端記号の後ろを見て終端を中止し同じ構文を再帰的に適用してはならない。
-exports.emstrong = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('***', visibility_1.beforeNonblank, '***', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
+exports.emstrong = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('***', visibility_1.beforeNonblank, '***', 3 /* Recursion.inline */, (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*', visibility_1.afterNonblank)])), (0, source_1.strs)('*', 1, 3), false, [], ([, bs, cs], context) => {
   const {
     buffer
   } = context;
@@ -7122,7 +7122,7 @@ const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.insertion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('++', '', '++', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
+exports.insertion = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('++', '', '++', 3 /* Recursion.inline */, (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, (0, visibility_1.blankWith)('\n', '++')), (0, combinator_1.open)('\n', (0, combinator_1.some)(inline_1.inline, '+'), true)])), '++', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -7150,7 +7150,7 @@ const dom_1 = __webpack_require__(394);
 // 可読性のため実際にはオブリーク体を指定する。
 // 斜体は単語に使うとかえって見づらく読み飛ばしやすくなるため使わないべきであり
 // ある程度の長さのある文に使うのが望ましい。
-exports.italic = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('///', visibility_1.beforeNonblank, '///', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
+exports.italic = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('///', visibility_1.beforeNonblank, '///', 3 /* Recursion.inline */, (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '///', visibility_1.afterNonblank), '///', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -7332,7 +7332,7 @@ const repeat_1 = __webpack_require__(8019);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
 const dom_1 = __webpack_require__(394);
-exports.mark = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('==', visibility_1.beforeNonblank, '==', [3 /* Recursion.inline */], (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
+exports.mark = (0, combinator_1.lazy)(() => (0, repeat_1.repeat)('==', visibility_1.beforeNonblank, '==', 3 /* Recursion.inline */, (0, combinator_1.precedence)(0, (0, combinator_1.surround)('', (0, combinator_1.state)(2 /* State.mark */, (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), '==', visibility_1.afterNonblank)), '==', false, [], ([, bs], {
   buffer
 }) => buffer.import(bs), ([, bs], {
   buffer
@@ -8128,7 +8128,7 @@ const parser_1 = __webpack_require__(605);
 const delimiter_1 = __webpack_require__(385);
 const combinator_1 = __webpack_require__(3484);
 const alias_1 = __webpack_require__(5413);
-function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, context, prefix, postfix) => {
+function repeat(opener, after, closer, recursion, parser, cons, termination = (nodes, context, prefix, postfix) => {
   const acc = new parser_1.List();
   if (prefix > 0) {
     acc.push(new parser_1.Node(opener[0].repeat(prefix)));
@@ -8166,15 +8166,11 @@ function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, c
       return;
     }
     let depth = i / opener.length + 1 | 0;
-    for (const index of rs) {
-      (0, combinator_1.recur)(recursions, index, depth, true);
-    }
+    (0, combinator_1.recur)(recursions, recursion, depth, true);
     let state = false;
     let follow = 0;
     for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
-      for (const index of rs) {
-        (0, combinator_1.recur)(recursions, index, -1);
-      }
+      (0, combinator_1.recur)(recursions, recursion, -1);
       depth -= 1;
       const lead = i - opener.length;
       if (source.startsWith(closer, context.position)) {
@@ -8222,9 +8218,7 @@ function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, c
       }
       break;
     }
-    for (const index of rs) {
-      (0, combinator_1.recur)(recursions, index, -depth);
-    }
+    (0, combinator_1.recur)(recursions, recursion, -depth);
     depth = 0;
     const prefix = i;
     i = 0;
