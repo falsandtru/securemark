@@ -2605,7 +2605,7 @@ function fence(opener, limit, separation = true) {
     opener.lastIndex = position;
     const matches = opener.exec(source);
     if (!matches) return;
-    (0, combinator_1.consume)(matches[0].length, context);
+    (0, combinator_1.spend)(context, matches[0].length);
     const delim = matches[1];
     if (matches[0].includes(delim, delim.length)) return;
     context.position += matches[0].length;
@@ -2727,7 +2727,7 @@ function match(pattern, f) {
     pattern.lastIndex = position;
     const params = pattern.exec(source);
     if (!params) return;
-    count && (0, combinator_1.consume)(params[0].length, context);
+    count && (0, combinator_1.spend)(context, params[0].length);
     const result = f(params)(input);
     context.position += result ? context.position === position ? params[0].length : 0 : context.position - position;
     return result;
@@ -3239,7 +3239,7 @@ function matcher(pattern, advance, after) {
         pos = position;
         if (index === -1) return;
         const src = source.slice(position, index);
-        count && !hit && (0, context_1.consume)(src.length, context);
+        count && !hit && (0, context_1.spend)(context, src.length);
         if (advance) {
           context.position = index;
         }
@@ -3290,7 +3290,7 @@ function tester(pattern, advance, after) {
         pos = position;
         if (index === -1) return;
         const len = index - position;
-        count && !hit && (0, context_1.consume)(len, context);
+        count && !hit && (0, context_1.spend)(context, len);
         if (advance) {
           context.position = index;
         }
@@ -3547,35 +3547,28 @@ exports.failsafe = failsafe;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.constraint = exports.state = exports.precedence = exports.recursions = exports.recursion = exports.consume = exports.creation = void 0;
+exports.constraint = exports.state = exports.precedence = exports.recur = exports.recursion = exports.spend = exports.creation = void 0;
 const alias_1 = __webpack_require__(5413);
 function creation(cost, parser) {
   return input => {
     const context = input;
-    const resources = context.resources ?? {
-      clock: cost || 1,
-      recursions: [1]
-    };
-    const {
-      recursions
-    } = resources;
     const result = parser(input);
     if (result === undefined) return;
-    consume(cost, context);
+    spend(context, cost);
     return result;
   };
 }
 exports.creation = creation;
-function consume(cost, context) {
-  const {
-    resources
-  } = context;
-  if (!resources) return;
+function spend(context, cost) {
+  const resources = context.resources ?? {
+    clock: cost || 1,
+    recursions: [1]
+  };
   if (resources.clock < cost) throw new Error('Too many creations');
   resources.clock -= cost;
 }
-exports.consume = consume;
-function recursion(recursion, parser) {
+exports.spend = spend;
+function recursion(index, parser) {
   return input => {
     const context = input;
     const resources = context.resources ?? {
@@ -3585,41 +3578,19 @@ function recursion(recursion, parser) {
     const {
       recursions
     } = resources;
-    const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-    if (rec >= 0 && recursions[rec] < 1) throw new Error('Too much recursion');
-    rec >= 0 && --recursions[rec];
+    recur(recursions, index, 1);
     const result = parser(input);
-    rec >= 0 && ++recursions[rec];
+    recur(recursions, index, -1);
     return result;
   };
 }
 exports.recursion = recursion;
-function recursions(rs, parser) {
-  return input => {
-    const context = input;
-    const resources = context.resources ?? {
-      clock: 1,
-      recursions: [4]
-    };
-    const {
-      recursions
-    } = resources;
-    for (const recursion of rs) {
-      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      if (recursions[rec] < 1) throw new Error('Too much recursion');
-      --recursions[rec];
-    }
-    const result = parser(input);
-    for (const recursion of rs) {
-      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      ++recursions[rec];
-    }
-    return result;
-  };
+function recur(recursions, index, size, force = false) {
+  index = (0, alias_1.min)(index, recursions.length && recursions.length - 1);
+  if (recursions[index] < size - +force) throw new Error('Too much recursion');
+  recursions[index] -= size;
 }
-exports.recursions = recursions;
+exports.recur = recur;
 function precedence(precedence, parser) {
   return input => {
     const context = input;
@@ -3773,7 +3744,6 @@ function some(parser, delimiter, after, delimiters, limit = 0) {
       source,
       position
     } = context;
-    //assert(context.backtracks ??= {});
     let nodes;
     delims && context.delimiters.push(delims);
     // whileは数倍遅い
@@ -4468,7 +4438,7 @@ exports.block = error((0, combinator_1.union)([source_1.emptysegment, input => {
     case '(':
       return (0, olist_1.olist)(input);
     default:
-      if ('0' <= char && char <= '9') return (0, olist_1.olist)(input);
+      if (char <= '9' && '0' <= char) return (0, olist_1.olist)(input);
   }
 }, paragraph_1.paragraph]));
 function error(parser) {
@@ -4512,7 +4482,7 @@ const indent = (0, combinator_1.open)(opener, (0, combinator_1.some)(source_1.co
 const unindent = source => source.replace(/(?<=^|\n)>(?: |(?=>*(?:$|[ \r\n])))|\r?\n$/g, '');
 const source = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.recursion)(1 /* Recursion.blockquote */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, source)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, (0, combinator_1.fmap)(autolink_1.autolink, ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('pre', (0, dom_1.defrag)((0, util_1.unwrap)(ns))))]))))]))), ns => new parser_1.List([new parser_1.Node((0, dom_1.html)('blockquote', (0, util_1.unwrap)(ns)))])));
 const markdown = (0, combinator_1.lazy)(() => (0, combinator_1.fmap)((0, combinator_1.recursion)(1 /* Recursion.blockquote */, (0, combinator_1.some)((0, combinator_1.union)([(0, combinator_1.rewrite)(indent, (0, combinator_1.convert)(unindent, markdown)), (0, combinator_1.rewrite)((0, combinator_1.some)(source_1.contentline, opener), (0, combinator_1.convert)(unindent, context => {
-  (0, combinator_1.consume)(10, context);
+  (0, combinator_1.spend)(context, 10);
   const {
     source
   } = context;
@@ -5823,7 +5793,7 @@ exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE * 10;
 class Context extends parser_1.Context {
   constructor(options = {}) {
     super(options);
-    this.recursion = new RecursionCounter('annotation', 2);
+    this.recursion = new RecursionCounter(2);
     const {
       segment,
       local,
@@ -5835,7 +5805,7 @@ class Context extends parser_1.Context {
       id,
       caches
     } = options;
-    this.resources ??= {
+    this.resources = options.resources ?? {
       // バックトラックのせいで文字数制限を受けないようにする。
       clock: exports.MAX_SEGMENT_SIZE * (5 + 1),
       recursions: [5 || 0 /* Recursion.block */, 20 || 0 /* Recursion.blockquote */, 40 || 0 /* Recursion.listitem */, 20 || 0 /* Recursion.inline */, 20 || 0 /* Recursion.bracket */, 20 || 0 /* Recursion.terminal */]
@@ -5853,8 +5823,7 @@ class Context extends parser_1.Context {
 }
 exports.Context = Context;
 class RecursionCounter {
-  constructor(syntax, limit) {
-    this.syntax = syntax;
+  constructor(limit) {
     this.limit = limit;
     this.stack = [];
     this.index = 0;
@@ -5865,7 +5834,7 @@ class RecursionCounter {
     } = this;
     for (; this.index > 0 && stack[this.index - 1] <= depth; --this.index);
     // 内側から数えるので無効化処理できずエラーを投げるしかない。
-    if (this.index === this.limit) throw new Error(`Too much ${this.syntax} recursion`);
+    if (this.index === this.limit) throw new Error(`Too much recursion`);
     stack[this.index] = depth;
     ++this.index;
   }
@@ -6067,7 +6036,7 @@ Object.defineProperty(exports, "lineshortmedia", ({
   }
 }));
 function isAlphabet(char) {
-  return 'a' <= char && char <= 'z';
+  return char <= 'z' && 'a' <= char;
 }
 
 /***/ },
@@ -7256,7 +7225,7 @@ exports.uri = (0, combinator_1.union)([(0, combinator_1.open)(' ', (0, source_1.
 exports.option = (0, combinator_1.union)([(0, combinator_1.fmap)((0, source_1.str)(/ nofollow(?=[ }])/y), () => new parser_1.List([new parser_1.Node(' rel="nofollow"')])), (0, source_1.str)(/ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\r\n]|[^\\\r\n"])*")?(?=[ }])/yi), (0, source_1.str)(/ [^\s{}]+/y)]);
 function parse(content, params, context) {
   const INSECURE_URI = params.shift().value;
-  (0, combinator_1.consume)(10, context);
+  (0, combinator_1.spend)(context, 10);
   let uri;
   try {
     uri = new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location), context.host?.href || location.href);
@@ -7465,7 +7434,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     text = text.trim();
     if (text === '' || text[0] !== tmp[0]) return;
   }
-  (0, combinator_1.consume)(100, context);
+  (0, combinator_1.spend)(context, 100);
   if (params.last.value === "\u0018" /* Command.Cancel */) {
     params.pop();
     return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
@@ -8157,6 +8126,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.repeat = void 0;
 const parser_1 = __webpack_require__(605);
 const delimiter_1 = __webpack_require__(385);
+const combinator_1 = __webpack_require__(3484);
 const alias_1 = __webpack_require__(5413);
 function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, context, prefix, postfix) => {
   const acc = new parser_1.List();
@@ -8184,7 +8154,7 @@ function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, c
       position,
       resources: {
         recursions
-      } = {}
+      }
     } = context;
     if (!source.startsWith(opener, context.position)) return;
     let nodes = new parser_1.List();
@@ -8196,19 +8166,14 @@ function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, c
       return;
     }
     let depth = i / opener.length + 1 | 0;
-    if (recursions) for (const recursion of rs) {
-      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      if (recursions[rec] < depth - 1) throw new Error('Too much recursion');
-      recursions[rec] -= depth;
+    for (const index of rs) {
+      (0, combinator_1.recur)(recursions, index, depth, true);
     }
     let state = false;
     let follow = 0;
     for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
-      if (recursions) for (const recursion of rs) {
-        const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-        if (rec === -1) continue;
-        recursions[rec] += 1;
+      for (const index of rs) {
+        (0, combinator_1.recur)(recursions, index, -1);
       }
       depth -= 1;
       const lead = i - opener.length;
@@ -8257,10 +8222,8 @@ function repeat(opener, after, closer, rs, parser, cons, termination = (nodes, c
       }
       break;
     }
-    if (recursions) for (let i = 0; i < depth; ++i) for (const recursion of rs) {
-      const rec = (0, alias_1.min)(recursion, recursions.length - 1);
-      if (rec === -1) continue;
-      recursions[rec] += depth;
+    for (const index of rs) {
+      (0, combinator_1.recur)(recursions, index, -depth);
     }
     depth = 0;
     const prefix = i;
@@ -8448,11 +8411,11 @@ const escsource = context => {
   } = context;
   if (position === source.length) return;
   const char = source[position];
-  (0, combinator_1.consume)(1, context);
+  (0, combinator_1.spend)(context, 1);
   context.position += 1;
   switch (char) {
     case "\u001B" /* Command.Escape */:
-      (0, combinator_1.consume)(1, context);
+      (0, combinator_1.spend)(context, 1);
       context.position += 1;
       return new parser_1.List([new parser_1.Node(source.slice(position + 1, position + 2))]);
     case '\\':
@@ -8462,7 +8425,7 @@ const escsource = context => {
         case '\n':
           return new parser_1.List([new parser_1.Node(char)]);
         default:
-          (0, combinator_1.consume)(1, context);
+          (0, combinator_1.spend)(context, 1);
           context.position += 1;
           return new parser_1.List([new parser_1.Node(source.slice(position, position + 2))]);
       }
@@ -8475,7 +8438,7 @@ const escsource = context => {
       if (context.sequential) return new parser_1.List([new parser_1.Node(char)]);
       let i = seek(source, position);
       i -= position;
-      (0, combinator_1.consume)(i - 1, context);
+      (0, combinator_1.spend)(context, i - 1);
       context.position += i - 1;
       return new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
@@ -8648,7 +8611,7 @@ const text = input => {
   } = context;
   if (position === source.length) return;
   const char = source[position];
-  (0, combinator_1.consume)(1, context);
+  (0, combinator_1.spend)(context, 1);
   context.position += 1;
   switch (char) {
     case "\u001B" /* Command.Escape */:
@@ -8660,7 +8623,7 @@ const text = input => {
         case '\n':
           return new parser_1.List();
         default:
-          (0, combinator_1.consume)(1, context);
+          (0, combinator_1.spend)(context, 1);
           context.position += 1;
           return new parser_1.List([new parser_1.Node(source.slice(position + 1, context.position))]);
       }
@@ -8677,7 +8640,7 @@ const text = input => {
       const lineend =  false || s && i === source.length || s && source[i] === '\r' || s && source[i] === '\n';
       i -= position;
       i = lineend ? i : i - +s || 1;
-      (0, combinator_1.consume)(i - 1, context);
+      (0, combinator_1.spend)(context, i - 1);
       context.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
       if (position === context.position || s && !linestart || lineend) return new parser_1.List();
@@ -8707,7 +8670,7 @@ function isWhitespace(char, linebreak) {
 }
 function next(source, position, state) {
   let index = seek(source, position, state);
-  if (index === source.length) return source.length;
+  if (index === source.length) return index;
   const char = source[index];
   switch (char) {
     case '%':
@@ -8771,8 +8734,9 @@ function backToEmailHead(source, position, index) {
 }
 exports.backToEmailHead = backToEmailHead;
 function isAlphanumeric(char) {
-  if (char < '0' || '\x7F' < char) return false;
-  return '0' <= char && char <= '9' || 'A' <= char && char <= 'Z' || 'a' <= char && char <= 'z';
+  if (char < '0' || 'z' < char) return false;
+  if (char <= '9' || 'a' <= char) return true;
+  return 'A' <= char && char <= 'Z';
 }
 exports.isAlphanumeric = isAlphanumeric;
 function seek(source, position, state) {
@@ -8878,11 +8842,11 @@ const unescsource = context => {
   } = context;
   if (position === source.length) return;
   const char = source[position];
-  (0, combinator_1.consume)(1, context);
+  (0, combinator_1.spend)(context, 1);
   context.position += 1;
   switch (char) {
     case "\u001B" /* Command.Escape */:
-      (0, combinator_1.consume)(1, context);
+      (0, combinator_1.spend)(context, 1);
       context.position += 1;
       return new parser_1.List([new parser_1.Node(source.slice(position + 1, position + 2))]);
     case '\r':
@@ -8895,7 +8859,7 @@ const unescsource = context => {
       text_1.nonWhitespace.lastIndex = position + 1;
       let i = (0, text_1.canSkip)(source, position) ? text_1.nonWhitespace.test(source) ? text_1.nonWhitespace.lastIndex - 1 : source.length : next(source, position, state);
       i -= position;
-      (0, combinator_1.consume)(i - 1, context);
+      (0, combinator_1.spend)(context, i - 1);
       context.position += i - 1;
       return new parser_1.List([new parser_1.Node(source.slice(position, context.position))]);
   }
@@ -8903,7 +8867,7 @@ const unescsource = context => {
 exports.unescsource = unescsource;
 function next(source, position, state) {
   let index = seek(source, position, state);
-  if (index === source.length) return source.length;
+  if (index === source.length) return index;
   const char = source[index];
   switch (char) {
     case ':':
@@ -8972,7 +8936,7 @@ function seek(source, position, state) {
   return source.length;
 }
 function category(char) {
-  return '\x21' <= char && char <= '\x7E';
+  return char <= '\x7E' && '\x21' <= char;
 }
 
 /***/ },
