@@ -41,9 +41,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 __webpack_require__(518);
-__exportStar(__webpack_require__(3561), exports);
-__exportStar(__webpack_require__(2570), exports);
+__exportStar(__webpack_require__(3972), exports);
 __exportStar(__webpack_require__(1625), exports);
+__exportStar(__webpack_require__(2570), exports);
 
 /***/ },
 
@@ -2321,6 +2321,474 @@ class ReadonlyURLSearchParams extends URLSearchParams {
 
 /***/ },
 
+/***/ 3972
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.normalize = exports.body = exports.headers = exports.header = exports.caches = exports.bind = exports.parse = void 0;
+var parse_1 = __webpack_require__(2032);
+Object.defineProperty(exports, "parse", ({
+  enumerable: true,
+  get: function () {
+    return parse_1.parse;
+  }
+}));
+var bind_1 = __webpack_require__(8012);
+Object.defineProperty(exports, "bind", ({
+  enumerable: true,
+  get: function () {
+    return bind_1.bind;
+  }
+}));
+var cache_1 = __webpack_require__(4197);
+Object.defineProperty(exports, "caches", ({
+  enumerable: true,
+  get: function () {
+    return cache_1.caches;
+  }
+}));
+var header_1 = __webpack_require__(8206);
+Object.defineProperty(exports, "header", ({
+  enumerable: true,
+  get: function () {
+    return header_1.header;
+  }
+}));
+Object.defineProperty(exports, "headers", ({
+  enumerable: true,
+  get: function () {
+    return header_1.headers;
+  }
+}));
+var body_1 = __webpack_require__(8307);
+Object.defineProperty(exports, "body", ({
+  enumerable: true,
+  get: function () {
+    return body_1.body;
+  }
+}));
+var normalize_1 = __webpack_require__(5188);
+Object.defineProperty(exports, "normalize", ({
+  enumerable: true,
+  get: function () {
+    return normalize_1.normalize;
+  }
+}));
+
+/***/ },
+
+/***/ 8012
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.bind = void 0;
+const context_1 = __webpack_require__(8669);
+const parser_1 = __webpack_require__(605);
+const segment_1 = __webpack_require__(3967);
+const block_1 = __webpack_require__(7099);
+const header_1 = __webpack_require__(8206);
+const figure_1 = __webpack_require__(5815);
+const note_1 = __webpack_require__(8119);
+const url_1 = __webpack_require__(1904);
+const array_1 = __webpack_require__(6876);
+function bind(target, settings) {
+  const options = {
+    ...settings,
+    host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin)
+  };
+  if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
+  if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
+  const blocks = [];
+  const adds = [];
+  const dels = [];
+  const bottom = target.firstChild;
+  let revision;
+  return {
+    parse,
+    nearest,
+    index
+  };
+  function* parse(source) {
+    if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
+    const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
+    // @ts-expect-error
+    options.url = url ? new url_1.ReadonlyURL(url) : undefined;
+    const rev = revision = Symbol();
+    const sourceSegments = [];
+    const sourceSegmentAttrs = [];
+    for (const [seg, attr] of (0, segment_1.segment)(source, true)) {
+      sourceSegments.push(seg);
+      sourceSegmentAttrs.push(attr);
+      yield {
+        type: 'segment',
+        value: seg
+      };
+    }
+    const targetSegments = blocks.map(([seg]) => seg);
+    let head = 0;
+    for (; head < targetSegments.length; ++head) {
+      if (blocks[head][2] !== url) break;
+      if (targetSegments[head] !== sourceSegments[head]) break;
+    }
+    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
+    let last = 0;
+    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+      if (blocks[targetSegments.length - last - 1][2] !== url) break;
+      if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
+    }
+    const base = next(head);
+    let index = head;
+    // @ts-expect-error
+    options.header = true;
+    for (; index < sourceSegments.length - last; ++index) {
+      const seg = sourceSegments[index];
+      options.segment = sourceSegmentAttrs[index] | 1 /* Segment.write */;
+      const es = (0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(options))).foldl((acc, {
+        value
+      }) => void acc.push(value) || acc, []);
+      // @ts-expect-error
+      options.header = false;
+      blocks.length === index ? blocks.push([seg, es, url]) : blocks.splice(index, 0, [seg, es, url]);
+      if (es.length === 0) continue;
+      // All deletion processes always run after all addition processes have done.
+      // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
+      adds.push(...es.map(el => [el, base]));
+      adds.reverse();
+      for (; adds.length > 0;) {
+        const [el, base] = adds.pop();
+        target.insertBefore(el, base);
+        yield {
+          type: 'block',
+          value: el
+        };
+        if (rev !== revision) return yield {
+          type: 'cancel'
+        };
+      }
+    }
+    for (let refuse = (0, array_1.splice)(blocks, index, blocks.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
+      const es = refuse[i][1];
+      if (es.length === 0) continue;
+      dels.push(...es.map(el => [el]));
+    }
+    adds.reverse();
+    for (; adds.length > 0;) {
+      const [el, base] = adds.pop();
+      target.insertBefore(el, base);
+      yield {
+        type: 'block',
+        value: el
+      };
+      if (rev !== revision) return yield {
+        type: 'cancel'
+      };
+    }
+    dels.reverse();
+    for (; dels.length > 0;) {
+      const [el] = dels.pop();
+      el.parentNode?.removeChild(el);
+      yield {
+        type: 'block',
+        value: el
+      };
+      if (rev !== revision) return yield {
+        type: 'cancel'
+      };
+    }
+    yield {
+      type: 'break'
+    };
+    if (rev !== revision) return yield {
+      type: 'cancel'
+    };
+    for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.notes, options)) {
+      el ? yield {
+        type: 'figure',
+        value: el
+      } : yield {
+        type: 'break'
+      };
+      if (rev !== revision) return yield {
+        type: 'cancel'
+      };
+    }
+    for (const el of (0, note_1.note)(next(0)?.parentNode ?? target, settings.notes, options, bottom)) {
+      el ? yield {
+        type: 'note',
+        value: el
+      } : yield {
+        type: 'break'
+      };
+      if (rev !== revision) return yield {
+        type: 'cancel'
+      };
+    }
+  }
+  function next(index) {
+    for (let i = index; i < blocks.length; ++i) {
+      const [, es] = blocks[i];
+      if (es.length > 0) return es[0];
+    }
+    return bottom;
+  }
+  function nearest(index) {
+    let el;
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
+      const block = blocks[i];
+      len += block[0].length;
+      el = block[1][0] ?? el;
+      if (len >= index) break;
+    }
+    return el;
+  }
+  function index(source) {
+    for (let len = 0, i = 0; i < blocks.length; ++i) {
+      const block = blocks[i];
+      if (block[1].includes(source)) return len;
+      len += block[0].length;
+    }
+    return -1;
+  }
+}
+exports.bind = bind;
+
+/***/ },
+
+/***/ 8307
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.body = void 0;
+const header_1 = __webpack_require__(8206);
+function body(source) {
+  return source.slice((0, header_1.header)(source).length);
+}
+exports.body = body;
+
+/***/ },
+
+/***/ 4197
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.caches = void 0;
+const tclock_1 = __webpack_require__(3307);
+const tlru_1 = __webpack_require__(8888);
+// For rerendering in editing.
+/*
+同一文書内で複数回使用される可能性が低いデータ: TClock
+同一文書内で複数回使用される可能性が高いデータ: TLRU
+
+編集時の再描画高速化が主目的であるためブロックを周期とするループおよび
+異なるブロックへのジャンプに適したアルゴリズムを使用。
+キャッシュサイズはブロック内の全データをキャッシュできなければならない。
+キャッシュサイズは100あれば足りるが10,000までは速度低下しないようなので
+データサイズを加味して100から1,000とする。
+遠くで少数の同じデータを高速描画してもあまり意味はない。
+タイムラインとスレッドのmediaにおいても多数の同一データが長周期で複数回表示
+される適切な状況はないと思われる。
+同一投稿は頻繁に再送されてはならずスパムは削除されなければならず
+ジャーゴンは考慮に値しない。
+
+*/
+exports.caches = {
+  code: new tclock_1.TClock(1000),
+  math: new tlru_1.TLRU(1000),
+  media: new tclock_1.TClock(100)
+};
+
+/***/ },
+
+/***/ 8206
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.headers = exports.header = void 0;
+const context_1 = __webpack_require__(8669);
+const header_1 = __webpack_require__(3009);
+function header(source) {
+  const [, pos = 0] = parse(source);
+  return source.slice(0, pos);
+}
+exports.header = header;
+function headers(source) {
+  const [el] = parse(source);
+  const acc = [];
+  for (let field = el?.firstChild?.firstChild; field = field?.nextSibling;) {
+    acc.push(field.textContent);
+  }
+  return acc;
+}
+exports.headers = headers;
+function parse(source) {
+  const context = new context_1.Context({
+    source
+  });
+  const result = (0, header_1.header)(context);
+  const el = result?.head?.value;
+  return el?.tagName === 'ASIDE' ? [el, context.position] : [];
+}
+
+/***/ },
+
+/***/ 5188
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.escape = exports.invisibleGraphHTMLEntityNames = exports.invisibleBlankHTMLEntityNames = exports.normalize = void 0;
+const dom_1 = __webpack_require__(394);
+const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
+function normalize(source) {
+  return sanitize(format(source));
+}
+exports.normalize = normalize;
+function format(source) {
+  return source.replace(/\r\n?|[\u2028\u2029]/g, '\n');
+}
+const invalid = new RegExp([/(?![\t\r\n])[\x00-\x1F\x7F]/g.source, /(?![\u200C\u200D])[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source
+// 後読みが重い
+///(?<![\u1820\u1821])\u180E/g.source,
+///[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
+].join('|'), 'g');
+function sanitize(source) {
+  return source.replace(invalid, UNICODE_REPLACEMENT_CHARACTER);
+}
+// https://dev.w3.org/html5/html-author/charref
+// https://en.wikipedia.org/wiki/Whitespace_character
+const invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
+const parser = (el => entity => {
+  if (entity === '&NewLine;') return entity;
+  el.innerHTML = entity;
+  return el.textContent;
+})((0, dom_1.html)('span'));
+exports.invisibleBlankHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() === '');
+exports.invisibleGraphHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() !== '');
+const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
+const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => parser(`&${name};`));
+const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
+// https://www.pandanoir.info/entry/2018/03/11/193000
+// http://anti.rosx.net/etc/memo/002_space.html
+// http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
+const unreadableSpecialCharacters = (/* unused pure expression or super */ null && ([
+// SIX-PER-EM SPACE
+'\u2006',
+// ZERO WIDTH SPACE
+'\u200B',
+// ZERO WIDTH NON-JOINER
+//'\u200C',
+// ZERO WIDTH JOINER
+//'\u200D',
+// LEFT-TO-RIGHT MARK
+'\u200E',
+// RIGHT-TO-LEFT MARK
+'\u200F',
+// LEFT-TO-RIGHT EMBEDDING
+'\u202A',
+// RIGHT-TO-LEFT EMBEDDING
+'\u202B',
+// POP DIRECTIONAL FORMATTING
+'\u202C',
+// LEFT-TO-RIGHT OVERRIDE
+'\u202D',
+// RIGHT-TO-LEFT OVERRIDE
+'\u202E',
+// NARROW NO-BREAK SPACE
+'\u202F',
+// WORD JOINER
+'\u2060',
+// ZERO WIDTH NON-BREAKING SPACE
+'\uFEFF']));
+// 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
+function escape(source) {
+  return source.replace(unreadableEscapeCharacter, char => `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
+}
+exports.escape = escape;
+
+/***/ },
+
+/***/ 2032
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.parse = void 0;
+const parser_1 = __webpack_require__(605);
+const context_1 = __webpack_require__(8669);
+const segment_1 = __webpack_require__(3967);
+const block_1 = __webpack_require__(7099);
+const header_1 = __webpack_require__(8206);
+const figure_1 = __webpack_require__(5815);
+const note_1 = __webpack_require__(8119);
+const url_1 = __webpack_require__(1904);
+const dom_1 = __webpack_require__(394);
+function parse(source, opts = {}, options) {
+  const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
+  options = {
+    host: opts.host ?? options?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
+    url: url ? new url_1.ReadonlyURL(url) : options?.url,
+    id: opts.id ?? options?.id,
+    local: opts.local ?? options?.local ?? false,
+    caches: options?.caches,
+    resources: options?.resources
+  };
+  if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
+  if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
+  const node = (0, dom_1.frag)();
+  // @ts-expect-error
+  options.header = true;
+  for (const [seg, attr] of (0, segment_1.segment)(source, !options.local)) {
+    options.segment = attr | 1 /* Segment.write */;
+    const es = (0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(options))).foldl((acc, {
+      value
+    }) => void acc.push(value) || acc, []);
+    // @ts-expect-error
+    options.header = false;
+    if (es.length === 0) continue;
+    node.append(...es);
+  }
+  if (opts.test) return node;
+  for (const _ of (0, figure_1.figure)(node, opts.notes, options));
+  for (const _ of (0, note_1.note)(node, opts.notes, options));
+  return node;
+}
+exports.parse = parse;
+
+/***/ },
+
 /***/ 3484
 (__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3303,7 +3771,7 @@ exports.tester = tester;
 
 /***/ },
 
-/***/ 1610
+/***/ 1461
 (__unused_webpack_module, exports) {
 
 "use strict";
@@ -3436,15 +3904,6 @@ class List {
   }
 }
 exports.List = List;
-(function (List) {
-  class Node {
-    constructor() {
-      this.next = undefined;
-      this.prev = undefined;
-    }
-  }
-  List.Node = Node;
-})(List || (exports.List = List = {}));
 
 /***/ },
 
@@ -3458,11 +3917,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.failsafe = exports.subinput = exports.input = exports.Context = exports.Node = exports.List = void 0;
-const node_1 = __webpack_require__(1610);
+const list_1 = __webpack_require__(1461);
 Object.defineProperty(exports, "List", ({
   enumerable: true,
   get: function () {
-    return node_1.List;
+    return list_1.List;
   }
 }));
 const delimiter_1 = __webpack_require__(385);
@@ -3650,7 +4109,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.inits = void 0;
-function inits(parsers) {
+function inits(parsers, delimitation = false) {
   if (parsers.length === 1) return parsers[0];
   return input => {
     const context = input;
@@ -3660,7 +4119,7 @@ function inits(parsers) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) break;
-      if (context.delimiters.test(input)) break;
+      if (delimitation && context.delimiters.test(input)) break;
       const result = parsers[i](input);
       if (result === undefined) break;
       nodes = nodes?.import(result) ?? result;
@@ -3683,7 +4142,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.sequence = void 0;
 const parser_1 = __webpack_require__(605);
-function sequence(parsers) {
+function sequence(parsers, delimitation = false) {
   if (parsers.length === 1) return parsers[0];
   return (0, parser_1.failsafe)(input => {
     const context = input;
@@ -3693,7 +4152,7 @@ function sequence(parsers) {
     let nodes;
     for (let len = parsers.length, i = 0; i < len; ++i) {
       if (context.position === source.length) return;
-      if (context.delimiters.test(input)) return;
+      if (delimitation && context.delimiters.test(input)) return;
       const result = parsers[i](input);
       if (result === undefined) return;
       nodes = nodes?.import(result) ?? result;
@@ -3778,8 +4237,8 @@ Object.defineProperty(exports, "__esModule", ({
 exports.subsequence = void 0;
 const union_1 = __webpack_require__(2369);
 const inits_1 = __webpack_require__(2861);
-function subsequence(parsers) {
-  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1))]) : parsers[i]));
+function subsequence(parsers, delimitation = false) {
+  return (0, union_1.union)(parsers.map((_, i) => i + 1 < parsers.length ? (0, inits_1.inits)([parsers[i], subsequence(parsers.slice(i + 1), delimitation)], delimitation) : parsers[i]));
 }
 exports.subsequence = subsequence;
 
@@ -3797,8 +4256,8 @@ Object.defineProperty(exports, "__esModule", ({
 exports.tails = void 0;
 const union_1 = __webpack_require__(2369);
 const sequence_1 = __webpack_require__(3989);
-function tails(parsers) {
-  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i))));
+function tails(parsers, delimitation) {
+  return (0, union_1.union)(parsers.map((_, i) => (0, sequence_1.sequence)(parsers.slice(i), delimitation)));
 }
 exports.tails = tails;
 
@@ -3825,506 +4284,6 @@ function union(parsers) {
   }
 }
 exports.union = union;
-
-/***/ },
-
-/***/ 3561
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  var desc = Object.getOwnPropertyDescriptor(m, k);
-  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-    desc = {
-      enumerable: true,
-      get: function () {
-        return m[k];
-      }
-    };
-  }
-  Object.defineProperty(o, k2, desc);
-} : function (o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  o[k2] = m[k];
-});
-var __exportStar = this && this.__exportStar || function (m, exports) {
-  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-__exportStar(__webpack_require__(5886), exports);
-
-/***/ },
-
-/***/ 5886
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.normalize = exports.body = exports.headers = exports.header = exports.caches = exports.bind = exports.parse = void 0;
-var parse_1 = __webpack_require__(3662);
-Object.defineProperty(exports, "parse", ({
-  enumerable: true,
-  get: function () {
-    return parse_1.parse;
-  }
-}));
-var bind_1 = __webpack_require__(7990);
-Object.defineProperty(exports, "bind", ({
-  enumerable: true,
-  get: function () {
-    return bind_1.bind;
-  }
-}));
-var cache_1 = __webpack_require__(4331);
-Object.defineProperty(exports, "caches", ({
-  enumerable: true,
-  get: function () {
-    return cache_1.caches;
-  }
-}));
-var header_1 = __webpack_require__(3652);
-Object.defineProperty(exports, "header", ({
-  enumerable: true,
-  get: function () {
-    return header_1.header;
-  }
-}));
-Object.defineProperty(exports, "headers", ({
-  enumerable: true,
-  get: function () {
-    return header_1.headers;
-  }
-}));
-var body_1 = __webpack_require__(3413);
-Object.defineProperty(exports, "body", ({
-  enumerable: true,
-  get: function () {
-    return body_1.body;
-  }
-}));
-var normalize_1 = __webpack_require__(4490);
-Object.defineProperty(exports, "normalize", ({
-  enumerable: true,
-  get: function () {
-    return normalize_1.normalize;
-  }
-}));
-
-/***/ },
-
-/***/ 7990
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.bind = void 0;
-const context_1 = __webpack_require__(8669);
-const parser_1 = __webpack_require__(605);
-const segment_1 = __webpack_require__(3967);
-const block_1 = __webpack_require__(7099);
-const header_1 = __webpack_require__(3652);
-const figure_1 = __webpack_require__(1657);
-const note_1 = __webpack_require__(165);
-const url_1 = __webpack_require__(1904);
-const array_1 = __webpack_require__(6876);
-function bind(target, settings) {
-  const options = {
-    ...settings,
-    host: settings.host ?? new url_1.ReadonlyURL(location.pathname, location.origin)
-  };
-  if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
-  if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
-  const blocks = [];
-  const adds = [];
-  const dels = [];
-  const bottom = target.firstChild;
-  let revision;
-  return {
-    parse,
-    nearest,
-    index
-  };
-  function* parse(source) {
-    if (settings.chunk && revision) throw new Error('Chunks cannot be updated');
-    const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-    // @ts-expect-error
-    options.url = url ? new url_1.ReadonlyURL(url) : undefined;
-    const rev = revision = Symbol();
-    const sourceSegments = [];
-    const sourceSegmentAttrs = [];
-    for (const [seg, attr] of (0, segment_1.segment)(source, true)) {
-      sourceSegments.push(seg);
-      sourceSegmentAttrs.push(attr);
-      yield {
-        type: 'segment',
-        value: seg
-      };
-    }
-    const targetSegments = blocks.map(([seg]) => seg);
-    let head = 0;
-    for (; head < targetSegments.length; ++head) {
-      if (blocks[head][2] !== url) break;
-      if (targetSegments[head] !== sourceSegments[head]) break;
-    }
-    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
-    let last = 0;
-    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
-      if (blocks[targetSegments.length - last - 1][2] !== url) break;
-      if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
-    }
-    const base = next(head);
-    let index = head;
-    // @ts-expect-error
-    options.header = true;
-    for (; index < sourceSegments.length - last; ++index) {
-      const seg = sourceSegments[index];
-      options.segment = sourceSegmentAttrs[index] | 1 /* Segment.write */;
-      const es = (0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(options))).foldl((acc, {
-        value
-      }) => void acc.push(value) || acc, []);
-      // @ts-expect-error
-      options.header = false;
-      blocks.length === index ? blocks.push([seg, es, url]) : blocks.splice(index, 0, [seg, es, url]);
-      if (es.length === 0) continue;
-      // All deletion processes always run after all addition processes have done.
-      // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      adds.push(...es.map(el => [el, base]));
-      adds.reverse();
-      for (; adds.length > 0;) {
-        const [el, base] = adds.pop();
-        target.insertBefore(el, base);
-        yield {
-          type: 'block',
-          value: el
-        };
-        if (rev !== revision) return yield {
-          type: 'cancel'
-        };
-      }
-    }
-    for (let refuse = (0, array_1.splice)(blocks, index, blocks.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
-      const es = refuse[i][1];
-      if (es.length === 0) continue;
-      dels.push(...es.map(el => [el]));
-    }
-    adds.reverse();
-    for (; adds.length > 0;) {
-      const [el, base] = adds.pop();
-      target.insertBefore(el, base);
-      yield {
-        type: 'block',
-        value: el
-      };
-      if (rev !== revision) return yield {
-        type: 'cancel'
-      };
-    }
-    dels.reverse();
-    for (; dels.length > 0;) {
-      const [el] = dels.pop();
-      el.parentNode?.removeChild(el);
-      yield {
-        type: 'block',
-        value: el
-      };
-      if (rev !== revision) return yield {
-        type: 'cancel'
-      };
-    }
-    yield {
-      type: 'break'
-    };
-    if (rev !== revision) return yield {
-      type: 'cancel'
-    };
-    for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.notes, options)) {
-      el ? yield {
-        type: 'figure',
-        value: el
-      } : yield {
-        type: 'break'
-      };
-      if (rev !== revision) return yield {
-        type: 'cancel'
-      };
-    }
-    for (const el of (0, note_1.note)(next(0)?.parentNode ?? target, settings.notes, options, bottom)) {
-      el ? yield {
-        type: 'note',
-        value: el
-      } : yield {
-        type: 'break'
-      };
-      if (rev !== revision) return yield {
-        type: 'cancel'
-      };
-    }
-  }
-  function next(index) {
-    for (let i = index; i < blocks.length; ++i) {
-      const [, es] = blocks[i];
-      if (es.length > 0) return es[0];
-    }
-    return bottom;
-  }
-  function nearest(index) {
-    let el;
-    for (let len = 0, i = 0; i < blocks.length; ++i) {
-      const block = blocks[i];
-      len += block[0].length;
-      el = block[1][0] ?? el;
-      if (len >= index) break;
-    }
-    return el;
-  }
-  function index(source) {
-    for (let len = 0, i = 0; i < blocks.length; ++i) {
-      const block = blocks[i];
-      if (block[1].includes(source)) return len;
-      len += block[0].length;
-    }
-    return -1;
-  }
-}
-exports.bind = bind;
-
-/***/ },
-
-/***/ 3413
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.body = void 0;
-const header_1 = __webpack_require__(3652);
-function body(source) {
-  return source.slice((0, header_1.header)(source).length);
-}
-exports.body = body;
-
-/***/ },
-
-/***/ 4331
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.caches = void 0;
-const tclock_1 = __webpack_require__(3307);
-const tlru_1 = __webpack_require__(8888);
-// For rerendering in editing.
-/*
-同一文書内で複数回使用される可能性が低いデータ: TClock
-同一文書内で複数回使用される可能性が高いデータ: TLRU
-
-編集時の再描画高速化が主目的であるためブロックを周期とするループおよび
-異なるブロックへのジャンプに適したアルゴリズムを使用。
-キャッシュサイズはブロック内の全データをキャッシュできなければならない。
-キャッシュサイズは100あれば足りるが10,000までは速度低下しないようなので
-データサイズを加味して100から1,000とする。
-遠くで少数の同じデータを高速描画してもあまり意味はない。
-タイムラインとスレッドのmediaにおいても多数の同一データが長周期で複数回表示
-される適切な状況はないと思われる。
-同一投稿は頻繁に再送されてはならずスパムは削除されなければならず
-ジャーゴンは考慮に値しない。
-
-*/
-exports.caches = {
-  code: new tclock_1.TClock(1000),
-  math: new tlru_1.TLRU(1000),
-  media: new tclock_1.TClock(100)
-};
-
-/***/ },
-
-/***/ 3652
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.headers = exports.header = void 0;
-const context_1 = __webpack_require__(8669);
-const header_1 = __webpack_require__(3009);
-function header(source) {
-  const [, pos = 0] = parse(source);
-  return source.slice(0, pos);
-}
-exports.header = header;
-function headers(source) {
-  const [el] = parse(source);
-  const acc = [];
-  for (let field = el?.firstChild?.firstChild; field = field?.nextSibling;) {
-    acc.push(field.textContent);
-  }
-  return acc;
-}
-exports.headers = headers;
-function parse(source) {
-  const context = new context_1.Context({
-    source
-  });
-  const result = (0, header_1.header)(context);
-  const el = result?.head?.value;
-  return el?.tagName === 'ASIDE' ? [el, context.position] : [];
-}
-
-/***/ },
-
-/***/ 4490
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.escape = exports.invisibleGraphHTMLEntityNames = exports.invisibleBlankHTMLEntityNames = exports.normalize = void 0;
-const dom_1 = __webpack_require__(394);
-const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
-function normalize(source) {
-  return sanitize(format(source));
-}
-exports.normalize = normalize;
-function format(source) {
-  return source.replace(/\r\n?|[\u2028\u2029]/g, '\n');
-}
-const invalid = new RegExp([/(?![\t\r\n])[\x00-\x1F\x7F]/g.source, /(?![\u200C\u200D])[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g.source
-// 後読みが重い
-///(?<![\u1820\u1821])\u180E/g.source,
-///[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g.source,
-].join('|'), 'g');
-function sanitize(source) {
-  return source.replace(invalid, UNICODE_REPLACEMENT_CHARACTER);
-}
-// https://dev.w3.org/html5/html-author/charref
-// https://en.wikipedia.org/wiki/Whitespace_character
-const invisibleHTMLEntityNames = ['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'shy', 'ensp', 'emsp', 'emsp13', 'emsp14', 'numsp', 'puncsp', 'ThinSpace', 'thinsp', 'VeryThinSpace', 'hairsp', 'ZeroWidthSpace', 'NegativeVeryThinSpace', 'NegativeThinSpace', 'NegativeMediumSpace', 'NegativeThickSpace', 'zwj', 'zwnj', 'lrm', 'rlm', 'MediumSpace', 'NoBreak', 'ApplyFunction', 'af', 'InvisibleTimes', 'it', 'InvisibleComma', 'ic'];
-const parser = (el => entity => {
-  if (entity === '&NewLine;') return entity;
-  el.innerHTML = entity;
-  return el.textContent;
-})((0, dom_1.html)('span'));
-exports.invisibleBlankHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() === '');
-exports.invisibleGraphHTMLEntityNames = invisibleHTMLEntityNames.filter(name => parser(`&${name};`).trimStart() !== '');
-const unreadableEscapeHTMLEntityNames = invisibleHTMLEntityNames.filter(name => !['Tab', 'NewLine', 'NonBreakingSpace', 'nbsp', 'zwj', 'zwnj'].includes(name));
-const unreadableEscapeCharacters = unreadableEscapeHTMLEntityNames.map(name => parser(`&${name};`));
-const unreadableEscapeCharacter = new RegExp(`[${unreadableEscapeCharacters.join('')}]`, 'g');
-// https://www.pandanoir.info/entry/2018/03/11/193000
-// http://anti.rosx.net/etc/memo/002_space.html
-// http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
-const unreadableSpecialCharacters = (/* unused pure expression or super */ null && ([
-// SIX-PER-EM SPACE
-'\u2006',
-// ZERO WIDTH SPACE
-'\u200B',
-// ZERO WIDTH NON-JOINER
-//'\u200C',
-// ZERO WIDTH JOINER
-//'\u200D',
-// LEFT-TO-RIGHT MARK
-'\u200E',
-// RIGHT-TO-LEFT MARK
-'\u200F',
-// LEFT-TO-RIGHT EMBEDDING
-'\u202A',
-// RIGHT-TO-LEFT EMBEDDING
-'\u202B',
-// POP DIRECTIONAL FORMATTING
-'\u202C',
-// LEFT-TO-RIGHT OVERRIDE
-'\u202D',
-// RIGHT-TO-LEFT OVERRIDE
-'\u202E',
-// NARROW NO-BREAK SPACE
-'\u202F',
-// WORD JOINER
-'\u2060',
-// ZERO WIDTH NON-BREAKING SPACE
-'\uFEFF']));
-// 特殊不可視文字はエディタおよびソースビューアでは等幅および強調表示により可視化する
-function escape(source) {
-  return source.replace(unreadableEscapeCharacter, char => `&${unreadableEscapeHTMLEntityNames[unreadableEscapeCharacters.indexOf(char)]};`);
-}
-exports.escape = escape;
-
-/***/ },
-
-/***/ 3662
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.parse = void 0;
-const parser_1 = __webpack_require__(605);
-const context_1 = __webpack_require__(8669);
-const segment_1 = __webpack_require__(3967);
-const block_1 = __webpack_require__(7099);
-const header_1 = __webpack_require__(3652);
-const figure_1 = __webpack_require__(1657);
-const note_1 = __webpack_require__(165);
-const url_1 = __webpack_require__(1904);
-const dom_1 = __webpack_require__(394);
-function parse(source, opts = {}, options) {
-  const url = (0, header_1.headers)(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-  options = {
-    host: opts.host ?? options?.host ?? new url_1.ReadonlyURL(location.pathname, location.origin),
-    url: url ? new url_1.ReadonlyURL(url) : options?.url,
-    id: opts.id ?? options?.id,
-    local: opts.local ?? options?.local ?? false,
-    caches: options?.caches,
-    resources: options?.resources
-  };
-  if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
-  if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
-  const node = (0, dom_1.frag)();
-  // @ts-expect-error
-  options.header = true;
-  for (const [seg, attr] of (0, segment_1.segment)(source, !options.local)) {
-    options.segment = attr | 1 /* Segment.write */;
-    const es = (0, block_1.block)((0, parser_1.input)(seg, new context_1.Context(options))).foldl((acc, {
-      value
-    }) => void acc.push(value) || acc, []);
-    // @ts-expect-error
-    options.header = false;
-    if (es.length === 0) continue;
-    node.append(...es);
-  }
-  if (opts.test) return node;
-  for (const _ of (0, figure_1.figure)(node, opts.notes, options));
-  for (const _ of (0, note_1.note)(node, opts.notes, options));
-  return node;
-}
-exports.parse = parse;
 
 /***/ },
 
@@ -4473,7 +4432,7 @@ const combinator_1 = __webpack_require__(3484);
 const autolink_1 = __webpack_require__(1671);
 const source_1 = __webpack_require__(8745);
 const util_1 = __webpack_require__(4992);
-const parse_1 = __webpack_require__(3662);
+const parse_1 = __webpack_require__(2032);
 const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.union)([(0, combinator_1.validate)(/!?>+ /y, (0, combinator_1.some)(source_1.contentline))]));
 exports.blockquote = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.union)([(0, combinator_1.open)(/(?=>)/y, source), (0, combinator_1.open)(/!(?=>)/y, markdown)]))));
@@ -4630,7 +4589,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const indexee_1 = __webpack_require__(7610);
 const util_1 = __webpack_require__(4992);
-const parse_1 = __webpack_require__(3662);
+const parse_1 = __webpack_require__(2032);
 const dom_1 = __webpack_require__(394);
 exports.aside = (0, combinator_1.block)((0, combinator_1.recursion)(0 /* Recursion.block */, (0, combinator_1.fmap)((0, combinator_1.fence)(/(~{3,})aside(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
 // Bug: Type mismatch between outer and inner.
@@ -4679,7 +4638,7 @@ const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
 const mathblock_1 = __webpack_require__(4903);
 const util_1 = __webpack_require__(4992);
-const parse_1 = __webpack_require__(3662);
+const parse_1 = __webpack_require__(2032);
 const dom_1 = __webpack_require__(394);
 exports.example = (0, combinator_1.block)((0, combinator_1.recursion)(0 /* Recursion.block */, (0, combinator_1.fmap)((0, combinator_1.fence)(/(~{3,})(?:example\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
 // Bug: Type mismatch between outer and inner.
@@ -7190,7 +7149,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combi
 })))),
 // `{ `と`{`で個別にバックトラックが発生し+1nされる。
 // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
-(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
+(0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), ([{
   value: content
 }, {
   value: params = undefined
@@ -7216,7 +7175,7 @@ exports.textlink = (0, combinator_1.lazy)(() => (0, combinator_1.bind)((0, combi
   if (content.length !== 0 && (0, visibility_1.trimBlankNodeEnd)(content).length === 0) return;
   return new parser_1.List([new parser_1.Node(parse(content, params, context))]);
 }));
-exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)])), / ?}/y))]), ([{
+exports.medialink = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(8 /* State.link */ | 4 /* State.media */, (0, combinator_1.state)(251 /* State.linkers */, (0, combinator_1.bind)((0, combinator_1.sequence)([(0, combinator_1.dup)((0, combinator_1.surround)('[', (0, combinator_1.union)([inline_1.media, inline_1.shortmedia]), ']')), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([exports.uri, (0, combinator_1.some)(exports.option)]), / ?}/y))]), ([{
   value: content
 }, {
   value: params
@@ -7418,7 +7377,7 @@ exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(4 /* S
     return void (0, combinator_1.setBacktrack)(context, 2 | 64 /* Backtrack.link */ | 32 /* Backtrack.ruby */, head);
   }
   return ns;
-})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.precedence)(9, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)])), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
+})), (0, combinator_1.dup)((0, combinator_1.surround)(/{(?![{}])/y, (0, combinator_1.inits)([link_1.uri, (0, combinator_1.some)(option)]), / ?}/y, false, [], undefined, ([as, bs]) => bs && as.import(bs).push(new parser_1.Node("\u0018" /* Command.Cancel */)) && as))]), nodes => nodes.length === 1 ? new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node('')])), nodes.delete(nodes.head)]) : new parser_1.List([new parser_1.Node(new parser_1.List([new parser_1.Node(nodes.head.value.foldl((acc, {
   value
 }) => acc + value, ''), nodes.head.value.head?.flags)])), nodes.delete(nodes.last)])), ([{
   value: [{
@@ -7801,316 +7760,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.isBlankHTMLEntityName = void 0;
-const normalize_1 = __webpack_require__(4490);
+const normalize_1 = __webpack_require__(5188);
 exports.isBlankHTMLEntityName = eval(['name => {', 'switch(name){', normalize_1.invisibleBlankHTMLEntityNames.map(name => `case '${name}':`).join(''), 'return true;', 'default:', 'return false;', '}', '}'].join(''));
-
-/***/ },
-
-/***/ 1657
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.figure = void 0;
-const label_1 = __webpack_require__(2178);
-const util_1 = __webpack_require__(4992);
-const queue_1 = __webpack_require__(4110);
-const array_1 = __webpack_require__(6876);
-const dom_1 = __webpack_require__(394);
-const query_1 = __webpack_require__(2282);
-function* figure(target, notes, opts = {}) {
-  const selector = ':is(figure[data-label], h1, h2)';
-  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.local)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.local)') || []).map(el => [el.getAttribute('data-label'), el]));
-  const labels = new Set();
-  const numbers = new Map();
-  let base = '0';
-  let bases = base.split('.');
-  let index = bases;
-  for (let defs = target instanceof Element ? target.querySelectorAll(`:scope > ${selector}`) : target.querySelectorAll(`${selector}:not(* > *)`), len = defs.length, i = 0; i < len; ++i) {
-    yield;
-    const def = defs[i];
-    const {
-      tagName
-    } = def;
-    if (bases.length === 1 && tagName[0] === 'H') continue;
-    const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${increment(index, def)}`;
-    if (label.endsWith('-')) continue;
-    if (label.endsWith('-0')) {
-      (0, util_1.markInvalid)(def, 'figure', 'argument', 'Invalid base index');
-      (0, dom_1.define)(def, {
-        hidden: null
-      });
-      continue;
-    }
-    if (tagName === 'FIGURE' && label.endsWith('.0')) {
-      // $-x.x.0 is disabled.
-      if (label.lastIndexOf('.', label.length - 3) !== -1) {
-        (0, util_1.markInvalid)(def, 'figure', 'argument', 'Base index must be $-x.0 format');
-        (0, dom_1.define)(def, {
-          hidden: null
-        });
-        continue;
-      }
-      // $-x.0 after h1-h6.
-      if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
-        (0, util_1.markInvalid)(def, 'figure', 'position', messages.declaration);
-        (0, dom_1.define)(def, {
-          hidden: null
-        });
-        continue;
-      } else if (def.getAttribute('data-invalid-message') === messages.declaration) {
-        (0, util_1.unmarkInvalid)(def);
-        (0, dom_1.define)(def, {
-          hidden: null
-        });
-      }
-    }
-    const group = label.split('-', 1)[0];
-    let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? numbers.get(group).split('.').slice(0, bases.length).join('.') : base);
-    if (number.endsWith('.0')) {
-      if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
-      if (number.startsWith('0.')) {
-        number = index.slice(0).reduce((ns, _, i, xs) => {
-          i === ns.length ? xs.length = i : ns[i] = +ns[i] > +xs[i] ? ns[i] : +ns[i] === 0 ? xs[i] : `${+xs[i] + 1}`;
-          return ns;
-        }, number.split('.')).join('.');
-      }
-      base = number;
-      bases = index = base.split('.');
-      tagName !== 'FIGURE' && numbers.clear();
-      continue;
-    }
-    !(0, label_1.isFixed)(label) && numbers.set(group, number);
-    const figindex = group === '$' ? `(${number})` : `${capitalize(group)}${group === 'fig' ? '.' : ''} ${number}`;
-    (0, dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${figindex}. `);
-    if (labels.has(label)) {
-      if (def.classList.contains('invalid')) continue;
-      (0, dom_1.define)(def, {
-        id: null
-      });
-      (0, util_1.markInvalid)(def, 'figure', 'argument', messages.duplicate);
-      continue;
-    } else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
-      (0, util_1.unmarkInvalid)(def);
-    }
-    labels.add(label);
-    opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
-    for (const ref of refs.take(label, Infinity)) {
-      if (ref.getAttribute('data-invalid-message') === messages.reference) {
-        (0, util_1.unmarkInvalid)(ref);
-      }
-      if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
-      yield (0, dom_1.define)(ref, {
-        class: opts.local ? `${ref.className} local` : undefined,
-        href: opts.id !== '' ? `#${def.id}` : undefined
-      }, figindex);
-    }
-  }
-  for (const [, ref] of refs) {
-    if (opts.id !== '' && !ref.classList.contains('invalid')) {
-      (0, util_1.markInvalid)(ref, 'label', 'reference', messages.reference);
-    }
-    yield ref;
-  }
-}
-exports.figure = figure;
-const messages = {
-  declaration: 'Base index declarations must be after level 1 to 6 headings',
-  duplicate: 'Duplicate label',
-  reference: 'Missing the target figure'
-};
-function increment(bases, el) {
-  const index = (+el.tagName[1] - 1 || 1) - 1;
-  return index + 1 < bases.length ? bases.slice(0, index + 2).map((v, i) => {
-    switch (true) {
-      case i < index:
-        return v;
-      case i === index:
-        return +v + 1;
-      default:
-        return 0;
-    }
-  }).join('.') : '';
-}
-function capitalize(label) {
-  return label[0].toUpperCase() + label.slice(1);
-}
-
-/***/ },
-
-/***/ 165
-(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.note = void 0;
-const indexee_1 = __webpack_require__(7610);
-const util_1 = __webpack_require__(4992);
-const memoize_1 = __webpack_require__(6925);
-const dom_1 = __webpack_require__(394);
-function* note(target, notes, opts = {}, bottom = null) {
-  const referenceRefMemory = referenceRefsMemoryCaller(target);
-  const annotationRefMemory = annotationRefsMemoryCaller(target);
-  for (const memory of [referenceRefMemory, annotationRefMemory]) {
-    for (const [ref, {
-      content
-    }] of memory) {
-      ref.replaceChildren(content);
-    }
-    memory.clear();
-  }
-  yield* reference(referenceRefMemory, target, notes?.references, opts, bottom);
-  yield* annotation(annotationRefMemory, target, notes?.annotations, opts, bottom);
-}
-exports.note = note;
-const annotationRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
-const referenceRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
-const annotation = build('annotation', 'annotations', '.annotation:not(:is(.annotations, .references) &, .local)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
-const reference = build('reference', 'references', '.reference:not(:is(.annotations, .references) &, .local)', (n, abbr) => `[${abbr || n}]`);
-function build(syntax, list, selector, marker, splitter = '') {
-  splitter &&= `${splitter}, .${list}`;
-  return function* (memory, target, note, opts = {}, bottom = null) {
-    const refInfoCaller = (0, memoize_1.memoize)(ref => {
-      const content = ref.firstElementChild;
-      const abbr = ref.getAttribute('data-abbr') ?? '';
-      const clone = ref.cloneNode(true);
-      const txt = (0, indexee_1.text)(clone).trim();
-      const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(clone))?.slice(6) || '';
-      return {
-        content,
-        identifier,
-        abbr,
-        text: txt
-      };
-    }, memory);
-    const defs = new Map();
-    const refs = target.querySelectorAll(selector);
-    const identifierInfoCaller = (0, memoize_1.memoize)(identifier => ({
-      defIndex: 0,
-      defSubindex: 0,
-      refSubindex: 0,
-      title: '' && 0,
-      queue: []
-    }));
-    const splitters = splitter ? target instanceof Element ? target.querySelectorAll(`:scope > :is(${splitter}, .${list})`) : target.querySelectorAll(`:is(${splitter}, .${list}):not(* > *)`) : [];
-    let iSplitters = 0;
-    let total = 0;
-    let format;
-    let refIndex = 0;
-    for (let len = refs.length, i = 0; i < len; ++i) {
-      const ref = refs[i];
-      if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
-        const pos = splitter?.compareDocumentPosition(ref) ?? 0;
-        if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
-        if (~iSplitters << 32 - 8 === 0) yield;
-        if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
-          yield* proc(splitter);
-          splitter.remove();
-          continue;
-        }
-        if (defs.size > 0) {
-          total += defs.size;
-          const note = splitter.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
-            class: list
-          }), splitter);
-          yield* proc(note, defs);
-        }
-      }
-      const {
-        content,
-        identifier,
-        abbr,
-        text
-      } = refInfoCaller(ref);
-      const info = identifierInfoCaller(identifier);
-      const refSubindex = ++info.refSubindex;
-      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
-      const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
-      const defSubindex = initial ? ++info.defSubindex : info.defSubindex;
-      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
-      const def = initial ? (0, dom_1.html)('li', {
-        id: defId,
-        'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
-      }, [content, (0, dom_1.html)('sup')]) : defs.get(identifier);
-      initial && defs.set(identifier, def);
-      if (!initial && content.innerHTML.length > def.firstElementChild.innerHTML.length) {
-        def.firstElementChild.replaceWith(content);
-      }
-      const defIndex = initial ? info.defIndex = total + defs.size : info.defIndex;
-      const title = info.title ||= text;
-      (0, dom_1.define)(ref, {
-        id: refId,
-        class: opts.local ? `${ref.className} local` : undefined,
-        title
-      }, []);
-      if (title && info.queue.length > 0) {
-        for (const ref of info.queue) {
-          (0, dom_1.define)(ref, {
-            title
-          });
-          (0, util_1.unmarkInvalid)(ref);
-        }
-        info.queue = [];
-        def.firstElementChild.replaceWith(content);
-      }
-      switch (ref.getAttribute('data-invalid-syntax')) {
-        case 'format':
-        case 'content':
-          (0, util_1.unmarkInvalid)(ref);
-      }
-      format ??= abbr ? 'abbr' : 'number';
-      if (!ref.classList.contains('invalid')) switch (true) {
-        case format === 'number' ? abbr !== '' : abbr === '':
-          (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
-          break;
-        case title === '':
-          (0, util_1.markInvalid)(ref, syntax, 'content', 'Missing the content');
-          info.queue.push(ref);
-          break;
-      }
-      ref.appendChild((0, dom_1.html)('a', {
-        href: refId && defId && `#${defId}`
-      }, marker(defIndex, abbr)));
-      def.lastElementChild.appendChild((0, dom_1.html)('a', {
-        href: refId && `#${refId}`,
-        title: abbr && text || undefined
-      }, `^${++refIndex}`));
-      yield;
-    }
-    if (note || defs.size > 0) {
-      const splitter = splitters[iSplitters++];
-      note ??= splitter?.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
-        class: list
-      }), splitter ?? bottom);
-      yield* proc(note, defs);
-    }
-    if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
-      if (~iSplitters << 32 - 8 === 0) yield;
-      if (splitter.classList.contains(list)) {
-        yield* proc(splitter);
-        splitter.remove();
-      }
-    }
-  };
-}
-function* proc(note, defs) {
-  for (let defs = note.children, i = defs.length; i--;) {
-    yield note.removeChild(defs[i]);
-  }
-  if (!defs) return;
-  for (const [, def] of defs) {
-    yield note.appendChild(def);
-  }
-  defs.clear();
-}
 
 /***/ },
 
@@ -9012,7 +8663,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.trimBlankNodeEnd = exports.trimBlankEnd = exports.trimBlank = exports.isNonblankNodeStart = exports.isNonblankFirstLine = exports.beforeNonblankWith = exports.blankWith = exports.afterNonblank = exports.beforeNonblank = exports.visualize = void 0;
 const parser_1 = __webpack_require__(605);
 const combinator_1 = __webpack_require__(3484);
-const normalize_1 = __webpack_require__(4490);
+const normalize_1 = __webpack_require__(5188);
 var blank;
 (function (blank) {
   blank.line = new RegExp(/((?:^|\n)[^\S\r\n]*(?=\S))((?:[^\S\r\n]|\\(?=$|\s)|&IBHN;|<wbr ?>)+(?=$|\r?\n))/g.source.replace('IBHN', `(?:${normalize_1.invisibleBlankHTMLEntityNames.join('|')})`), 'g');
@@ -9115,6 +8766,314 @@ function trimBlankNodeEnd(nodes) {
   return nodes;
 }
 exports.trimBlankNodeEnd = trimBlankNodeEnd;
+
+/***/ },
+
+/***/ 5815
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.figure = void 0;
+const label_1 = __webpack_require__(2178);
+const util_1 = __webpack_require__(4992);
+const queue_1 = __webpack_require__(4110);
+const array_1 = __webpack_require__(6876);
+const dom_1 = __webpack_require__(394);
+const query_1 = __webpack_require__(2282);
+function* figure(target, notes, opts = {}) {
+  const selector = ':is(figure[data-label], h1, h2)';
+  const refs = new queue_1.MultiQueue((0, array_1.push)((0, query_1.querySelectorAll)(target, 'a.label:not(.local)[data-label]'), notes && (0, query_1.querySelectorAll)(notes.references, 'a.label:not(.local)') || []).map(el => [el.getAttribute('data-label'), el]));
+  const labels = new Set();
+  const numbers = new Map();
+  let base = '0';
+  let bases = base.split('.');
+  let index = bases;
+  for (let defs = target instanceof Element ? target.querySelectorAll(`:scope > ${selector}`) : target.querySelectorAll(`${selector}:not(* > *)`), len = defs.length, i = 0; i < len; ++i) {
+    yield;
+    const def = defs[i];
+    const {
+      tagName
+    } = def;
+    if (bases.length === 1 && tagName[0] === 'H') continue;
+    const label = tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${increment(index, def)}`;
+    if (label.endsWith('-')) continue;
+    if (label.endsWith('-0')) {
+      (0, util_1.markInvalid)(def, 'figure', 'argument', 'Invalid base index');
+      (0, dom_1.define)(def, {
+        hidden: null
+      });
+      continue;
+    }
+    if (tagName === 'FIGURE' && label.endsWith('.0')) {
+      // $-x.x.0 is disabled.
+      if (label.lastIndexOf('.', label.length - 3) !== -1) {
+        (0, util_1.markInvalid)(def, 'figure', 'argument', 'Base index must be $-x.0 format');
+        (0, dom_1.define)(def, {
+          hidden: null
+        });
+        continue;
+      }
+      // $-x.0 after h1-h6.
+      if (!/^H[1-6]$/.test(def.previousElementSibling?.tagName ?? '')) {
+        (0, util_1.markInvalid)(def, 'figure', 'position', messages.declaration);
+        (0, dom_1.define)(def, {
+          hidden: null
+        });
+        continue;
+      } else if (def.getAttribute('data-invalid-message') === messages.declaration) {
+        (0, util_1.unmarkInvalid)(def);
+        (0, dom_1.define)(def, {
+          hidden: null
+        });
+      }
+    }
+    const group = label.split('-', 1)[0];
+    let number = (0, label_1.number)(label, numbers.has(group) && !(0, label_1.isFixed)(label) ? numbers.get(group).split('.').slice(0, bases.length).join('.') : base);
+    if (number.endsWith('.0')) {
+      if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
+      if (number.startsWith('0.')) {
+        number = index.slice(0).reduce((ns, _, i, xs) => {
+          i === ns.length ? xs.length = i : ns[i] = +ns[i] > +xs[i] ? ns[i] : +ns[i] === 0 ? xs[i] : `${+xs[i] + 1}`;
+          return ns;
+        }, number.split('.')).join('.');
+      }
+      base = number;
+      bases = index = base.split('.');
+      tagName !== 'FIGURE' && numbers.clear();
+      continue;
+    }
+    !(0, label_1.isFixed)(label) && numbers.set(group, number);
+    const figindex = group === '$' ? `(${number})` : `${capitalize(group)}${group === 'fig' ? '.' : ''} ${number}`;
+    (0, dom_1.define)(def.querySelector(':scope > figcaption > .figindex'), group === '$' ? figindex : `${figindex}. `);
+    if (labels.has(label)) {
+      if (def.classList.contains('invalid')) continue;
+      (0, dom_1.define)(def, {
+        id: null
+      });
+      (0, util_1.markInvalid)(def, 'figure', 'argument', messages.duplicate);
+      continue;
+    } else if (def.getAttribute('data-invalid-message') === messages.duplicate) {
+      (0, util_1.unmarkInvalid)(def);
+    }
+    labels.add(label);
+    opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
+    for (const ref of refs.take(label, Infinity)) {
+      if (ref.getAttribute('data-invalid-message') === messages.reference) {
+        (0, util_1.unmarkInvalid)(ref);
+      }
+      if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
+      yield (0, dom_1.define)(ref, {
+        class: opts.local ? `${ref.className} local` : undefined,
+        href: opts.id !== '' ? `#${def.id}` : undefined
+      }, figindex);
+    }
+  }
+  for (const [, ref] of refs) {
+    if (opts.id !== '' && !ref.classList.contains('invalid')) {
+      (0, util_1.markInvalid)(ref, 'label', 'reference', messages.reference);
+    }
+    yield ref;
+  }
+}
+exports.figure = figure;
+const messages = {
+  declaration: 'Base index declarations must be after level 1 to 6 headings',
+  duplicate: 'Duplicate label',
+  reference: 'Missing the target figure'
+};
+function increment(bases, el) {
+  const index = (+el.tagName[1] - 1 || 1) - 1;
+  return index + 1 < bases.length ? bases.slice(0, index + 2).map((v, i) => {
+    switch (true) {
+      case i < index:
+        return v;
+      case i === index:
+        return +v + 1;
+      default:
+        return 0;
+    }
+  }).join('.') : '';
+}
+function capitalize(label) {
+  return label[0].toUpperCase() + label.slice(1);
+}
+
+/***/ },
+
+/***/ 8119
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.note = void 0;
+const indexee_1 = __webpack_require__(7610);
+const util_1 = __webpack_require__(4992);
+const memoize_1 = __webpack_require__(6925);
+const dom_1 = __webpack_require__(394);
+function* note(target, notes, opts = {}, bottom = null) {
+  const referenceRefMemory = referenceRefsMemoryCaller(target);
+  const annotationRefMemory = annotationRefsMemoryCaller(target);
+  for (const memory of [referenceRefMemory, annotationRefMemory]) {
+    for (const [ref, {
+      content
+    }] of memory) {
+      ref.replaceChildren(content);
+    }
+    memory.clear();
+  }
+  yield* reference(referenceRefMemory, target, notes?.references, opts, bottom);
+  yield* annotation(annotationRefMemory, target, notes?.annotations, opts, bottom);
+}
+exports.note = note;
+const annotationRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
+const referenceRefsMemoryCaller = (0, memoize_1.memoize)(target => new Map() ?? target, new WeakMap());
+const annotation = build('annotation', 'annotations', '.annotation:not(:is(.annotations, .references) &, .local)', n => `*${n}`, 'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+const reference = build('reference', 'references', '.reference:not(:is(.annotations, .references) &, .local)', (n, abbr) => `[${abbr || n}]`);
+function build(syntax, list, selector, marker, splitter = '') {
+  splitter &&= `${splitter}, .${list}`;
+  return function* (memory, target, note, opts = {}, bottom = null) {
+    const refInfoCaller = (0, memoize_1.memoize)(ref => {
+      const content = ref.firstElementChild;
+      const abbr = ref.getAttribute('data-abbr') ?? '';
+      const clone = ref.cloneNode(true);
+      const txt = (0, indexee_1.text)(clone).trim();
+      const identifier = abbr ? (0, indexee_1.identity)('', undefined, abbr.match(/^(?:\S+ )+?(?:(?:January|February|March|April|May|June|August|September|October|November|December) \d{1,2}(?:-\d{0,2})?, \d{1,4}(?:-\d{0,4})?[a-z]?|n\.d\.)(?=,|$)/)?.[0] ?? abbr.match(/^[^,\s]+(?:,? [^,\s]+)*?(?: \d{1,4}(?:-\d{0,4})?[a-z]?(?=,|$)|(?=,(?: [a-z]+\.?)? [0-9]))/)?.[0] ?? abbr)?.slice(2) || '' : (0, indexee_1.identity)('mark', undefined, (0, indexee_1.signature)(clone))?.slice(6) || '';
+      return {
+        content,
+        identifier,
+        abbr,
+        text: txt
+      };
+    }, memory);
+    const defs = new Map();
+    const refs = target.querySelectorAll(selector);
+    const identifierInfoCaller = (0, memoize_1.memoize)(identifier => ({
+      defIndex: 0,
+      defSubindex: 0,
+      refSubindex: 0,
+      title: '' && 0,
+      queue: []
+    }));
+    const splitters = splitter ? target instanceof Element ? target.querySelectorAll(`:scope > :is(${splitter}, .${list})`) : target.querySelectorAll(`:is(${splitter}, .${list}):not(* > *)`) : [];
+    let iSplitters = 0;
+    let total = 0;
+    let format;
+    let refIndex = 0;
+    for (let len = refs.length, i = 0; i < len; ++i) {
+      const ref = refs[i];
+      if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
+        const pos = splitter?.compareDocumentPosition(ref) ?? 0;
+        if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
+        if (~iSplitters << 32 - 8 === 0) yield;
+        if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
+          yield* proc(splitter);
+          splitter.remove();
+          continue;
+        }
+        if (defs.size > 0) {
+          total += defs.size;
+          const note = splitter.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
+            class: list
+          }), splitter);
+          yield* proc(note, defs);
+        }
+      }
+      const {
+        content,
+        identifier,
+        abbr,
+        text
+      } = refInfoCaller(ref);
+      const info = identifierInfoCaller(identifier);
+      const refSubindex = ++info.refSubindex;
+      const refId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:ref:${identifier}:${refSubindex}` : undefined;
+      const initial = splitter ? !defs.has(identifier) : refSubindex === 1;
+      const defSubindex = initial ? ++info.defSubindex : info.defSubindex;
+      const defId = opts.id !== '' ? `${syntax}:${opts.id ?? ''}:def:${identifier}${splitter && `:${defSubindex}`}` : undefined;
+      const def = initial ? (0, dom_1.html)('li', {
+        id: defId,
+        'data-marker': note ? undefined : marker(total + defs.size + 1, abbr)
+      }, [content, (0, dom_1.html)('sup')]) : defs.get(identifier);
+      initial && defs.set(identifier, def);
+      if (!initial && content.innerHTML.length > def.firstElementChild.innerHTML.length) {
+        def.firstElementChild.replaceWith(content);
+      }
+      const defIndex = initial ? info.defIndex = total + defs.size : info.defIndex;
+      const title = info.title ||= text;
+      (0, dom_1.define)(ref, {
+        id: refId,
+        class: opts.local ? `${ref.className} local` : undefined,
+        title
+      }, []);
+      if (title && info.queue.length > 0) {
+        for (const ref of info.queue) {
+          (0, dom_1.define)(ref, {
+            title
+          });
+          (0, util_1.unmarkInvalid)(ref);
+        }
+        info.queue = [];
+        def.firstElementChild.replaceWith(content);
+      }
+      switch (ref.getAttribute('data-invalid-syntax')) {
+        case 'format':
+        case 'content':
+          (0, util_1.unmarkInvalid)(ref);
+      }
+      format ??= abbr ? 'abbr' : 'number';
+      if (!ref.classList.contains('invalid')) switch (true) {
+        case format === 'number' ? abbr !== '' : abbr === '':
+          (0, util_1.markInvalid)(ref, syntax, 'format', 'Notation format must be consistent with numbers or abbreviations');
+          break;
+        case title === '':
+          (0, util_1.markInvalid)(ref, syntax, 'content', 'Missing the content');
+          info.queue.push(ref);
+          break;
+      }
+      ref.appendChild((0, dom_1.html)('a', {
+        href: refId && defId && `#${defId}`
+      }, marker(defIndex, abbr)));
+      def.lastElementChild.appendChild((0, dom_1.html)('a', {
+        href: refId && `#${refId}`,
+        title: abbr && text || undefined
+      }, `^${++refIndex}`));
+      yield;
+    }
+    if (note || defs.size > 0) {
+      const splitter = splitters[iSplitters++];
+      note ??= splitter?.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
+        class: list
+      }), splitter ?? bottom);
+      yield* proc(note, defs);
+    }
+    if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
+      if (~iSplitters << 32 - 8 === 0) yield;
+      if (splitter.classList.contains(list)) {
+        yield* proc(splitter);
+        splitter.remove();
+      }
+    }
+  };
+}
+function* proc(note, defs) {
+  for (let defs = note.children, i = defs.length; i--;) {
+    yield note.removeChild(defs[i]);
+  }
+  if (!defs) return;
+  for (const [, def] of defs) {
+    yield note.appendChild(def);
+  }
+  defs.clear();
+}
 
 /***/ },
 
@@ -9344,7 +9303,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.pdf = void 0;
-const parser_1 = __webpack_require__(3561);
+const api_1 = __webpack_require__(3972);
 const dom_1 = __webpack_require__(394);
 const extensions = ['.pdf'];
 function pdf(source, url) {
@@ -9355,7 +9314,7 @@ function pdf(source, url) {
   }, [(0, dom_1.html)('object', {
     type: 'application/pdf',
     data: source.getAttribute('data-src')
-  }), (0, dom_1.html)('div', [(0, dom_1.define)((0, parser_1.parse)(`{ ${source.getAttribute('data-src')} }`).querySelector('a'), {
+  }), (0, dom_1.html)('div', [(0, dom_1.define)((0, api_1.parse)(`{ ${source.getAttribute('data-src')} }`).querySelector('a'), {
     class: null,
     target: '_blank'
   })])]);
@@ -9379,7 +9338,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.twitter = void 0;
-const parser_1 = __webpack_require__(3561);
+const api_1 = __webpack_require__(3972);
 const dom_1 = __webpack_require__(394);
 const dompurify_1 = __importDefault(__webpack_require__(611));
 const origins = ['https://twitter.com'];
@@ -9411,7 +9370,7 @@ function twitter(source, url) {
       status,
       statusText
     }) {
-      (0, dom_1.define)(el, [(0, dom_1.define)((0, parser_1.parse)(`{ ${source.getAttribute('data-src')} }`).querySelector('a'), {
+      (0, dom_1.define)(el, [(0, dom_1.define)((0, api_1.parse)(`{ ${source.getAttribute('data-src')} }`).querySelector('a'), {
         class: null,
         target: '_blank'
       }), (0, dom_1.html)('pre', `${status}\n${statusText}`)]);
