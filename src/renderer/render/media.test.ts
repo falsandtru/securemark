@@ -1,7 +1,6 @@
 import { media } from './media';
-import { parse } from '../../parser';
+import { parse, caches } from '../../api';
 import { html } from 'typed-dom/dom';
-import { caches } from '../../parser/api';
 
 describe('Unit: renderer/render/media', () => {
 

@@ -1,12 +1,12 @@
 import { figure } from './figure';
-import { ParserOptions } from '../../..';
-import { parse as parse_ } from '../../parser';
+import { ParserOptions } from '../..';
+import { parse as parse_ } from '../api';
 import { html } from 'typed-dom/dom';
-import { normalize } from '../../debug.test';
+import { normalize } from '../debug.test';
 
 const parse = (s: string, o?: ParserOptions) => parse_(s, { test: true, ...o });
 
-describe('Unit: parser/processor/figure', () => {
+describe('Unit: processor/figure', () => {
   describe('figure', () => {
     it('empty', () => {
       const target = parse('');

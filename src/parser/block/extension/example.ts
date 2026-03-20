@@ -4,7 +4,7 @@ import { List, Node, subinput } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { mathblock } from '../mathblock';
 import { unwrap, invalid, randomID } from '../../util';
-import { parse } from '../../api/parse';
+import { parse } from '../../../api/parse';
 import { html } from 'typed-dom/dom';
 
 export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.block, fmap(

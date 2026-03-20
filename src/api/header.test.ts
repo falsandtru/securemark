@@ -1,6 +1,6 @@
 import { headers } from './header';
 
-describe('Unit: parser/api/header', () => {
+describe('Unit: api/header', () => {
   describe('headers', () => {
     it('basic', () => {
       assert.deepStrictEqual(headers(''), []);

@@ -1,4 +1,4 @@
-import { Parser, Context } from './parser';
+import { Parser, Context } from '../parser';
 
 export class List<N extends List.Node = List.Node, C extends Context = Context, D extends Parser<unknown, C>[] = any> {
   constructor(nodes?: ArrayLike<N>) {
@@ -134,8 +134,8 @@ export class List<N extends List.Node = List.Node, C extends Context = Context, 
   }
 }
 export namespace List {
-  export class Node {
-    public next?: this = undefined;
-    public prev?: this = undefined;
+  export interface Node {
+    next?: this;
+    prev?: this;
   }
 }

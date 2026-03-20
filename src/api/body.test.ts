@@ -1,6 +1,6 @@
 import { body } from './body';
 
-describe('Unit: parser/api/body', () => {
+describe('Unit: api/body', () => {
   describe('body', () => {
     it('basic', () => {
       assert.deepStrictEqual(body(''), '');

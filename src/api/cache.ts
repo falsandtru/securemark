@@ -1,4 +1,4 @@
-import { Caches } from '../../..';
+import { Caches } from '../..';
 import { TClock } from 'spica/tclock';
 import { TLRU } from 'spica/tlru';
 

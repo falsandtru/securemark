@@ -5,7 +5,7 @@ import { union, some, spend, recursion, block, validate, rewrite, open, convert,
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { unwrap, randomID } from '../util';
-import { parse } from '../api/parse';
+import { parse } from '../../api/parse';
 import { html, defrag } from 'typed-dom/dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([

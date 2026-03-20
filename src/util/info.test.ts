@@ -1,5 +1,5 @@
 import { info } from './info';
-import { parse } from '../parser';
+import { parse } from '../api';
 
 describe('Unit: util/info', () => {
   describe('info', () => {

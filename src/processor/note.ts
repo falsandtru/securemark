@@ -1,5 +1,5 @@
-import { identity, signature, text } from '../inline/extension/indexee';
-import { markInvalid, unmarkInvalid } from '../util';
+import { identity, signature, text } from '../parser/inline/extension/indexee';
+import { markInvalid, unmarkInvalid } from '../parser/util';
 import { memoize } from 'spica/memoize';
 import { html, define } from 'typed-dom/dom';
 

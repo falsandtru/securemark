@@ -1,9 +1,9 @@
 import { parse } from './parse';
-import { Context } from '../context';
+import { Context } from '../parser/context';
 import { html } from 'typed-dom/dom';
-import { normalize } from '../../debug.test';
+import { normalize } from '../debug.test';
 
-describe('Unit: parser/api/parse', () => {
+describe('Unit: api/parse', () => {
   describe('parse', () => {
     it('huge input', () => {
       assert.deepStrictEqual(

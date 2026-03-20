@@ -1,4 +1,4 @@
-import { invisibleBlankHTMLEntityNames } from './api/normalize';
+import { invisibleBlankHTMLEntityNames } from '../api/normalize';
 
 export const enum Flag {
   none,

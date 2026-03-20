@@ -1,5 +1,5 @@
-import { Context } from '../context';
-import { header as h } from '../header';
+import { Context } from '../parser/context';
+import { header as h } from '../parser/header';
 
 export function header(source: string): string {
   const [, pos = 0] = parse(source);

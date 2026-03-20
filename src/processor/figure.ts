@@ -1,5 +1,5 @@
-import { number as calculate, isFixed } from '../inline/extension/label';
-import { markInvalid, unmarkInvalid } from '../util';
+import { number as calculate, isFixed } from '../parser/inline/extension/label';
+import { markInvalid, unmarkInvalid } from '../parser/util';
 import { MultiQueue } from 'spica/queue';
 import { push } from 'spica/array';
 import { define } from 'typed-dom/dom';

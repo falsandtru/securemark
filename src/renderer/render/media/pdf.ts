@@ -1,4 +1,4 @@
-import { parse } from '../../../parser';
+import { parse } from '../../../api';
 import { html, define } from 'typed-dom/dom';
 
 const extensions = [

@@ -1,8 +1,8 @@
-import { Progress } from '../../..';
+import { Progress } from '../..';
 import { bind } from './bind';
 import { frag, html } from 'typed-dom/dom';
 
-describe('Unit: parser/api/bind', () => {
+describe('Unit: api/bind', () => {
   describe('bind', () => {
     function inspect(iter: IterableIterator<Progress>, count = Infinity) {
       const acc: (string | undefined)[] = [];

@@ -1,8 +1,8 @@
-import { ParserSettings, Progress } from '../../..';
-import { Context, Options, Segment } from '../context';
-import { input } from '../../combinator/data/parser';
-import { segment } from '../segment';
-import { block } from '../block';
+import { ParserSettings, Progress } from '../..';
+import { Context, Options, Segment } from '../parser/context';
+import { input } from '../combinator/data/parser';
+import { segment } from '../parser/segment';
+import { block } from '../parser/block';
 import { headers } from './header';
 import { figure } from '../processor/figure';
 import { note } from '../processor/note';

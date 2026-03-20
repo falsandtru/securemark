@@ -4,7 +4,7 @@ import { List, Node } from '../../../combinator/data/parser';
 import { recursion, block, fence, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
 import { unwrap, invalid, randomID } from '../../util';
-import { parse } from '../../api/parse';
+import { parse } from '../../../api/parse';
 import { html } from 'typed-dom/dom';
 
 export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.block, fmap(

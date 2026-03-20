@@ -1,4 +1,4 @@
-import { List } from './node';
+import { List } from './list/list';
 import { Delimiters } from './delimiter';
 
 export type Parser<N = unknown, C extends Context = Context, D extends Parser<unknown, C>[] = any>

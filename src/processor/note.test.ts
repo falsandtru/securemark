@@ -1,11 +1,11 @@
 import { note } from './note';
-import { parse as parse_ } from '../../parser';
+import { parse as parse_ } from '../api';
 import { html } from 'typed-dom/dom';
-import { normalize } from '../../debug.test';
+import { normalize } from '../debug.test';
 
 const parse = (s: string) => parse_(s, { test: true });
 
-describe('Unit: parser/processor/note', () => {
+describe('Unit: processor/note', () => {
   describe('annotation', () => {
     it('empty', () => {
       const target = parse('');

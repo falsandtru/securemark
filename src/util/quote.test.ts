@@ -1,5 +1,5 @@
 import { quote } from './quote';
-import { parse } from '../parser';
+import { parse } from '../api';
 
 describe('Unit: util/quote', () => {
   describe('quote', () => {

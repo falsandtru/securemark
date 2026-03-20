@@ -1,6 +1,6 @@
 import { normalize, escape } from './normalize';
 
-describe('Unit: parser/normalize', () => {
+describe('Unit: normalize', () => {
   describe('normalize', () => {
     it('controls', () => {
       assert(normalize('\r') === '\n');

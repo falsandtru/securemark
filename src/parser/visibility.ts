@@ -2,7 +2,7 @@ import { Parser, List, Node } from '../combinator/data/parser';
 import { Command } from './context';
 import { Flag } from './node';
 import { convert, fmap } from '../combinator';
-import { invisibleBlankHTMLEntityNames } from './api/normalize';
+import { invisibleBlankHTMLEntityNames } from '../api/normalize';
 
 namespace blank {
   export const line = new RegExp(

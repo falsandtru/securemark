@@ -1,6 +1,6 @@
 import { render as render_ } from './render';
 import { RenderingOptions } from '../../';
-import { parse } from '../parser/api/parse';
+import { parse } from '../api/parse';
 
 function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   render_(target, opts);
