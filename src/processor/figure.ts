@@ -3,7 +3,6 @@ import { markInvalid, unmarkInvalid } from '../parser/util';
 import { MultiQueue } from 'spica/queue';
 import { push } from 'spica/array';
 import { define } from 'typed-dom/dom';
-import { querySelectorAll } from 'typed-dom/query';
 
 export function* figure(
   target: ParentNode & Node,
@@ -14,19 +13,26 @@ export function* figure(
   } = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const selector = ':is(figure[data-label], h1, h2)';
-  const refs = new MultiQueue<string, HTMLAnchorElement>(push(
-    querySelectorAll(target, 'a.label:not(.local)[data-label]'),
-    notes && querySelectorAll(notes.references, 'a.label:not(.local)') || [])
-    .map(el => [el.getAttribute('data-label')!, el]));
+  const refs = new MultiQueue<string, HTMLAnchorElement>(
+    !notes || notes.references.parentNode === target
+      ? Array.from(
+          target.querySelectorAll('a.label:not(.local)[data-label]'),
+          el => [el.getAttribute('data-label')!, el])
+      : push(
+          Array.from(
+            target.querySelectorAll('a.label:not(.local)[data-label]'),
+            el => [el.getAttribute('data-label')!, el] as const),
+          Array.from(
+            notes.references.querySelectorAll('a.label:not(.local)'),
+            el => [el.getAttribute('data-label')!, el] as const)));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
-  let index: readonly string[] = bases;
   for (
     let defs = target instanceof Element
           ? target.querySelectorAll(`:scope > ${selector}`)
-          : target.querySelectorAll(`${selector}:not(* > *)`),
+          : target.querySelectorAll(`:not(* > *)${selector}`),
         len = defs.length, i = 0; i < len; ++i) {
     yield;
     const def = defs[i];
@@ -36,7 +42,7 @@ export function* figure(
     assert(base === '0' || bases.length > 1);
     const label = tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
-      : `$-${increment(index, def as HTMLHeadingElement)}`;
+      : `$-${increment(bases, def as HTMLHeadingElement)}`;
     if (label.endsWith('-')) continue;
     if (label.endsWith('-0')) {
       markInvalid(def, 'figure', 'argument', 'Invalid base index');
@@ -76,7 +82,7 @@ export function* figure(
       if (group !== '$' || tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));
-        number = index.slice(0)
+        number = bases.slice(0)
           .reduce((ns, _, i, xs) => {
             i === ns.length
               ? xs.length = i
@@ -90,7 +96,7 @@ export function* figure(
           .join('.');
       }
       base = number;
-      bases = index = base.split('.');
+      bases = base.split('.');
       tagName !== 'FIGURE' && numbers.clear();
       assert(def.tagName !== 'FIGURE' || !+def.setAttribute('data-number', number));
       continue;
@@ -135,6 +141,8 @@ export function* figure(
     }
     yield ref;
   }
+  assert(opts.id !== '' || !target.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
+  assert(opts.id !== '' || !notes?.references.querySelector('[id], .index[href], .label[href]'));
 }
 
 const messages = {

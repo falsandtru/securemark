@@ -31,6 +31,7 @@ export const olist_: OListParser = lazy(() => block(union([
     memoize(ms => list(type(ms[1]), '('), ms => idx(ms[1]), [])),
 ])));
 
+// TODO: リストマーカーの直書き
 const list = (type: string, form: string): OListParser.ListParser => fmap(
   recursion(Recursion.listitem, some(union([
     indexee(fmap(fallback(

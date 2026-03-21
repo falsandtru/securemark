@@ -74,7 +74,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       const seg = sourceSegments[index];
       options.segment = sourceSegmentAttrs[index] | Segment.write;
       const es = block(input(seg, new Context(options)))!
-        .foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, []);
+        .foldl<HTMLElement[]>((acc, { value }) => (acc.push(value), acc), []);
       // @ts-expect-error
       options.header = false;
       blocks.length === index

@@ -1,7 +1,7 @@
 import { List } from './list/list';
 import { Delimiters } from './delimiter';
 
-export type Parser<N = unknown, C extends Context = Context, D extends Parser<unknown, C>[] = any>
+export type Parser<N = unknown, C extends Context = Context, D extends readonly Parser<unknown, C>[] = any>
   = (input: Input<C>) => Result<N, C, D>;
 export namespace Parser {
   export type Node<P extends Parser> = P extends Parser<infer N> ? N : never;
@@ -9,11 +9,11 @@ export namespace Parser {
   export type Context<P extends Parser> = P extends Parser<unknown, infer C> ? C : never;
   export type SubNode<P extends Parser> = ExtractSubNode<SubParsers<P>>;
   export type IntermediateParser<P extends Parser> = Parser<SubNode<P>, Context<P>, SubParsers<P>>;
-  type ExtractSubNode<D extends Parser[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
-  type ExtractSubParser<D extends Parser[]> = D extends (infer P)[] ? P extends Parser ? P : never : never;
+  type ExtractSubNode<D extends readonly Parser[]> = ExtractSubParser<D> extends infer N ? N extends Parser<infer U> ? U : never : never;
+  type ExtractSubParser<D extends readonly Parser[]> = D extends readonly (infer P)[] ? P extends Parser ? P : never : never;
 }
 export type Input<C extends Context = Context> = C;
-export type Result<N, C extends Context = Context, D extends Parser<unknown, C>[] = any>
+export type Result<N, C extends Context = Context, D extends readonly Parser<unknown, C>[] = any>
   = List<Node<N>, C, D>
   | undefined;
 export { List };

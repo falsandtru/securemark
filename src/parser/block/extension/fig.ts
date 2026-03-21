@@ -9,7 +9,6 @@ import { segment as seg_math } from '../mathblock';
 import { segment as seg_table } from './table';
 import { segment as seg_blockquote } from '../blockquote';
 import { segment as seg_placeholder } from './placeholder';
-import { media, lineshortmedia } from '../../inline';
 
 import FigParser = ExtensionParser.FigParser;
 
@@ -31,22 +30,8 @@ export const fig: FigParser = block(rewrite(segment, verify(convert(
     // Bug: TypeScript
     const fence = (/^[^\r\n]*\r?\n!?>+ /.test(source) && source.match(/^~{3,}(?=[^\S\r\n]*$)/gm) as string[] || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
-    const { position } = context;
-    const result = parser(context);
-    context.position = position;
     context.segment = Segment.figure | Segment.write;
-    return result
-      ? `${fence}figure ${source.replace(/^([^\r\n]+\r?\n[^\r\n]+\r?\n)(.+?)\r?\n?$/s, '$1\n$2')}\n${fence}`
-      : `${fence}figure ${source}\n\n${fence}`;
+    return `${fence}figure ${source.replace(/^([^\r\n]+\r?\n!https?:[^\r\n]+\r?\n)(.+?)\r?\n?$/s, '$1\n$2')}\n${fence}`;
   },
   union([figure])),
   ([{ value: el }]) => el.tagName === 'FIGURE')));
-
-const parser = sequence([
-  line(close(seg_label, /(?!\S)[^\r\n]*\r?\n/y)),
-  line(union([
-    media,
-    lineshortmedia,
-  ])),
-  some(contentline),
-]);

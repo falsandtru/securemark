@@ -1,6 +1,6 @@
 import { Parser, Context } from '../parser';
 
-export class List<N extends List.Node = List.Node, C extends Context = Context, D extends Parser<unknown, C>[] = any> {
+export class List<N extends List.Node = List.Node, C extends Context = Context, D extends readonly Parser<unknown, C>[] = any> {
   constructor(nodes?: ArrayLike<N>) {
     if (nodes === undefined) return;
     for (let i = 0; i < nodes.length; ++i) {

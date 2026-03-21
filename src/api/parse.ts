@@ -32,7 +32,7 @@ export function parse(source: string, opts: Opts = {}, options?: Options): Docum
   for (const [seg, attr] of segment(source, !options.local)) {
     options.segment = attr | Segment.write;
     const es = block(input(seg, new Context(options)))!
-      .foldl<HTMLElement[]>((acc, { value }) => void acc.push(value) || acc, [])
+      .foldl<HTMLElement[]>((acc, { value }) => (acc.push(value), acc), [])
     // @ts-expect-error
     options.header = false;
     if (es.length === 0) continue;
@@ -42,7 +42,5 @@ export function parse(source: string, opts: Opts = {}, options?: Options): Docum
   if (opts.test) return node;
   for (const _ of figure(node, opts.notes, options));
   for (const _ of note(node, opts.notes, options));
-  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  assert(opts.id !== '' || !opts.notes?.references.querySelector('[id], .index[href], .label[href]'));
   return node;
 }

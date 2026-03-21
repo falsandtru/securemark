@@ -1,11 +1,11 @@
-import { Parser, List, Node, Context, failsafe } from '../../data/parser';
+import { Parser, List, Node, Context } from '../../data/parser';
 import { spend } from '../../../combinator';
 import { firstline, isEmptyline } from '../constraint/line';
 import { push } from 'spica/array';
 
 export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation = true): Parser<string, C, D> {
   assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
-  return failsafe(input => {
+  return input => {
     const context = input;
     const { source, position } = context;
     if (position === source.length) return;
@@ -50,5 +50,5 @@ export function fence<C extends Context, D extends Parser<unknown, C>[]>(opener:
       context.position += line.length;
     }
     return new List(push([block, overflow, closer], matches).map(str => new Node(str)));
-  });
+  };
 }

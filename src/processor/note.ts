@@ -112,7 +112,7 @@ function build(
     const splitters = splitter
       ? target instanceof Element
         ? target.querySelectorAll(`:scope > :is(${splitter}, .${list})`)
-        : target.querySelectorAll(`:is(${splitter}, .${list}):not(* > *)`)
+        : target.querySelectorAll(`:not(* > *):is(${splitter}, .${list})`)
       : [];
     let iSplitters = 0;
     let total = 0;
@@ -226,6 +226,8 @@ function build(
         splitter.remove();
       }
     }
+    assert(opts.id !== '' || !target.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
+    assert(opts.id !== '' || !note?.querySelector('[id], .index[href], .label[href]'));
   };
 }
 

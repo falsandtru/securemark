@@ -20,7 +20,7 @@ export class Context extends Ctx {
       id,
       caches,
     } = options;
-    this.resources = options.resources ?? {
+    this.resources ??= {
       // バックトラックのせいで文字数制限を受けないようにする。
       clock: MAX_SEGMENT_SIZE * (5 + 1),
       recursions: [

@@ -13,6 +13,7 @@ export const ulist: UListParser = lazy(() => block(validate(
   '- ',
   ulist_)));
 
+// TODO: リストマーカーの直書き
 export const ulist_: UListParser = lazy(() => block(fmap(validate(
   /-(?=$|[ \r\n])/y,
   recursion(Recursion.listitem, some(union([
