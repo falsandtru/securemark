@@ -70,7 +70,7 @@ interface Memory {
 }
 const text: RubyParser.TextParser = always<Parser<string, Input<Memory>>>([
   (input, output) => {
-    input.sequential = true;
+    input.whitespace = true;
     input.memory = {
       position: 0,
       state: false,
@@ -81,7 +81,7 @@ const text: RubyParser.TextParser = always<Parser<string, Input<Memory>>>([
   () => loop,
   (input, output) => {
     const { memory } = input;
-    input.sequential = false;
+    input.whitespace = false;
     return memory.state || memory.nodes.last!.value.trimStart() !== ''
       ? output.import(memory.nodes)
       : undefined;

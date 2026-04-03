@@ -24,7 +24,6 @@ export const unescsource: UnescapableSourceParser = (input, output) => {
       return output.append(new Node(html('br'), Flag.blank));
     default:
       assert(char !== '\n');
-      if (input.sequential) return output.append(new Node(char));
       nonWhitespace.lastIndex = position + 1;
       let i = canSkip(source, position)
         ? nonWhitespace.test(source)

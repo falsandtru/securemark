@@ -15,7 +15,7 @@ export class Input<M extends object = object> extends Ipt<M> {
       segment,
       header,
       local,
-      sequential,
+      whitespace,
       host,
       url,
       id,
@@ -37,7 +37,7 @@ export class Input<M extends object = object> extends Ipt<M> {
     this.segment = segment ?? Segment.unknown;
     this.header = header ?? true;
     this.local = local ?? false;
-    this.sequential = sequential ?? false;
+    this.whitespace = whitespace ?? false;
     this.host = host;
     this.url = url;
     this.id = id;
@@ -53,7 +53,7 @@ export class Input<M extends object = object> extends Ipt<M> {
   public override segment: Segment;
   public header: boolean;
   public local: boolean;
-  public sequential: boolean;
+  public whitespace: boolean;
   public recursion = new RecursionCounter(2);
   public readonly host?: URL;
   public readonly url?: URL;

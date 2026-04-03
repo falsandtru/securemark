@@ -34,7 +34,6 @@ export const escsource: EscapableSourceParser = (input, output) => {
       return output.append(new Node(html('br'), Flag.blank));
     default:
       assert(char !== '\n');
-      if (input.sequential) return output.append(new Node(char));
       let i = seek(source, position);
       assert(i > position);
       i -= position;

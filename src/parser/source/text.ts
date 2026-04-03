@@ -36,14 +36,13 @@ export const text: TextParser = (input, output) => {
       return output.append(new Node(html('br'), Flag.blank));
     default:
       assert(char !== '\n');
-      if (input.sequential) return output.append(new Node(char));
       nonWhitespace.lastIndex = position + 1;
       const s = canSkip(source, position);
       let i = s
         ? nonWhitespace.test(source)
           ? nonWhitespace.lastIndex - 1
           : source.length
-        : next(source, position, state);
+        : next(source, position, input.whitespace, state);
       assert(i > position);
       const lineend = 0
         || s && i === source.length
@@ -70,8 +69,8 @@ export function canSkip(source: string, position: number): boolean {
   return isWhitespace(source[position + 1], true);
 }
 
-function next(source: string, position: number, state: number): number {
-  let index= seek(source, position, state);
+function next(source: string, position: number, space: boolean, state: number): number {
+  let index= seek(source, position, space, state);
   assert(index > position);
   if (index === source.length) return index;
   const char = source[index];
@@ -155,7 +154,7 @@ export function isAlphanumeric(char: string): boolean {
   return 'A' <= char && char <= 'Z';
 }
 
-function seek(source: string, position: number, state: number): number {
+function seek(source: string, position: number, space: boolean, state: number): number {
   for (let i = position + 1; i < source.length; ++i) {
     const char = source[i];
     switch (char) {
@@ -206,6 +205,7 @@ function seek(source: string, position: number, state: number): number {
         continue;
       default:
         if (!isWhitespace(char)) continue;
+        if (space) return i;
         if (i + 1 === source.length) return i;
         if (isWhitespace(source[i + 1])) return i;
         if (source[i + 1] !== '\\') continue;
