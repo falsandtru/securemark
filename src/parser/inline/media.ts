@@ -1,8 +1,8 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
-import { List, Node } from '../../combinator/data/parser';
+import { Result, List, Node } from '../../combinator/parser';
 import { Flag } from '../node';
-import { union, inits, tails, some, spend, recursion, precedence, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, recursion, precedence, constraint, backtrack, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
 import { unsafehtmlentity } from './htmlentity';
@@ -19,10 +19,10 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => constraint(State.media, open(
+export const media: MediaParser = lazy(() => constraint(State.media, backtrack(open(
   '!',
   bind(fmap(tails([
-    dup(surround(
+    backtrack(dup(surround(
       '[',
       precedence(1, some(union([
         unsafehtmlentity,
@@ -32,34 +32,28 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
       ']',
       true,
       [3 | Backtrack.escapable, 2 | Backtrack.ruby],
-      ([, ns = new List()], context) => {
-        if (context.linebreak !== 0) {
-          const head = context.position - context.range;
-          return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
+      ([, ns = new List()], input, output) => {
+        if (input.linebreak !== 0 || ns.head?.flags! & Flag.blank || ns.head?.value?.[0].trimStart() === '') {
+          const head = input.position - input.range;
+          return void setBacktrack(input, 2 | Backtrack.escapable | Backtrack.ruby, head);
         }
-        return ns;
-      })),
-    dup(surround(
+        return output.import(ns);
+      }))),
+    backtrack(dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
       / ?}/y,
       false, [],
       undefined,
-      ([as, bs]) =>
-        bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
+      ([as, bs], _, output) =>
+        bs && output.import(as.import(bs).push(new Node(Command.Cancel)))))),
   ]),
   nodes =>
     nodes.length === 1
       ? new List<Node<List<Node<string>>>>([new Node(new List([new Node('')])), nodes.delete(nodes.head!)])
-      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, ''), nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
-  ([{ value: [{ value: text, flags }] }, { value: params }], context) => {
-    if (flags & Flag.blank) return;
-    if (text) {
-      const tmp = text;
-      text = text.trim();
-      if (text === '' || text[0] !== tmp[0]) return;
-    }
-    spend(context, 100);
+      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, '').trimEnd(), nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
+  ([{ value: [{ value: text }] }, { value: params }], input) => {
+    assert(text === text.trim());
     if (params.last!.value === Command.Cancel) {
       params.pop();
       return new List([
@@ -68,7 +62,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
             class: 'invalid',
             ...invalid('media', 'syntax', 'Missing the closing symbol "}"')
           },
-          '!' + context.source.slice(context.position - context.range, context.position)))
+          '!' + input.source.slice(input.position - input.range, input.position)))
       ]);
     }
     const INSECURE_URI = params.shift()!.value;
@@ -79,14 +73,14 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
     let uri: ReadonlyURL | undefined;
     try {
       uri = new ReadonlyURL(
-        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-        context.host?.href || location.href);
+        resolve(INSECURE_URI, input.host ?? location, input.url ?? input.host ?? location),
+        input.host?.href || location.href);
     }
     catch {
     }
     let cache: HTMLElement | undefined;
     const el = undefined
-      || uri && (cache = context.caches?.media?.get(uri.href)?.cloneNode(true))
+      || uri && (cache = input.caches?.media?.get(uri.href)?.cloneNode(true))
       || html('img', { class: 'media', 'data-src': uri?.source });
     assert(!el.matches('.invalid'));
     el.setAttribute('alt', text);
@@ -99,7 +93,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
     if (el.hasAttribute('aspect-ratio')) {
       el.style.aspectRatio = el.getAttribute('aspect-ratio')!;
     }
-    if (context.state & State.link) return new List([new Node(el)]);
+    if (input.state & State.link) return new List([new Node(el)]);
     if (cache && cache.tagName !== 'IMG') return new List([new Node(el)]);
     return new List([new Node(define(
       parse(
@@ -107,32 +101,32 @@ export const media: MediaParser = lazy(() => constraint(State.media, open(
         linkparams.reduce(
           (acc, p) => acc.push(new Node(p)) && acc,
           new List([new Node(INSECURE_URI)])),
-        context),
+        input),
       { class: null, target: '_blank' }, [el]))
     ]);
-  }))));
+  })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
   surround(str('('), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ')')), str(')'),
-    true, [], undefined, () => new List()),
+    true, [], undefined, () => Result.succ),
   surround(str('['), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ']')), str(']'),
-    true, [], undefined, () => new List()),
+    true, [], undefined, () => Result.succ),
   surround(str('{'), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), '}')), str('}'),
-    true, [], undefined, () => new List()),
+    true, [], undefined, () => Result.succ),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(union([unsafehtmlentity, txt]), '"'))), str('"'),
-    true, [], undefined, () => new List()),
+    true, [], undefined, () => Result.succ),
 ]));
 
 const option: MediaParser.ParameterParser.OptionParser = lazy(() => union([
-  surround(
+  backtrack(surround(
     open(/ /y, str(/[1-9][0-9]*/y)),
     str(/[x:]/y),
     str(/[1-9][0-9]*(?=[ }])/y),
     false, [],
-    ([[{ value: a }], [{ value: b }], [{ value: c }]]) =>
+    ([[{ value: a }], [{ value: b }], [{ value: c }]], _, output) =>
       b === 'x'
-        ? new List([new Node(`width="${a}"`), new Node(`height="${c}"`)])
-        : new List([new Node(`aspect-ratio="${a}/${c}"`)])),
+        ? output.import(new List([new Node(`width="${a}"`), new Node(`height="${c}"`)]))
+        : output.import(new List([new Node(`aspect-ratio="${a}/${c}"`)])))),
   linkoption,
 ]));
 

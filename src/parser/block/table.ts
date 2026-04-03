@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { List, Node } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/parser';
 import { union, sequence, some, block, line, validate, focus, rewrite, surround, open, close, fallback, lazy, fmap } from '../../combinator';
 import { inline, media, medialink, shortmedia } from '../inline';
 import { contentline } from '../source';
@@ -30,20 +30,21 @@ export const table: TableParser = lazy(() => block(fmap(validate(
 const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => fallback(fmap(
   line(surround(/(?=\|)/y, some(union([parser])), /\|?\s*$/y, optional)),
   ns => new List([new Node(html('tr', unwrap(ns)))])),
-  rewrite(contentline, ({ source }) => new List([
+  rewrite(contentline, ({ source }, output) => output.append(
     new Node(html('tr', {
       class: 'invalid',
-      ...invalid('table-row', 'syntax', 'Missing the start symbol of the table row'),
-    }, [html('td', source.replace(/\r?\n/, ''))]))
-  ])));
+      ...invalid('table', 'syntax', 'Missing the start symbol "|"'),
+    }, [html('td', source.replace(/\r?\n/, ''))])))));
 
 const align: AlignParser = fmap(open(
   '|',
   union([
-    focus(/:-+:?/y, ({ source, position, range }) =>
-      new List([new Node(source[position + range - 1] === ':' ? 'center' : 'start')]), false),
-    focus(/-+:?/y, ({ source, position, range }) =>
-      new List([new Node(source[position + range - 1] === ':' ? 'end' : '')]), false),
+    focus(/:-+:?/y, ({ source, position, range }, output) => output.append(
+      new Node(source[position + range - 1] === ':' ? 'center' : 'start')),
+      false),
+    focus(/-+:?/y, ({ source, position, range }, output) => output.append(
+      new Node(source[position + range - 1] === ':' ? 'end' : '')),
+      false),
   ])),
   ns => new List([new Node(html('td', defrag(unwrap(ns))))]));
 

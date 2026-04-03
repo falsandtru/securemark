@@ -1,11 +1,11 @@
 import { quote } from './quote';
-import { parse } from '../api';
+import { run, parse } from '../api';
 
 describe('Unit: util/quote', () => {
   describe('quote', () => {
     it('basic', () => {
       const range = document.createRange();
-      const el = parse('>>1\n> a\n>>?\n> 2\n>>4 `b` ${c}$\n [e](f) ').firstElementChild!;
+      const el = run(parse('>>1\n> a\n>>?\n> 2\n>>4 `b` ${c}$\n [e](f) ')).firstElementChild!;
       range.setStart(el.firstChild!.firstChild!, 0);
       range.setEnd(el.lastChild!.lastChild!.lastChild!, 1);
       assert.deepStrictEqual(quote('3', range), `>>>1\n>> a\n>>>?\n>> 2\n>>3\n> >>4 \`b\` \${c}$\n>  e`);
@@ -13,7 +13,7 @@ describe('Unit: util/quote', () => {
 
     it('adjustment', () => {
       const range = document.createRange();
-      const el = parse('>>>1\n>> a').firstElementChild!;
+      const el = run(parse('>>>1\n>> a')).firstElementChild!;
       range.setEnd(el.lastChild!.lastChild!, 4);
       range.setStart(el.children[0].firstChild!, 0);
       assert(quote('2', range) === '>>>>1\n>>> a\n>>2');

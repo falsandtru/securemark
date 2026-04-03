@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../inline';
 import { State } from '../context';
-import { state, lazy } from '../../combinator';
+import { union, state, lazy } from '../../combinator';
 import { url, lineurl } from './autolink/url';
 import { email } from './autolink/email';
 import { account } from './autolink/account';
@@ -9,38 +9,51 @@ import { hashnum } from './autolink/hashnum';
 import { anchor } from './autolink/anchor';
 import { isAlphanumeric } from '../source/text';
 
+const p1 = lazy(() => union([
+  hashtag,
+  hashnum,
+]));
+const p2 = lazy(() => union([
+  lineurl,
+  url,
+  email,
+]));
+const p3 = lazy(() => union([
+  url,
+  email,
+]));
 export const autolink: AutolinkParser = lazy(() =>
   state(~State.autolink,
-  input => {
+  (input, output) => {
     const { source, position } = input;
     if (position === source.length) return;
     const char = source[position];
     switch (char) {
       case '@':
-        return account(input);
+        return account(input, output);
       case '#':
-        return hashtag(input) || hashnum(input);
+        return p1(input, output);
       case '>':
-        return anchor(input);
+        return anchor(input, output);
       case '!':
         if (!source.startsWith('http', position + 1)) break;
-        if (position === 0) return lineurl(input);
+        if (position === 0) return lineurl(input, output);
         switch (source[position - 1]) {
           case '\r':
           case '\n':
-            return lineurl(input);
+            return lineurl(input, output);
         }
         break;
       case 'h':
         if (!source.startsWith('http', position)) return;
-        if (position === 0) return lineurl(input) || url(input) || email(input);
+        if (position === 0) return p2(input, output);
         switch (source[position - 1]) {
           case '\r':
           case '\n':
-            return lineurl(input) || url(input) || email(input);
+            return p2(input, output);
         }
-        return url(input) || email(input);
+        return p3(input, output);
       default:
-        if (isAlphanumeric(char)) return email(input);
+        if (isAlphanumeric(char)) return email(input, output);
     }
   }));

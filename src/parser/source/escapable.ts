@@ -1,46 +1,46 @@
 import { EscapableSourceParser } from '../source';
+import { Result, Node } from '../../combinator/parser';
+import { spend } from '../../combinator';
 import { Command } from '../context';
 import { Flag } from '../node';
-import { List, Node } from '../../combinator/data/parser';
-import { spend } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
-export const escsource: EscapableSourceParser = context => {
-  const { source, position } = context;
+export const escsource: EscapableSourceParser = (input, output) => {
+  const { source, position } = input;
   if (position === source.length) return;
   const char = source[position];
-  spend(context, 1);
-  context.position += 1;
+  spend(input, output, 1);
+  input.position += 1;
   switch (char) {
     case Command.Escape:
-      spend(context, 1);
-      context.position += 1;
-      return new List([new Node(source.slice(position + 1, position + 2))]);
+      spend(input, output, 1);
+      input.position += 1;
+      return output.append(new Node(source.slice(position + 1, position + 2)));
     case '\\':
       switch (source[position + 1]) {
         case undefined:
         case '\r':
         case '\n':
-          return new List([new Node(char)]);
+          return output.append(new Node(char));
         default:
-          spend(context, 1);
-          context.position += 1;
-          return new List([new Node(source.slice(position, position + 2))]);
+          spend(input, output, 1);
+          input.position += 1;
+          return output.append(new Node(source.slice(position, position + 2)));
       }
     case '\r':
-      return new List();
+      return Result.succ;
     case '\n':
-      context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'), Flag.blank)]);
+      input.linebreak ||= source.length - position;
+      return output.append(new Node(html('br'), Flag.blank));
     default:
       assert(char !== '\n');
-      if (context.sequential) return new List([new Node(char)]);
+      if (input.sequential) return output.append(new Node(char));
       let i = seek(source, position);
       assert(i > position);
       i -= position;
-      spend(context, i - 1);
-      context.position += i - 1;
-      return new List([new Node(source.slice(position, context.position))]);
+      spend(input, output, i - 1);
+      input.position += i - 1;
+      return output.append(new Node(source.slice(position, input.position)));
   }
 };
 

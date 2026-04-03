@@ -52,7 +52,7 @@ const annotation = build(
   'annotations',
   '.annotation:not(:is(.annotations, .references) &, .local)',
   n => `*${n}`,
-  'h1, h2, h3, h4, h5, h6, aside.aside, hr');
+  'h1, h2, h3, h4, h5, h6, aside.aside, hr, .references');
 const reference = build(
   'reference',
   'references',

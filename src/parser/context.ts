@@ -1,67 +1,72 @@
-import { List, Node, Context as Ctx } from '../../src/combinator/data/parser';
+import { Input as Ipt, input as ipt } from '../combinator/parser';
 import { Dict } from 'spica/dict';
 
-export const MAX_SEGMENT_SIZE = 100_000; // 100,000 bytes (Max value size of FDB)
-export const MAX_INPUT_SIZE = MAX_SEGMENT_SIZE * 10;
+export function input(source: string, input: Input = new Input()): Input {
+  return ipt(source, input);
+}
 
-export class Context extends Ctx {
+export class Input<M extends object = object> extends Ipt<M> {
   constructor(
-    options: Partial<Context> = {},
+    options: Partial<Input> = {},
   ) {
     super(options);
     const {
       segment,
+      header,
       local,
       sequential,
-      buffer,
-      header,
       host,
       url,
       id,
+      notes,
       caches,
+      test,
     } = options;
     this.resources ??= {
-      // バックトラックのせいで文字数制限を受けないようにする。
-      clock: MAX_SEGMENT_SIZE * (5 + 1),
+      clock: -1,
+      interval: 200,
       recursions: [
-        5 || Recursion.block,
-        20 || Recursion.blockquote,
-        40 || Recursion.listitem,
-        20 || Recursion.inline,
-        20 || Recursion.bracket,
-        20 || Recursion.terminal,
+        10 || Recursion.scope,
+        100 || Recursion.block,
+        100 || Recursion.inline,
+        100 || Recursion.terminal,
       ],
     };
     this.segment = segment ?? Segment.unknown;
+    this.header = header ?? true;
     this.local = local ?? false;
     this.sequential = sequential ?? false;
-    this.buffer = buffer ?? new List();
-    this.header = header ?? true;
     this.host = host;
     this.url = url;
     this.id = id;
+    this.notes = notes;
     this.caches = caches;
+    this.test = test ?? false;
   }
   public override readonly resources: {
     clock: number;
     recursions: number[];
+    interval?: number;
   };
   public override segment: Segment;
+  public header: boolean;
   public local: boolean;
   public sequential: boolean;
-  public buffer: List<Node<(string | HTMLElement)>>;
   public recursion = new RecursionCounter(2);
-  public readonly header: boolean;
   public readonly host?: URL;
   public readonly url?: URL;
-  public readonly id?: string;
+  public id?: string;
+  public notes?: {
+    readonly references: HTMLOListElement;
+  };
   public readonly caches?: {
     readonly code?: Dict<string, HTMLElement>;
     readonly math?: Dict<string, HTMLElement>;
     readonly media?: Dict<string, HTMLElement>;
   };
+  public test: boolean;
 }
-export type Options = Partial<Context>;
+export type Options = Partial<Input>;
 
 class RecursionCounter {
   constructor(
@@ -70,11 +75,11 @@ class RecursionCounter {
   }
   private readonly stack: number[] = [];
   private index = 0;
-  public add(depth: number): void {
+  public add(depth: number): Error | undefined {
     const { stack } = this
-    for (; this.index > 0 && stack[this.index - 1] <= depth; --this.index);
+    for (; this.index > 0 && stack[this.index - 1] >= depth; --this.index);
     // 内側から数えるので無効化処理できずエラーを投げるしかない。
-    if (this.index === this.limit) throw new Error(`Too much recursion`);
+    if (this.index === this.limit) return new Error(`Too much recursion`);
     stack[this.index] = depth;
     ++this.index;
   }
@@ -82,12 +87,12 @@ class RecursionCounter {
 
 export const enum Segment {
   unknown = 0,
+  read = 0,
   write = 1,
-  nonempty = 0,
   empty = 1 << 1,
-  heading = 3 << 1,
-  fig = 4 << 1,
-  figure = 5 << 1,
+  heading = 2 << 1,
+  fig = 3 << 1,
+  figure = 4 << 1,
 }
 
 export const enum State {
@@ -110,11 +115,9 @@ export const enum State {
 }
 
 export const enum Recursion {
+  scope,
   block,
-  blockquote,
-  listitem,
   inline,
-  bracket,
   terminal,
 }
 

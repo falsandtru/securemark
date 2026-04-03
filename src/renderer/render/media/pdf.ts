@@ -1,4 +1,4 @@
-import { parse } from '../../../api';
+import { run, parse } from '../../../api';
 import { html, define } from 'typed-dom/dom';
 
 const extensions = [
@@ -13,7 +13,7 @@ export function pdf(source: HTMLImageElement, url: URL): HTMLElement | undefined
       data: source.getAttribute('data-src'),
     }),
     html('div', [
-      define(parse(`{ ${source.getAttribute('data-src')} }`).querySelector('a')!, {
+      define(run(parse(`{ ${source.getAttribute('data-src')} }`)).querySelector('a')!, {
         class: null,
         target: '_blank',
       }),

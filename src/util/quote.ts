@@ -1,11 +1,12 @@
-import { input } from '../combinator/data/parser';
-import { Context } from '../parser/context';
+import { Input } from '../parser/context';
+import { Output, run } from '../combinator/parser';
 import { cite } from '../parser/block/reply/cite';
 
 export function quote(anchor: string, range: Range): string {
-  const context = input('', new Context());
-  cite(input(`>>${anchor}`, context));
-  if (context.position !== context.source.length) throw new Error(`Invalid anchor: ${anchor}`);
+  const input = new Input({ source: `>>${anchor}` });
+  const output = new Output<HTMLElement>();
+  for (const _ of run(cite, input, output));
+  if (input.position !== input.source.length) throw new Error(`Invalid anchor: ${anchor}`);
   fit(range);
   const node = trim(range.cloneContents());
   if (!node.firstChild) return '';

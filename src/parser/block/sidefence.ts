@@ -1,33 +1,39 @@
 import { SidefenceParser } from '../block';
-import { Recursion } from '../context';
-import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, block, focus, rewrite, open, convert, lazy, fmap } from '../../combinator';
+import { Input, Recursion } from '../context';
+import { List, Node } from '../../combinator/parser';
+import { union, some, force, recursion, scope, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { contentline } from '../source';
 import { unwrap, invalid } from '../util';
 import { html, define, defrag } from 'typed-dom/dom';
 
-export const sidefence: SidefenceParser = lazy(() => block(fmap(focus(
-  /\|+ [^\r\n]*(?:\r?\n\|+(?=$|[ \r\n])[^\r\n]*)*(?:$|\r?\n)/y,
-  union([source])),
+export const sidefence: SidefenceParser = lazy(() => validate(/\|+ /y, block(fmap(
+  union([source]),
   ([{ value }]) => new List([
     new Node(define(value, {
       class: 'invalid',
       ...invalid('sidefence', 'syntax', 'Reserved syntax'),
     })),
-  ]))));
+  ])))));
 
 const opener = /(?=\|\|+(?:$|[ \r\n]))/y;
 const indent = open(opener, some(contentline, /\|(?:$|[ \r\n])/y));
-const unindent = (source: string) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \r\n])))|\r?\n$/g, '');
+const unindent = ({ source }: Input) => source.replace(/(?<=^|\n)\|(?: |(?=\|*(?:$|[ \r\n])))|\r?\n$/g, '');
 
 const source: SidefenceParser.SourceParser = lazy(() => fmap(
   recursion(Recursion.block, some(union([
     rewrite(
       indent,
-      convert(unindent, source)),
+      scope(unindent, source, false)),
     rewrite(
-      some(contentline, opener),
-      convert(unindent, fmap(autolink, ns => new List([new Node(html('pre', defrag(unwrap(ns))))])))),
+      some(validate(/\|(?:$|[ \r\n])/y, contentline), opener),
+      scope(unindent, force(fmap(autolink, ns => new List([new Node(html('pre', defrag(unwrap(ns))))]))), false)),
+    line(({source}, output) => output.append(
+      new Node(html('pre',
+        {
+          class: 'invalid',
+          ...invalid('sidefence', 'syntax', 'Missing the start symbol "|"'),
+        },
+        source.trimEnd())))),
   ]))),
   ns => new List([new Node(html('blockquote', unwrap(ns)))])));

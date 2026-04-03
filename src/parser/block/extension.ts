@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../block';
-import { union } from '../../combinator';
+import { union, lazy } from '../../combinator';
 import { segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
 import { table, segment as seg_table } from './extension/table';
@@ -15,7 +15,7 @@ export const segment: ExtensionParser.SegmentParser = union([
   seg_placeholder,
 ]);
 
-export const extension: ExtensionParser = union([
+export const extension: ExtensionParser = lazy(() => union([
   //figbase,
   //fig,
   figure,
@@ -24,4 +24,4 @@ export const extension: ExtensionParser = union([
   aside,
   example,
   placeholder,
-]);
+]));

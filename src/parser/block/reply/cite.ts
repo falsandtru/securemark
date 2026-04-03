@@ -1,5 +1,5 @@
 import { ReplyParser } from '../../block';
-import { List, Node } from '../../../combinator/data/parser';
+import { List, Node } from '../../../combinator/parser';
 import { Flag } from '../../node';
 import { union, line, focus, open, fmap } from '../../../combinator';
 import { anchor } from '../../inline/autolink/anchor';
@@ -13,12 +13,12 @@ export const cite: ReplyParser.CiteParser = line(fmap(
   open(
     str(syntax),
     union([
-      line(anchor),
+      line(anchor, false),
       // Subject page representation.
       // リンクの実装は後で検討
-      focus(/>>#\S*(?=\s*$)/y, ({ source }) => new List([new Node(html('a', { class: 'anchor' }, source))])),
-      focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ source }) => new List([new Node(html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source))])),
-      focus(/>>\S+(?=\s*$)/y, ({ source }) => new List([new Node(source)])),
+      focus(/>>#\S*(?=\s*$)/y, ({ source }, output) => output.append(new Node(html('a', { class: 'anchor' }, source)))),
+      focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ source }, output) => output.append(new Node(html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)))),
+      focus(/>>\S+(?=\s*$)/y, ({ source }, output) => output.append(new Node(source))),
     ])),
   nodes => {
     const quotes = nodes.head!.value as string;

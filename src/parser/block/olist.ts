@@ -1,6 +1,6 @@
 import { OListParser } from '../block';
 import { Recursion } from '../context';
-import { List, Node } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/parser';
 import { union, inits, subsequence, some, recursion, block, line, validate, indent, focus, open, match, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, checkbox, fillFirstLine } from './ulist';
 import { ilist_, ilistitem } from './ilist';
@@ -11,8 +11,8 @@ import { memoize } from 'spica/memoize';
 import { html, define, defrag } from 'typed-dom/dom';
 
 const openers = {
-  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?=$|[0-9\r\n])[0-9]*)*(?:\.?(?:$|[\r\n])|\. )/y,
-  '(': /\((?=$|[0-9a-z\r\n])([0-9]*|[a-z]*)(?=$|[)\r\n])\)?(?:-(?=$|[0-9\r\n])[0-9]*)*(?:$|[ \r\n])/y,
+  '.': /([0-9]+|[a-z]+|[A-Z]+)(?:-(?=$|[0-9\r\n])[0-9]*)*(?:\.?(?=$|[\r\n])|\. )/y,
+  '(': /\((?=$|[0-9a-z\r\n])([0-9]*|[a-z]*)(?=$|[)\r\n])\)?(?:-(?=$|[0-9\r\n])[0-9]*)*(?=$|[ \r\n])/y,
 } as const;
 
 export const olist: OListParser = lazy(() => block(validate(
@@ -33,12 +33,12 @@ export const olist_: OListParser = lazy(() => block(union([
 
 // TODO: リストマーカーの直書き
 const list = (type: string, form: string): OListParser.ListParser => fmap(
-  recursion(Recursion.listitem, some(union([
+  recursion(Recursion.block, some(union([
     indexee(fmap(fallback(
       inits([
-        line(open(heads[form], subsequence([
+        open(heads[form], subsequence([
           checkbox,
-          visualize(trimBlank(some(union([indexer, inline]))))]), true)),
+          line(visualize(trimBlank(some(union([indexer, inline])))))]), true),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
@@ -54,14 +54,12 @@ const list = (type: string, form: string): OListParser.ListParser => fmap(
 const heads = {
   '.': focus(
     openers['.'],
-    ({ source }) => new List([
-      new Node(source.trimEnd().split('.', 1)[0] + '.')
-    ])),
+    ({ source }, output) => output.append(
+      new Node(source.trimEnd().split('.', 1)[0] + '.'))),
   '(': focus(
     openers['('],
-    ({ source }) => new List([
-      new Node(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)'))
-    ])),
+    ({ source }, output) => output.append(
+      new Node(source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)$/, '($1)')))),
 } as const;
 
 function idx(value: string): number {

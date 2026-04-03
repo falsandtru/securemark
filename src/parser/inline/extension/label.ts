@@ -1,20 +1,29 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { union, constraint, clear, surround, fmap } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { union, constraint, backtrack, clear, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom/dom';
 
-const body = str(/\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/y);
+const syntax = /\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/y;
+const body = str(syntax);
+
+export function test(source: string): boolean {
+  const bracket = source[0] === '[';
+  syntax.lastIndex = +bracket;
+  if (!syntax.test(source)) return false;
+  if (bracket && source[syntax.lastIndex] !== ']') return false;
+  return true;
+}
 
 export const segment: ExtensionParser.LabelParser.SegmentParser = clear(union([
-  surround('[', body, ']'),
+  backtrack(surround('[', body, ']')),
   body,
 ]));
 
 export const label: ExtensionParser.LabelParser = constraint(State.label, fmap(
   union([
-    surround('[', body, ']', false, [1 | Backtrack.common]),
+    backtrack(surround('[', body, ']', false, [1 | Backtrack.common])),
     body,
   ]),
   ([{ value }]) => new List([

@@ -1,4 +1,4 @@
-import { List, Node } from '../combinator/data/parser';
+import { List, Node } from '../combinator/parser';
 import { rnd0Z } from 'spica/random';
 import { define } from 'typed-dom/dom';
 

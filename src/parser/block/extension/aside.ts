@@ -1,51 +1,80 @@
 import { ExtensionParser } from '../../block';
-import { Recursion } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { recursion, block, fence, fmap } from '../../../combinator';
+import { Input, Recursion } from '../../context';
+import { Node } from '../../../combinator/parser';
+import { inits, recursion, block, fence, lazy } from '../../../combinator';
+import { document } from '../../document';
 import { identity } from '../../inline/extension/indexee';
-import { unwrap, invalid, randomID } from '../../util';
-import { parse } from '../../../api/parse';
+import { unwrap, invalid } from '../../util';
 import { html } from 'typed-dom/dom';
 
-export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.block, fmap(
-  fence(/(~{3,})aside(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
-  // Bug: Type mismatch between outer and inner.
-  (nodes: List<Node<string>>, context) => {
-    const [body, overflow, closer, opener, delim, param] = unwrap(nodes);
-    if (!closer || overflow || param.trimStart()) return new List([
-      new Node(html('pre', {
-        class: 'invalid',
-        translate: 'no',
-        ...invalid(
-          'aside',
-          !closer || overflow ? 'fence' : 'argument',
-          !closer ? `Missing the closing delimiter "${delim}"` :
-            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-              'Invalid argument'),
-      }, `${opener}${body}${overflow || closer}`))
-    ]);
-    const references = html('ol', { class: 'references' });
-    const document = parse(body.slice(0, -1), {
-      local: true,
-      id: context.id === '' ? '' : randomID(),
-      notes: {
-        references,
-      },
-    }, context);
-    const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(document.firstElementChild?.tagName!) && document.firstElementChild as HTMLHeadingElement;
-    if (!heading) return new List([
-      new Node(html('pre', {
-        class: 'invalid',
-        translate: 'no',
-        ...invalid('aside', 'content', 'Missing the title at the first line'),
-      }, `${opener}${body}${closer}`))
-    ]);
-    assert(identity('index', context.id, heading));
-    return new List([
-      new Node(html('aside', { id: identity('index', context.id, heading), class: 'aside' }, [
-        document,
-        html('h2', 'References'),
-        references,
-      ]))
-    ]);
-  })));
+interface Memory {
+  readonly opener: string;
+  readonly body: string;
+  readonly closer: string;
+}
+
+export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.block, inits([
+  fence(/(~{3,})aside(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  (input: Input<Memory>, output) => {
+    const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
+    if (!closer || overflow || param.trimStart()) {
+      output.append(
+        new Node(html('pre',
+          {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid(
+              'aside',
+              !closer || overflow ? 'fence' : 'argument',
+              !closer ? `Missing the closing delimiter "${delim}"` :
+                overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+                  'Invalid argument'),
+          },
+          `${opener}${body}${overflow || closer}`)));
+      return;
+    }
+    input.memory = {
+      opener,
+      body,
+      closer,
+    };
+    input = input.scope.push(body);
+    input.header = true;
+    input.local = true;
+    input.notes = {
+      references: html('ol', { class: 'references' }),
+    };
+    output.push();
+    return output.context;
+  },
+  lazy(() => document),
+  (input: Input<Memory>, output) => {
+    const { notes } = input;
+    input = input.scope.pop();
+    const { memory: { opener, body, closer } } = input;
+    const doc = output.pop().head!.value;
+    const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(doc.firstElementChild?.tagName!) && doc.firstElementChild as HTMLHeadingElement;
+    if (!heading) {
+      return output.append(
+        new Node(html('pre',
+          {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid('aside', 'content', 'Missing the title at the first line'),
+          },
+          `${opener}${body}${closer}`)));
+    }
+    assert(identity('index', input.id, heading));
+    return output.append(
+      new Node(html('aside',
+        {
+          id: identity('index', input.id, heading),
+          class: 'aside',
+        },
+        [
+          doc,
+          html('h2', 'References'),
+          notes!.references,
+        ])));
+  },
+])));

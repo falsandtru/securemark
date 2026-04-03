@@ -1,7 +1,7 @@
-import { Parser, List, Node } from '../combinator/data/parser';
-import { Command } from './context';
+import { Parser, List, Node } from '../combinator/parser';
+import { Input, Command } from './context';
 import { Flag } from './node';
-import { convert, fmap } from '../combinator';
+import { always, fmap } from '../combinator';
 import { invisibleBlankHTMLEntityNames } from '../api/normalize';
 
 namespace blank {
@@ -19,10 +19,32 @@ namespace blank {
     'y');
 }
 
-export function visualize<P extends Parser>(parser: P): P {
-  return convert(
-    source => source.replace(blank.line, `$1${Command.Escape}$2`),
-    parser);
+export function visualize<P extends Parser>(parser: P): P;
+export function visualize<T>(parser: Parser<T>): Parser<T> {
+  interface Memory {
+    readonly scope: boolean;
+  }
+  return always<Parser<T, Input<Memory>>>([
+    (input, output) => {
+      const { source, position } = input;
+      const src = source.slice(position).replace(blank.line, `$1${Command.Escape}$2`);
+      input.memory = {
+        scope: src.length !== source.length - position,
+      };
+      if (input.memory.scope) {
+        input.scope.push(src);
+      }
+      return output.context;
+    },
+    parser,
+    (input, output) => {
+      if (input.memory.scope) {
+        input = input.scope.pop();
+      }
+      input.position = input.source.length;
+      return output.context;
+    },
+  ]);
 }
 
 export const beforeNonblank = beforeNonblankWith('');
@@ -91,17 +113,16 @@ export function trimBlank<N extends HTMLElement | string>(parser: Parser<N>): Pa
 }
 function trimBlankStart<P extends Parser>(parser: P): P;
 function trimBlankStart<N>(parser: Parser<N>): Parser<N> {
-  return input => {
-    const context = input;
-    const { source, position } = context;
+  return (input, output) => {
+    const { source, position } = input;
     if (position === source.length) return;
     const reg = blank.start;
     reg.lastIndex = position;
     reg.test(source);
-    context.position = reg.lastIndex || position;
-    return context.position === source.length
-      ? new List()
-      : parser(input);
+    input.position = reg.lastIndex || position;
+    return input.position === source.length
+      ? output.context
+      : parser(input, output);
   };
 }
 export function trimBlankEnd<P extends Parser<HTMLElement | string>>(parser: P): P;

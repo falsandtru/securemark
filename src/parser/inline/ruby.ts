@@ -1,31 +1,33 @@
 import { RubyParser } from '../inline';
-import { Backtrack } from '../context';
-import { List, Node } from '../../combinator/data/parser';
-import { inits, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
+import { Input, Backtrack } from '../context';
+import { Parser, Result, List, Node } from '../../combinator/parser';
+import { union, inits, always, backtrack, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
 import { txt } from '../source';
 import { isNonblankNodeStart } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const ruby: RubyParser = lazy(() => bind(
+export const ruby: RubyParser = lazy(() => backtrack(bind(
   inits([
     dup(surround(
       '[', text, ']',
       false,
       [1 | Backtrack.common, 3 | Backtrack.ruby],
-      ([, ns]) => {
+      ([, ns], _, output) => {
         ns && ns.last?.value === '' && ns.pop();
-        return isNonblankNodeStart(ns) ? ns : undefined;
+        return isNonblankNodeStart(ns)
+          ? output.import(ns)
+          : Result.fail;
       })),
     dup(surround(
       '(', text, ')',
       false)),
   ]),
-  ([{ value: texts }, { value: rubies = undefined } = {}], context) => {
+  ([{ value: texts }, { value: rubies = undefined } = {}], input) => {
     if (rubies === undefined) {
-      const head = context.position - context.range;
-      return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
+      const head = input.position - input.range;
+      return void setBacktrack(input, 2 | Backtrack.link | Backtrack.ruby, head);
     }
     switch (true) {
       case texts.length >= rubies.length:
@@ -59,51 +61,60 @@ export const ruby: RubyParser = lazy(() => bind(
           ]))))),
         ]);
     }
-  }));
+  })));
 
 const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\r?\n/y;
 
-const text: RubyParser.TextParser = input => {
-  const context = input;
-  const { source } = context;
-  const acc = new List([new Node('')]);
-  let state = false;
-  context.sequential = true;
-  for (let { position } = context; position < source.length; position = context.position) {
-    delimiter.lastIndex = position;
-    if (delimiter.test(source)) break;
-    assert(source[position] !== '\n');
-    switch (source[position]) {
-      case '&': {
-        const result = source[position + 1] !== ' '
-          ? unsafehtmlentity(input) ?? txt(input)!
-          : txt(input)!;
-        assert(result);
-        acc.last!.value += result.head!.value;
-        continue;
-      }
-      default: {
-        if (source[position].trimStart() === '') {
-          state ||= acc.last!.value.trimStart() !== '';
-          acc.push(new Node(''));
-          context.position += 1;
-          continue;
-        }
-        const result = txt(input)!;
-        assert(result);
-        acc.last!.value += result.head?.value ?? '';
-        continue;
-      }
+interface Memory {
+  position: number;
+  state: boolean;
+  nodes: List<Node<string>>;
+}
+const text: RubyParser.TextParser = always<Parser<string, Input<Memory>>>([
+  (input, output) => {
+    input.sequential = true;
+    input.memory = {
+      position: 0,
+      state: false,
+      nodes: new List([new Node('')]),
+    };
+    return output.context;
+  },
+  () => loop,
+  (input, output) => {
+    const { memory } = input;
+    input.sequential = false;
+    return memory.state || memory.nodes.last!.value.trimStart() !== ''
+      ? output.import(memory.nodes)
+      : undefined;
+  },
+]);
+const loop: Result<string, Input<Memory>> = [
+  (input, output) => {
+    const { source, memory } = input;
+    for (let { position } = input; ; position = input.position) {
+      if (position === source.length) return Result.skip;
+      delimiter.lastIndex = position;
+      if (delimiter.test(source)) return Result.skip;
+      assert(source[position] !== '\n');
+      if (source[position].trimStart() !== '') break;
+      memory.state ||= memory.nodes.last!.value.trimStart() !== '';
+      memory.nodes.push(new Node(''));
+      input.position += 1;
     }
-  }
-  context.sequential = false;
-  state ||= acc.last!.value.trimStart() !== '';
-  return state
-    ? acc
-    : undefined;
-};
+    memory.position = input.position;
+    return output.context;
+  },
+  union([unsafehtmlentity, txt]),
+  (input, output) => {
+    assert(output.state);
+    input.memory.nodes.last!.value += output.peek().pop()?.value ?? '';
+    assert(output.peek().length === 0);
+    return loop;
+  },
+];
 
-function* zip<N extends List.Node>(a: List<N>, b: List<N>): Iterable<[N | undefined, N | undefined]> {
+function* zip<N extends Node<unknown>>(a: List<N>, b: List<N>): Iterable<[N | undefined, N | undefined]> {
   const ia = a[Symbol.iterator]();
   const ib = b[Symbol.iterator]();
   for (; ;) {

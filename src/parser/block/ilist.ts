@@ -1,7 +1,6 @@
 import { IListParser } from '../block';
-import { Parser } from '../../combinator/data/parser';
 import { Recursion } from '../context';
-import { List, Node } from '../../combinator/data/parser';
+import { Parser, List, Node } from '../../combinator/parser';
 import { union, inits, some, recursion, block, line, validate, indent, rewrite, open, fallback, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
@@ -17,10 +16,10 @@ export const ilist: IListParser = lazy(() => block(validate(
 
 export const ilist_: IListParser = lazy(() => block(fmap(validate(
   /[-+*](?:$|[ \r\n])/y,
-  recursion(Recursion.listitem, some(union([
+  recursion(Recursion.block, some(union([
     fmap(fallback(
       inits([
-        line(open(/[-+*](?:$|[ \r\n])/y, visualize(trimBlank(some(inline))), true)),
+        open(/[-+*](?:$|[ \r\n])/y, line(visualize(trimBlank(some(inline)))), true),
         indent(union([ulist_, olist_, ilist_])),
       ]),
       ilistitem),
@@ -34,11 +33,14 @@ export const ilist_: IListParser = lazy(() => block(fmap(validate(
   ]))));
 
 export const ilistitem = rewrite(
-  inits([contentline, indent<Parser<string>>(({ source }) => new List([new Node(source)]))]),
-  ({ source }) => new List([
+  inits([
+    contentline,
+    indent<Parser<string>>(({ source }, output) => output.append(new Node(source))),
+  ]),
+  ({ source }, output) => output.import(new List([
     new Node(''),
     new Node(html('span', {
       class: 'invalid',
       ...invalid('list', 'syntax', 'Fix the indent or the head of the list item'),
     }, source.replace(/\r?\n/, '')))
-  ]));
+  ])));

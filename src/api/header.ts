@@ -1,4 +1,5 @@
-import { Context } from '../parser/context';
+import { Input } from '../parser/context';
+import { Output, run } from '../combinator/parser';
 import { header as h } from '../parser/header';
 
 export function header(source: string): string {
@@ -16,10 +17,12 @@ export function headers(source: string): string[] {
 }
 
 function parse(source: string): [HTMLElement, number] | [] {
-  const context = new Context({ source });
-  const result = h(context);
-  const el = result?.head?.value;
+  const input = new Input({ source });
+  const output = new Output<HTMLElement>();
+  for (const _ of run(h,input, output));
+  assert(output.data.length === 1);
+  const el = output.peek().head?.value;
   return el?.tagName === 'ASIDE'
-    ? [el, context.position]
+    ? [el, input.position]
     : [];
 }

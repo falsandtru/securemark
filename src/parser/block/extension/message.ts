@@ -1,8 +1,9 @@
 import { ExtensionParser } from '../../block';
-import { List, Node, subinput } from '../../../combinator/data/parser';
-import { union, block, fence, fmap } from '../../../combinator';
-import { segment } from '../../segment';
-import { emptyline } from '../../source';
+import { Node } from '../../../combinator/parser';
+import { union, inits, force, block, fence, lazy } from '../../../combinator';
+import { build } from '../../parser';
+import { parser as segment } from '../../segment';
+import { emptysegment } from '../../source';
 import { ulist } from '../ulist';
 import { olist } from '../olist';
 import { ilist } from '../ilist';
@@ -14,54 +15,66 @@ import { blockquote } from '../blockquote';
 import { mediablock } from '../mediablock';
 import { paragraph } from '../paragraph';
 import { unwrap, invalid } from '../../util';
-import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
 import MessageParser = ExtensionParser.MessageParser;
 
-export const message: MessageParser = block(fmap(
-  fence(/(~{3,})message\/(\S+)(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
-  // Bug: Type mismatch between outer and inner.
-  (nodes: List<Node<string>>, context) => {
-    const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
-    if (!closer || overflow || param.trimStart()) return new List([
-      new Node(html('pre', {
-        class: 'invalid',
-        translate: 'no',
-        ...invalid(
-          'message',
-          !closer || overflow ? 'fence' : 'argument',
-          !closer ? `Missing the closing delimiter "${delim}"` :
-            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-              'Invalid argument'),
-      }, `${opener}${body}${overflow || closer}`))
-    ]);
+export const message: MessageParser = block(inits([
+  fence(/(~{3,})message\/(\S+)(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  (input, output) => {
+    const [body, overflow, closer, opener, delim, type, param] = unwrap(output.pop()) as string[];
+    if (!closer || overflow || param.trimStart()) {
+      output.append(
+        new Node(html('pre',
+          {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid(
+              'message',
+              !closer || overflow ? 'fence' : 'argument',
+              !closer ? `Missing the closing delimiter "${delim}"` :
+                overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+                  'Invalid argument'),
+          },
+          `${opener}${body}${overflow || closer}`)));
+      return;
+    }
     switch (type) {
       case 'note':
       case 'caution':
       case 'warning':
         break;
       default:
-        return new List([
-          new Node(html('pre', {
-            class: 'invalid',
-            translate: 'no',
-            ...invalid('message', 'type', 'Invalid message type'),
-          }, `${opener}${body}${closer}`))
-        ]);
+        output.append(
+          new Node(html('pre',
+            {
+              class: 'invalid',
+              translate: 'no',
+              ...invalid('message', 'type', 'Invalid message type'),
+            },
+            `${opener}${body}${closer}`)));
+        return;
     }
-    return new List([
+    output.append(
       new Node(html('section',
         {
           class: `message`,
           'data-type': type,
         },
-        [...segment(body, false)].reduce(
-          (acc, [seg]) =>
-            push(acc, unwrap(content(subinput(seg, context)))),
-          [html('h1', title(type))])))
-    ]);
-  }));
+        [html('h1', title(type))])));
+    const src = body.slice(0, body.at(-2) === '\r' ? -2 : -1);
+    input.scope.focus(src);
+    output.push();
+    return output.context;
+  },
+  force(() => cont),
+  (input, output) => {
+    input.scope.unfocus();
+    const content = output.pop();
+    output.peek().last!.value.append(...unwrap(content));
+    return output.context;
+  },
+]));
 
 function title(type: string): string {
   switch (type) {
@@ -75,8 +88,8 @@ function title(type: string): string {
 }
 
 // Must not have indexed blocks.
-const content: MessageParser.ContentParser = union([
-  emptyline,
+const cont = build(lazy(() => segment), lazy(() => union([
+  emptysegment,
   ulist,
   olist,
   ilist,
@@ -87,4 +100,4 @@ const content: MessageParser.ContentParser = union([
   blockquote,
   mediablock,
   paragraph,
-]);
+])));

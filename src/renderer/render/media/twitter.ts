@@ -1,4 +1,4 @@
-import { parse } from '../../../api';
+import { run, parse } from '../../../api';
 import { html as h, define } from 'typed-dom/dom';
 import DOMPurify from 'dompurify';
 
@@ -37,7 +37,7 @@ export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undef
     error({ status, statusText }) {
       assert(Number.isSafeInteger(status));
       define(el, [
-        define(parse(`{ ${source.getAttribute('data-src')} }`).querySelector('a')!, {
+        define(run(parse(`{ ${source.getAttribute('data-src')} }`)).querySelector('a')!, {
           class: null,
           target: '_blank',
         }),

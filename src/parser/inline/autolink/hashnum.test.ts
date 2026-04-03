@@ -1,7 +1,6 @@
 import { autolink } from '../autolink';
 import { some } from '../../../combinator';
-import { input } from '../../../combinator/data/parser';
-import { Context } from '../../context';
+import { input } from '../../context';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/hashnum', () => {
@@ -9,40 +8,40 @@ describe('Unit: parser/inline/autolink/hashnum', () => {
     const parser = some(autolink);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser, input('', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('# ', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#1#', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#1#2', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#1#2#3', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#1@2', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#\\', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#\\ ', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#\\\n', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('##', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('##1', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('###1', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#{}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#{{}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#{}}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#{#}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#{1}', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input(`#${'1'.repeat(10)}`, new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input(`#${'1'.repeat(10)}a`, new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input('#　', new Context())), undefined);
-      assert.deepStrictEqual(inspect(parser, input(' #1', new Context())), undefined);
+      assert.deepStrictEqual(inspect(parser, input('')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('# ')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#1#')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#1#2')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#1#2#3')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#1@2')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#\\')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#\\ ')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#\\\n')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('##')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('##1')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('###1')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#{}')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#{{}')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#{}}')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#{#}')), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#{1}')), undefined);
+      assert.deepStrictEqual(inspect(parser, input(`#${'1'.repeat(10)}`)), undefined);
+      assert.deepStrictEqual(inspect(parser, input(`#${'1'.repeat(10)}a`)), undefined);
+      assert.deepStrictEqual(inspect(parser, input('#　')), undefined);
+      assert.deepStrictEqual(inspect(parser, input(' #1')), undefined);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser, input('#1', new Context())), [['<a class="hashnum">#1</a>'], '']);
-      assert.deepStrictEqual(inspect(parser, input('#1 ', new Context())), [['<a class="hashnum">#1</a>'], ' ']);
-      assert.deepStrictEqual(inspect(parser, input('#1\n', new Context())), [['<a class="hashnum">#1</a>'], '\n']);
-      assert.deepStrictEqual(inspect(parser, input('#1\\', new Context())), [['<a class="hashnum">#1</a>'], '\\']);
-      assert.deepStrictEqual(inspect(parser, input('#1\\ ', new Context())), [['<a class="hashnum">#1</a>'], '\\ ']);
-      assert.deepStrictEqual(inspect(parser, input('#1\\\n', new Context())), [['<a class="hashnum">#1</a>'], '\\\n']);
-      assert.deepStrictEqual(inspect(parser, input(`#1'`, new Context())), [[`<a class="hashnum">#1</a>`], `'`]);
-      assert.deepStrictEqual(inspect(parser, input(`#1''`, new Context())), [[`<a class="hashnum">#1</a>`], `''`]);
-      assert.deepStrictEqual(inspect(parser, input('#123456789', new Context())), [['<a class="hashnum">#123456789</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('#1')), [['<a class="hashnum">#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser, input('#1 ')), [['<a class="hashnum">#1</a>'], ' ']);
+      assert.deepStrictEqual(inspect(parser, input('#1\n')), [['<a class="hashnum">#1</a>'], '\n']);
+      assert.deepStrictEqual(inspect(parser, input('#1\\')), [['<a class="hashnum">#1</a>'], '\\']);
+      assert.deepStrictEqual(inspect(parser, input('#1\\ ')), [['<a class="hashnum">#1</a>'], '\\ ']);
+      assert.deepStrictEqual(inspect(parser, input('#1\\\n')), [['<a class="hashnum">#1</a>'], '\\\n']);
+      assert.deepStrictEqual(inspect(parser, input(`#1'`)), [[`<a class="hashnum">#1</a>`], `'`]);
+      assert.deepStrictEqual(inspect(parser, input(`#1''`)), [[`<a class="hashnum">#1</a>`], `''`]);
+      assert.deepStrictEqual(inspect(parser, input('#123456789')), [['<a class="hashnum">#123456789</a>'], '']);
     });
 
   });

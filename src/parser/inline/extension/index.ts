@@ -1,7 +1,8 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { union, inits, some, precedence, state, constraint, validate, surround, lazy, fmap } from '../../../combinator';
+import { Flag } from '../../node';
+import { List, Node } from '../../../combinator/parser';
+import { union, inits, some, precedence, state, constraint, backtrack, validate, surround, setBacktrack, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identity } from './indexee';
 import { unsafehtmlentity } from '../htmlentity';
@@ -12,7 +13,7 @@ import { html, define, defrag } from 'typed-dom/dom';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(surround(
+export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexee(backtrack(surround(
   str('[#', beforeNonblank),
   precedence(1, state(State.linkers,
   some(inits([
@@ -22,11 +23,11 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
   str(']'),
   false,
   [3 | Backtrack.common],
-  ([, bs], context) =>
-    context.linebreak === 0 && trimBlankNodeEnd(bs).length > 0
-      ? new List([new Node(html('a', { 'data-index': dataindex(bs) }, defrag(unwrap(bs))))])
+  ([, bs], input, output) =>
+    input.linebreak === 0 && trimBlankNodeEnd(bs).length > 0
+      ? output.append(new Node(html('a', { 'data-index': dataindex(bs) }, defrag(unwrap(bs)))))
       : undefined,
-  undefined)),
+  undefined))),
   ns => {
     assert(ns.length === 1);
     const el = ns.head!.value as HTMLAnchorElement;
@@ -39,7 +40,7 @@ export const index: IndexParser = lazy(() => constraint(State.index, fmap(indexe
     ]);
   })));
 
-export const signature: IndexParser.SignatureParser = lazy(() => validate('|', surround(
+export const signature: IndexParser.SignatureParser = lazy(() => validate('|', backtrack(surround(
   str(/\|(?!\\?\s)/y),
   precedence(9, some(union([
     unsafehtmlentity,
@@ -48,13 +49,16 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', s
   /(?=])/y,
   false,
   [3 | Backtrack.escapable],
-  ([, ns], context) => {
+  ([, ns], input, output) => {
+    const { position, range, linebreak } = input;
+    const head = position - range;
     const index = identity('index', undefined, ns.foldl((acc, { value }) => acc + value, ''))?.slice(7);
-    return index && context.linebreak === 0
-      ? new List([new Node(html('span', { class: 'indexer', 'data-index': index }))])
-      : undefined;
+    if (linebreak !== 0 || ns.head!.flags & Flag.blank || !index) {
+      return void setBacktrack(input, 2 | Backtrack.escapable, head);
+    }
+    return output.append(new Node(html('span', { class: 'indexer', 'data-index': index })));
   },
-  ([as, bs]) => bs && as.import(bs))));
+  ([as, bs], _, output) => bs && output.import(as.import(bs))))));
 
 export function dataindex(nodes: List<Node<string | HTMLElement>>): string | undefined {
   let node = nodes.last;

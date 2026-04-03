@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../..';
-import { Context, Options, Segment } from '../parser/context';
-import { input } from '../combinator/data/parser';
+import { Input, Options, Segment } from '../parser/context';
+import { Output, subinput, run } from '../combinator/parser';
 import { segment } from '../parser/segment';
 import { block } from '../parser/block';
 import { headers } from './header';
@@ -20,12 +20,13 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   const options: Options = {
     ...settings,
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
+    header: true,
   };
   if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
   const blocks: Block[] = [];
-  const adds: (readonly [HTMLElement, Node | null])[] = [];
+  const adds: (readonly [HTMLElement, global.Node | null])[] = [];
   const dels: (readonly [HTMLElement])[] = [];
   const bottom = target.firstChild;
   let revision: symbol | undefined;
@@ -43,7 +44,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];
     const sourceSegmentAttrs: Segment[] = [];
-    for (const [seg, attr] of segment(source, true)) {
+    for (const [seg, attr] of segment(source)) {
       sourceSegments.push(seg);
       sourceSegmentAttrs.push(attr);
       yield { type: 'segment', value: seg };
@@ -65,18 +66,22 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     assert(last <= targetSegments.length);
     assert(head + last <= targetSegments.length);
+    const output = new Output<HTMLElement>();
     const base = next(head);
     let index = head;
-    // @ts-expect-error
     options.header = true;
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
       options.segment = sourceSegmentAttrs[index] | Segment.write;
-      const es = block(input(seg, new Context(options)))!
+      for (const _ of run(block, subinput(seg, new Input(options)), output)) {
+        yield { type: 'break' };
+      }
+      assert(output.data.length === 1);
+      const es = output.pop()
         .foldl<HTMLElement[]>((acc, { value }) => (acc.push(value), acc), []);
-      // @ts-expect-error
-      options.header = false;
+      output.push();
+      options.header &&= false;
       blocks.length === index
         ? blocks.push([seg, es, url])
         : blocks.splice(index, 0, [seg, es, url]);
@@ -137,7 +142,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
   }
 
-  function next(index: number): Node | null {
+  function next(index: number): global.Node | null {
     assert(index >= 0);
     assert(index <= blocks.length);
     for (let i = index; i < blocks.length; ++i) {

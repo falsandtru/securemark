@@ -7,7 +7,8 @@
 
 import { Dict } from 'spica/dict';
 
-export function parse(source: string, options?: ParserOptions): DocumentFragment;
+export function run(parser: Iterator<void, DocumentFragment, void>): DocumentFragment;
+export function parse(source: string, options?: ParserOptions): Generator<void, DocumentFragment, void>;
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): {
   parse: (source: string) => Generator<Progress, undefined, undefined>;
   nearest: (index: number) => HTMLElement | undefined;

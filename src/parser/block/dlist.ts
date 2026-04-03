@@ -1,6 +1,6 @@
 import { DListParser } from '../block';
 import { State } from '../context';
-import { List, Node } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/parser';
 import { union, inits, some, state, block, line, validate, rewrite, open, lazy, fmap } from '../../combinator';
 import { inline, indexee, indexer, dataindex } from '../inline';
 import { anyline } from '../source';
@@ -17,11 +17,11 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   ]))),
   ns => new List([new Node(html('dl', unwrap(fillTrailingDescription(ns))))]))));
 
-const term: DListParser.TermParser = line(indexee(fmap(open(
+const term: DListParser.TermParser = indexee(fmap(open(
   /~ +(?=\S)/y,
-  visualize(trimBlank(some(union([indexer, inline])))),
+  line(visualize(trimBlank(some(union([indexer, inline]))))),
   true),
-  ns => new List([new Node(html('dt', { 'data-index': dataindex(ns) }, defrag(unwrap(ns))))]))));
+  ns => new List([new Node(html('dt', { 'data-index': dataindex(ns) }, defrag(unwrap(ns))))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(open(
   /: +(?=\S)|/y,
@@ -34,6 +34,6 @@ const desc: DListParser.DescriptionParser = block(fmap(open(
 
 function fillTrailingDescription(nodes: List<Node<HTMLElement>>): List<Node<HTMLElement>> {
   return nodes.last?.value.tagName === 'DT'
-    ? nodes.push(new Node(html('dd'))) && nodes
+    ? nodes.push(new Node(html('dd')))
     : nodes;
 }

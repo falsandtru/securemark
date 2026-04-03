@@ -1,6 +1,6 @@
 import { CodeBlockParser } from '../block';
-import { List, Node, subinput } from '../../combinator/data/parser';
-import { block, fence, clear, fmap } from '../../combinator';
+import { Node } from '../../combinator/parser';
+import { inits, force, block, fence } from '../../combinator';
 import { autolink } from '../autolink';
 import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -9,16 +9,15 @@ const opener = /(`{3,})(?!`)([^\r\n]*)(?:$|\r?\n)/y;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 
 export const segment: CodeBlockParser.SegmentParser = block(
-  clear(fence(opener, 300)));
+  fence(opener, false, 300));
 
 export const segment_: CodeBlockParser.SegmentParser = block(
-  clear(fence(opener, 300, false)), false);
+  fence(opener, false, 300, false), false);
 
-export const codeblock: CodeBlockParser = block(fmap(
-  fence(opener, 300),
-  // Bug: Type mismatch between outer and inner.
-  (nodes, context) => {
-    const [body, overflow, closer, opener, delim, param] = unwrap<string>(nodes);
+export const codeblock: CodeBlockParser = block(inits([
+  fence(opener, true, 300),
+  (input, output) => {
+    const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
     const params = param.match(/(?:\\.?|\S)+/g)?.reduce<{
       lang?: string;
       path?: string;
@@ -50,18 +49,25 @@ export const codeblock: CodeBlockParser = block(fmap(
         : params[name] = value;
       return params;
     }, {}) ?? {};
-    if (!closer || overflow || params.invalid) return new List([new Node(html('pre', {
-      class: 'invalid',
-      translate: 'no',
-      ...invalid(
-        'codeblock',
-        !closer || overflow ? 'fence' : 'argument',
-        !closer
-          ? `Missing the closing delimiter "${delim}"`
-          : overflow
-            ? `Invalid trailing line after the closing delimiter "${delim}"`
-            : params.invalid!),
-    }, `${opener}${body}${overflow || closer}`))]);
+    if (!closer || overflow || params.invalid) {
+      output.append(
+        new Node(html('pre',
+          {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid(
+              'codeblock',
+              !closer || overflow ? 'fence' : 'argument',
+              !closer
+                ? `Missing the closing delimiter "${delim}"`
+                : overflow
+                  ? `Invalid trailing line after the closing delimiter "${delim}"`
+                  : params.invalid!),
+          },
+          `${opener}${body}${overflow || closer}`)));
+      return;
+    }
+    const src = body.slice(0, body.at(-2) === '\r' ? -2 : -1);
     const el = html('pre',
       {
         class: params.lang ? `code language-${params.lang}` : 'text',
@@ -71,8 +77,20 @@ export const codeblock: CodeBlockParser = block(fmap(
         'data-path': params.path || undefined,
       },
       params.lang
-        ? context.caches?.code?.get(`${params.lang ?? ''}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
-          body.slice(0, -1) || undefined
-        : defrag(unwrap(autolink(subinput(body.slice(0, -1), context)))));
-    return new List([new Node(el)]);
-  }));
+        ? input.caches?.code?.get(`${params.lang ?? ''}\n${src}`)?.cloneNode(true).childNodes ||
+          src || undefined
+        : undefined);
+    output.append(new Node(el));
+    if (params.lang) return;
+    input.scope.focus(src);
+    output.push();
+    return output.context;
+  },
+  force(autolink),
+  (input, output) => {
+    input.scope.unfocus();
+    const content = output.pop();
+    output.peek().last!.value.replaceChildren(...defrag(unwrap(content)));
+    return output.context;
+  },
+]));

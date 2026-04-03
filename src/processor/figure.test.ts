@@ -1,6 +1,6 @@
 import { figure } from './figure';
 import { ParserOptions } from '../..';
-import { parse as parse_ } from '../api';
+import { run, parse as parse_ } from '../api';
 import { html } from 'typed-dom/dom';
 import { normalize } from '../debug.test';
 
@@ -9,7 +9,7 @@ const parse = (s: string, o?: ParserOptions) => parse_(s, { test: true, ...o });
 describe('Unit: processor/figure', () => {
   describe('figure', () => {
     it('empty', () => {
-      const target = parse('');
+      const target = run(parse(''));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -19,12 +19,12 @@ describe('Unit: processor/figure', () => {
     });
 
     it('one', () => {
-      const target = parse([
+      const target = run(parse([
         '$test-a\n> ',
         '$test-a',
         '$test-b',
         '$test-a',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -39,14 +39,14 @@ describe('Unit: processor/figure', () => {
     });
 
     it('some', () => {
-      const target = parse([
+      const target = run(parse([
         '$test-a\n> ',
         '## 0',
         '$test-b\n> ',
         '$quote-a\n> ',
         '$test-b\n> ',
         '$test-c\n> ',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -63,10 +63,10 @@ describe('Unit: processor/figure', () => {
     });
 
     it('number', () => {
-      const target = parse([
+      const target = run(parse([
         '$-a\n$$\n$$',
         '$-a',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -79,7 +79,7 @@ describe('Unit: processor/figure', () => {
     });
 
     it('fixed', () => {
-      const target = parse([
+      const target = run(parse([
         '$test-2\n> ',
         '$test-3.1\n> ',
         '$-4.1.1\n$$\n$$',
@@ -88,7 +88,7 @@ describe('Unit: processor/figure', () => {
         '$test-2',
         '$-4.1.1',
         '$test-1',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -107,12 +107,12 @@ describe('Unit: processor/figure', () => {
     });
 
     it('separation', () => {
-      const target = html('blockquote', parse([
+      const target = html('blockquote', run(parse([
         '!>> ~~~figure $test-a\n>> > \n>>\n~~~\n> ~~~figure $test-a\n> > \n>\n~~~',
         '~~~~example/markdown\n~~~figure $test-a\n> \n\n~~~\n\n$test-a\n~~~~',
         '~~~figure $test-b\n> \n\n~~~',
         '~~~figure $test-a\n> \n\n~~~',
-      ].join('\n\n')).children);
+      ].join('\n\n'))).children);
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -127,7 +127,7 @@ describe('Unit: processor/figure', () => {
     });
 
     it('base', () => {
-      const target = parse([
+      const target = run(parse([
         '# 0',
         '$-0.0',
         '## 0',
@@ -163,7 +163,7 @@ describe('Unit: processor/figure', () => {
         '$test-i\n> ',
         '# 0',
         '$test-j\n> ',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -209,7 +209,7 @@ describe('Unit: processor/figure', () => {
     });
 
     it('concat', () => {
-      const target = parse([
+      const target = run(parse([
         '$-0.0',
         '## 0',
         '$-0.0',
@@ -229,7 +229,7 @@ describe('Unit: processor/figure', () => {
         '## 0',
         '$-9.0',
         '$test-e\n> ',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -259,11 +259,11 @@ describe('Unit: processor/figure', () => {
     });
 
     it('verbose', () => {
-      const target = parse([
+      const target = run(parse([
         '~~~figure [$test-a]\n> \n\n~~~',
         '[$test-a]',
         '[$test-a]',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
@@ -277,11 +277,11 @@ describe('Unit: processor/figure', () => {
     });
 
     it('id', () => {
-      const target = parse([
+      const target = run(parse([
         '$test-a\n> ',
         '==$test-a==',
         '- $test-a',
-      ].join('\n\n'), { id: '0' });
+      ].join('\n\n'), { id: '0' }));
       for (let i = 0; i < 3; ++i) {
         [...figure(target, undefined, { id: '0' })];
         assert.deepStrictEqual(

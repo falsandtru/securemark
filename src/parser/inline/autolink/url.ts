@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Recursion, Backtrack } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { union, tails, some, recursion, precedence, state, constraint, focus, rewrite, surround, open, lazy } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { union, tails, some, recursion, precedence, state, constraint, backtrack, focus, rewrite, surround, open, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { unescsource, str } from '../../source';
 
@@ -15,9 +15,9 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     false,
     [3 | Backtrack.unescapable]),
   union([
-    constraint(State.autolink, state(State.autolink, context =>
-      new List([new Node(parse(new List(), new List([new Node(context.source)]), context))]))),
-    context => new List([new Node(context.source)]),
+    constraint(State.autolink, state(State.autolink, (input, output) =>
+      output.append(new Node(parse(new List(), new List([new Node(input.source)]), input))))),
+    (input, output) => output.append(new Node(input.source)),
   ])));
 
 export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
@@ -25,21 +25,20 @@ export const lineurl: AutolinkParser.UrlParser.LineUrlParser = lazy(() => focus(
   tails([
     str('!'),
     union([
-      constraint(State.autolink, state(State.autolink, context => {
-        const { source, position } = context;
-        context.position -= source[0] === '!' ? 1 : 0;
-        return new List([
+      constraint(State.autolink, state(State.autolink, (input, output) => {
+        const { source, position } = input;
+        input.position = source.length;
+        return output.append(
           new Node(parse(
             new List(),
             new List([new Node(source.slice(position))]),
-            context))
-        ]);
+            input)));
       })),
-      context => new List([new Node(context.source)]),
+      (input, output) => output.append(new Node(input.source.slice(input.position))),
     ]),
   ])));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => backtrack(union([
   surround(str('('), recursion(Recursion.terminal, some(union([bracket, unescsource]), ')')), str(')'),
     true, [3 | Backtrack.unescapable]),
   surround(str('['), recursion(Recursion.terminal, some(union([bracket, unescsource]), ']')), str(']'),
@@ -48,4 +47,4 @@ const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
     true, [3 | Backtrack.unescapable]),
   surround(str('"'), precedence(2, recursion(Recursion.terminal, some(unescsource, '"'))), str('"'),
     true, [3 | Backtrack.unescapable]),
-]));
+])));

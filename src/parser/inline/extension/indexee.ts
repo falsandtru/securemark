@@ -1,10 +1,10 @@
-import { Parser, List, Node } from '../../../combinator/data/parser';
-import { Context } from '../../context';
+import { Parser, List, Node } from '../../../combinator/parser';
+import { Input } from '../../context';
 import { fmap } from '../../../combinator';
 import { define } from 'typed-dom/dom';
 
-export function indexee<P extends Parser<HTMLElement, Context>>(parser: P): P;
-export function indexee(parser: Parser<HTMLElement, Context>): Parser<HTMLElement> {
+export function indexee<P extends Parser<HTMLElement, Input>>(parser: P): P;
+export function indexee(parser: Parser<HTMLElement, Input>): Parser<HTMLElement, Input> {
   return fmap(parser, (ns, { id, local }) =>
     ns.length === 1
       ? new List([new Node(define(ns.head!.value, {

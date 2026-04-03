@@ -1,104 +1,87 @@
+import { run } from './run';
 import { parse } from './parse';
-import { Context } from '../parser/context';
+import { Input } from '../parser/context';
 import { html } from 'typed-dom/dom';
 import { normalize } from '../debug.test';
 
 describe('Unit: api/parse', () => {
   describe('parse', () => {
-    it('huge input', () => {
-      assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(1e6 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
-        [
-          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
-          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-        ]);
-    });
-
-    it('huge segment', () => {
-      assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(1e5 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
-        [
-          '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
-          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-        ]);
-    });
-
     it('result', () => {
-      assert(parse('') instanceof DocumentFragment);
+      assert(run(parse('')) instanceof DocumentFragment);
     });
 
     it('empty', () => {
       assert.deepStrictEqual(
-        [...parse('').children].map(el => el.outerHTML),
-        []);
+        [...run(parse('')).children].map(el => el.outerHTML),
+        ['<ol class="references"></ol>']);
     });
 
     it('invisible', () => {
       assert.deepStrictEqual(
-        [...parse(' ').children].map(el => el.outerHTML),
-        []);
+        [...run(parse(' ')).children].map(el => el.outerHTML),
+        ['<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('\n').children].map(el => el.outerHTML),
-        []);
+        [...run(parse('\n')).children].map(el => el.outerHTML),
+        ['<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('\n\n').children].map(el => el.outerHTML),
-        []);
+        [...run(parse('\n\n')).children].map(el => el.outerHTML),
+        ['<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('\\').children].map(el => el.outerHTML),
-        ['<p>\\</p>']);
+        [...run(parse('\\')).children].map(el => el.outerHTML),
+        ['<p>\\</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('\\\na').children].map(el => el.outerHTML),
-        ['<p>\\<br>a</p>']);
+        [...run(parse('\\\na')).children].map(el => el.outerHTML),
+        ['<p>\\<br>a</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('&Tab;').children].map(el => el.outerHTML),
-        ['<p>&amp;Tab;</p>']);
+        [...run(parse('&Tab;')).children].map(el => el.outerHTML),
+        ['<p>&amp;Tab;</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('&Tab;\na').children].map(el => el.outerHTML),
-        ['<p>&amp;Tab;<br>a</p>']);
+        [...run(parse('&Tab;\na')).children].map(el => el.outerHTML),
+        ['<p>&amp;Tab;<br>a</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('<wbr>').children].map(el => el.outerHTML),
-        ['<p>&lt;wbr&gt;</p>']);
+        [...run(parse('<wbr>')).children].map(el => el.outerHTML),
+        ['<p>&lt;wbr&gt;</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('<wbr>\na').children].map(el => el.outerHTML),
-        ['<p>&lt;wbr&gt;<br>a</p>']);
+        [...run(parse('<wbr>\na')).children].map(el => el.outerHTML),
+        ['<p>&lt;wbr&gt;<br>a</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('[%\n<wbr>\n%]').children].map(el => el.outerHTML),
-        ['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>']);
+        [...run(parse('[%\n<wbr>\n%]')).children].map(el => el.outerHTML),
+        ['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span></p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('[%\n<wbr>\n%]\na').children].map(el => el.outerHTML),
-        ['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>']);
+        [...run(parse('[%\n<wbr>\n%]\na')).children].map(el => el.outerHTML),
+        ['<p><span class="remark"><input type="checkbox"><span>[%<br>&lt;wbr&gt;<br>%]</span></span><br>a</p>', '<ol class="references"></ol>']);
     });
 
     it('linebreak', () => {
       assert.deepStrictEqual(
-        [...parse('\\ ').children].map(el => el.outerHTML),
-        ['<p>\\</p>']);
+        [...run(parse('\\ ')).children].map(el => el.outerHTML),
+        ['<p>\\</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('\\\n').children].map(el => el.outerHTML),
-        ['<p>\\</p>']);
+        [...run(parse('\\\n')).children].map(el => el.outerHTML),
+        ['<p>\\</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('a\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a <br>b</p>']);
+        [...run(parse('a\\ \nb')).children].map(el => el.outerHTML),
+        ['<p>a <br>b</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('a\\\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        [...run(parse('a\\\nb')).children].map(el => el.outerHTML),
+        ['<p>a<br>b</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('a\n\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a<br>\\<br>b</p>']);
+        [...run(parse('a\n\\ \nb')).children].map(el => el.outerHTML),
+        ['<p>a<br>\\<br>b</p>', '<ol class="references"></ol>']);
       assert.deepStrictEqual(
-        [...parse('a\n\\\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>\\<br>b</p>']);
+        [...run(parse('a\n\\\nb')).children].map(el => el.outerHTML),
+        ['<p>a<br>\\<br>b</p>', '<ol class="references"></ol>']);
     });
 
     it('indent', () => {
       assert.deepStrictEqual(
-        [...parse('\ta').children].map(el => el.outerHTML),
-        ['<p>\ta</p>']);
+        [...run(parse('\ta')).children].map(el => el.outerHTML),
+        ['<p>\ta</p>', '<ol class="references"></ol>']);
     });
 
     it('url', () => {
       assert.deepStrictEqual(
-        [...parse([
+        [...run(parse([
           [
             '---',
             'URL: https://source/x/y',
@@ -123,7 +106,7 @@ describe('Unit: api/parse', () => {
           '!{a}',
           '!{^/a}',
           '!{../../a}',
-        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) })).children].map(el => el.outerHTML),
         [
           '<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span></div></details></aside>',
           '<p><a class="account" href="https://source/@a" target="_blank">@a</a></p>',
@@ -146,9 +129,10 @@ describe('Unit: api/parse', () => {
           '<div><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt="^/a"></a></div>',
           '<div><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt="../../a"></a></div>',
           '<ol class="annotations"><li id="annotation::def:a:1" data-marker="*1"><span>a</span><sup><a href="#annotation::ref:a:1">^1</a></sup></li></ol>',
+          '<ol class="references"></ol>',
         ]);
       assert.deepStrictEqual(
-        [...parse([
+        [...run(parse([
           [
             '---',
             'URL: https://source/x/y',
@@ -156,14 +140,15 @@ describe('Unit: api/parse', () => {
           ].join('\n'),
           '{^/a}',
           '{./a}',
-        ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) }).children].map(el => el.outerHTML),
+        ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) })).children].map(el => el.outerHTML),
         [
           '<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://source/x/y"><span class="field-name">URL</span>: <span class="field-value">https://source/x/y</span></div></details></aside>',
           '<p><a class="url" href="/a">^/a</a></p>',
           '<p><a class="url" href="https://source/x/a" target="_blank">./a</a></p>',
+          '<ol class="references"></ol>',
         ]);
       assert.deepStrictEqual(
-        [...parse([
+        [...run(parse([
           [
             '---',
             `URL: ${location.origin}/x/y`,
@@ -171,17 +156,18 @@ describe('Unit: api/parse', () => {
           ].join('\n'),
           '{^/a}',
           '{./a}',
-        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) })).children].map(el => el.outerHTML),
         [
           `<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="${location.origin}/x/y"><span class="field-name">URL</span>: <span class="field-value">${location.origin}/x/y</span></div></details></aside>`,
           '<p><a class="url" href="/z/a">^/a</a></p>',
           '<p><a class="url" href="/x/a">./a</a></p>',
+          '<ol class="references"></ol>',
         ]);
     });
 
     it('separation', () => {
       assert.deepStrictEqual(
-        [...parse([
+        [...run(parse([
           [
             '---',
             'URL: https://example/x',
@@ -202,19 +188,20 @@ describe('Unit: api/parse', () => {
             '~~~',
           ].join('\n'),
           '{#}',
-        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => normalize(el.outerHTML)),
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) })).children].map(el => normalize(el.outerHTML)),
         [
           `<aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://example/x"><span class="field-name">URL</span>: <span class="field-value">https://example/x</span></div></details></aside>`,
           '<pre class="invalid" translate="no">---\nURL: https://example/y\n---\n</pre>',
           '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><aside class="header"><details open=""><summary>Header</summary><div class="field" data-name="url" data-value="https://example/y"><span class="field-name">URL</span>: <span class="field-value">https://example/y</span></div></details></aside><p><a class="url" href="https://example/y#" target="_blank">#</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
           '<p><a class="url" href="https://example/x#" target="_blank">#</a></p>',
+          '<ol class="references"></ol>',
         ]);
     });
 
     it('note', () => {
       const notes = { references: html('ol') };
       assert.deepStrictEqual(
-        [...parse('$-a\n$$\n$$\n\n(($-a[[^B]]))[[^B|$-a]]', { notes }).children].map(el => el.outerHTML),
+        [...run(parse('$-a\n$$\n$$\n\n(($-a[[^B]]))[[^B|$-a]]', { notes })).children].map(el => el.outerHTML),
         [
           '<figure data-type="math" data-label="$-a" data-group="$" data-number="1" id="label:$-a"><figcaption><span class="figindex">(1)</span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n$$</div></div></figure>',
           '<p><sup class="annotation" id="annotation::ref:[$-a][[^B]]:1" title="(1)[[^B]]"><a href="#annotation::def:[$-a][[^B]]:1">*1</a></sup><sup class="reference" data-abbr="B" id="reference::ref:B:2" title="(1)"><a href="#reference::def:B">[B]</a></sup></p>',
@@ -224,7 +211,7 @@ describe('Unit: api/parse', () => {
         notes.references.outerHTML,
         '<ol><li id="reference::def:B"><span><a class="label" data-label="$-a" href="#label:$-a">(1)</a></span><sup><a href="#reference::ref:B:1">^1</a><a href="#reference::ref:B:2" title="(1)">^2</a></sup></li></ol>');
       assert.deepStrictEqual(
-        [...parse([
+        [...run(parse([
           '[[^A 1|b]]',
           '[[^A 1,|b]]',
           '[[^A 1, |b]]',
@@ -255,7 +242,7 @@ describe('Unit: api/parse', () => {
           '[[^A title 2020, 1|b]]',
           '[[^Constitution, art. 2|b]]',
           '[[^Constitution, art. 2, sec. 1|b]]',
-        ].join('\n\n'), { notes }).children].map(el => el.outerHTML),
+        ].join('\n\n'), { notes })).children].map(el => el.outerHTML),
         [
           '<p><sup class="reference" data-abbr="A 1" id="reference::ref:A_1:1" title="b"><a href="#reference::def:A_1">[A 1]</a></sup></p>',
           '<p><sup class="reference" data-abbr="A 1," id="reference::ref:A_1:2" title="b"><a href="#reference::def:A_1">[A 1,]</a></sup></p>',
@@ -292,87 +279,96 @@ describe('Unit: api/parse', () => {
 
     it('normalize', () => {
       assert.deepStrictEqual(
-        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        [...run(parse('a\\\r\nb')).children].map(el => el.outerHTML),
+        ['<p>a<br>b</p>', '<ol class="references"></ol>']);
     });
 
     it('recursion', () => {
       assert.deepStrictEqual(
-        [...parse(`${'['.repeat(20)}0`).children].map(el => el.outerHTML),
-        [`<p>${'['.repeat(20)}0</p>`]);
-      assert.deepStrictEqual(
-        [...parse(`${'['.repeat(21)}0`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
-        [
-          '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'['.repeat(21)}0</pre>`,
-        ]);
-      assert.deepStrictEqual(
-        [...parse(`${'('.repeat(20)}0`).children].map(el => el.tagName),
-        ['P']);
-      assert.deepStrictEqual(
-        [...parse(`${'('.repeat(21)}0`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
-      assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
+        [...run(parse(`${'('.repeat(100)}0`)).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
+        [...run(parse(`${'('.repeat(101)}0`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
+        [...run(parse(`${'['.repeat(100)}0`)).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`(${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
+        [...run(parse(`${'['.repeat(101)}0`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(2)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
+        [...run(parse(`${'{'.repeat(102)}0`)).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(3)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
+        [...run(parse(`${'{'.repeat(103)}0`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(2)}`).children].map(el => el.tagName),
+        [...run(parse(`${'{ '.repeat(100)}0`)).children].map(el => el.tagName),
         ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(3)}`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
+        [...run(parse(`${'{ '.repeat(1000)}0`)).children].map(el => el.tagName),
+        ['P', 'OL']);
       assert.deepStrictEqual(
-        [...parse(`${'(('.repeat(3)}0))((1))))))`).children].map(el => el.tagName),
-        ['H1', 'PRE']);
+        [...run(parse(`${'{  '.repeat(100)}0`)).children].map(el => el.tagName),
+        ['P', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'{  '.repeat(101)}0`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(2)}0${'))'.repeat(2)}`)).children].map(el => el.tagName),
+        ['P', 'OL', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(3)}0${'))'.repeat(3)}`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`(${'(('.repeat(2)}0${'))'.repeat(2)}`)).children].map(el => el.tagName),
+        ['P', 'OL', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`(${'(('.repeat(3)}0${'))'.repeat(3)}`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(2)}0${'))'.repeat(2)}`)).children].map(el => el.tagName),
+        ['P', 'OL', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(3)}0${'))'.repeat(3)}`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(2)}`)).children].map(el => el.tagName),
+        ['P', 'OL', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(9)}0${'))'.repeat(3)}`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
+      assert.deepStrictEqual(
+        [...run(parse(`${'(('.repeat(3)}0))((1))))))`)).children].map(el => el.tagName),
+        ['H1', 'PRE', 'OL']);
     });
 
     it('recovery', () => {
       assert.deepStrictEqual(
-        [...parse(`${'['.repeat(20)}0\n\n[a]`).children].map(el => el.outerHTML),
-        [
-          `<p>${'['.repeat(20)}0</p>`,
-          '<p>[a]</p>',
-        ]);
-      assert.deepStrictEqual(
-        [...parse(`${'['.repeat(21)}0\n\n[a]`).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...run(parse(`${'('.repeat(101)}0\n\n*a*`)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too much recursion</h1>',
-          `<pre class="error" translate="no">${'['.repeat(21)}0\n</pre>`,
-          '<p>[a]</p>',
+          `<pre class="error" translate="no">${'('.repeat(101)}0\n</pre>`,
+          '<p><em>a</em></p>',
+          '<ol class="references"></ol>',
         ]);
     });
 
-    if (!navigator.userAgent.includes('Chrome')) return;
-
-    it('creation', function () {
-      this.timeout(10000);
+    it('creation', () => {
       assert.deepStrictEqual(
-        [...parse('.'.repeat(100000)).children].map(el => el.outerHTML),
-        [`<p>${'.'.repeat(100000)}</p>`]);
+        [...run(parse('.'.repeat(100000), {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
+          .map(el => el.outerHTML),
+        [`<p>${'.'.repeat(100000)}</p>`, '<ol class="references"></ol>']);
     });
 
-    it.skip('creation error', function () {
-      this.timeout(10000);
+    it('creation error', () => {
       assert.deepStrictEqual(
-        [...parse('.'.repeat(100001)).children].map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
+        [...run(parse('.'.repeat(100001), {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
+          .map(el => el.outerHTML.replace(/:\w+/, ':rnd')),
         [
           '<h1 id="error:rnd" class="error">Error: Too many creations</h1>',
           `<pre class="error" translate="no">${'.'.repeat(1000 - 3)}...</pre>`,
+          '<ol class="references"></ol>',
         ]);
     });
 
@@ -380,30 +376,30 @@ describe('Unit: api/parse', () => {
       // 最悪計算量での実行速度はCommonMarkの公式JS実装の32nに対して1-4倍程度。
       // 5n = reference + link + url/math + ruby + text
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$http://[${'.'.repeat(19992)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...run(parse(`((([[[[#$http://[${'.'.repeat(19983)}`, {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
           .map(el => el.tagName),
-        ['P']);
+        ['P', 'OL']);
     });
 
     it('backtrack 1 error', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$http://[${'.'.repeat(19992 + 1)}`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...run(parse(`((([[[[#$http://[${'.'.repeat(19983 + 1)}`, {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
           .map(el => el.tagName),
-        ['H1', 'PRE']);
+        ['H1', 'PRE', 'OL']);
     });
 
     it('backtrack 2', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$http://[${'.'.repeat(33324)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...run(parse(`((([[[[#$http://[${'.'.repeat(33313)}]]]`, {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
           .map(el => el.tagName),
         ['P', 'OL']);
     });
 
     it('backtrack 2 error', () => {
       assert.deepStrictEqual(
-        [...parse(`((([[[[#$http://[${'.'.repeat(33324 + 1)}]]]`, {}, new Context({ resources: { clock: 100000, recursions: [100] } })).children]
+        [...run(parse(`((([[[[#$http://[${'.'.repeat(33313 + 1)}]]]`, {}, new Input({ resources: { clock: 100000, recursions: [100] } }))).children]
           .map(el => el.tagName),
-        ['H1', 'PRE']);
+        ['H1', 'PRE', 'OL']);
     });
 
   });

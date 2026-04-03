@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../inline';
-import { List, Node } from '../../../combinator/data/parser';
-import { union, validate, focus, surround } from '../../../combinator';
+import { Node } from '../../../combinator/parser';
+import { union, validate, backtrack, focus, surround, lazy } from '../../../combinator';
 import { signature } from './index';
 import { html } from 'typed-dom/dom';
 
@@ -10,10 +10,11 @@ import { html } from 'typed-dom/dom';
 // テキストまたはインデクスを付けて同期が必要な機会を減らすのが
 // 継続的編集において最も簡便となる。
 
-export const indexer: ExtensionParser.IndexerParser = validate(' [|', surround(
+export const indexer: ExtensionParser.IndexerParser = lazy(() => validate(' [|', backtrack(surround(
   / \[(?=\|\S)/y,
   union([
     signature,
-    focus(/\|(?=\])/y, () => new List([new Node(html('span', { class: 'indexer', 'data-index': '' }))])),
+    focus(/\|(?=\])/y, (_, output) =>
+      output.append(new Node(html('span', { class: 'indexer', 'data-index': '' })))),
   ]),
-  /\][^\S\r\n]*(?:$|\r?\n)/y));
+  /\][^\S\r\n]*(?:$|\r?\n)/y))));

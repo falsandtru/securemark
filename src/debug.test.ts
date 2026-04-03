@@ -1,12 +1,15 @@
-import { Parser, Input } from './combinator/data/parser';
+import { Parser, Input, Output, run } from './combinator/parser';
 import { html, define } from 'typed-dom/dom';
 import { querySelectorWith, querySelectorAllWith } from 'typed-dom/query';
 
-export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>, input: Input, until: number | string = Infinity): [string[], string] | undefined {
-  const context = input;
-  const result = parser(input);
-  return result && [
-    result.foldl<string[]>((acc, { value: node }) => {
+export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>, input: Input, until: number | string = Infinity): [...string[][], string] | undefined {
+  const output = new Output<DocumentFragment | HTMLElement | string>();
+  for (const _ of run(parser, input, output));
+  assert.deepStrictEqual(output.data, [output.data[0]]);
+  assert(output.state || output.peek().length === 0);
+  assert(!output.error);
+  return !output.state ? undefined : [
+    ...output.data.map(nodes => nodes.foldl<string[]>((acc, { value: node }) => {
       assert(node);
       if (typeof node === 'string') return acc.push(node), acc;
       if (node instanceof DocumentFragment) return acc.push(html('div', [node]).innerHTML), acc;
@@ -35,8 +38,8 @@ export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>,
         assert(el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
       }
       return acc.push(normalize(node.outerHTML.slice(0, until))), acc;
-    }, []),
-    context.source.slice(context.position),
+    }, [])),
+    input.source.slice(input.position),
   ];
 }
 

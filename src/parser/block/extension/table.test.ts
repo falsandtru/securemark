@@ -1,7 +1,6 @@
 import { table } from './table';
 import { some } from '../../../combinator';
-import { input } from '../../../combinator/data/parser';
-import { Context } from '../../context';
+import { input } from '../../context';
 import { inspect } from '../../../debug.test';
 import { html } from 'typed-dom/dom';
 
@@ -10,31 +9,31 @@ describe('Unit: parser/block/extension/table', () => {
     const parser = some(table);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser, input('~~~table a\n-\n~~~', new Context())), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~table\n0${'\n'.repeat(10001)}~~~`, new Context()), '>'), [['<pre class="invalid" translate="no">'], '']);
+      assert.deepStrictEqual(inspect(parser, input('~~~table a\n-\n~~~')), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser, input(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('data', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n~~~', new Context())),
+        inspect(parser, input('~~~table\n~~~')),
         [[html('table').outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n\n~~~\n', new Context())),
+        inspect(parser, input('~~~table\n\n~~~\n')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n0\n\n~~~', new Context())),
+        inspect(parser, input('~~~table\n0\n\n~~~')),
         [[html('table', [html('thead'), html('tbody', [html('tr', [html('td', '0')])]), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:\n~~~')),
         [[html('table', [html('thead'), html('tbody', [html('tr', [html('td')])]), html('tfoot'),]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -43,7 +42,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n1.1\n1.2\n\n1.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n1.1\n1.2\n\n1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -52,7 +51,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n1.1\n-\n2.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n1.1\n-\n2.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -62,7 +61,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: 1.1\n0\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: 1.1\n0\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -71,7 +70,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: 1.1\n: 1.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: 1.1\n: 1.2\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -80,7 +79,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: 1.1\n\n1.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: 1.1\n\n1.2\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -89,7 +88,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n1.1\n: 1.2\n:1:1 1.3\n\n: 1.4\n~~~', new Context())),
+        inspect(parser, input('~~~table\n1.1\n: 1.2\n:1:1 1.3\n\n: 1.4\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -98,7 +97,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:\n1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:\n1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -107,7 +106,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: \n1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: \n1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -116,7 +115,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: \n 1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: \n 1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -125,7 +124,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: \n\n1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: \n\n1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -134,7 +133,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n\\ \n\\ \n~~~', new Context())),
+        inspect(parser, input('~~~table\n\\ \n\\ \n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -143,7 +142,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: \\ \n\\ \n0\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: \\ \n\\ \n0\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -155,16 +154,16 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('align', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-=<>\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-=<>\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-=<>/-=^v\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-=<>/-=^v\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-/-=^v\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-/-=^v\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-=^v\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-=^v\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -172,7 +171,7 @@ describe('Unit: parser/block/extension/table', () => {
           ]),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n=-<>\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~', new Context())),
+        inspect(parser, input('~~~table\n=-<>\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -188,7 +187,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n=<\n-\n2.1\n2.2\n2.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n=<\n-\n2.1\n2.2\n2.3\n~~~')),
         [[html('table', [
           html('thead', [html('tr')]),
           html('tbody', [
@@ -201,7 +200,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n=<\n=\n2.1\n2.2\n2.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n=<\n=\n2.1\n2.2\n2.3\n~~~')),
         [[html('table', [
           html('thead', [html('tr')]),
           html('tbody', [
@@ -214,7 +213,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n=<\n=-\n2.1\n2.2\n2.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n=<\n=-\n2.1\n2.2\n2.3\n~~~')),
         [[html('table', [
           html('thead', [html('tr')]),
           html('tbody', [
@@ -227,7 +226,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-/=-^v\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-/=-^v\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -243,7 +242,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-/=^\n-/-\n2.1\n2.2\n2.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-/=^\n-/-\n2.1\n2.2\n2.3\n~~~')),
         [[html('table', [
           html('thead', [html('tr')]),
           html('tbody', [
@@ -259,10 +258,10 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('head', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#\n~~~')),
         [[html('table', [html('thead', [html('tr', [html('th')])]), html('tbody'), html('tfoot'),]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n# 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n# 1.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', '1.1')]),
@@ -270,7 +269,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody'),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-/-\n# 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-/-\n# 1.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', '1.1')]),
@@ -278,7 +277,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody'),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n# 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n# 1.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', '1.1')]),
@@ -286,7 +285,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody'),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n# 1.1\n: 1.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n# 1.1\n: 1.2\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -297,7 +296,7 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('foot', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n1.1\n-\n# 2.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n1.1\n-\n# 2.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -310,7 +309,7 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('highlight', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#! 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#! 1.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight' }, '1.1')]),
@@ -319,7 +318,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:! 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:! 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -328,7 +327,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#! 1.1\n: 1.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#! 1.1\n: 1.2\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -340,7 +339,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: 1.1\n#! 1.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: 1.1\n#! 1.2\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -352,7 +351,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#! 1.1\n-\n: 2.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#! 1.1\n-\n: 2.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight' }, '1.1')]),
@@ -363,7 +362,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#! 1.1\n-\n:!+ 2.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#! 1.1\n-\n:!+ 2.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight' }, '1.1')]),
@@ -374,7 +373,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#!+ 1.1\n-\n: 2.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#!+ 1.1\n-\n: 2.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.1')]),
@@ -385,7 +384,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#!+ 1.1\n# 1.2\n: 1.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#!+ 1.1\n# 1.2\n: 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -398,7 +397,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n: 1.1\n# 1.2\n#!+ 1.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n: 1.1\n# 1.2\n#!+ 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -411,7 +410,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#!+ 1.1\n-\n# 2.1\n-\n: 3.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#!+ 1.1\n-\n# 2.1\n-\n: 3.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight', 'data-highlight-extension': '+' }, '1.1')]),
@@ -423,7 +422,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#:2!+ 1.1\n: 1.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#:2!+ 1.1\n: 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -435,7 +434,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#2:!+ 1.1\n-\n: 3.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#2:!+ 1.1\n-\n: 3.1\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [html('th', { class: 'highlight', rowspan: '2', 'data-highlight-extension': '+' }, '1.1')]),
@@ -446,7 +445,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n: 2.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n: 2.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -463,7 +462,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n:! 2.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n# \n#!+ 1.2\n-\n#!+ 2.1\n:! 2.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -480,7 +479,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n# 1.1\n#!+ 1.2\n-\n# 2.1\n:2:2 2.2\n: 2.4\n-\n#!+ 3.1\n: 3.4\n-\n# 4.1\n: 4.2\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n# 1.1\n#!+ 1.2\n-\n# 2.1\n:2:2 2.2\n: 2.4\n-\n#!+ 3.1\n: 3.4\n-\n# 4.1\n: 4.2\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -506,7 +505,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n-\n# 1.1\n#:2!+ 1.2\n-\n#2:!+ 2.1\n: 2.2\n-\n3.2\n3.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n-\n# 1.1\n#:2!+ 1.2\n-\n#2:!+ 2.1\n: 2.2\n-\n3.2\n3.3\n~~~')),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -532,7 +531,7 @@ describe('Unit: parser/block/extension/table', () => {
           `-\n# 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           `-\n#!+ 1\n${[...Array(32)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           '~~~'
-        ].join('\n'), new Context())),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -552,7 +551,7 @@ describe('Unit: parser/block/extension/table', () => {
           `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n# 33`,
           `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n#!+ 33`,
           '~~~'
-        ].join('\n'), new Context())),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -572,7 +571,7 @@ describe('Unit: parser/block/extension/table', () => {
           `-\n${[...Array(32)].map((_, i) => `# ${i + 1}`).join('\n')}\n#!+ 33`,
           `-\n${[...Array(33)].map((_, i) => `: ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join('\n'), new Context())),
+        ].join('\n'))),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -592,7 +591,7 @@ describe('Unit: parser/block/extension/table', () => {
           '~~~table',
           `${[...Array(7)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join('\n'), new Context())),
+        ].join('\n'))),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -609,7 +608,7 @@ describe('Unit: parser/block/extension/table', () => {
           '~~~table',
           `${[...Array(7)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join('\n'), new Context())),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -622,7 +621,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n#!+ 1\n: 2\n:! 3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n#!+ 1\n: 2\n:! 3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -635,7 +634,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n! 1.1\n!!!!!! 1.2\n!!!!!!! 1.3\n~~~', new Context())),
+        inspect(parser, input('~~~table\n! 1.1\n!!!!!! 1.2\n!!!!!!! 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -651,7 +650,7 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('merge', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:: 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:: 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -660,7 +659,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:0:0 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:0:0 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -669,7 +668,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:01:01 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:01:01 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -678,7 +677,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:1:1 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:1:1 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -687,7 +686,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:2: 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:2: 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -696,7 +695,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n::2 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n::2 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -705,7 +704,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table\n:2:3 1.1\n~~~', new Context())),
+        inspect(parser, input('~~~table\n:2:3 1.1\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -717,10 +716,10 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('type', () => {
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table/invalid\n~~~', new Context())),
+        inspect(parser, input('~~~table/invalid\n~~~')),
         [['<pre class="invalid" translate="no">~~~table/invalid\n~~~</pre>'], '']);
       assert.deepStrictEqual(
-        inspect(parser, input('~~~table/grid\n~~~', new Context())),
+        inspect(parser, input('~~~table/grid\n~~~')),
         [[html('table', { 'data-type': 'grid' }).outerHTML], '']);
     });
 

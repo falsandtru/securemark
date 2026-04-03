@@ -1,7 +1,7 @@
 import { MathParser } from '../inline';
 import { Backtrack, Recursion } from '../context';
-import { List, Node } from '../../combinator/data/parser';
-import { union, some, recursion, precedence, rewrite, surround, lazy } from '../../combinator';
+import { Node } from '../../combinator/parser';
+import { union, some, recursion, precedence, backtrack, rewrite, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
@@ -26,7 +26,7 @@ export const math: MathParser = lazy(() => rewrite(
       false,
       [3 | Backtrack.escapable]),
   ]),
-  ({ source, caches: { math: cache } = {} }) => new List([
+  ({ source, caches: { math: cache } = {} }, output) => output.append(
     new Node(cache?.get(source)?.cloneNode(true) ||
     html('span',
       !forbiddenCommand.test(source)
@@ -37,10 +37,9 @@ export const math: MathParser = lazy(() => rewrite(
             ...invalid('math', 'content',
               `"${source.match(forbiddenCommand)![0]}" command is forbidden`),
           },
-      source))
-  ])));
+      source)))));
 
-const bracket: MathParser.BracketParser = lazy(() => surround(
+const bracket: MathParser.BracketParser = lazy(() => backtrack(surround(
   str('{'),
   recursion(Recursion.terminal,
   some(union([
@@ -48,4 +47,4 @@ const bracket: MathParser.BracketParser = lazy(() => surround(
     some(escsource, /[{}$\r\n]|(?<=[0-9A-Za-z]):\/\/[[0-9A-Za-z]/y),
   ]))),
   str('}'),
-  true));
+  true)));

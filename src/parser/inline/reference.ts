@@ -1,7 +1,7 @@
 import { ReferenceParser } from '../inline';
-import { State, Backtrack, Command } from '../context';
-import { List, Node } from '../../combinator/data/parser';
-import { union, subsequence, some, precedence, state, constraint, surround, open, isBacktrack, setBacktrack, lazy } from '../../combinator';
+import { Input, State, Backtrack, Command } from '../context';
+import { Result, List, Node } from '../../combinator/parser';
+import { union, subsequence, some, precedence, state, constraint, backtrack, surround, open, isBacktrack, setBacktrack, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { textlink } from './link';
 import { str } from '../source';
@@ -9,7 +9,7 @@ import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
-export const reference: ReferenceParser = lazy(() => constraint(State.reference, surround(
+export const reference: ReferenceParser = lazy(() => constraint(State.reference, backtrack(surround(
   '[[',
   precedence(1, state(State.annotation | State.reference,
   subsequence([
@@ -19,56 +19,85 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
   ']]',
   false,
   [2, 1 | Backtrack.common, 3 | Backtrack.doublebracket],
-  ([, ns], context) => {
-    const { position, range, linebreak } = context;
+  ([, ns], input, output) => {
+    const { position, range, linebreak } = input;
     const head = position - range;
     if (linebreak !== 0) {
-      setBacktrack(context, 2 | Backtrack.link, head, 2);
+      setBacktrack(input, 2 | Backtrack.link, head, 2);
       return;
     }
-    return new List([new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))]);
+    return output.import(new List([
+      new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))
+    ]));
   },
-  (_, context): undefined => {
-    const { source, position, range, linebreak } = context;
+  (_, input) => {
+    const { source, position, range, linebreak } = input;
     const head = position - range;
     if (source[position] !== ']') {
-      setBacktrack(context, 2 | Backtrack.common, head, 2);
+      setBacktrack(input, 2 | Backtrack.common, head, 2);
     }
     else if (linebreak !== 0) {
-      setBacktrack(context, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head, 2);
+      setBacktrack(input, 2 | Backtrack.doublebracket | Backtrack.link | Backtrack.ruby, head, 2);
     }
     else if (source[position + 1] !== '{') {
-      setBacktrack(context, 2 | Backtrack.link, head + 1);
+      setBacktrack(input, 2 | Backtrack.link, head + 1);
     }
     else {
       assert(source[position] === ']');
-      assert(~context.state & State.link);
-      context.position += 1;
-      assert(!isBacktrack(context, 1 | Backtrack.link));
-      if (!textlink(context)) {
-        setBacktrack(context, 2 | Backtrack.link, head + 1);
-      }
-      context.position = position;
-      context.range = range;
+      assert(~input.state & State.link);
+      input.position += 1;
+      assert(!isBacktrack(input, 1 | Backtrack.link));
+      input.memory = {
+        position,
+        range,
+        head,
+      };
+      return cont;
     }
-  })));
+  }))));
+
+interface Memory {
+  readonly position: number;
+  readonly range: number;
+  readonly head: number;
+}
+const cont: Result<HTMLElement | string, Input<Memory>> = [
+  (_, output) => {
+    output.push();
+    return output.context;
+  },
+  lazy(() => textlink),
+  (input, output) => {
+    const { memory: { position, range, head } } = input;
+    if (output.state) {
+      setBacktrack(input, 2 | Backtrack.link, head + 1);
+    }
+    input.position = position;
+    input.range = range;
+    output.pop();
+    return Result.fail;
+  },
+];
 
 // Chicago-Style
-const abbr: ReferenceParser.AbbrParser = surround(
+const abbr: ReferenceParser.AbbrParser = backtrack(surround(
   str('^'),
   union([str(/(?=[A-Z])(?:[0-9A-Za-z]'?|(?:[-.:]|\.?\??,? ?)(?!['\-.:?, ]))+/y)]),
   /\|?(?=]])|\|/y,
   true, [],
-  ([, ns], context) => {
-    const { source, position, range } = context;
-    if (!ns) return new List([new Node(''), new Node(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position))]);
-    context.position += source[position] === ' ' ? 1 : 0;
-    return new List([new Node(Command.Separator), new Node(ns.head!.value.trimEnd())]);
+  ([, ns], input, output) => {
+    const { source, position, range } = input;
+    if (!ns) return output.import(new List([
+      new Node(''),
+      new Node(source.slice(position - range, source[position - 1] === '|' ? position - 1 : position)),
+    ]));
+    input.position += source[position] === ' ' ? 1 : 0;
+    return output.import(new List([new Node(Command.Separator), new Node(ns.head!.value.trimEnd())]));
   },
-  (_, context) => {
-    context.position -= context.range;
-    return new List([new Node('')]);
-  });
+  (_, input, output) => {
+    input.position -= input.range;
+    return output.append(new Node(''));
+  }));
 
 function attributes(ns: List<Node<string | HTMLElement>>): Record<string, string | undefined> {
   switch (ns.head!.value) {

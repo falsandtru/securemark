@@ -1,42 +1,41 @@
 import { TextParser, TxtParser } from '../source';
+import { Result, Node } from '../../combinator/parser';
+import { union, spend } from '../../combinator';
 import { State, Command } from '../context';
 import { Flag } from '../node';
-import { List, Node } from '../../combinator/data/parser';
-import { union, spend } from '../../combinator';
 import { html } from 'typed-dom/dom';
 
 export const nonWhitespace = /[^ \t　]/g;
 
-export const text: TextParser = input => {
-  const context = input;
-  const { source, position, state } = context;
+export const text: TextParser = (input, output) => {
+  const { source, position, state } = input;
   if (position === source.length) return;
   const char = source[position];
-  spend(context, 1);
-  context.position += 1;
+  spend(input, output, 1);
+  input.position += 1;
   switch (char) {
     case Command.Escape:
     case '\\':
       switch (source[position + 1]) {
         case undefined:
-          return new List();
+          return Result.succ;
         case '\r':
         case '\n':
           assert(char !== Command.Escape);
-          return new List();
+          return Result.succ;
         default:
-          spend(context, 1);
-          context.position += 1;
-          return new List([new Node(source.slice(position + 1, context.position))]);
+          spend(input, output, 1);
+          input.position += 1;
+          return output.append(new Node(source.slice(position + 1, input.position)));
       }
     case '\r':
-      return new List();
+      return Result.succ;
     case '\n':
-      context.linebreak ||= source.length - position;
-      return new List([new Node(html('br'), Flag.blank)]);
+      input.linebreak ||= source.length - position;
+      return output.append(new Node(html('br'), Flag.blank));
     default:
       assert(char !== '\n');
-      if (context.sequential) return new List([new Node(char)]);
+      if (input.sequential) return output.append(new Node(char));
       nonWhitespace.lastIndex = position + 1;
       const s = canSkip(source, position);
       let i = s
@@ -51,11 +50,11 @@ export const text: TextParser = input => {
         || s && source[i] === '\n';
       i -= position;
       i = lineend ? i : i - +s || 1;
-      spend(context, i - 1);
-      context.position += i - 1;
+      spend(input, output, i - 1);
+      input.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
-      if (position === context.position || s && !linestart || lineend) return new List();
-      return new List([new Node(source.slice(position, context.position))]);
+      if (position === input.position || s && !linestart || lineend) return Result.succ;
+      return output.append(new Node(source.slice(position, input.position)));
   }
 };
 

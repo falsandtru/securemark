@@ -1,46 +1,30 @@
 import { ParserOptions } from '../..';
-import { input } from '../combinator/data/parser';
-import { Context, Options, Segment } from '../parser/context';
-import { segment } from '../parser/segment';
-import { block } from '../parser/block';
-import { headers } from './header';
-import { figure } from '../processor/figure';
-import { note } from '../processor/note';
+import { Input, Options, input } from '../parser/context';
+import { Output, run } from '../combinator/parser';
+import { document } from '../parser/document';
 import { ReadonlyURL } from 'spica/url';
-import { frag } from 'typed-dom/dom';
 
 interface Opts extends ParserOptions {
   readonly local?: boolean;
   readonly test?: boolean;
 }
 
-export function parse(source: string, opts: Opts = {}, options?: Options): DocumentFragment {
-  const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
+export function* parse(source: string, opts: Opts = {}, options?: Options): Generator<void, DocumentFragment, void> {
   options = {
     host: opts.host ?? options?.host ?? new ReadonlyURL(location.pathname, location.origin),
-    url: url ? new ReadonlyURL(url as ':') : options?.url,
+    url: options?.url,
     id: opts.id ?? options?.id,
-    local: opts.local ?? options?.local ?? false,
+    notes: opts.notes ?? options?.notes,
     caches: options?.caches,
     resources: options?.resources,
+    header: true,
+    test: opts.test,
   };
   if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
-  const node = frag();
-  // @ts-expect-error
-  options.header = true;
-  for (const [seg, attr] of segment(source, !options.local)) {
-    options.segment = attr | Segment.write;
-    const es = block(input(seg, new Context(options)))!
-      .foldl<HTMLElement[]>((acc, { value }) => (acc.push(value), acc), [])
-    // @ts-expect-error
-    options.header = false;
-    if (es.length === 0) continue;
-    node.append(...es);
-  }
-  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-  if (opts.test) return node;
-  for (const _ of figure(node, opts.notes, options));
-  for (const _ of note(node, opts.notes, options));
-  return node;
+  const output = new Output<DocumentFragment>();
+  for (const _ of run(document, input(source, new Input(options)), output)) yield;
+  assert(output.data.length === 1);
+  assert(output.peek().length === 1);
+  return output.peek().head!.value;
 }

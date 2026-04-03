@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
-import { List, Node, subinput } from '../../../combinator/data/parser';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, clear, surround, open, convert, dup, lazy, fmap } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { union, inits, subsequence, some, scope, block, line, validate, fence, rewrite, surround, open, dup, lazy, fmap } from '../../../combinator';
 import { inline, medialink, media, lineshortmedia } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { unwrap, invalid } from '../../util';
@@ -10,6 +10,7 @@ import { splice } from 'spica/array';
 import { html, define, defrag } from 'typed-dom/dom';
 
 import TableParser = ExtensionParser.TableParser;
+import GridTableParser = TableParser.GridTableParser;
 import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
@@ -17,17 +18,16 @@ import CellParser = TableParser.CellParser;
 const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y;
 
 export const segment: TableParser.SegmentParser = block(
-  clear(fence(opener, 10000)));
+  fence(opener, false, 10000));
 
 export const segment_: TableParser.SegmentParser = block(
-  clear(fence(opener, 10000, false)), false);
+  fence(opener, false, 10000, false), false);
 
-export const table: TableParser = block(fmap(
-  fence(opener, 10000),
-  // Bug: Type mismatch between outer and inner.
-  (nodes: List<Node<string>>, context) => {
-    const [body, overflow, closer, opener, delim, type, param] = unwrap(nodes);
-    if (!closer || overflow || param.trimStart()) return new List([
+export const table: TableParser = block(inits([
+  fence(opener, true, 10000),
+  (_, output) => {
+    const [body, overflow, closer, opener, delim, type, param] = unwrap(output.pop()) as string[];
+    if (!closer || overflow || param.trimStart()) return output.append(
       new Node(html('pre', {
         class: 'invalid',
         translate: 'no',
@@ -37,27 +37,37 @@ export const table: TableParser = block(fmap(
           !closer ? `Missing the closing delimiter "${delim}"` :
             overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
               'Invalid argument'),
-      }, `${opener}${body}${overflow || closer}`))
-    ]);
+      }, `${opener}${body}${overflow || closer}`)));
     switch (type) {
-      case 'grid':
       case undefined:
-        return (parser(subinput(body, context)) ?? new List([new Node(html('table'))]))
-          .foldl(
-            (acc, { value }) => acc.push(new Node(define(value, { 'data-type': type }))) && acc,
-            new List());
+      case 'grid':
+        return [
+          (input, output) => {
+            input.scope.focus(body);
+            return output.context;
+          },
+          gridtable,
+          (input, output) => {
+            input.scope.unfocus();
+            !output.state && output.append(new Node(html('table')));
+            define(output.peek().last!.value, { 'data-type': type });
+            return output.context;
+          },
+        ];
       default:
-        return new List([
-          new Node(html('pre', {
-            class: 'invalid',
-            translate: 'no',
-            ...invalid('table', 'argument', 'Invalid table type'),
-          }, `${opener}${body}${closer}`))
-        ]);
+        return output.append(
+          new Node(html('pre',
+            {
+              class: 'invalid',
+              translate: 'no',
+              ...invalid('table', 'argument', 'Invalid table type'),
+            },
+            `${opener}${body}${closer}`)));
     }
-  }));
+  },
+]));
 
-const parser: TableParser = lazy(() => block(fmap(
+const gridtable: GridTableParser = lazy(() => block(fmap(
   some(union([row])),
   rows => new List([
     new Node(html('table', format([...unwrap(rows)])))
@@ -75,13 +85,14 @@ const row: RowParser = lazy(() => dup(fmap(
       emptyline,
     ])),
   ]),
-  ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Node([[]])) && ns)));
+  ns => Array.isArray(ns.head?.value) ? ns : ns.unshift(new Node([[]])))));
 
 const alignment = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\r\n]*\r?\n)/y;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
-  ([{ value }]) => new List([new Node(value.split('/').map(s => s.split('')) as [string[], string[]?])])));
+  ([{ value }]) => new List([new Node(value.split('/').map(s => s.split('')) as [string[], string[]?])])),
+  false);
 
 const delimiter = /[-=<>]+(?:\/[-=^v]*)?(?=[^\S\r\n]*\r?\n)|[#:](?:(?!:\D|0)\d*:(?!0)\d*)?(?:!+[+]?)?(?=[ \r\n])/y;
 
@@ -133,9 +144,10 @@ const dataline: CellParser.DatalineParser = line(
   rewrite(
     contentline,
     union([
-      validate(/!+ /y, convert(source => `:${source}`, data)),
-      convert(source => `: ${source}`, data),
-    ])));
+      validate(/!+ /y, scope(({ source }) => `:${source}`, data, true)),
+      scope(({ source }) => `: ${source}`, data, true),
+    ])),
+  false);
 
 function attributes(source: string): Record<string, string | undefined> {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined, extension = undefined] =

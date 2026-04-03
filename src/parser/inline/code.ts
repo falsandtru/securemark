@@ -1,20 +1,20 @@
 import { CodeParser } from '../inline';
-import { List, Node } from '../../combinator/data/parser';
+import { Node } from '../../combinator/parser';
 import { match } from '../../combinator';
 import { invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 export const code: CodeParser = match(
   /(`+)(?!`)([^\r\n]*?)(?:((?<!`)\1(?!`))|(?=$|\r?\n))/y,
-  ([whole, opener, body, closer]) => () =>
+  ([whole, opener, body, closer]) => (_, output) =>
     closer
-      ? new List([new Node(html('code', { 'data-src': whole }, format(body)))])
+      ? output.append(new Node(html('code', { 'data-src': whole }, format(body))))
       : body
-        ? new List([new Node(html('code', {
+        ? output.append(new Node(html('code', {
             class: 'invalid',
             ...invalid('code', 'syntax', `Missing the closing symbol "${opener}"`)
-          }, whole))])
-        : new List([new Node(opener)]));
+          }, whole)))
+        : output.append(new Node(opener)));
 
 function format(text: string): string {
   return text.length > 2

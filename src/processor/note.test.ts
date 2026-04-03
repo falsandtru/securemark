@@ -1,5 +1,5 @@
 import { note } from './note';
-import { parse as parse_ } from '../api';
+import { run, parse as parse_ } from '../api';
 import { html } from 'typed-dom/dom';
 import { normalize } from '../debug.test';
 
@@ -8,7 +8,7 @@ const parse = (s: string) => parse_(s, { test: true });
 describe('Unit: processor/note', () => {
   describe('annotation', () => {
     it('empty', () => {
-      const target = parse('');
+      const target = run(parse(''));
       [...note(target)];
       assert.deepStrictEqual(
         [...target.children].map(el => normalize(el.outerHTML)),
@@ -16,7 +16,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('1', () => {
-      const target = parse('((a b))');
+      const target = run(parse('((a b))'));
       for (let i = 0; i < 3; ++i) {
         assert.deepStrictEqual([...note(target)].length, i === 0 ? 2 : 3);
         assert.deepStrictEqual(
@@ -38,7 +38,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('2', () => {
-      const target = parse('((1))((12345678901234567890))');
+      const target = run(parse('((1))((12345678901234567890))'));
       for (let i = 0; i < 3; ++i) {
         assert.deepStrictEqual([...note(target)].length, i === 0 ? 4 : 6);
         assert.deepStrictEqual(
@@ -67,7 +67,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('unify', () => {
-      const target = parse('((1))((2))((3))((2))((4))');
+      const target = run(parse('((1))((2))((3))((2))((4))'));
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
@@ -116,11 +116,11 @@ describe('Unit: processor/note', () => {
     });
 
     it('separation', () => {
-      const target = parse([
+      const target = run(parse([
         '!>> ((1))\n> ((2))\n~~~',
         '~~~~example/markdown\n((3))\n~~~~',
         '((4))',
-      ].join('\n\n'));
+      ].join('\n\n')));
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
@@ -135,7 +135,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('split', () => {
-      const target = parse('((1))\n\n## a\n\n((2))((1))((3))((2))\n\n## b\n\n((2))');
+      const target = run(parse('((1))\n\n## a\n\n((2))((1))((3))((2))\n\n## b\n\n((2))'));
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
@@ -201,7 +201,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('id', () => {
-      const target = parse('((a b))');
+      const target = run(parse('((a b))'));
       for (let i = 0; i < 3; ++i) {
         assert.deepStrictEqual([...note(target, undefined, { id: '0' })].length, i === 0 ? 2 : 3);
         assert.deepStrictEqual(
@@ -223,7 +223,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('nest', () => {
-      const target = parse('((a((b))))((a))((b))');
+      const target = run(parse('((a((b))))((a))((b))'));
       for (let i = 0; i < 3; ++i) {
         [...note(target)];
         assert.deepStrictEqual(
@@ -278,7 +278,7 @@ describe('Unit: processor/note', () => {
 
   describe('reference', () => {
     it('1', () => {
-      const target = parse('[[a b]]');
+      const target = run(parse('[[a b]]'));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
         [...note(target, notes)];
@@ -305,7 +305,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('abbr', () => {
-      const target = parse('[[^A 1]][[^A 1|b]][[^A 1]]');
+      const target = run(parse('[[^A 1]][[^A 1|b]][[^A 1]]'));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
         [...note(target, notes)];
@@ -342,7 +342,7 @@ describe('Unit: processor/note', () => {
     });
 
     it('nest', () => {
-      const target = parse('((a[[^B]]))[[^B|c]]');
+      const target = run(parse('((a[[^B]]))[[^B|c]]'));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
         [...note(target, notes)];

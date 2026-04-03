@@ -1,7 +1,7 @@
 import { LinkParser } from '../inline';
-import { Context, State, Backtrack, Command } from '../context';
-import { List, Node } from '../../combinator/data/parser';
-import { union, inits, sequence, subsequence, some, spend, precedence, state, constraint, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
+import { Input, State, Backtrack, Command } from '../context';
+import { List, Node } from '../../combinator/parser';
+import { union, inits, sequence, subsequence, some, precedence, state, constraint, backtrack, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { str } from '../source';
@@ -15,42 +15,42 @@ const optspec = {
 } as const;
 Object.setPrototypeOf(optspec, null);
 
-export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
+export const textlink: LinkParser.TextLinkParser = lazy(() => backtrack(bind(
   subsequence([
-    constraint(State.link, state(State.linkers, dup(surround(
+    constraint(State.link, state(State.linkers, backtrack(dup(surround(
       open('[', beforeNonblank),
       precedence(1,
       some(union([inline]), ']', [[']', 1]])),
       ']',
       true,
       [3 | Backtrack.common | Backtrack.link, 2 | Backtrack.ruby],
-      ([, ns = new List()], context) => {
-        if (context.linebreak !== 0) {
-          const head = context.position - context.range;
-          return void setBacktrack(context, 2 | Backtrack.link | Backtrack.ruby, head);
+      ([, ns = new List()], input, output) => {
+        if (input.linebreak !== 0) {
+          const head = input.position - input.range;
+          return void setBacktrack(input, 2 | Backtrack.link | Backtrack.ruby, head);
         }
-        return ns.push(new Node(Command.Separator)) && ns;
-      })))),
+        return output.import(ns.push(new Node(Command.Separator)));
+      }))))),
     // `{ `と`{`で個別にバックトラックが発生し+1nされる。
     // 自己再帰的にパースしてもオプションの不要なパースによる計算量の増加により相殺される。
-    dup(surround(
+    backtrack(dup(surround(
       /{(?![{}])/y,
       inits([uri, some(option)]),
       / ?}/y,
       false, [],
       undefined,
-      ([as, bs]) =>
-        bs && as.import(bs).push(new Node(Command.Cancel)) && as)),
+      ([as, bs], _, output) =>
+        bs && output.import(as.import(bs).push(new Node(Command.Cancel)))))),
   ]),
-  ([{ value: content }, { value: params = undefined } = {}], context) => {
-    if (context.state & State.link) return new List([
-      new Node(context.source.slice(context.position - context.range, context.position).replace(/\\($|.)/g, '$1'))
+  ([{ value: content }, { value: params = undefined } = {}], input) => {
+    if (input.state & State.link) return new List([
+      new Node(input.source.slice(input.position - input.range, input.position).replace(/\\($|.)/g, '$1'))
     ]);
     if (content.last!.value === Command.Separator) {
       content.pop();
       if (params === undefined) {
-        const head = context.position - context.range;
-        return void setBacktrack(context, 2 | Backtrack.link, head);
+        const head = input.position - input.range;
+        return void setBacktrack(input, 2 | Backtrack.link, head);
       }
     }
     else {
@@ -65,18 +65,18 @@ export const textlink: LinkParser.TextLinkParser = lazy(() => bind(
             class: 'invalid',
             ...invalid('link', 'syntax', 'Missing the closing symbol "}"')
           },
-          context.source.slice(context.position - context.range, context.position)))
+          input.source.slice(input.position - input.range, input.position)))
       ]);
     }
     assert(!html('div', unwrap(content)).querySelector('a, .media, .annotation, .reference'));
     assert(content.head?.value !== '');
     if (content.length !== 0 && trimBlankNodeEnd(content).length === 0) return;
-    return new List([new Node(parse(content, params as List<Node<string>>, context))]);
-  }));
+    return new List([new Node(parse(content, params as List<Node<string>>, input))]);
+  })));
 
 export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State.link | State.media,
   state(State.linkers,
-  bind(sequence([
+  backtrack(bind(sequence([
     dup(surround(
       '[',
       union([media, shortmedia]),
@@ -86,8 +86,8 @@ export const medialink: LinkParser.MediaLinkParser = lazy(() => constraint(State
       inits([uri, some(option)]),
       / ?}/y)),
   ]),
-  ([{ value: content }, { value: params }], context) =>
-    new List([new Node(parse(content, params as List<Node<string>>, context))])))));
+  ([{ value: content }, { value: params }], input) =>
+    new List([new Node(parse(content, params as List<Node<string>>, input))]))))));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(' ', str(/\S+/y)),
@@ -103,18 +103,17 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 export function parse(
   content: List<Node<string | HTMLElement>>,
   params: List<Node<string>>,
-  context: Context,
+  input: Input,
 ): HTMLAnchorElement {
   assert(params.length > 0);
   const INSECURE_URI = params.shift()!.value;
   assert(INSECURE_URI === INSECURE_URI.trim());
   assert(!INSECURE_URI.match(/\s/));
-  spend(context, 10);
   let uri: ReadonlyURL | undefined;
   try{
     uri = new ReadonlyURL(
-      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
-      context.host?.href || location.href);
+      resolve(INSECURE_URI, input.host ?? location, input.url ?? input.host ?? location),
+      input.host?.href || location.href);
   }
   catch {
   }
@@ -122,7 +121,7 @@ export function parse(
     INSECURE_URI,
     content,
     uri,
-    context.host?.origin || location.origin);
+    input.host?.origin || location.origin);
   return el.classList.contains('invalid')
     ? el
     : define(el, attributes('link', optspec, unwrap(params))[0]);

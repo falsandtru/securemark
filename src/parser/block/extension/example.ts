@@ -1,62 +1,102 @@
 import { ExtensionParser } from '../../block';
-import { Recursion } from '../../context';
-import { List, Node, subinput } from '../../../combinator/data/parser';
-import { recursion, block, fence, fmap } from '../../../combinator';
+import { Input, Recursion } from '../../context';
+import { Result, Node } from '../../../combinator/parser';
+import { inits, recursion, block, fence, lazy } from '../../../combinator';
+import { document } from '../../document';
 import { mathblock } from '../mathblock';
-import { unwrap, invalid, randomID } from '../../util';
-import { parse } from '../../../api/parse';
+import { unwrap, invalid } from '../../util';
 import { html } from 'typed-dom/dom';
 
-export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.block, fmap(
-  fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y, 300),
-  // Bug: Type mismatch between outer and inner.
-  (nodes: List<Node<string>>, context) => {
-    const [body, overflow, closer, opener, delim, type = 'markdown', param] = unwrap(nodes);
-    if (!closer || overflow || param.trimStart()) return new List([
-      new Node(html('pre', {
-        class: 'invalid',
-        translate: 'no',
-        ...invalid(
-          'example',
-          !closer || overflow ? 'fence' : 'argument',
-          !closer ? `Missing the closing delimiter "${delim}"` :
-            overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-              'Invalid argument'),
-      }, `${opener}${body}${overflow || closer}`))
-    ]);
+interface Memory {
+  readonly body: string;
+}
+
+export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.block, inits([
+  fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  (input: Input<Memory>, output) => {
+    const [body, overflow, closer, opener, delim, type = 'markdown', param] = unwrap(output.pop()) as string[];
+    if (!closer || overflow || param.trimStart()) return output.append(
+      new Node(html('pre',
+        {
+          class: 'invalid',
+          translate: 'no',
+          ...invalid(
+            'example',
+            !closer || overflow ? 'fence' : 'argument',
+            !closer ? `Missing the closing delimiter "${delim}"` :
+              overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+                'Invalid argument'),
+        },
+        `${opener}${body}${overflow || closer}`)));
     switch (type) {
       case 'markdown': {
-        const references = html('ol', { class: 'references' });
-        const document = parse(body.slice(0, -1), {
-          local: true,
-          id: context.id === '' ? '' : randomID(),
-          notes: {
-            references,
-          },
-        }, context);
-        return new List([
-          new Node(html('aside', { class: 'example', 'data-type': 'markdown' }, [
-            html('pre', { translate: 'no' }, body.slice(0, -1)),
-            html('hr'),
-            html('section', [document, html('h2', 'References'), references]),
-          ])),
-        ]);
+        input.memory = {
+          body,
+        };
+        return contMD;
       }
       case 'math':
-        return new List([
-          new Node(html('aside', { class: 'example', 'data-type': 'math' }, [
-            html('pre', { translate: 'no' }, body.slice(0, -1)),
-            html('hr'),
-            mathblock(subinput(`$$\n${body}$$`, context))!.head!.value,
-          ])),
-        ]);
+        input.memory = {
+          body,
+        };
+        return contMath;
       default:
-        return new List([
+        return output.append(
           new Node(html('pre', {
             class: 'invalid',
             translate: 'no',
             ...invalid('example', 'type', 'Invalid example type'),
-          }, `${opener}${body}${closer}`)),
-        ]);
+          }, `${opener}${body}${closer}`)));
     }
-  })));
+  },
+])));
+
+const contMD: Result<DocumentFragment | HTMLElement, Input<Memory>> = [
+  (input, output) => {
+    input = input.scope.push(input.memory.body);
+    input.header = true;
+    input.local = true;
+    input.notes = {
+      references: html('ol', { class: 'references' }),
+    };
+    output.push();
+    return output.context;
+  },
+  lazy(() => document),
+  (input, output) => {
+    const { notes } = input;
+    input = input.scope.pop();
+    return output.append(
+      new Node(html('aside',
+        { class: 'example', 'data-type': 'markdown' },
+        [
+          html('pre', { translate: 'no' }, input.memory.body.slice(0, input.memory.body.at(-2) === '\r' ? -2 : -1)),
+          html('hr'),
+          html('section', [
+            output.pop().head!.value,
+            html('h2', 'References'),
+            notes!.references,
+          ]),
+        ])));
+  },
+];
+
+const contMath: Result<HTMLElement, Input<Memory>> = [
+  (input, output) => {
+    input.scope.push(`$$\n${input.memory.body}$$`);
+    output.push();
+    return output.context;
+  },
+  mathblock,
+  (input, output) => {
+    input = input.scope.pop();
+    return output.append(
+      new Node(html('aside',
+        { class: 'example', 'data-type': 'math' },
+        [
+          html('pre', { translate: 'no' }, input.memory.body.slice(0, input.memory.body.at(-2) === '\r' ? -2 : -1)),
+          html('hr'),
+          output.pop().head!.value,
+        ])));
+  },
+];

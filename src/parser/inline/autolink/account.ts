@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { some, state, constraint, verify, surround, setBacktrack, lazy } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { some, state, constraint, backtrack, verify, surround, setBacktrack, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { emoji } from './hashtag';
 import { str } from '../../source';
@@ -11,50 +11,49 @@ import { define } from 'typed-dom/dom';
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 
 export const account: AutolinkParser.AccountParser = lazy(() => constraint(State.autolink, state(State.autolink,
-  surround(
+  backtrack(surround(
     surround(
       /(?<![0-9a-z@#])@/yi,
       str(/[0-9a-z](?:[.-](?=[0-9a-z])|[0-9a-z]){0,254}\/|/yi),
       str(/[a-z][0-9a-z]*(?:[.-][0-9a-z]+)*(?![_.-]?[0-9a-z@]|>>|:\S)/yi),
       false,
       [3 | Backtrack.unescapable]),
-    some(surround(
+    some(backtrack(surround(
       '#',
       verify(
         str(new RegExp([
           /(?!['_])(?:[^\p{C}\p{S}\p{P}\s]|emoji|'(?=[0-9A-Za-z])|_(?=[^\p{C}\p{S}\p{P}\s]|emoji))+/yu.source,
         ].join('|').replace(/emoji/g, emoji.source), 'yu')),
-        ([{ value }]) => /^[0-9]{0,4}[^0-9]/.test(value)),
+        (_, output) => /^[0-9]{0,4}[^0-9]/.test(output.peek().head!.value)),
       new RegExp([
         /(?![_.-]?[0-9a-z@]|>>|:\S|[^\p{C}\p{S}\p{P}\s]|emoji)/yu.source,
       ].join('|').replace(/emoji/g, emoji.source), 'yu'),
       false,
-      [3 | Backtrack.unescapable])),
+      [3 | Backtrack.unescapable]))),
     '',
     false, [],
-    ([[{ value: host }, { value: account }], nodes], context) => {
+    ([[{ value: host }, { value: account }], nodes], input, output) => {
       const hashes = nodes.foldl((acc, { value }) => acc + '#' + value, '');
       const param = nodes.foldl((acc, { value }) => acc ? acc + '+' + value : value, '');
-      return new List([
+      return output.append(
         new Node(define(
           parse(
             new List([new Node(`@${host}${account}${hashes}`)]),
             new List([new Node(host ? `https://${host}@${account}?ch=${param}` : `/@${account}?ch=${param}`)]),
-            context),
-          { class: 'channel' }))
-      ]);
+            input),
+          { class: 'channel' })));
     },
-    ([[{ value: host }, { value: account }]], context) => {
-      if (context.source[context.position] === '#') {
-        assert(context.source[context.position - context.range] === '@');
-        return void setBacktrack(context, 2 | Backtrack.unescapable, context.position - context.range);
+    ([[{ value: host }, { value: account }]], input, output) => {
+      if (input.source[input.position] === '#') {
+        assert(input.source[input.position - input.range] === '@');
+        return void setBacktrack(input, 2 | Backtrack.unescapable, input.position - input.range);
       }
-      return new List([
+      return output.append(
         new Node(define(
           parse(
             new List([new Node(`@${host}${account}`)]),
             new List([new Node(host ? `https://${host}@${account}` : `/@${account}`)]),
-            context),
+            input),
           { class: 'account' }))
-      ]);
-    }))));
+      );
+    })))));

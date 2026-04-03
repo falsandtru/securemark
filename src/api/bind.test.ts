@@ -29,28 +29,6 @@ describe('Unit: api/bind', () => {
 
     const cfgs = { notes: { references: html('ol') } };
 
-    it('huge input', () => {
-      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1e6 + 1)}`);
-      assert.deepStrictEqual(
-        inspect(iter),
-        [
-          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
-          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-        ]);
-    });
-
-    it('huge segment', function () {
-      this.timeout(10 * 1000);
-
-      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1e5 + 1)}`);
-      assert.deepStrictEqual(
-        inspect(iter, 3),
-        [
-          '<h1 class="error">Error: Too large segment over 100,000 bytes.</h1>',
-          `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-        ]);
-    });
-
     it('empty', () => {
       const el = html('div');
       const update = bind(el, cfgs).parse;

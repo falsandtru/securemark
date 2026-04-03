@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { List, Node } from '../../../combinator/data/parser';
-import { state, constraint, surround, lazy } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { state, constraint, backtrack, surround, lazy } from '../../../combinator';
 import { parse } from '../link';
 import { str } from '../../source';
 import { define } from 'typed-dom/dom';
@@ -17,17 +17,16 @@ import { define } from 'typed-dom/dom';
 // 外部表現は投稿ごとに投稿者の投稿時のタイムゾーンに統一する(非時系列順)
 
 export const anchor: AutolinkParser.AnchorParser = lazy(() => constraint(State.autolink, state(State.autolink,
-  surround(
+  backtrack(surround(
     /(?<![0-9a-z@#])>>/yi,
     str(/[0-9a-z]+(?:-[0-9a-z]+)*(?![_.-]?[0-9a-z@#]|>>|:\S)/yi),
     '',
     false,
     [3 | Backtrack.unescapable],
-    ([, [{ value }]], context) =>
-      new List([
+    ([, [{ value }]], input, output) =>
+      output.append(
         new Node(define(parse(
           new List([new Node(`>>${value}`)]),
           new List([new Node(`?at=${value}`)]),
-          context),
-          { class: 'anchor' }))
-      ])))));
+          input),
+          { class: 'anchor' }))))))));

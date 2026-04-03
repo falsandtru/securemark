@@ -1,11 +1,11 @@
 import { info } from './info';
-import { parse } from '../api';
+import { run, parse } from '../api';
 
 describe('Unit: util/info', () => {
   describe('info', () => {
     it('empty', () => {
       assert.deepStrictEqual(
-        info(parse('')),
+        info(run(parse(''))),
         {
           url: [],
           tel: [],

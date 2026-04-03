@@ -1,6 +1,6 @@
 import { HTMLParser } from '../inline';
-import { Recursion } from '../context';
-import { List, Node, Context } from '../../combinator/data/parser';
+import { Input, Recursion } from '../context';
+import { List, Node } from '../../combinator/parser';
 import { Flag } from '../node';
 import { union, some, recursion, precedence, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
@@ -27,22 +27,22 @@ export const html: HTMLParser = lazy(() => union([
     precedence(9, some(union([attribute]))),
     open(str(/ ?/y), str('>'), true),
     true, [],
-    ([as, bs = new List(), cs], context) =>
-      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context), as.head!.value === '<wbr' ? Flag.blank : Flag.none)]),
-    ([as, bs = new List()], context) =>
-      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+    ([as, bs = new List(), cs], input, output) =>
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input), as.head!.value === '<wbr' ? Flag.blank : Flag.none)),
+    ([as, bs = new List()], input, output) =>
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), input)))),
   match(
     new RegExp(String.raw`<(${TAGS.join('|')})(?=[ >])`, 'y'),
     memoize(
     ([, tag]) =>
-      surround<HTMLParser.TagParser, string>(
-        surround(
+      surround<HTMLParser.TagParser>(
+        surround<HTMLParser.VoidTagParser>(
           str(`<${tag}`),
           precedence(9, some(attribute)),
           open(str(/ ?/y), str('>'), true),
           true, [],
-          ([as, bs = new List(), cs]) => as.import(bs).import(cs),
-          ([as, bs = new List()]) => as.import(bs)),
+          ([as, bs = new List(), cs], _, output) => output.import(as.import(bs).import(cs)),
+          ([as, bs = new List()], _, output) => output.import(as.import(bs))),
         // 不可視のHTML構造が可視構造を変化させるべきでない。
         // 可視のHTMLは優先度変更を検討する。
         // このため`<>`記号は将来的に共通構造を変化させる可能性があり
@@ -54,10 +54,10 @@ export const html: HTMLParser = lazy(() => union([
         ])))),
         str(`</${tag}>`),
         true, [],
-        ([as, bs = new List(), cs], context) =>
-          new List([new Node(elem(tag, true, [...unwrap(as)], bs, cs, context))]),
-        ([as, bs = new List()], context) =>
-          new List([new Node(elem(tag, true, [...unwrap(as)], bs, new List(), context))])),
+        ([as, bs = new List(), cs], input, output) =>
+          output.append(new Node(elem(tag, true, [...unwrap(as)], bs, cs, input))),
+        ([as, bs = new List()], input, output) =>
+          output.append(new Node(elem(tag, true, [...unwrap(as)], bs, new List(), input)))),
     ([, tag]) => tag2index(tag),
     Array(TAGS.length))),
   surround(
@@ -66,10 +66,10 @@ export const html: HTMLParser = lazy(() => union([
     precedence(9, some(union([attribute]))),
     open(str(/ ?/y), str('>'), true),
     true, [],
-    ([as, bs = new List(), cs], context) =>
-      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), context))]),
-    ([as, bs = new List()], context) =>
-      new List([new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), context))])),
+    ([as, bs = new List(), cs], input, output) =>
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input))),
+    ([as, bs = new List()], input, output) =>
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), input)))),
 ]));
 
 export const attribute: HTMLParser.AttributeParser = union([
@@ -77,25 +77,25 @@ export const attribute: HTMLParser.AttributeParser = union([
   str(/ [^\s<>]+/y),
 ]);
 
-function elem(tag: string, content: boolean, as: readonly string[], bs: List<Node<HTMLElement | string>>, cs: List<Node<string>>, context: Context): HTMLElement {
+function elem(tag: string, content: boolean, as: readonly string[], bs: List<Node<HTMLElement | string>>, cs: List<Node<string>>, input: Input): HTMLElement {
   assert(as.length > 0);
   assert(as[0][0] === '<');
-  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, context);
+  if (!tags.includes(tag)) return ielem('tag', `Invalid HTML tag name "${tag}"`, input);
   if (content) {
-    if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, context);
-    if (bs.length === 0) return ielem('content', `Missing the content`, context);
-    if (!isNonblankFirstLine(bs)) return ielem('content', `Missing the visible content in the same line`, context);
+    if (cs.length === 0) return ielem('tag', `Missing the closing HTML tag "</${tag}>"`, input);
+    if (bs.length === 0) return ielem('content', `Missing the content`, input);
+    if (!isNonblankFirstLine(bs)) return ielem('content', `Missing the visible content in the same line`, input);
   }
   const [attrs] = attributes('html', attrspecs[tag], as.slice(1, as.at(-1) === '>' ? -1 : as.length));
-  if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', context)
-  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, context);
+  if (/(?<!\S)invalid(?!\S)/.test(attrs['class'] ?? '')) return ielem('attribute', 'Invalid HTML attribute', input)
+  if (as.at(-1) !== '>') return ielem('tag', `Missing the closing symbol ">"`, input);
   return h(tag as 'span', attrs, defrag(unwrap(bs)));
 }
 
-function ielem(type: string, message: string, context: Context): HTMLElement {
+function ielem(type: string, message: string, input: Input): HTMLElement {
   return h('span',
     { class: 'invalid', ...invalid('html', type, message) },
-    context.source.slice(context.position - context.range, context.position));
+    input.source.slice(input.position - input.range, input.position));
 }
 
 const requiredAttributes = memoize(

@@ -1,36 +1,37 @@
 import { MathBlockParser } from '../block';
-import { List, Node } from '../../combinator/data/parser';
-import { block, fence, clear, fmap } from '../../combinator';
+import { Node } from '../../combinator/parser';
+import { inits, block, fence } from '../../combinator';
 import { unwrap, invalid } from '../util';
 import { html } from 'typed-dom/dom';
 
 const opener = /(\${2,})(?!\$)([^\r\n]*)(?:$|\r?\n)/y;
 
 export const segment: MathBlockParser.SegmentParser = block(
-  clear(fence(opener, 300)));
+  fence(opener, false, 300));
 
 export const segment_: MathBlockParser.SegmentParser = block(
-  clear(fence(opener, 300, false)), false);
+  fence(opener, false, 300, false), false);
 
-export const mathblock: MathBlockParser = block(fmap(
-  fence(opener, 300),
-  // Bug: Type mismatch between outer and inner.
-  (nodes, { caches: { math: cache = undefined } = {} }) => {
-    const [body, overflow, closer, opener, delim, param] = unwrap<string>(nodes);
-    return new List([
+export const mathblock: MathBlockParser = block(inits([
+  fence(opener, true, 300),
+  ({ caches: { math: cache = undefined } = {} }, output) => {
+    const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
+    return output.append(
       delim.length === 2 && closer && !overflow && param.trimStart() === ''
         ? new Node(cache?.get(`${delim}\n${body}${delim}`)?.cloneNode(true) as HTMLDivElement ||
           html('div', { class: 'math', translate: 'no' }, `${delim}\n${body}${delim}`))
-        : new Node(html('pre', {
-            class: 'invalid',
-            translate: 'no',
-            ...invalid(
-              'mathblock',
-              delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
-              delim.length > 2 ? 'Invalid syntax' :
-                !closer ? `Missing the closing delimiter "${delim}"` :
-                  overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
-                    'Invalid argument'),
-          }, `${opener}${body}${overflow || closer}`)),
-    ]);
-  }));
+        : new Node(html('pre',
+            {
+              class: 'invalid',
+              translate: 'no',
+              ...invalid(
+                'mathblock',
+                delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument',
+                delim.length > 2 ? 'Invalid syntax' :
+                  !closer ? `Missing the closing delimiter "${delim}"` :
+                    overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
+                      'Invalid argument'),
+            },
+            `${opener}${body}${overflow || closer}`)));
+  },
+]));

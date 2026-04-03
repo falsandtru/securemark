@@ -1,19 +1,19 @@
 import { ilist } from './ilist';
 import { some } from '../../combinator';
-import { input } from '../../combinator/data/parser';
-import { Context } from '../context';
+import { input } from '../context';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/ilist', () => {
   describe('ilist', () => {
     const parser = some(ilist);
 
     it('single', () => {
-      assert(!parser(input('-', new Context())));
-      assert(!parser(input('+', new Context())));
-      assert(!parser(input('*', new Context())));
-      assert(parser(input('- ', new Context())));
-      assert(parser(input('+ ', new Context())));
-      assert(parser(input('* ', new Context())));
+      assert(!inspect(parser, input('-')));
+      assert(!inspect(parser, input('+')));
+      assert(!inspect(parser, input('*')));
+      assert(inspect(parser, input('- ')));
+      assert(inspect(parser, input('+ ')));
+      assert(inspect(parser, input('* ')));
     });
 
   });

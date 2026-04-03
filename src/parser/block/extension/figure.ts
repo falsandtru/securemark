@@ -1,9 +1,9 @@
 import { ExtensionParser } from '../../block';
 import { Segment } from '../../context';
-import { List, Node, subinput } from '../../../combinator/data/parser';
-import { union, inits, sequence, some, block, line, fence, rewrite, close, match, convert, fallback, fmap } from '../../../combinator';
+import { List, Node } from '../../../combinator/parser';
+import { union, inits, sequence, some, scope, block, line, fence, rewrite, close, match, fallback, fmap } from '../../../combinator';
 import { str, contentline, emptyline } from '../../source';
-import { label, segment as seg_label } from '../../inline/extension/label';
+import { label, test as test_label } from '../../inline/extension/label';
 import { ulist } from '../ulist';
 import { olist } from '../olist';
 import { table as styled_table } from '../table';
@@ -48,9 +48,9 @@ export const segment: FigureParser.SegmentParser = block(match(
   ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)), true, Segment.figure);
 
 export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
-  convert(source => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
+  scope(({ source }) => source.slice(source.match(/^~+(?:\w+\s+)?/)![0].length, source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(sequence([label, str(/(?!\S)[^\r\n]*\r?\n/y)])),
+    line(sequence([label, str(/(?!\S)[^\r\n]*\r?\n/y)]), false),
     inits([
       block(union([
         ulist,
@@ -62,13 +62,13 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         table,
         blockquote,
         placeholder,
-        line(media),
-        line(lineshortmedia),
+        line(media, false),
+        line(lineshortmedia, false),
       ])),
       emptyline,
       block(visualize(trimBlank(some(inline)))),
     ]),
-  ])),
+  ]), false),
   nodes => {
     const [label, param, content, ...caption] = unwrap(nodes) as [HTMLAnchorElement, string, ...HTMLElement[]];
     return new List([
@@ -83,10 +83,10 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         ]))
     ]);
   })),
-  fmap(
-    fence(/(~{3,})(?:figure(?=$|[ \r\n])|\[?\$)[^\r\n]*(?:$|\r?\n)/y, 300),
-    (nodes, context) => {
-      const [body, overflow, closer, opener, delim] = unwrap<string>(nodes);
+  inits([
+    fence(/(~{3,})(?:figure(?=$|[ \r\n])|\[?\$)[^\r\n]*(?:$|\r?\n)/y, true, 300),
+    (_, output) => {
+      const [body, overflow, closer, opener, delim] = unwrap(output.pop()) as string[];
       const violation =
         !closer && [
           'fence',
@@ -96,7 +96,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'fence',
           `Invalid trailing line after the closing delimiter "${delim}"`,
         ] ||
-        !seg_label(subinput(opener.match(/^~+(?:figure )?(\[?\$\S+)/)?.[1] ?? '', context)) && [
+        !test_label(opener.match(/^~+(?:figure )?(\[?\$\S+)/)?.[1] ?? '') && [
           'label',
           'Invalid label',
         ] ||
@@ -108,14 +108,16 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
           'content',
           'Invalid content',
         ];
-      return new List([
-        new Node(html('pre', {
-          class: 'invalid',
-          translate: 'no',
-          ...invalid('figure', violation[0], violation[1]),
-        }, `${opener}${body}${overflow || closer}`)),
-      ]);
-    })));
+      return output.append(
+        new Node(html('pre',
+          {
+            class: 'invalid',
+            translate: 'no',
+            ...invalid('figure', violation[0], violation[1]),
+          },
+          `${opener}${body}${overflow || closer}`)));
+    },
+  ])));
 
 function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];

@@ -1,8 +1,9 @@
 import { MarkdownParser } from '../../markdown';
-import { List, Node } from '../combinator/data/parser';
-import { union, inits, some, block, line, validate, focus, clear, convert, lazy, fmap } from '../combinator';
+import { List, Node } from '../combinator/parser';
+import { union, inits, some, scope, block, line, validate, focus, clear, lazy, fmap } from '../combinator';
 import { str } from './source';
 import { unwrap, invalid } from './util';
+import { ReadonlyURL } from 'spica/url';
 import { html, defrag } from 'typed-dom/dom';
 
 export const header: MarkdownParser.HeaderParser = lazy(() => validate(
@@ -10,42 +11,47 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
   inits([
     block(
       union([
-        validate(context => context.header,
-        focus(/(---+)[^\S\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,32}\1[^\S\r\n]*(?:$|\r?\n)/yi,
-        convert(source =>
-          source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n')),
-          fmap(
-            some(union([field])),
-            ns => new List([
-              new Node(html('aside', { class: 'header' }, [
-                html('details',
-                  { open: '' },
-                  defrag(unwrap(ns.unshift(new Node(html('summary', 'Header'))) && ns))),
-              ])),
-            ]))))),
-        context => {
-          const { source, position } = context;
-          context.position += source.length;
-          return new List([
+        validate(
+          input => input.header,
+          focus(/(---+)[^\S\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[0-9a-z]+)*:[ \t]+\S[^\r\n]*\r?\n){1,32}\1[^\S\r\n]*(?:$|\r?\n)/yi,
+            scope(
+              ({ source }) => source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n')),
+              fmap(
+                some(union([field])),
+                ns => new List([
+                  new Node(html('aside', { class: 'header' }, [
+                    html('details',
+                      { open: '' },
+                      defrag(unwrap(ns.unshift(new Node(html('summary', 'Header')))))),
+                  ])),
+                ])),
+              false))),
+        (input, output) => {
+          const { source, position } = input;
+          input.position += source.length;
+          return output.append(
             new Node(html('pre', {
               class: 'invalid',
               translate: 'no',
               ...invalid('header', 'syntax', 'Invalid syntax'),
-            }, source.slice(position))),
-          ]);
+            }, source.slice(position))));
         },
       ])),
     clear(str(/[^\S\r\n]*\r?\n/y)),
   ])));
 
-const field: MarkdownParser.HeaderParser.FieldParser = line(({ source, position }) => {
+const field: MarkdownParser.HeaderParser.FieldParser = line((input, output) => {
+  const { source, position } = input;
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();
-  return new List([
+  if (name.toLowerCase() === 'url') {
+    // @ts-expect-error
+    input.url = new ReadonlyURL(value as ':');
+  }
+  return output.append(
     new Node(html('div', { class: 'field', 'data-name': name.toLowerCase(), 'data-value': value }, [
       html('span', { class: 'field-name' }, name),
       ': ',
       html('span', { class: 'field-value' }, value),
-    ])),
-  ]);
+    ])));
 });

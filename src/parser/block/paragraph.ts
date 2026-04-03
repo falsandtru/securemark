@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../block';
-import { List, Node } from '../../combinator/data/parser';
+import { List, Node } from '../../combinator/parser';
 import { union, some, block, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { visualize, trimBlankEnd } from '../visibility';

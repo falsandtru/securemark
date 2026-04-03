@@ -1,27 +1,27 @@
 import { placeholder } from './placeholder';
 import { some } from '../../../combinator';
-import { input } from '../../../combinator/data/parser';
-import { Context } from '../../context';
+import { input } from '../../context';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/placeholder', () => {
   describe('placeholder', () => {
     const parser = some(placeholder);
 
     it('invalid', () => {
-      assert(!parser(input('', new Context())));
-      assert(!parser(input('\n', new Context())));
-      assert(!parser(input('~~~', new Context())));
-      assert(!parser(input('~~~\n', new Context())));
-      assert(!parser(input('~~~a ~~~\n~~~', new Context())));
+      assert(!inspect(parser, input('')));
+      assert(!inspect(parser, input('\n')));
+      assert(!inspect(parser, input('~~~')));
+      assert(!inspect(parser, input('~~~\n')));
+      assert(!inspect(parser, input('~~~a ~~~\n~~~')));
     });
 
     it('valid', () => {
-      assert(parser(input('~~~\n~~~', new Context())));
-      assert(parser(input('~~~a\n~~~', new Context())));
-      assert(parser(input('~~~a \n~~~', new Context())));
-      assert(parser(input('~~~a b \n~~~', new Context())));
-      assert(parser(input('~~~~a\n~~~~', new Context())));
-      assert(parser(input('~~~~a\n~~~~\n', new Context())));
+      assert(inspect(parser, input('~~~\n~~~')));
+      assert(inspect(parser, input('~~~a\n~~~')));
+      assert(inspect(parser, input('~~~a \n~~~')));
+      assert(inspect(parser, input('~~~a b \n~~~')));
+      assert(inspect(parser, input('~~~~a\n~~~~')));
+      assert(inspect(parser, input('~~~~a\n~~~~\n')));
     });
 
   });

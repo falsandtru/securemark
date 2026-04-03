@@ -1,39 +1,35 @@
 import { AnyLineParser, EmptyLineParser, EmptySegmentParser, ContentLineParser } from '../source';
 import { Segment } from '../context';
-import { List } from '../../combinator/data/parser';
 
-export const anyline: AnyLineParser = input => {
-  const context = input;
-  const { source, position } = context;
+export const anyline: AnyLineParser = (input, output) => {
+  const { source, position } = input;
   if (position === source.length) return;
-  context.position = source.indexOf('\n', position) + 1 || source.length;
-  return new List();
+  input.position = source.indexOf('\n', position) + 1 || source.length;
+  return output.context;
 };
 
 const regEmptyline = /[^\S\r\n]*(?:$|\r?\n)/y;
-export const emptyline: EmptyLineParser = input => {
-  const context = input;
-  const { source, position } = context;
+export const emptyline: EmptyLineParser = (input, output) => {
+  const { source, position } = input;
   if (position === source.length) return;
   const i = eoel(source, position);
   if (i === position) return;
-  context.position = i;
-  return new List();
+  input.position = i;
+  return output.context;
 };
-export const emptysegment: EmptySegmentParser = input => {
-  const context = input;
-  const { source, position, segment } = context;
+export const emptysegment: EmptySegmentParser = (input, output) => {
+  const { source, position, segment } = input;
   if (position === source.length) return;
   if (segment & Segment.write) {
     if (segment !== (Segment.empty | Segment.write)) return;
-    context.position = source.length;
-    return new List();
+    input.position = source.length;
+    return output.context;
   }
   const i = eoel(source, position);
   if (i === position) return;
-  context.position = i;
-  context.segment = Segment.empty;
-  return new List();
+  input.position = i;
+  input.segment = Segment.empty;
+  return output.context;
 };
 function eoel(source: string, position: number): number {
   const char = source[position];
@@ -44,9 +40,8 @@ function eoel(source: string, position: number): number {
 }
 
 const regContentline = /[^\S\r\n]*\S[^\r\n]*(?:$|\r?\n)/y;
-export const contentline: ContentLineParser = input => {
-  const context = input;
-  const { source, position } = context;
+export const contentline: ContentLineParser = (input, output) => {
+  const { source, position } = input;
   if (position === source.length) return;
   const char = source[position];
   if (char === '\n' || char === '\r' && source[position + 1] === '\n') return;
@@ -54,6 +49,6 @@ export const contentline: ContentLineParser = input => {
   regContentline.test(source);
   const i = regContentline.lastIndex;
   if (i === 0) return;
-  context.position = i;
-  return new List();
+  input.position = i;
+  return output.context;
 };

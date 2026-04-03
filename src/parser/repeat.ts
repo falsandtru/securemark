@@ -1,117 +1,144 @@
-import { Parser, Result, List, Node } from '../combinator/data/parser';
-import { tester } from '../combinator/data/delimiter';
+import { Parser, Result, Output, List, Node } from '../combinator/parser';
+import { tester } from '../combinator/delimiter';
 import { recur } from '../combinator';
-import { Context, Recursion, Command } from './context';
+import { Input, Recursion, Command } from './context';
 import { min } from 'spica/alias';
 
-export function repeat<P extends Parser<HTMLElement | string, Context>>(
+export function repeat<P extends Parser<HTMLElement | string, Input>>(
   opener: string, after: string | RegExp, closer: string, recursion: Recursion, parser: P,
-  cons: (nodes: List<Node<Parser.Node<P>>>, context: Parser.Context<P>, lead: number, follow: number) =>
+  cons: (nodes: List<Node<Parser.Node<P>>>, input: Parser.Input<P>, output: Output<Parser.Node<P>>, lead: number, follow: number) =>
     List<Node<Parser.Node<P>>>,
-  termination?: (acc: List<Node<Parser.Node<P>>>, context: Context, prefix: number, postfix: number, state: boolean) =>
+  termination?: (nodes: List<Node<Parser.Node<P>>>, input: Input, output: Output<Parser.Node<P>>, prefix: number, postfix: number, state: boolean) =>
     Result<string | Parser.Node<P>>,
 ): P;
-export function repeat<N extends HTMLElement | string>(
-  opener: string, after: string | RegExp, closer: string, recursion: Recursion, parser: Parser<N>,
-  cons: (nodes: List<Node<N>>, context: Context, lead: number, follow: number) =>
-    List<Node<N>>,
-  termination: (acc: List<Node<N>>, context: Context, prefix: number, postfix: number, state: boolean) =>
-    Result<string | N, Context> =
-    (nodes, context, prefix, postfix) => {
-      const acc = new List<Node<string | N>>();
+export function repeat<T extends HTMLElement | string>(
+  opener: string, after: string | RegExp, closer: string, recursion: Recursion, parser: Parser<string | T>,
+  cons: (nodes: List<Node<string | T>>, input: Input, output: Output<string | T>, lead: number, follow: number) =>
+    List<Node<T>>,
+  termination: (nodes: List<Node<string | T>>, input: Input, output: Output<string | T>, prefix: number, postfix: number, state: boolean) =>
+    Result<string | T, Input> =
+    (nodes, input, output, prefix, postfix) => {
       if (prefix > 0) {
-        acc.push(new Node(opener[0].repeat(prefix)));
-        context.range += prefix;
+        nodes.unshift(new Node(opener[0].repeat(prefix)));
+        input.range += prefix;
       }
-      acc.import(nodes);
       if (postfix > 0) {
-        const { source, position } = context;
-        acc.push(new Node(source.slice(position, position + postfix)));
-        context.position += postfix;
-        context.range += postfix;
+        const { source, position } = input;
+        nodes.push(new Node(source.slice(position, position + postfix)));
+        input.position += postfix;
+        input.range += postfix;
       }
-      return acc;
+      return output.import(nodes);
     },
-): Parser<string | N, Context> {
+): Parser<string | T, Input> {
   const test = tester(after, false);
-  return input => {
-    const context = input;
-    const { source, position, resources: { recursions } } = context;
-    if (!source.startsWith(opener, context.position)) return;
-    let nodes = new List<Node<N>>();
-    let i = opener.length;
-    for (; source[context.position + i] === source[context.position];) ++i;
-    context.position += i;
-    if (test(input) === undefined) {
-      context.position = position;
-      return;
-    }
-    let depth = i / opener.length + 1 | 0;
-    recur(recursions, recursion, depth, true);
-    let state = false;
-    let follow = 0;
-    for (; i >= opener.length; i -= opener.length, follow -= closer.length) {
-      recur(recursions, recursion, -1);
-      depth -= 1;
-      const lead = i - opener.length;
-      if (source.startsWith(closer, context.position)) {
-        context.position += closer.length;
-        const pos = context.position;
-        follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
-        nodes = cons(nodes, context, lead, follow);
-        if (context.position > pos) {
-          const advance = context.position - pos;
-          i -= advance;
-          follow -= advance;
-          depth -= advance / closer.length | 0;
-        }
-        continue;
+  interface Memory {
+    readonly position: number;
+    i: number;
+    lead: number;
+    follow: number;
+    state: boolean;
+    depth: number;
+  }
+  const cont: Result<T, Input<Memory>> = [
+    (input, output) => {
+      const { source, position, resources: { recursions } } = input;
+      if (!source.startsWith(opener, input.position)) return Result.skip;
+      let i = opener.length;
+      for (; source[input.position + i] === source[input.position];) ++i;
+      input.position += i;
+      if (!test(input, output)) {
+        input.position = position;
+        return Result.skip;
       }
-      const buf = context.buffer;
-      context.buffer = nodes;
-      const result = parser(input);
-      context.buffer = buf;
-      context.range = context.position - position - i + opener.length;
-      if (result === undefined) break;
-      const pos = context.position;
-      nodes = result;
-      switch (nodes.last?.value) {
-        case Command.Cancel:
-          assert(!source.startsWith(closer, context.position));
-          nodes.pop();
-          state = false;
-          break;
-        case Command.Separator:
-          assert(!source.startsWith(closer, context.position));
-          follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
-          nodes.pop();
-          state = true;
-          continue;
-        default:
-          follow = follow > 0 ? follow : countFollows(source, pos, closer, lead / opener.length | 0);
-          nodes = cons(nodes, context, lead, follow);
-          state = true;
-          if (context.position > pos) {
-            const advance = context.position - pos;
-            i -= advance;
-            follow -= advance;
-            depth -= advance / closer.length | 0;
+      let depth = i / opener.length + 1 | 0;
+      recur(output, recursions, recursion, depth, true);
+      input.memory = {
+        position,
+        i,
+        lead: 0,
+        follow: 0,
+        state: false,
+        depth,
+      };
+      output.push();
+      return loop;
+    },
+    (input, output) => {
+      const { source, memory: m, resources: { recursions } } = input;
+      recur(output, recursions, recursion, -m.depth);
+      m.depth = 0;
+      const prefix = m.i;
+      m.i = 0;
+      for (let len = min(prefix, source.length - input.position); m.i < len && source[input.position + m.i] === closer[0];) {
+        ++m.i;
+      }
+      const postfix = m.i;
+      input.range = input.position - m.position - prefix;
+      return termination(output.pop(), input, output, prefix, postfix, m.state);
+    },
+  ];
+  const loop: Result<T, Input<Memory>> = [
+    (input, output) => {
+      const { source, memory: m, resources: { recursions } } = input;
+      for (; m.i >= opener.length; m.i -= opener.length, m.follow -= closer.length) {
+        recur(output, recursions, recursion, -1);
+        m.depth -= 1;
+        const lead = m.lead = m.i - opener.length;
+        if (source.startsWith(closer, input.position)) {
+          input.position += closer.length;
+          const pos = input.position;
+          m.follow = m.follow > 0 ? m.follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          output.push(cons(output.pop(), input, output, lead, m.follow));
+          if (input.position > pos) {
+            const advance = input.position - pos;
+            m.i -= advance;
+            m.follow -= advance;
+            m.depth -= advance / closer.length | 0;
           }
           continue;
+        }
+        return output.context;
       }
-      break;
-    }
-    recur(recursions, recursion, -depth);
-    depth = 0;
-    const prefix = i;
-    i = 0;
-    for (let len = min(prefix, source.length - context.position); i < len && source[context.position + i] === closer[0];) {
-      ++i;
-    }
-    const postfix = i;
-    context.range = context.position - position - prefix;
-    return termination(nodes, context, prefix, postfix, state);
-  };
+      return Result.skip;
+    },
+    parser,
+    (input, output) => {
+      const { source, memory: m } = input;
+      const { lead } = m;
+      input.range = input.position - m.position - m.i + opener.length;
+      if (!output.state) return;
+      const pos = input.position;
+      const nodes = output.peek();
+      switch (nodes.last?.value) {
+        case Command.Cancel:
+          assert(!source.startsWith(closer, input.position));
+          nodes.pop();
+          m.state = false;
+          return;
+        case Command.Separator:
+          assert(!source.startsWith(closer, input.position));
+          m.follow = m.follow > 0 ? m.follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          nodes.pop();
+          m.state = true;
+          m.i -= opener.length, m.follow -= closer.length;
+          return loop;
+        default:
+          m.follow = m.follow > 0 ? m.follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          output.push(cons(output.pop(), input, output, lead, m.follow));
+          m.state = true;
+          if (input.position > pos) {
+            const advance = input.position - pos;
+            m.i -= advance;
+            m.follow -= advance;
+            m.depth -= advance / closer.length | 0;
+          }
+          m.i -= opener.length, m.follow -= closer.length;
+          return loop;
+      }
+    },
+  ];
+  return () => cont;
 }
 
 function countFollows(source: string, position: number, closer: string, limit: number): number {
