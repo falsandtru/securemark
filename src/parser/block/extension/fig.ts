@@ -1,7 +1,7 @@
 import { ExtensionParser } from '../../block';
 import { Segment } from '../../context';
 import { Result } from '../../../combinator/parser';
-import { union, sequence, some, always, backtrack, block, line, rewrite, close } from '../../../combinator';
+import { union, sequence, some, always, block, line, rewrite, close } from '../../../combinator';
 import { contentline } from '../../source';
 import { figure } from './figure';
 import { segment as seg_label } from '../../inline/extension/label';
@@ -12,7 +12,7 @@ import { segment as seg_blockquote } from '../blockquote';
 
 import FigParser = ExtensionParser.FigParser;
 
-export const segment: FigParser.SegmentParser = backtrack(block(
+export const segment: FigParser.SegmentParser = block(
   sequence([
     line(close(seg_label, /(?!\S)[^\r\n]*\r?\n/y), false),
     union([
@@ -22,7 +22,7 @@ export const segment: FigParser.SegmentParser = backtrack(block(
       seg_blockquote,
       some(contentline),
     ]),
-  ]), true, Segment.fig));
+  ]), true, Segment.fig);
 
 export const fig: FigParser = block(rewrite(segment, always([
   (input, output) => {
