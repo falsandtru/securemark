@@ -107,13 +107,13 @@ export const media: MediaParser = lazy(() => constraint(State.media, backtrack(o
   })))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
-  surround(str('('), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ')')), str(')'),
+  surround(str('('), recursion(Recursion.bracket, some(union([unsafehtmlentity, bracket, txt]), ')')), str(')'),
     true, [], undefined, () => Result.succ),
-  surround(str('['), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), ']')), str(']'),
+  surround(str('['), recursion(Recursion.bracket, some(union([unsafehtmlentity, bracket, txt]), ']')), str(']'),
     true, [], undefined, () => Result.succ),
-  surround(str('{'), recursion(Recursion.terminal, some(union([unsafehtmlentity, bracket, txt]), '}')), str('}'),
+  surround(str('{'), recursion(Recursion.bracket, some(union([unsafehtmlentity, bracket, txt]), '}')), str('}'),
     true, [], undefined, () => Result.succ),
-  surround(str('"'), precedence(2, recursion(Recursion.terminal, some(union([unsafehtmlentity, txt]), '"'))), str('"'),
+  surround(str('"'), precedence(2, recursion(Recursion.bracket, some(union([unsafehtmlentity, txt]), '"'))), str('"'),
     true, [], undefined, () => Result.succ),
 ]));
 

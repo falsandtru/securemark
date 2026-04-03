@@ -41,7 +41,7 @@ export const math: MathParser = lazy(() => rewrite(
 
 const bracket: MathParser.BracketParser = lazy(() => backtrack(surround(
   str('{'),
-  recursion(Recursion.terminal,
+  recursion(Recursion.bracket,
   some(union([
     bracket,
     some(escsource, /[{}$\r\n]|(?<=[0-9A-Za-z]):\/\/[[0-9A-Za-z]/y),

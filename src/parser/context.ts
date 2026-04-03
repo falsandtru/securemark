@@ -28,10 +28,10 @@ export class Input<M extends object = object> extends Ipt<M> {
       clock: -1,
       interval: 200,
       recursions: [
-        10 || Recursion.scope,
+        10 || Recursion.document,
         100 || Recursion.block,
         100 || Recursion.inline,
-        100 || Recursion.terminal,
+        100 || Recursion.bracket,
       ],
     };
     this.segment = segment ?? Segment.unknown;
@@ -117,10 +117,10 @@ export const enum State {
 }
 
 export const enum Recursion {
-  scope,
+  document,
   block,
   inline,
-  terminal,
+  bracket,
 }
 
 export const enum Backtrack {

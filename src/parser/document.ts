@@ -29,7 +29,7 @@ export const document: MarkdownParser = (() => {
       output.push();
       return output.context;
     },
-    recursion(Recursion.scope, force(() => loop)),
+    recursion(Recursion.document, force(() => loop)),
     (input, output) => {
       assert(input.position === input.source.length);
       const doc = frag(unwrap(output.pop()));

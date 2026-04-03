@@ -25,15 +25,15 @@ export const template: TemplateParser = lazy(() => backtrack(surround(
         input.source.slice(input.position - input.range, input.position)))))));
 
 const bracket: TemplateParser.BracketParser = lazy(() => union([
-  surround(str('('), recursion(Recursion.terminal, some(union([bracket, escsource]), ')')), str(')'),
+  surround(str('('), recursion(Recursion.bracket, some(union([bracket, escsource]), ')')), str(')'),
     true, [], undefined, ([as, bs], _, output) => bs && output.import(as.import(bs as List<Node<string>>))),
-  surround(str('['), recursion(Recursion.terminal, some(union([bracket, escsource]), ']')), str(']'),
+  surround(str('['), recursion(Recursion.bracket, some(union([bracket, escsource]), ']')), str(']'),
     true, [], undefined, ([as, bs], _, output) => bs && output.import(as.import(bs as List<Node<string>>))),
-  surround(str('{'), recursion(Recursion.terminal, some(union([bracket, escsource]), '}')), str('}'),
+  surround(str('{'), recursion(Recursion.bracket, some(union([bracket, escsource]), '}')), str('}'),
     true, [], undefined, ([as, bs], _, output) => bs && output.import(as.import(bs as List<Node<string>>))),
   surround(
     str('"'),
-    precedence(2, recursion(Recursion.terminal, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
+    precedence(2, recursion(Recursion.bracket, some(escsource, /["\n]/y, [['"', 2], ['\n', 3]]))),
     str('"'),
     true, [], undefined, ([as, bs], _, output) => bs && output.import(as.import(bs as List<Node<string>>))),
 ]));
