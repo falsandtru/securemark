@@ -3,7 +3,7 @@ import { Input, Backtrack } from '../context';
 import { Parser, Result, List, Node } from '../../combinator/parser';
 import { union, inits, always, backtrack, surround, setBacktrack, dup, lazy, bind } from '../../combinator';
 import { unsafehtmlentity } from './htmlentity';
-import { txt } from '../source';
+import { txt, isWhitespace } from '../source';
 import { isNonblankNodeStart } from '../visibility';
 import { unwrap } from '../util';
 import { html, defrag } from 'typed-dom/dom';
@@ -63,8 +63,6 @@ export const ruby: RubyParser = lazy(() => backtrack(bind(
     }
   })));
 
-const delimiter = /[$"`\[\](){}<>（）［］｛｝|]|\\?\r?\n/y;
-
 interface Memory {
   position: number;
   state: boolean;
@@ -94,10 +92,9 @@ const loop: Result<string, Input<Memory>> = [
     const { source, memory } = input;
     for (let { position } = input; ; position = input.position) {
       if (position === source.length) return Result.skip;
-      delimiter.lastIndex = position;
-      if (delimiter.test(source)) return Result.skip;
+      if (isDelimiter(source, position)) return Result.skip;
       assert(source[position] !== '\n');
-      if (source[position].trimStart() !== '') break;
+      if (!isWhitespace(source[position])) break;
       memory.state ||= memory.nodes.last!.value.trimStart() !== '';
       memory.nodes.push(new Node(''));
       input.position += 1;
@@ -123,4 +120,44 @@ function* zip<N extends Node<unknown>>(a: List<N>, b: List<N>): Iterable<[N | un
     if (ra.done) break;
     yield [ra.value, rb.value];
   }
+}
+
+function isDelimiter(source: string, position: number): boolean {
+  switch (source[position]) {
+    case '$':
+    case '"':
+    case '`':
+    case '[':
+    case ']':
+    case '(':
+    case ')':
+    case '{':
+    case '}':
+    case '<':
+    case '>':
+    case '（':
+    case '）':
+    case '［':
+    case '］':
+    case '｛':
+    case '｝':
+    case '|':
+      return true;
+    case '\\':
+      switch (source[position + 1]) {
+        case '\r':
+          return source[position + 2] === '\n';
+        case '\n':
+          return true;
+        default:
+          return false;
+      }
+    case '\r':
+      return source[position + 1] === '\n';
+    case '\n':
+      return true;
+    default:
+      return false;
+  }
+  assert(false);
 }

@@ -3,6 +3,7 @@ import { Input, Command } from './context';
 import { Flag } from './node';
 import { always, fmap } from '../combinator';
 import { invisibleBlankHTMLEntityNames } from '../api/normalize';
+import { isWhitespace } from './source';
 
 namespace blank {
   export const line = new RegExp(
@@ -102,7 +103,7 @@ function isNonblank({ value: node, flags }: Node<HTMLElement | string>, strpos?:
     case '\n':
       return false;
     default:
-      return str.trimStart() !== '';
+      return !isWhitespace(str.trimStart());
   }
 }
 

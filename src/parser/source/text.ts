@@ -3,6 +3,7 @@ import { Result, Node } from '../../combinator/parser';
 import { union, spend } from '../../combinator';
 import { State, Command } from '../context';
 import { Flag } from '../node';
+import { isWhitespace } from './whitespace';
 import { html } from 'typed-dom/dom';
 
 export const nonWhitespace = /[^ \t　]/g;
@@ -68,19 +69,6 @@ export function canSkip(source: string, position: number): boolean {
   if (position + 1 === source.length) return true;
   return isWhitespace(source[position + 1], true);
 }
-function isWhitespace(char: string, linebreak: boolean): boolean {
-  switch (char) {
-    case ' ':
-    case '\t':
-    case '　':
-      return true;
-    case '\r':
-    case '\n':
-      return linebreak;
-    default:
-      return false;
-  }
-}
 
 function next(source: string, position: number, state: number): number {
   let index= seek(source, position, state);
@@ -89,7 +77,7 @@ function next(source: string, position: number, state: number): number {
   const char = source[index];
   switch (char) {
     case '%':
-      assert(source.startsWith('%]', index) && isWhitespace(source[index - 1], true));
+      assert(source.startsWith('%]', index) && isWhitespace(source[index - 1]));
       index += index - 1 > position
         ? -1
         : 0;
@@ -208,7 +196,7 @@ function seek(source: string, position: number, state: number): number {
         if (source[i + 1] === char && source[i + 2] === char) return i;
         continue;
       case '%':
-        if (source[i + 1] === ']' && isWhitespace(source[i - 1], true)) return i;
+        if (source[i + 1] === ']' && isWhitespace(source[i - 1])) return i;
         continue;
       case ':':
         if (source[i + 1] === '/' && source[i + 2] === '/') return i;
@@ -216,30 +204,13 @@ function seek(source: string, position: number, state: number): number {
       case '&':
         if (source[i + 1] !== ' ') return i;
         continue;
-      case ' ':
-      case '\t':
-      case '　':
-        if (i + 1 === source.length) return i;
-        switch (source[i + 1]) {
-          case ' ':
-          case '\t':
-          case '\r':
-          case '\n':
-          case '　':
-            return i;
-          case '\\':
-            if (i + 2 === source.length) return i;
-            switch (source[i + 2]) {
-              case ' ':
-              case '\t':
-              case '\r':
-              case '\n':
-              case '　':
-                return i;
-            }
-        }
-        continue;
       default:
+        if (!isWhitespace(char)) continue;
+        if (i + 1 === source.length) return i;
+        if (isWhitespace(source[i + 1])) return i;
+        if (source[i + 1] !== '\\') continue;
+        if (i + 2 === source.length) return i;
+        if (isWhitespace(source[i + 2])) return i;
         continue;
     }
     assert(false);

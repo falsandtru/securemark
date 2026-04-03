@@ -15,4 +15,5 @@ export { text, txt } from './source/text';
 export { escsource } from './source/escapable';
 export { unescsource } from './source/unescapable';
 export { str, strs } from './source/str';
+export { isWhitespace } from './source/whitespace';
 export { contentline, emptyline, emptysegment, anyline } from './source/line';
