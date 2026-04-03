@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.300.1
+
+- Refactoring.
+
 ## 0.300.0
 
 - Refine parser to CPS.
