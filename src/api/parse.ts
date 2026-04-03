@@ -1,5 +1,5 @@
 import { ParserOptions } from '../..';
-import { Input, Options, input } from '../parser/context';
+import { Input, Options } from '../parser/context';
 import { Output, run } from '../combinator/parser';
 import { document } from '../parser/document';
 import { ReadonlyURL } from 'spica/url';
@@ -23,7 +23,7 @@ export function* parse(source: string, opts: Opts = {}, options?: Options): Gene
   if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
   const output = new Output<DocumentFragment>();
-  for (const _ of run(document, input(source, new Input(options)), output)) yield;
+  for (const _ of run(document, new Input(options, source), output)) yield;
   assert(output.data.length === 1);
   assert(output.peek().length === 1);
   return output.peek().head!.value;

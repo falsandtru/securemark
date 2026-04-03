@@ -136,6 +136,7 @@ export function surround<T>(
         const o = output.pop();
         if (!g) return;
         output.state = true;
+        // @ts-expect-error
         output.context = Result.succ;
         return g([o, state ? m : undefined], input, output);
       }
@@ -156,6 +157,7 @@ export function surround<T>(
         wbs && setBacktrack(input, wbs, position);
         if (!g) return;
         output.state = true;
+        // @ts-expect-error
         output.context = Result.succ;
         return g([o, state ? m : undefined], input, output);
       }

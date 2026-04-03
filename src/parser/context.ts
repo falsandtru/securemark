@@ -8,6 +8,7 @@ export function input(source: string, input: Input = new Input()): Input {
 export class Input<M extends object = object> extends Ipt<M> {
   constructor(
     options: Partial<Input> = {},
+    source?: string,
   ) {
     super(options);
     const {
@@ -22,6 +23,7 @@ export class Input<M extends object = object> extends Ipt<M> {
       caches,
       test,
     } = options;
+    this.source = source ?? options.source ?? '';
     this.resources ??= {
       clock: -1,
       interval: 200,

@@ -140,7 +140,7 @@ export class Output<T> {
     assert(data.length > 0);
   }
   public state: boolean = true;
-  public context: Result.Succ | Result.Fail = Result.succ;
+  public readonly context: Result.Succ | Result.Fail = Result.succ;
   public error?: Error = undefined;
   public peek(): List<Node<T>> {
     assert(this.data.length > 0);
@@ -222,17 +222,24 @@ export function* run
       time = Date.now();
     }
     if (output.state && output.error) {
-      output.state = false;
-      output.context = Result.fail;
+      if (output.state) {
+        output.state = false;
+        // @ts-expect-error
+        output.context = Result.fail;
+      }
     }
     const input = scope.peek();
     //assert(input.position <= input.source.length);
-    const result = queue.pop()(input, output);
+    const parser = queue.pop();
+    const result = parser(input, output);
 
     if (result) {
       //assert(result.every(f => f));
-      output.state = true;
-      output.context = Result.succ;
+      if (!output.state) {
+        output.state = true;
+        // @ts-expect-error
+        output.context ??= Result.succ;
+      }
       if (result.length !== 0) {
         if (queue.length !== 0) {
           queue.memory = input.memory;
@@ -249,8 +256,11 @@ export function* run
       if (result === Result.skip) {
         queue.length = 0;
       }
-      output.state = false;
-      output.context = Result.fail;
+      if (output.state) {
+        output.state = false;
+        // @ts-expect-error
+        output.context = Result.fail;
+      }
     }
 
     if (queue.length !== 0) continue;

@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../..';
 import { Input, Options, Segment } from '../parser/context';
-import { Output, subinput, run } from '../combinator/parser';
+import { Output, run } from '../combinator/parser';
 import { segment } from '../parser/segment';
 import { block } from '../parser/block';
 import { headers } from './header';
@@ -74,7 +74,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       assert(rev === revision);
       const seg = sourceSegments[index];
       options.segment = sourceSegmentAttrs[index] | Segment.write;
-      for (const _ of run(block, subinput(seg, new Input(options)), output)) {
+      for (const _ of run(block, new Input(options, seg), output)) {
         yield { type: 'break' };
       }
       assert(output.data.length === 1);

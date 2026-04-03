@@ -1,7 +1,6 @@
-import { Parser, SubParsers } from '../parser';
+import { Parser, SubParsers, Result } from '../parser';
 import { union } from './union';
 import { sequence } from './sequence';
-import { recovery } from './state';
 
 export function inits<P extends Parser>(parsers: Parser.SubParsers<P>): P;
 export function inits<T>(parsers: SubParsers<T>): Parser<T> {
@@ -19,8 +18,17 @@ export function inits<T>(parsers: SubParsers<T>): Parser<T> {
             ? acc
             : union([
                 acc,
-                recovery(),
+                recovery,
               ]),
         ]));
   }
 }
+
+const recovery: Parser<never> = (_, output) => {
+  if (output.state) {
+    output.state = true;
+    // @ts-expect-error
+    output.context ??= Result.succ;
+  }
+  return output.context;
+};
