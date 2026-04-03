@@ -7,9 +7,10 @@ export function inits<T>(parsers: SubParsers<T>): Parser<T> {
   assert(parsers.every(f => f));
   switch (parsers.length) {
     case 0:
+      assert(false);
       return (_, output) => output.context;
     case 1:
-      return () => parsers;
+      return parsers[0];
     default:
       return parsers.reduceRight((acc, parser, i) =>
         sequence([
