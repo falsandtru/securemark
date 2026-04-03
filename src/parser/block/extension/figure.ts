@@ -84,7 +84,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
     ]);
   })),
   inits([
-    fence(/(~{3,})(?:figure(?=$|[ \r\n])|\[?\$)[^\r\n]*(?:$|\r?\n)/y, true, 300),
+    fence(/(~{3,})(?:figure(?=$|[ \r\n])|\[?\$)[^\r\n]*(?:$|\r?\n)/y, true),
     (_, output) => {
       const [body, overflow, closer, opener, delim] = unwrap(output.pop()) as string[];
       const violation =

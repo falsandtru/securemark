@@ -2,7 +2,7 @@ import { Parser, SubParsers, Input, List, Node } from '../parser';
 import { spend } from '../effect/clock';
 import { firstline, isEmptyline } from './line';
 
-export function fence<I extends Input, S extends SubParsers<never, I>>(opener: RegExp, write: boolean, limit: number, separation = true): Parser<string, I, S> {
+export function fence<I extends Input, S extends SubParsers<never, I>>(opener: RegExp, write: boolean, separation = true): Parser<string, I, S> {
   assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
   return (input, output) => {
     const { source, position } = input;
@@ -29,11 +29,11 @@ export function fence<I extends Input, S extends SubParsers<never, I>>(opener: R
     for (let count = 1; ; ++count) {
       if (input.position === source.length) break;
       const line = firstline(source, input.position);
-      if ((closer || count > limit + 1) && isEmptyline(line, 0)) break;
+      if (closer && isEmptyline(line, 0)) break;
       if(closer) {
         overflow += line;
       }
-      if (!closer && count <= limit + 1 && line.startsWith(delim) && line.trimEnd() === delim) {
+      if (!closer && line.startsWith(delim) && line.trimEnd() === delim) {
         closer = line;
         if (isEmptyline(source, input.position + line.length)) {
           input.position += line.length;

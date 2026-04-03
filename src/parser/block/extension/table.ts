@@ -18,13 +18,13 @@ import CellParser = TableParser.CellParser;
 const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y;
 
 export const segment: TableParser.SegmentParser = block(
-  fence(opener, false, 10000));
+  fence(opener, false));
 
 export const segment_: TableParser.SegmentParser = block(
-  fence(opener, false, 10000, false), false);
+  fence(opener, false, false), false);
 
 export const table: TableParser = block(inits([
-  fence(opener, true, 10000),
+  fence(opener, true),
   (_, output) => {
     const [body, overflow, closer, opener, delim, type, param] = unwrap(output.pop()) as string[];
     if (!closer || overflow || param.trimStart()) return output.append(

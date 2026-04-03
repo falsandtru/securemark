@@ -11,7 +11,6 @@ describe('Unit: parser/block/extension/example', () => {
       assert.deepStrictEqual(inspect(parser, input('~~~example/\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser, input('~~~example/a\n~~~')), [['<pre class="invalid" translate="no">~~~example/a\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~example/markdown a\n~~~')), [['<pre class="invalid" translate="no">~~~example/markdown a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~example/markdown\n0${'\n'.repeat(301)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('valid', () => {
@@ -27,7 +26,6 @@ describe('Unit: parser/block/extension/example', () => {
       assert.deepStrictEqual(inspect(parser, input('~~~example/markdown\n((a))[[b]]\n~~~')), [['<aside class="example" data-type="markdown"><pre translate="no">((a))[[b]]</pre><hr><section><p><sup class="annotation local" id="annotation:random:ref:a:1" title="a"><a href="#annotation:random:def:a:1">*1</a></sup><sup class="reference local" id="reference:random:ref:b:1" title="b"><a href="#reference:random:def:b">[1]</a></sup></p><ol class="annotations"><li id="annotation:random:def:a:1" data-marker="*1"><span>a</span><sup><a href="#annotation:random:ref:a:1">^1</a></sup></li></ol><h2>References</h2><ol class="references"><li id="reference:random:def:b"><span>b</span><sup><a href="#reference:random:ref:b:1">^1</a></sup></li></ol></section></aside>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~~example/markdown\na\n~~~~')), [['<aside class="example" data-type="markdown"><pre translate="no">a</pre><hr><section><p>a</p><h2>References</h2><ol class="references"></ol></section></aside>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~example/math\na\n~~~')), [['<aside class="example" data-type="math"><pre translate="no">a</pre><hr><div class="math" translate="no">$$\na\n$$</div></aside>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~example/math\n0${'\n'.repeat(100)}~~~`), '>'), [['<aside class="example" data-type="math">'], '']);
     });
 
   });

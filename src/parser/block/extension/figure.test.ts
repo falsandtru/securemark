@@ -33,8 +33,6 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$fig-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="fig-name" data-group="fig" class="invalid"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$figure-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="figure-name" data-group="figure" class="invalid"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$table-name]\n> \n\n~~~')), [['<figure data-type="quote" data-label="table-name" data-group="table" class="invalid"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~figure [$group-name]\n0${'\n'.repeat(301)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~figure [$group-name]\n~~~\n0${'\n'.repeat(301)}~~~\n~~~`), '>'), [['<pre class="invalid" translate="no">'], `${'\n'.repeat(300)}~~~\n~~~`]);
     });
 
     it('valid', () => {
@@ -70,8 +68,6 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$-0.0]\n$$\n\n$$\n~~~')), [['<figure data-type="math" data-label="$-0.0" data-group="$" class="invalid"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><div class="math" translate="no">$$\n\n$$</div></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$-name]\n!https://host\n~~~')), [['<figure data-type="media" data-label="$-name" data-group="$" class="invalid"><figcaption><span class="figindex"></span><span class="figtext"></span></figcaption><div><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt="https://host"></a></div></figure>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~figure [$-name]\n$$\n\n$$\n\ncaption\n~~~')), [['<figure data-type="math" data-label="$-name" data-group="$" class="invalid"><figcaption><span class="figindex"></span><span class="figtext">caption</span></figcaption><div><div class="math" translate="no">$$\n\n$$</div></div></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~figure [$group-name]\n${'> \n'.repeat(500)}\n~~~`), '>'), [['<figure data-type="quote" data-label="group-name" data-group="group">'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~figure [$group-name]\n~~~\n0${'\n'.repeat(300)}~~~\n~~~`), '>'), [['<figure data-type="example" data-label="group-name" data-group="group">'], '']);
     });
 
   });

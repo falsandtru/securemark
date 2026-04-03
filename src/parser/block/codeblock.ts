@@ -9,13 +9,13 @@ const opener = /(`{3,})(?!`)([^\r\n]*)(?:$|\r?\n)/y;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/i;
 
 export const segment: CodeBlockParser.SegmentParser = block(
-  fence(opener, false, 300));
+  fence(opener, false));
 
 export const segment_: CodeBlockParser.SegmentParser = block(
-  fence(opener, false, 300, false), false);
+  fence(opener, false, false), false);
 
 export const codeblock: CodeBlockParser = block(inits([
-  fence(opener, true, 300),
+  fence(opener, true),
   (input, output) => {
     const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
     const params = param.match(/(?:\\.?|\S)+/g)?.reduce<{

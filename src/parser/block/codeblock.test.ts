@@ -22,7 +22,6 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser, input('```\n````')), [['<pre class="invalid" translate="no">```\n````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('````\n```')), [['<pre class="invalid" translate="no">````\n```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input(' ```\n```')), undefined);
-      assert.deepStrictEqual(inspect(parser, input(`\`\`\`\n0${'\n'.repeat(301)}\`\`\``), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('basic', () => {
@@ -44,7 +43,6 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser, input('```\n!http://host)\n```')), [['<pre class="text">!<a class="url" href="http://host)" target="_blank">http://host)</a></pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('```\n#a\n```')), [['<pre class="text"><a class="hashtag" href="/hashtags/a">#a</a></pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('```\n@a#b\n```')), [['<pre class="text"><a class="channel" href="/@a?ch=b">@a#b</a></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`\`\`\`\n0${'\n'.repeat(300)}\`\`\``), '>'), [['<pre class="text">'], '']);
     });
 
     it('attribute', () => {

@@ -12,7 +12,7 @@ interface Memory {
 }
 
 export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.block, inits([
-  fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  fence(/(~{3,})(?:example\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true),
   (input: Input<Memory>, output) => {
     const [body, overflow, closer, opener, delim, type = 'markdown', param] = unwrap(output.pop()) as string[];
     if (!closer || overflow || param.trimStart()) return output.append(

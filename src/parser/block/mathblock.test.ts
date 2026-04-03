@@ -25,7 +25,6 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser, input('$$$\n$$')), [['<pre class="invalid" translate="no">$$$\n$$</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$$$\n$$$')), [['<pre class="invalid" translate="no">$$$\n$$$</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input(' $$\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser, input(`$$\n0${'\n'.repeat(301)}$$`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('basic', () => {
@@ -40,7 +39,6 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser, input('$$\n$$\n\n$$')), [['<div class="math" translate="no">$$\n$$</div>'], '\n$$']);
       assert.deepStrictEqual(inspect(parser, input('$$\n$$$\n$$')), [['<div class="math" translate="no">$$\n$$$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser, input('$$\n$$$\n\n$$')), [['<div class="math" translate="no">$$\n$$$\n\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`$$\n0${'\n'.repeat(300)}$$`), '>'), [['<div class="math" translate="no">'], '']);
     });
 
   });

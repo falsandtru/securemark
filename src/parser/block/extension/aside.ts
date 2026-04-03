@@ -14,7 +14,7 @@ interface Memory {
 }
 
 export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.block, inits([
-  fence(/(~{3,})aside(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  fence(/(~{3,})aside(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true),
   (input: Input<Memory>, output) => {
     const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
     if (!closer || overflow || param.trimStart()) {

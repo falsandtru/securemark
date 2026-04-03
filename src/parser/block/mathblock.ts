@@ -7,13 +7,13 @@ import { html } from 'typed-dom/dom';
 const opener = /(\${2,})(?!\$)([^\r\n]*)(?:$|\r?\n)/y;
 
 export const segment: MathBlockParser.SegmentParser = block(
-  fence(opener, false, 300));
+  fence(opener, false));
 
 export const segment_: MathBlockParser.SegmentParser = block(
-  fence(opener, false, 300, false), false);
+  fence(opener, false, false), false);
 
 export const mathblock: MathBlockParser = block(inits([
-  fence(opener, true, 300),
+  fence(opener, true),
   ({ caches: { math: cache = undefined } = {} }, output) => {
     const [body, overflow, closer, opener, delim, param] = unwrap(output.pop()) as string[];
     return output.append(

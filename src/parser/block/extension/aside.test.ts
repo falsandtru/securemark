@@ -11,7 +11,6 @@ describe('Unit: parser/block/extension/aside', () => {
       assert.deepStrictEqual(inspect(parser, input('~~~aside\n~~~')), [['<pre class="invalid" translate="no">~~~aside\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~aside\n# \n~~~')), [['<pre class="invalid" translate="no">~~~aside\n# \n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser, input('~~~aside a\n# 0\n~~~')), [['<pre class="invalid" translate="no">~~~aside a\n# 0\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser, input(`~~~aside\n# 0${'\n'.repeat(301)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('valid', () => {

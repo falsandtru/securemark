@@ -20,7 +20,7 @@ import { html } from 'typed-dom/dom';
 import MessageParser = ExtensionParser.MessageParser;
 
 export const message: MessageParser = block(inits([
-  fence(/(~{3,})message\/(\S+)(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true, 300),
+  fence(/(~{3,})message\/(\S+)(?!\S)([^\r\n]*)(?:$|\r?\n)/y, true),
   (input, output) => {
     const [body, overflow, closer, opener, delim, type, param] = unwrap(output.pop()) as string[];
     if (!closer || overflow || param.trimStart()) {
