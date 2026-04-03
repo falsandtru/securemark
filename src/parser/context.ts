@@ -136,12 +136,7 @@ export const enum Backtrack {
 }
 
 export const enum Command {
-  Error = '\x07',
   Cancel = '\x18',
   Escape = '\x1B',
   Separator = '\x1F',
 }
-
-export const CmdRegExp = {
-  Error: /\x07/g,
-} as const;
