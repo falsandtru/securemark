@@ -325,7 +325,6 @@ export namespace MarkdownParser {
         Parser<string, Input, [
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
-          TableParser.SegmentParser,
           PlaceholderParser.SegmentParser,
         ]> {
       }
@@ -350,8 +349,8 @@ export namespace MarkdownParser {
               MathBlockParser,
               ExampleParser,
               TableParser,
-              BlockquoteParser,
               PlaceholderParser,
+              BlockquoteParser,
               InlineParser.MediaParser,
               InlineParser.ShortMediaParser.LineShortMediaParser,
             ]>,
@@ -369,9 +368,8 @@ export namespace MarkdownParser {
               Parser<never, Input, [
                 CodeBlockParser.SegmentParser,
                 MathBlockParser.SegmentParser,
-                TableParser.SegmentParser,
-                BlockquoteParser.SegmentParser,
                 PlaceholderParser.SegmentParser,
+                BlockquoteParser.SegmentParser,
                 SourceParser.ContentLineParser,
               ]>,
               SourceParser.EmptyLineParser,
@@ -399,9 +397,8 @@ export namespace MarkdownParser {
             Parser<never, Input, [
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
-              TableParser.SegmentParser,
-              BlockquoteParser.SegmentParser,
               PlaceholderParser.SegmentParser,
+              BlockquoteParser.SegmentParser,
               SourceParser.ContentLineParser,
             ]>,
           ]> {
@@ -427,10 +424,6 @@ export namespace MarkdownParser {
         ]> {
       }
       export namespace TableParser {
-        export interface SegmentParser extends
-          Block<'extension/table/segment'>,
-          Parser<never, Input, []> {
-        }
         export interface GridTableParser extends
           Block<'extension/table/gridtable'>,
           Parser<HTMLElement, Input, [

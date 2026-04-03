@@ -7,9 +7,8 @@ import { figure } from './figure';
 import { segment as seg_label } from '../../inline/extension/label';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
-import { segment as seg_table } from './table';
-import { segment as seg_blockquote } from '../blockquote';
 import { segment as seg_placeholder } from './placeholder';
+import { segment as seg_blockquote } from '../blockquote';
 
 import FigParser = ExtensionParser.FigParser;
 
@@ -19,9 +18,8 @@ export const segment: FigParser.SegmentParser = backtrack(block(
     union([
       seg_code,
       seg_math,
-      seg_table,
-      seg_blockquote,
       seg_placeholder,
+      seg_blockquote,
       some(contentline),
     ]),
   ]), true, Segment.fig));

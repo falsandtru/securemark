@@ -10,9 +10,9 @@ import { table as styled_table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example } from './example';
-import { table, segment_ as seg_table } from './table';
-import { blockquote, segment as seg_blockquote } from '../blockquote';
+import { table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
+import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { inline, media, lineshortmedia } from '../../inline';
 import { visualize, trimBlank } from '../../visibility';
 import { unwrap, invalid } from '../../util';
@@ -32,9 +32,8 @@ export const segment: FigureParser.SegmentParser = block(match(
         union([
           seg_code,
           seg_math,
-          seg_table,
-          seg_blockquote,
           seg_placeholder,
+          seg_blockquote,
           some(contentline, closer),
         ]),
         emptyline,
@@ -60,8 +59,8 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
         mathblock,
         example,
         table,
-        blockquote,
         placeholder,
+        blockquote,
         line(media, false),
         line(lineshortmedia, false),
       ])),
