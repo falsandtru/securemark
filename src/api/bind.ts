@@ -75,7 +75,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       const seg = sourceSegments[index];
       options.segment = sourceSegmentAttrs[index] | Segment.write;
       for (const _ of run(block, new Input(options, seg), output)) {
-        yield { type: 'break' };
+        yield { type: 'break', value: 'block' };
       }
       assert(output.data.length === 1);
       const es = output.pop()
@@ -124,20 +124,20 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    yield { type: 'break' };
+    yield { type: 'break', value: 'parser' };
     if (rev !== revision) return yield { type: 'cancel' };
     for (const el of figure(next(0)?.parentNode ?? target, settings.notes, options)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
-        : yield { type: 'break' };
+        : yield { type: 'break', value: 'figure' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
     for (const el of note(next(0)?.parentNode ?? target, settings.notes, options, bottom)) {
       assert(rev === revision);
       el
         ? yield { type: 'note', value: el }
-        : yield { type: 'break' };
+        : yield { type: 'break', value: 'note' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
   }

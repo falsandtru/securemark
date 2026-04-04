@@ -44,7 +44,7 @@ export type Progress =
   | { readonly type: 'block'; readonly value: HTMLElement; }
   | { readonly type: 'figure'; readonly value: HTMLAnchorElement; }
   | { readonly type: 'note'; readonly value: HTMLLIElement | HTMLElement; }
-  | { readonly type: 'break'; }
+  | { readonly type: 'break'; readonly value: 'segment' | 'block' | 'parser' | 'figure' | 'note'; }
   | { readonly type: 'cancel'; };
 
 export interface RenderingOptions {
