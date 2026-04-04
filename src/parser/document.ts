@@ -38,21 +38,15 @@ export const document: MarkdownParser = (() => {
       const doc = memory.doc = frag(unwrap(output.pop()));
       output.append(new Node(doc));
       assert(input.id !== '' || !doc.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-      if (input.test && !input.local) return output.context;
+      if (input.test && !input.local) return Result.skip;
       memory.orphan = !memory.references.parentNode;
       memory.orphan && doc.appendChild(memory.references);
       return output.context;
     },
-    (input, output) => {
-      if (input.test && !input.local) return output.context;
-      const { memory } = input;
-      return conv(figure(memory.doc!, memory, input));
-    },
-    (input, output) => {
-      if (input.test && !input.local) return output.context;
-      const { memory } = input;
-      return conv(note(memory.doc!, memory, input));
-    },
+    input =>
+      conv(figure(input.memory.doc!, input.memory, input)),
+    input =>
+      conv(note(input.memory.doc!, input.memory, input)),
     (input, output) => {
       const { memory } = input;
       memory.orphan && !memory.interpolation && memory.references.remove();
@@ -64,12 +58,10 @@ export const document: MarkdownParser = (() => {
 function conv<T>(iterable: Iterable<T>): Result<never> {
   const iter = iterable[Symbol.iterator]();
   const cont: Result<T> = [
-    (_, output) => {
-      const { done } = iter.next();
-      return done
+    (_, output) =>
+      iter.next().done
         ? output.context
-        : cont;
-    },
+        : cont,
   ];
   return cont;
 }
