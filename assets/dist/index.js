@@ -6355,7 +6355,7 @@ class Input extends parser_1.Input {
     this.resources ??= {
       clock: -1,
       interval: 200,
-      recursions: [10 || 0 /* Recursion.document */, 100 || 0 /* Recursion.block */, 100 || 0 /* Recursion.inline */, 100 || 0 /* Recursion.bracket */]
+      recursions: [20 || 0 /* Recursion.document */, 100 || 0 /* Recursion.block */, 100 || 0 /* Recursion.inline */, 100 || 0 /* Recursion.bracket */]
     };
     this.segment = segment ?? 0 /* Segment.unknown */;
     this.header = header ?? true;
@@ -6413,29 +6413,54 @@ exports.document = (() => {
   const loop = (0, parser_2.build)(segment_1.parser, block_1.block);
   return (0, combinator_1.always)([(input, output) => {
     input.id = input.id === '' ? '' : input.local ? (0, util_1.randomID)() : input.id;
-    input.memory = input.notes ?? {
-      interpolation: true,
-      references: (0, dom_1.html)('ol', {
+    input.memory = {
+      interpolation: !input.notes,
+      references: input.notes?.references ?? (0, dom_1.html)('ol', {
         class: 'references'
       })
     };
     output.push();
     return output.context;
   }, (0, combinator_1.recursion)(0 /* Recursion.document */, (0, combinator_1.force)(() => loop)), (input, output) => {
-    const doc = (0, dom_1.frag)((0, util_1.unwrap)(output.pop()));
+    const {
+      memory
+    } = input;
+    const doc = memory.doc = (0, dom_1.frag)((0, util_1.unwrap)(output.pop()));
     output.append(new parser_1.Node(doc));
+    if (input.test && !input.local) return output.context;
+    memory.orphan = !memory.references.parentNode;
+    memory.orphan && doc.appendChild(memory.references);
+    return output.context;
+  }, (input, output) => {
     if (input.test && !input.local) return output.context;
     const {
       memory
     } = input;
-    const orphan = !memory.references.parentNode;
-    orphan && doc.appendChild(memory.references);
-    for (const _ of (0, figure_1.figure)(doc, memory, input));
-    for (const _ of (0, note_1.note)(doc, memory, input));
-    orphan && !memory.interpolation && memory.references.remove();
+    return conv((0, figure_1.figure)(memory.doc, memory, input));
+  }, (input, output) => {
+    if (input.test && !input.local) return output.context;
+    const {
+      memory
+    } = input;
+    return conv((0, note_1.note)(memory.doc, memory, input));
+  }, (input, output) => {
+    const {
+      memory
+    } = input;
+    memory.orphan && !memory.interpolation && memory.references.remove();
     return output.context;
   }]);
 })();
+function conv(iterable) {
+  const iter = iterable[Symbol.iterator]();
+  const cont = [(_, output) => {
+    const {
+      done
+    } = iter.next();
+    return done ? output.context : cont;
+  }];
+  return cont;
+}
 
 /***/ },
 
@@ -8581,7 +8606,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
       input.position = position;
       return parser_1.Result.skip;
     }
-    let depth = i / opener.length + 1 | 0;
+    const depth = i / opener.length + 1 | 0;
     (0, combinator_1.recur)(output, recursions, recursion, depth, true);
     input.memory = {
       position,
@@ -8633,6 +8658,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
           const advance = input.position - pos;
           m.i -= advance;
           m.follow -= advance;
+          (0, combinator_1.recur)(output, recursions, recursion, -(advance / closer.length | 0));
           m.depth -= advance / closer.length | 0;
         }
         continue;
@@ -8643,7 +8669,10 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
   }, parser, (input, output) => {
     const {
       source,
-      memory: m
+      memory: m,
+      resources: {
+        recursions
+      }
     } = input;
     const {
       lead
@@ -8671,6 +8700,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
           const advance = input.position - pos;
           m.i -= advance;
           m.follow -= advance;
+          (0, combinator_1.recur)(output, recursions, recursion, -(advance / closer.length | 0));
           m.depth -= advance / closer.length | 0;
         }
         m.i -= opener.length, m.follow -= closer.length;
