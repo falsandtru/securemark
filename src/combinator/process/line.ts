@@ -49,7 +49,7 @@ export function firstline(source: string, position: number): string {
 const emptyline = /[^\S\r\n]*(?:$|\r?\n)/y;
 export function isEmptyline(source: string, position: number): boolean {
   emptyline.lastIndex = position;
-  return source.length === position
+  return position >= source.length
       || source[position] === '\n'
       || emptyline.test(source);
 }
