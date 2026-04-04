@@ -64,7 +64,7 @@ export const codeblock: CodeBlockParser = block(inits([
                   ? `Invalid trailing line after the closing delimiter "${delim}"`
                   : params.invalid!),
           },
-          `${opener}${body}${overflow || closer}`)));
+          `${opener}${body}${closer}${overflow}`)));
       return;
     }
     const src = body.slice(0, body.at(-2) === '\r' ? -2 : -1);

@@ -27,7 +27,7 @@ export const example: ExtensionParser.ExampleParser = block(recursion(Recursion.
               overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
                 'Invalid argument'),
         },
-        `${opener}${body}${overflow || closer}`)));
+        `${opener}${body}${closer}${overflow}`)));
     switch (type) {
       case 'markdown': {
         input.memory = {

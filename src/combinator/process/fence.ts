@@ -5,12 +5,12 @@ import { firstline, isEmptyline } from './line';
 export function fence<I extends Input, S extends SubParsers<never, I>>(opener: RegExp, write: boolean, separation = true): Parser<string, I, S> {
   assert(!opener.flags.match(/[gm]/) && opener.sticky && !opener.source.startsWith('^'));
   return (input, output) => {
-    const { source, position } = input;
-    if (position === source.length) return;
-    opener.lastIndex = position;
+    const { source } = input;
+    if (input.position === source.length) return;
+    opener.lastIndex = input.position;
     const matches = opener.exec(source);
     if (!matches) return;
-    assert(matches[0] === firstline(source, position));
+    assert(matches[0] === firstline(source, input.position));
     spend(input, output, matches[0].length);
     const delim = matches[1];
     assert(delim && delim === delim.trim());
@@ -23,37 +23,27 @@ export function fence<I extends Input, S extends SubParsers<never, I>>(opener: R
       input.position -= matches[0].length;
       return;
     }
+    const { position } = input;
     let body = '';
     let closer = '';
-    let overflow = '';
-    for (let count = 1; ; ++count) {
-      if (input.position === source.length) break;
-      const line = firstline(source, input.position);
-      if (closer && isEmptyline(line, 0)) break;
-      if(closer) {
-        overflow += line;
-      }
-      if (!closer && line.startsWith(delim) && line.trimEnd() === delim) {
-        closer = line;
-        if (isEmptyline(source, input.position + line.length)) {
-          input.position += line.length;
-          break;
-        }
-        if (!separation) {
-          input.position += line.length;
-          break;
-        }
-        assert(!overflow);
-        overflow = line;
-      }
-      if (!overflow) {
-        body += line;
-      }
-      input.position += line.length;
+    assert(matches[0].endsWith('\n'));
+    for (input.position -= 1; ;) {
+      input.position = source.indexOf(`\n${delim}`, input.position) + 1 || source.length;
+      if (!isEmptyline(source, input.position + delim.length)) continue;
+      body = source.slice(position, input.position);
+      closer = firstline(source, input.position);
+      input.position += closer.length;
+      break;
     }
-    write && output.push(
-      new List([body, overflow, closer].map(str => new Node(str)))
-        .import(new List(matches.map(str => new Node(str)))));
+    if (separation) for (; !isEmptyline(source, input.position);) {
+      input.position = source.indexOf('\n', input.position) + 1 || source.length;
+    }
+    if (write) {
+      const overflow = source.slice(position + body.length + closer.length, input.position);
+      output.push(
+        new List([body, overflow, closer].map(str => new Node(str)))
+          .import(new List(matches.map(str => new Node(str)))));
+    }
     return output.context;
   };
 }

@@ -28,6 +28,6 @@ export const placeholder: ExtensionParser.PlaceholderParser = block(inits([
               overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
                 'Invalid argument'),
         },
-        `${opener}${body}${overflow || closer}`)));
+        `${opener}${body}${closer}${overflow}`)));
   },
 ]));

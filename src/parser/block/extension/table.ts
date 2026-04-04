@@ -31,7 +31,7 @@ export const table: TableParser = block(inits([
           !closer ? `Missing the closing delimiter "${delim}"` :
             overflow ? `Invalid trailing line after the closing delimiter "${delim}"` :
               'Invalid argument'),
-      }, `${opener}${body}${overflow || closer}`)));
+      }, `${opener}${body}${closer}${overflow}`)));
     switch (type) {
       case undefined:
       case 'grid':

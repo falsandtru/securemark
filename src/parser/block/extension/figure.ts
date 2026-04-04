@@ -114,7 +114,7 @@ export const figure: FigureParser = block(fallback(rewrite(segment, fmap(
             translate: 'no',
             ...invalid('figure', violation[0], violation[1]),
           },
-          `${opener}${body}${overflow || closer}`)));
+          `${opener}${body}${closer}${overflow}`)));
     },
   ])));
 
