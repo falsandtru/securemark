@@ -34,7 +34,7 @@ export function* figure(
           ? target.querySelectorAll(`:scope > ${selector}`)
           : target.querySelectorAll(`:not(* > *)${selector}`),
         len = defs.length, i = 0; i < len; ++i) {
-    yield;
+    if (~i << 32 - 8 === 0) yield;
     const def = defs[i];
     assert(def.parentNode === target || !def.parentNode);
     const { tagName } = def;

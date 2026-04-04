@@ -119,6 +119,7 @@ function build(
     let format: 'number' | 'abbr';
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
+      if (~i << 32 - 8 === 0) yield;
       const ref = refs[i];
       if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
         assert(splitter.parentNode === target || !splitter.parentNode);
@@ -212,7 +213,6 @@ function build(
             title: abbr && text || undefined,
           },
           `^${++refIndex}`));
-      yield;
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
