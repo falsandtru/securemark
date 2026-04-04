@@ -1,4 +1,4 @@
-import { MarkdownParser } from '../../markdown';
+import { DocumentParser } from '../../markdown';
 import { Input, Recursion } from './context';
 import { Parser, Result, Node } from '../combinator/parser';
 import { always, force, recursion } from '../combinator';
@@ -10,14 +10,14 @@ import { figure } from '../processor/figure';
 import { note } from '../processor/note';
 import { frag, html } from 'typed-dom/dom';
 
-export const document: MarkdownParser = (() => {
+export const document: DocumentParser = (() => {
   interface Memory {
     readonly interpolation: boolean;
     readonly references: HTMLOListElement;
     doc?: DocumentFragment;
     orphan?: boolean;
   }
-  const loop = build(segment, block);
+  const document = build(segment, block);
   return always<Parser<DocumentFragment | HTMLElement, Input<Memory>>>([
     (input, output) => {
       input.id =
@@ -31,7 +31,7 @@ export const document: MarkdownParser = (() => {
       output.push();
       return output.context;
     },
-    recursion(Recursion.document, force(() => loop)),
+    recursion(Recursion.document, force(() => document)),
     (input, output) => {
       assert(input.position === input.source.length);
       const { memory } = input;

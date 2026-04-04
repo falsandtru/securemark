@@ -1,6 +1,6 @@
 import { Input } from '../parser/context';
 import { Output, run } from '../combinator/parser';
-import { header as h } from '../parser/header';
+import { header as h } from '../parser/block/header';
 
 export function header(source: string): string {
   const [, pos = 0] = parse(source);

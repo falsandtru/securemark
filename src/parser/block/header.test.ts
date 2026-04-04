@@ -1,8 +1,8 @@
 import { header } from './header';
-import { input } from './context';
-import { inspect } from '../debug.test';
+import { input } from '../context';
+import { inspect } from '../../debug.test';
 
-describe('Unit: parser/header', () => {
+describe('Unit: parser/block/header', () => {
   describe('header', () => {
     const parser = header;
 

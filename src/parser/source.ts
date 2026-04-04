@@ -1,6 +1,6 @@
-import { MarkdownParser } from '../../markdown';
+import { DocumentParser } from '../../markdown';
 
-import SourceParser = MarkdownParser.SourceParser;
+import SourceParser = DocumentParser.SourceParser;
 export import TextParser = SourceParser.TextParser;
 export import TxtParser = SourceParser.TxtParser;
 export import EscapableSourceParser = SourceParser.EscapableSourceParser;

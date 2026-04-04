@@ -1,4 +1,4 @@
-import { MarkdownParser } from '../../markdown';
+import { DocumentParser } from '../../markdown';
 import { Input, Segment } from './context';
 import { Output, List, Node, run } from '../combinator/parser';
 import { union, some } from '../combinator';
@@ -8,7 +8,7 @@ import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptysegment } from './source';
 
-import SegmentParser = MarkdownParser.SegmentParser;
+import SegmentParser = DocumentParser.SegmentParser;
 
 export const parser: SegmentParser = union([
   some(emptysegment),

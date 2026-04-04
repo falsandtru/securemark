@@ -1,19 +1,18 @@
 import { Parser, List, Node } from './src/combinator/parser';
 import { Input } from './src/parser/context';
 
-declare abstract class Markdown<T> {
+declare abstract class Document<T> {
   private parser?: T;
 }
-export interface MarkdownParser extends
-  Markdown<'markdown'>,
+export interface DocumentParser extends
+  Document<'document'>,
   Parser<DocumentFragment, Input, [
-    MarkdownParser.HeaderParser,
-    MarkdownParser.BlockParser,
+    DocumentParser.BlockParser,
   ]> {
 }
-export namespace MarkdownParser {
+export namespace DocumentParser {
   export interface SegmentParser extends
-    Markdown<'segment'>,
+    Document<'segment'>,
     Parser<string, Input, [
       SourceParser.EmptySegmentParser,
       Parser<string, Input, [
@@ -25,39 +24,19 @@ export namespace MarkdownParser {
       SourceParser.ContentLineParser,
     ]> {
   }
-  export interface HeaderParser extends
-    // ---
-    // url: https://host/path
-    // ---
-    Markdown<'header'>,
-    Parser<HTMLElement | HTMLPreElement, Input, [
-      Parser<HTMLElement | HTMLPreElement, Input, [
-        Parser<HTMLElement, Input, [
-          HeaderParser.FieldParser,
-        ]>,
-        Parser<HTMLPreElement, Input, []>,
-      ]>,
-      Parser<never, Input, []>,
-    ]> {
-  }
-  export namespace HeaderParser {
-    export interface FieldParser extends
-      Markdown<'header/field'>,
-      Parser<HTMLSpanElement, Input, []> {
-    }
-  }
   export interface BlockParser extends
-    Markdown<'block'>,
+    Document<'block'>,
     Parser<HTMLElement, Input, [
       SourceParser.EmptySegmentParser,
       Parser<HTMLElement, Input, [
-        BlockParser.PagebreakParser,
+        BlockParser.HeaderParser,
         BlockParser.HeadingParser,
         BlockParser.UListParser,
         BlockParser.OListParser,
         BlockParser.IListParser,
         BlockParser.DListParser,
         BlockParser.TableParser,
+        BlockParser.PagebreakParser,
         BlockParser.CodeBlockParser,
         BlockParser.MathBlockParser,
         BlockParser.ExtensionParser,
@@ -70,7 +49,28 @@ export namespace MarkdownParser {
     ]> {
   }
   export namespace BlockParser {
-    interface Block<T extends string> extends Markdown<`block/${T}`> { }
+    interface Block<T extends string> extends Document<`block/${T}`> { }
+    export interface HeaderParser extends
+      // ---
+      // url: https://host/path
+      // ---
+      Block<'header'>,
+      Parser<HTMLElement | HTMLPreElement, Input, [
+        Parser<HTMLElement | HTMLPreElement, Input, [
+          Parser<HTMLElement, Input, [
+            HeaderParser.FieldParser,
+          ]>,
+          Parser<HTMLPreElement, Input, []>,
+        ]>,
+        Parser<never, Input, []>,
+      ]> {
+    }
+    export namespace HeaderParser {
+      export interface FieldParser extends
+        Block<'header/field'>,
+        Parser<HTMLSpanElement, Input, []> {
+      }
+    }
     export interface PagebreakParser extends
       // ===
       Block<'pagebreak'>,
@@ -520,7 +520,7 @@ export namespace MarkdownParser {
         Parser<HTMLElement, Input, [
           Parser<string, Input, []>,
           Parser<HTMLElement, Input, []>,
-          MarkdownParser,
+          DocumentParser,
           Parser<HTMLElement, Input, []>,
         ]> {
       }
@@ -635,7 +635,7 @@ export namespace MarkdownParser {
     }
   }
   export interface InlineParser extends
-    Markdown<'inline'>,
+    Document<'inline'>,
     Parser<HTMLElement | string, Input, [
       Parser<HTMLElement | string, Input, [
         InlineParser.AnnotationParser,
@@ -663,7 +663,7 @@ export namespace MarkdownParser {
     ]> {
   }
   export namespace InlineParser {
-    interface Inline<T extends string> extends Markdown<`inline/${T}`> { }
+    interface Inline<T extends string> extends Document<`inline/${T}`> { }
     export interface AnnotationParser extends
       // ((abc))
       Inline<'annotation'>,
@@ -1173,14 +1173,14 @@ export namespace MarkdownParser {
     }
   }
   export interface AutolinkParser extends
-    Markdown<'autolink'>,
+    Document<'autolink'>,
     Parser<string | HTMLElement, Input, [
       InlineParser.AutolinkParser,
       SourceParser.UnescapableSourceParser,
     ]> {
   }
   export namespace SourceParser {
-    interface Source<T extends string> extends Markdown<`source/${T}`> { }
+    interface Source<T extends string> extends Document<`source/${T}`> { }
     export interface TextParser extends
       // abc
       Source<'text'>,

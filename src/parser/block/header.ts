@@ -1,12 +1,12 @@
-import { MarkdownParser } from '../../markdown';
-import { List, Node } from '../combinator/parser';
-import { union, inits, some, scope, block, line, validate, focus, clear, lazy, fmap } from '../combinator';
-import { str } from './source';
-import { unwrap, invalid } from './util';
+import { HeaderParser } from '../block';
+import { List, Node } from '../../combinator/parser';
+import { union, inits, some, scope, block, line, validate, focus, clear, lazy, fmap } from '../../combinator';
+import { str } from '../source';
+import { unwrap, invalid } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, defrag } from 'typed-dom/dom';
 
-export const header: MarkdownParser.HeaderParser = lazy(() => validate(
+export const header: HeaderParser = lazy(() => validate(
   /---+[^\S\r\n]*\r?\n(?=\S)/y,
   inits([
     block(
@@ -40,7 +40,7 @@ export const header: MarkdownParser.HeaderParser = lazy(() => validate(
     clear(str(/[^\S\r\n]*\r?\n/y)),
   ])));
 
-const field: MarkdownParser.HeaderParser.FieldParser = line((input, output) => {
+const field: HeaderParser.FieldParser = line((input, output) => {
   const { source, position } = input;
   const name = source.slice(position, source.indexOf(':', position));
   const value = source.slice(position + name.length + 1).trim();

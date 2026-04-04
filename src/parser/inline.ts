@@ -1,4 +1,4 @@
-import { MarkdownParser } from '../../markdown';
+import { DocumentParser } from '../../markdown';
 import { union, lazy } from '../combinator';
 import { annotation } from './inline/annotation';
 import { reference } from './inline/reference';
@@ -23,7 +23,7 @@ import { bracket } from './inline/bracket';
 import { autolink } from './inline/autolink';
 import { text, strs } from './source';
 
-export import InlineParser = MarkdownParser.InlineParser;
+export import InlineParser = DocumentParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
