@@ -2528,8 +2528,7 @@ function bind(target, settings) {
     };
     for (const el of (0, figure_1.figure)(next(0)?.parentNode ?? target, settings.notes, options)) {
       el ? yield {
-        type: 'figure',
-        value: el
+        type: 'figure'
       } : yield {
         type: 'break',
         value: 'figure'
@@ -6427,23 +6426,11 @@ exports.document = (() => {
     } = input;
     const doc = memory.doc = (0, dom_1.frag)((0, util_1.unwrap)(output.pop()));
     output.append(new parser_1.Node(doc));
-    if (input.test && !input.local) return output.context;
+    if (input.test && !input.local) return parser_1.Result.skip;
     memory.orphan = !memory.references.parentNode;
     memory.orphan && doc.appendChild(memory.references);
     return output.context;
-  }, (input, output) => {
-    if (input.test && !input.local) return output.context;
-    const {
-      memory
-    } = input;
-    return conv((0, figure_1.figure)(memory.doc, memory, input));
-  }, (input, output) => {
-    if (input.test && !input.local) return output.context;
-    const {
-      memory
-    } = input;
-    return conv((0, note_1.note)(memory.doc, memory, input));
-  }, (input, output) => {
+  }, input => conv((0, figure_1.figure)(input.memory.doc, input.memory, input)), input => conv((0, note_1.note)(input.memory.doc, input.memory, input)), (input, output) => {
     const {
       memory
     } = input;
@@ -6453,12 +6440,7 @@ exports.document = (() => {
 })();
 function conv(iterable) {
   const iter = iterable[Symbol.iterator]();
-  const cont = [(_, output) => {
-    const {
-      done
-    } = iter.next();
-    return done ? output.context : cont;
-  }];
+  const cont = [(_, output) => iter.next().done ? output.context : cont];
   return cont;
 }
 
@@ -8594,6 +8576,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
     const {
       source,
       position,
+      linebreak,
       resources: {
         recursions
       }
@@ -8610,12 +8593,14 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
     (0, combinator_1.recur)(output, recursions, recursion, depth, true);
     input.memory = {
       position,
+      linebreak,
       i,
       lead: 0,
       follow: 0,
       state: false,
       depth
     };
+    input.linebreak = 0;
     output.push();
     return loop;
   }, (input, output) => {
@@ -8628,6 +8613,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
     } = input;
     (0, combinator_1.recur)(output, recursions, recursion, -m.depth);
     m.depth = 0;
+    input.linebreak ||= m.linebreak;
     const prefix = m.i;
     m.i = 0;
     for (let len = (0, alias_1.min)(prefix, source.length - input.position); m.i < len && source[input.position + m.i] === closer[0];) {
@@ -9667,7 +9653,7 @@ function* figure(target, notes, opts = {}) {
   let base = '0';
   let bases = base.split('.');
   for (let defs = target instanceof Element ? target.querySelectorAll(`:scope > ${selector}`) : target.querySelectorAll(`:not(* > *)${selector}`), len = defs.length, i = 0; i < len; ++i) {
-    yield;
+    if (~i << 32 - 8 === 0) yield;
     const def = defs[i];
     const {
       tagName
@@ -9740,7 +9726,7 @@ function* figure(target, notes, opts = {}) {
         (0, util_1.unmarkInvalid)(ref);
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
-      yield (0, dom_1.define)(ref, {
+      (0, dom_1.define)(ref, {
         class: opts.local ? `${ref.className} local` : undefined,
         href: opts.id !== '' ? `#${def.id}` : undefined
       }, figindex);
@@ -9750,7 +9736,6 @@ function* figure(target, notes, opts = {}) {
     if (opts.id !== '' && !ref.classList.contains('invalid')) {
       (0, util_1.markInvalid)(ref, 'label', 'reference', messages.reference);
     }
-    yield ref;
   }
 }
 exports.figure = figure;
@@ -9842,14 +9827,17 @@ function build(syntax, list, selector, marker, splitter = '') {
     let format;
     let refIndex = 0;
     for (let len = refs.length, i = 0; i < len; ++i) {
+      if (~i << 32 - 8 === 0) yield;
       const ref = refs[i];
       if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
         const pos = splitter?.compareDocumentPosition(ref) ?? 0;
         if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
         if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
-          yield* proc(splitter);
-          splitter.remove();
+          const note = splitter;
+          proc(note);
+          note.remove();
+          yield note;
           continue;
         }
         if (defs.size > 0) {
@@ -9857,7 +9845,8 @@ function build(syntax, list, selector, marker, splitter = '') {
           const note = splitter.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
             class: list
           }), splitter);
-          yield* proc(note, defs);
+          proc(note, defs);
+          yield note;
         }
       }
       const {
@@ -9919,31 +9908,33 @@ function build(syntax, list, selector, marker, splitter = '') {
         href: refId && `#${refId}`,
         title: abbr && text || undefined
       }, `^${++refIndex}`));
-      yield;
     }
     if (note || defs.size > 0) {
       const splitter = splitters[iSplitters++];
       note ??= splitter?.classList.contains(list) ? splitter : target.insertBefore((0, dom_1.html)('ol', {
         class: list
       }), splitter ?? bottom);
-      yield* proc(note, defs);
+      proc(note, defs);
+      yield note;
     }
     if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (splitter.classList.contains(list)) {
-        yield* proc(splitter);
+        const note = splitter;
+        proc(note);
         splitter.remove();
+        yield note;
       }
     }
   };
 }
-function* proc(note, defs) {
+function proc(note, defs) {
   for (let defs = note.children, i = defs.length; i--;) {
-    yield note.removeChild(defs[i]);
+    note.removeChild(defs[i]);
   }
   if (!defs) return;
   for (const [, def] of defs) {
-    yield note.appendChild(def);
+    note.appendChild(def);
   }
   defs.clear();
 }

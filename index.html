@@ -159,7 +159,6 @@
   ol {
     counter-reset: counter;
     list-style-type: none;
-    display: table;
     width: 100%;
   }
   /*
@@ -167,14 +166,16 @@
     counter-reset: counter attr(start);
   }
   */
+  /*
+    tableは折り返しが利かなくなるので使えない。
+    マーカーにカウンターを使えるようになったらマーカーで実装する。
+  */
   ol > li {
     counter-increment: counter;
-    display: table-row;
+    text-indent: 1em hanging;
   }
   ol > li::before {
     content: counter(counter) ". ";
-    display: table-cell;
-    width: 1px;
     white-space: pre;
     letter-spacing: normal;
     font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
