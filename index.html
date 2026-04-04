@@ -1366,12 +1366,11 @@
           break;
         case 'cancel':
           throw new Error('Cancel.');
-        default:
-          if (index === 1) {
-            stats[index] = time;
-            time = 0;
-          }
+        case 'break':
+          if (result.value !== 'parser') break;
+          stats[index] = time;
           index = 2;
+          time = 0;
       }
       const now = Date.now();
       const delta = now - past;

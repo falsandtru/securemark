@@ -2463,7 +2463,8 @@ function bind(target, settings) {
       options.segment = sourceSegmentAttrs[index] | 1 /* Segment.write */;
       for (const _ of (0, parser_1.run)(block_1.block, new context_1.Input(options, seg), output)) {
         yield {
-          type: 'break'
+          type: 'break',
+          value: 'block'
         };
       }
       const es = output.pop().foldl((acc, {
@@ -2519,7 +2520,8 @@ function bind(target, settings) {
       };
     }
     yield {
-      type: 'break'
+      type: 'break',
+      value: 'parser'
     };
     if (rev !== revision) return yield {
       type: 'cancel'
@@ -2529,7 +2531,8 @@ function bind(target, settings) {
         type: 'figure',
         value: el
       } : yield {
-        type: 'break'
+        type: 'break',
+        value: 'figure'
       };
       if (rev !== revision) return yield {
         type: 'cancel'
@@ -2540,7 +2543,8 @@ function bind(target, settings) {
         type: 'note',
         value: el
       } : yield {
-        type: 'break'
+        type: 'break',
+        value: 'note'
       };
       if (rev !== revision) return yield {
         type: 'cancel'
@@ -4256,11 +4260,10 @@ const line_1 = __webpack_require__(1599);
 function fence(opener, write, separation = true) {
   return (input, output) => {
     const {
-      source,
-      position
+      source
     } = input;
-    if (position === source.length) return;
-    opener.lastIndex = position;
+    if (input.position === source.length) return;
+    opener.lastIndex = input.position;
     const matches = opener.exec(source);
     if (!matches) return;
     (0, clock_1.spend)(input, output, matches[0].length);
@@ -4273,34 +4276,26 @@ function fence(opener, write, separation = true) {
       input.position -= matches[0].length;
       return;
     }
+    const {
+      position
+    } = input;
     let body = '';
     let closer = '';
-    let overflow = '';
-    for (let count = 1;; ++count) {
-      if (input.position === source.length) break;
-      const line = (0, line_1.firstline)(source, input.position);
-      if (closer && (0, line_1.isEmptyline)(line, 0)) break;
-      if (closer) {
-        overflow += line;
-      }
-      if (!closer && line.startsWith(delim) && line.trimEnd() === delim) {
-        closer = line;
-        if ((0, line_1.isEmptyline)(source, input.position + line.length)) {
-          input.position += line.length;
-          break;
-        }
-        if (!separation) {
-          input.position += line.length;
-          break;
-        }
-        overflow = line;
-      }
-      if (!overflow) {
-        body += line;
-      }
-      input.position += line.length;
+    for (input.position -= 1;;) {
+      input.position = source.indexOf(`\n${delim}`, input.position) + 1 || source.length;
+      if (!(0, line_1.isEmptyline)(source, input.position + delim.length)) continue;
+      body = source.slice(position, input.position);
+      closer = (0, line_1.firstline)(source, input.position);
+      input.position += closer.length;
+      break;
     }
-    write && output.push(new parser_1.List([body, overflow, closer].map(str => new parser_1.Node(str))).import(new parser_1.List(matches.map(str => new parser_1.Node(str)))));
+    if (separation) for (; !(0, line_1.isEmptyline)(source, input.position);) {
+      input.position = source.indexOf('\n', input.position) + 1 || source.length;
+    }
+    if (write) {
+      const overflow = source.slice(position + body.length + closer.length, input.position);
+      output.push(new parser_1.List([body, overflow, closer].map(str => new parser_1.Node(str))).import(new parser_1.List(matches.map(str => new parser_1.Node(str)))));
+    }
     return output.context;
   };
 }
@@ -4445,7 +4440,7 @@ exports.firstline = firstline;
 const emptyline = /[^\S\r\n]*(?:$|\r?\n)/y;
 function isEmptyline(source, position) {
   emptyline.lastIndex = position;
-  return source.length === position || source[position] === '\n' || emptyline.test(source);
+  return position >= source.length || source[position] === '\n' || emptyline.test(source);
 }
 exports.isEmptyline = isEmptyline;
 
@@ -5014,7 +5009,7 @@ exports.codeblock = (0, combinator_1.block)((0, combinator_1.inits)([(0, combina
       class: 'invalid',
       translate: 'no',
       ...(0, util_1.invalid)('codeblock', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : params.invalid)
-    }, `${opener}${body}${overflow || closer}`)));
+    }, `${opener}${body}${closer}${overflow}`)));
     return;
   }
   const src = body.slice(0, body.at(-2) === '\r' ? -2 : -1);
@@ -5085,7 +5080,7 @@ const message_1 = __webpack_require__(3949);
 const aside_1 = __webpack_require__(6150);
 const example_1 = __webpack_require__(6624);
 const placeholder_1 = __webpack_require__(4091);
-exports.segment = (0, combinator_1.union)([fig_1.segment, figure_1.segment, table_1.segment, placeholder_1.segment]);
+exports.segment = (0, combinator_1.union)([fig_1.segment, figure_1.segment, placeholder_1.segment]);
 exports.extension = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
 //figbase,
 //fig,
@@ -5116,7 +5111,7 @@ exports.aside = (0, combinator_1.block)((0, combinator_1.recursion)(1 /* Recursi
       class: 'invalid',
       translate: 'no',
       ...(0, util_1.invalid)('aside', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-    }, `${opener}${body}${overflow || closer}`)));
+    }, `${opener}${body}${closer}${overflow}`)));
     return;
   }
   input.memory = {
@@ -5185,7 +5180,7 @@ exports.example = (0, combinator_1.block)((0, combinator_1.recursion)(1 /* Recur
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('example', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-  }, `${opener}${body}${overflow || closer}`)));
+  }, `${opener}${body}${closer}${overflow}`)));
   switch (type) {
     case 'markdown':
       {
@@ -5263,10 +5258,9 @@ const figure_1 = __webpack_require__(4248);
 const label_1 = __webpack_require__(2178);
 const codeblock_1 = __webpack_require__(9194);
 const mathblock_1 = __webpack_require__(4903);
-const table_1 = __webpack_require__(3646);
-const blockquote_1 = __webpack_require__(5885);
 const placeholder_1 = __webpack_require__(4091);
-exports.segment = (0, combinator_1.backtrack)((0, combinator_1.block)((0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /(?!\S)[^\r\n]*\r?\n/y), false), (0, combinator_1.union)([codeblock_1.segment, mathblock_1.segment, table_1.segment, blockquote_1.segment, placeholder_1.segment, (0, combinator_1.some)(source_1.contentline)])]), true, 6 /* Segment.fig */));
+const blockquote_1 = __webpack_require__(5885);
+exports.segment = (0, combinator_1.block)((0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.close)(label_1.segment, /(?!\S)[^\r\n]*\r?\n/y), false), (0, combinator_1.union)([codeblock_1.segment, mathblock_1.segment, placeholder_1.segment, blockquote_1.segment, (0, combinator_1.some)(source_1.contentline)])]), true, 6 /* Segment.fig */);
 exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.always)([(input, output) => {
   const {
     source
@@ -5333,8 +5327,8 @@ const codeblock_1 = __webpack_require__(9194);
 const mathblock_1 = __webpack_require__(4903);
 const example_1 = __webpack_require__(6624);
 const table_2 = __webpack_require__(3646);
-const blockquote_1 = __webpack_require__(5885);
 const placeholder_1 = __webpack_require__(4091);
+const blockquote_1 = __webpack_require__(5885);
 const inline_1 = __webpack_require__(7973);
 const visibility_1 = __webpack_require__(6364);
 const util_1 = __webpack_require__(4992);
@@ -5342,10 +5336,10 @@ const memoize_1 = __webpack_require__(6925);
 const dom_1 = __webpack_require__(394);
 exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/(~{3,})(?:figure )?(?=\[?\$)/y, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`${fence}[^\S\r\n]*(?:$|\r?\n)`, 'y')) => (0, combinator_1.close)((0, combinator_1.sequence)([source_1.contentline, (0, combinator_1.inits)([
 // All parsers which can include closing terms.
-(0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, table_2.segment_, blockquote_1.segment, placeholder_1.segment_, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)), true, 8 /* Segment.figure */);
+(0, combinator_1.union)([codeblock_1.segment_, mathblock_1.segment_, placeholder_1.segment_, blockquote_1.segment, (0, combinator_1.some)(source_1.contentline, closer)]), source_1.emptyline, (0, combinator_1.union)([source_1.emptyline, (0, combinator_1.some)(source_1.contentline, closer)])])]), closer), ([, fence]) => fence.length - 1, [], 2 ** 4 - 1)), true, 8 /* Segment.figure */);
 exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.scope)(({
   source
-}) => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/(?!\S)[^\r\n]*\r?\n/y)]), false), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, blockquote_1.blockquote, placeholder_1.placeholder, (0, combinator_1.line)(inline_1.media, false), (0, combinator_1.line)(inline_1.lineshortmedia, false)])), source_1.emptyline, (0, combinator_1.block)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))))])]), false), nodes => {
+}) => source.slice(source.match(/^~+(?:\w+\s+)?/)[0].length, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([(0, combinator_1.line)((0, combinator_1.sequence)([label_1.label, (0, source_1.str)(/(?!\S)[^\r\n]*\r?\n/y)]), false), (0, combinator_1.inits)([(0, combinator_1.block)((0, combinator_1.union)([ulist_1.ulist, olist_1.olist, table_1.table, codeblock_1.codeblock, mathblock_1.mathblock, example_1.example, table_2.table, placeholder_1.placeholder, blockquote_1.blockquote, (0, combinator_1.line)(inline_1.media, false), (0, combinator_1.line)(inline_1.lineshortmedia, false)])), source_1.emptyline, (0, combinator_1.block)((0, visibility_1.visualize)((0, visibility_1.trimBlank)((0, combinator_1.some)(inline_1.inline))))])]), false), nodes => {
   const [label, param, content, ...caption] = (0, util_1.unwrap)(nodes);
   return new parser_1.List([new parser_1.Node((0, dom_1.html)('figure', attributes(label.getAttribute('data-label'), param, content, caption), [(0, dom_1.html)('figcaption', [(0, dom_1.html)('span', {
     class: 'figindex'
@@ -5359,7 +5353,7 @@ exports.figure = (0, combinator_1.block)((0, combinator_1.fallback)((0, combinat
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('figure', violation[0], violation[1])
-  }, `${opener}${body}${overflow || closer}`)));
+  }, `${opener}${body}${closer}${overflow}`)));
 }])));
 function attributes(label, param, content, caption) {
   const group = label.split('-', 1)[0];
@@ -5435,7 +5429,7 @@ exports.message = (0, combinator_1.block)((0, combinator_1.inits)([(0, combinato
       class: 'invalid',
       translate: 'no',
       ...(0, util_1.invalid)('message', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-    }, `${opener}${body}${overflow || closer}`)));
+    }, `${opener}${body}${closer}${overflow}`)));
     return;
   }
   switch (type) {
@@ -5503,7 +5497,7 @@ exports.placeholder = (0, combinator_1.block)((0, combinator_1.inits)([(0, combi
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('extension', 'fence', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-  }, `${opener}${body}${overflow || closer}`)));
+  }, `${opener}${body}${closer}${overflow}`)));
 }]));
 
 /***/ },
@@ -5517,7 +5511,7 @@ exports.placeholder = (0, combinator_1.block)((0, combinator_1.inits)([(0, combi
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.table = exports.segment_ = exports.segment = void 0;
+exports.table = void 0;
 const parser_1 = __webpack_require__(3360);
 const combinator_1 = __webpack_require__(3484);
 const inline_1 = __webpack_require__(7973);
@@ -5528,15 +5522,13 @@ const alias_1 = __webpack_require__(5413);
 const array_1 = __webpack_require__(6876);
 const dom_1 = __webpack_require__(394);
 const opener = /(~{3,})table(?:\/(\S+))?(?!\S)([^\r\n]*)(?:$|\r?\n)/y;
-exports.segment = (0, combinator_1.block)((0, combinator_1.fence)(opener, false));
-exports.segment_ = (0, combinator_1.block)((0, combinator_1.fence)(opener, false, false), false);
 exports.table = (0, combinator_1.block)((0, combinator_1.inits)([(0, combinator_1.fence)(opener, true), (_, output) => {
   const [body, overflow, closer, opener, delim, type, param] = (0, util_1.unwrap)(output.pop());
   if (!closer || overflow || param.trimStart()) return output.append(new parser_1.Node((0, dom_1.html)('pre', {
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('table', !closer || overflow ? 'fence' : 'argument', !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-  }, `${opener}${body}${overflow || closer}`)));
+  }, `${opener}${body}${closer}${overflow}`)));
   switch (type) {
     case undefined:
     case 'grid':
@@ -5888,7 +5880,7 @@ exports.mathblock = (0, combinator_1.block)((0, combinator_1.inits)([(0, combina
     class: 'invalid',
     translate: 'no',
     ...(0, util_1.invalid)('mathblock', delim.length > 2 ? 'syntax' : !closer || overflow ? 'fence' : 'argument', delim.length > 2 ? 'Invalid syntax' : !closer ? `Missing the closing delimiter "${delim}"` : overflow ? `Invalid trailing line after the closing delimiter "${delim}"` : 'Invalid argument')
-  }, `${opener}${body}${overflow || closer}`)));
+  }, `${opener}${body}${closer}${overflow}`)));
 }]));
 
 /***/ },
