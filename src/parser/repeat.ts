@@ -51,7 +51,7 @@ export function repeat<T extends HTMLElement | string>(
         input.position = position;
         return Result.skip;
       }
-      let depth = i / opener.length + 1 | 0;
+      const depth = i / opener.length + 1 | 0;
       recur(output, recursions, recursion, depth, true);
       input.memory = {
         position,
@@ -94,6 +94,7 @@ export function repeat<T extends HTMLElement | string>(
             const advance = input.position - pos;
             m.i -= advance;
             m.follow -= advance;
+            recur(output, recursions, recursion, -(advance / closer.length | 0));
             m.depth -= advance / closer.length | 0;
           }
           continue;
@@ -104,7 +105,7 @@ export function repeat<T extends HTMLElement | string>(
     },
     parser,
     (input, output) => {
-      const { source, memory: m } = input;
+      const { source, memory: m, resources: { recursions } } = input;
       const { lead } = m;
       input.range = input.position - m.position - m.i + opener.length;
       if (!output.state) return;
@@ -131,6 +132,7 @@ export function repeat<T extends HTMLElement | string>(
             const advance = input.position - pos;
             m.i -= advance;
             m.follow -= advance;
+            recur(output, recursions, recursion, -(advance / closer.length | 0));
             m.depth -= advance / closer.length | 0;
           }
           m.i -= opener.length, m.follow -= closer.length;
