@@ -10,8 +10,10 @@ describe('Unit: api/bind', () => {
         const result = iter.next();
         if (result.done) break;
         switch (result.value.type) {
-          case 'break':
           case 'segment':
+          case 'figure':
+          case 'note':
+          case 'break':
             --i;
             continue;
           case 'block':

@@ -14,7 +14,7 @@ export function* note(
     readonly local?: boolean;
   } = {},
   bottom: Node | null = null,
-): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+): Generator<HTMLOListElement | undefined, undefined, undefined> {
   const referenceRefMemory = referenceRefsMemoryCaller(target);
   const annotationRefMemory = annotationRefsMemoryCaller(target);
   for (const memory of [referenceRefMemory, annotationRefMemory]) {
@@ -77,7 +77,7 @@ function build(
       readonly local?: boolean;
     } = {},
     bottom: Node | null = null,
-  ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+  ): Generator<HTMLOListElement | undefined, undefined, undefined> {
     const refInfoCaller = memoize((ref: HTMLElement) => {
       const content = ref.firstElementChild!;
       const abbr = ref.getAttribute('data-abbr') ?? '';
@@ -126,8 +126,10 @@ function build(
         if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
         if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
-          yield* proc(splitter as HTMLOListElement);
-          splitter.remove();
+          const note = splitter as HTMLOListElement;
+          proc(note);
+          note.remove();
+          yield note;
           continue;
         }
         if (defs.size > 0) {
@@ -137,8 +139,9 @@ function build(
             ? splitter as HTMLOListElement
             : target.insertBefore(html('ol', { class: list }), splitter);
           assert(note.parentNode);
-          yield* proc(note, defs);
+          proc(note, defs);
           assert(defs.size === 0);
+          yield note;
         }
       }
       const { content, identifier, abbr, text } = refInfoCaller(ref);
@@ -216,14 +219,17 @@ function build(
       note ??= splitter?.classList.contains(list)
         ? splitter as HTMLOListElement
         : target.insertBefore(html('ol', { class: list }), splitter ?? bottom);
-      yield* proc(note, defs);
+      proc(note, defs);
       assert(defs.size === 0);
+      yield note;
     }
     if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
       if (~iSplitters << 32 - 8 === 0) yield;
       if (splitter.classList.contains(list)) {
-        yield* proc(splitter as HTMLOListElement);
+        const note = splitter as HTMLOListElement;
+        proc(note);
         splitter.remove();
+        yield note;
       }
     }
     assert(opts.id !== '' || !target.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
@@ -231,13 +237,13 @@ function build(
   };
 }
 
-function* proc(note: HTMLOListElement, defs?: Map<string, HTMLLIElement>): Generator<HTMLLIElement | undefined, undefined, undefined> {
+function proc(note: HTMLOListElement, defs?: Map<string, HTMLLIElement>): void {
   for (let defs = note.children, i = defs.length; i--;) {
-    yield note.removeChild(defs[i] as HTMLLIElement);
+    note.removeChild(defs[i] as HTMLLIElement);
   }
   if (!defs) return;
   for (const [, def] of defs) {
-    yield note.appendChild(def);
+    note.appendChild(def);
   }
   defs.clear();
 }

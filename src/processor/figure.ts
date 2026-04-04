@@ -11,7 +11,7 @@ export function* figure(
     readonly id?: string;
     readonly local?: boolean;
   } = {},
-): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
+): Generator<undefined, undefined, undefined> {
   const selector = ':is(figure[data-label], h1, h2)';
   const refs = new MultiQueue<string, HTMLAnchorElement>(
     !notes || notes.references.parentNode === target
@@ -127,7 +127,7 @@ export function* figure(
         unmarkInvalid(ref);
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
-      yield define(ref,
+      define(ref,
         {
           class: opts.local ? `${ref.className} local` : undefined,
           href: opts.id !== '' ? `#${def.id}` : undefined,
@@ -139,7 +139,6 @@ export function* figure(
     if (opts.id !== '' && !ref.classList.contains('invalid')) {
       markInvalid(ref, 'label', 'reference', messages.reference);
     }
-    yield ref;
   }
   assert(opts.id !== '' || !target.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   assert(opts.id !== '' || !notes?.references.querySelector('[id], .index[href], .label[href]'));

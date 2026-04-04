@@ -42,8 +42,8 @@ export interface ParserSettings {
 export type Progress =
   | { readonly type: 'segment'; readonly value: string; }
   | { readonly type: 'block'; readonly value: HTMLElement; }
-  | { readonly type: 'figure'; readonly value: HTMLAnchorElement; }
-  | { readonly type: 'note'; readonly value: HTMLLIElement | HTMLElement; }
+  | { readonly type: 'figure'; }
+  | { readonly type: 'note'; readonly value: HTMLOListElement; }
   | { readonly type: 'break'; readonly value: 'segment' | 'block' | 'parser' | 'figure' | 'note'; }
   | { readonly type: 'cancel'; };
 

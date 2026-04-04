@@ -18,7 +18,7 @@ describe('Unit: processor/note', () => {
     it('1', () => {
       const target = run(parse('((a b))'));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target)].length, i === 0 ? 2 : 3);
+        assert.deepStrictEqual([...note(target)].length, 2);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -40,7 +40,7 @@ describe('Unit: processor/note', () => {
     it('2', () => {
       const target = run(parse('((1))((12345678901234567890))'));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target)].length, i === 0 ? 4 : 6);
+        assert.deepStrictEqual([...note(target)].length, 3);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -203,7 +203,7 @@ describe('Unit: processor/note', () => {
     it('id', () => {
       const target = run(parse('((a b))'));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target, undefined, { id: '0' })].length, i === 0 ? 2 : 3);
+        assert.deepStrictEqual([...note(target, undefined, { id: '0' })].length, 2);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [

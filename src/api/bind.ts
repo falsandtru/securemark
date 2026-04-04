@@ -129,7 +129,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (const el of figure(next(0)?.parentNode ?? target, settings.notes, options)) {
       assert(rev === revision);
       el
-        ? yield { type: 'figure', value: el }
+        ? yield { type: 'figure' }
         : yield { type: 'break', value: 'figure' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
