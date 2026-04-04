@@ -34,6 +34,7 @@ export function repeat<T extends HTMLElement | string>(
   const test = tester(after, false);
   interface Memory {
     readonly position: number;
+    linebreak: number;
     i: number;
     lead: number;
     follow: number;
@@ -42,7 +43,7 @@ export function repeat<T extends HTMLElement | string>(
   }
   const cont: Result<T, Input<Memory>> = [
     (input, output) => {
-      const { source, position, resources: { recursions } } = input;
+      const { source, position, linebreak, resources: { recursions } } = input;
       if (!source.startsWith(opener, input.position)) return Result.skip;
       let i = opener.length;
       for (; source[input.position + i] === source[input.position];) ++i;
@@ -55,12 +56,14 @@ export function repeat<T extends HTMLElement | string>(
       recur(output, recursions, recursion, depth, true);
       input.memory = {
         position,
+        linebreak,
         i,
         lead: 0,
         follow: 0,
         state: false,
         depth,
       };
+      input.linebreak = 0;
       output.push();
       return loop;
     },
@@ -68,6 +71,7 @@ export function repeat<T extends HTMLElement | string>(
       const { source, memory: m, resources: { recursions } } = input;
       recur(output, recursions, recursion, -m.depth);
       m.depth = 0;
+      input.linebreak ||= m.linebreak;
       const prefix = m.i;
       m.i = 0;
       for (let len = min(prefix, source.length - input.position); m.i < len && source[input.position + m.i] === closer[0];) {
