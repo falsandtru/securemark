@@ -6414,7 +6414,6 @@ exports.input = input;
 class Input extends parser_1.Input {
   constructor(options = {}, source) {
     super(options);
-    this.recursion = new RecursionCounter(2);
     const {
       segment,
       header,
@@ -6449,23 +6448,6 @@ class Input extends parser_1.Input {
   }
 }
 exports.Input = Input;
-class RecursionCounter {
-  constructor(limit) {
-    this.limit = limit;
-    this.stack = [];
-    this.index = 0;
-  }
-  add(depth) {
-    const {
-      stack
-    } = this;
-    for (; this.index > 0 && stack[this.index - 1] >= depth; --this.index);
-    stack[this.index] = depth;
-    ++this.index;
-    // 内側から数えるので無効化処理できない。
-    return this.index <= this.limit;
-  }
-}
 
 /***/ },
 
@@ -6729,9 +6711,7 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
   const {
     position,
     linebreak,
-    range,
-    recursion,
-    resources
+    range
   } = input;
   if (linebreak !== 0 || nodes.length === 0 || lead === 0 || follow % 2 === 0) {
     nodes.unshift(new parser_1.Node('('));
@@ -6741,18 +6721,19 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     }, (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
   }
   input.position += 1;
-  if (!recursion.add(resources?.recursions[2 /* Recursion.inline */] ?? resources?.recursions.at(-1))) {
-    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
-      class: 'invalid',
-      ...(0, util_1.invalid)('annotation', 'syntax', 'Recursions must be two or fewer')
-    }, (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(nodes)))))]);
-  }
   const el = (0, dom_1.html)('sup', {
     class: 'annotation'
   }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(nodes))))]);
   for (let list = output.annotations.at(-1), node = list.last, pos = position - range, i = 0;; node = node.prev, ++i) {
-    if (node && node.position > pos) continue;
-    i === list.length ? list.unshift(new parser_1.Node(el, pos)) : list.insert(new parser_1.Node(el, pos), node?.next);
+    if (node && node.position > pos) {
+      if (~node.flags & 2 /* Node.Flag.nested */) continue;
+      return new parser_1.List([new parser_1.Node((0, dom_1.define)(el.firstElementChild, {
+        class: 'invalid',
+        ...(0, util_1.invalid)('annotation', 'syntax', 'Recursions must be two or fewer')
+      }))]);
+    }
+    const flag = i === 0 ? 0 /* Node.Flag.none */ : 2 /* Node.Flag.nested */;
+    i === list.length ? list.unshift(new parser_1.Node(el, pos, flag)) : list.insert(new parser_1.Node(el, pos, flag), node?.next);
     break;
   }
   return new parser_1.List([new parser_1.Node(el)]);
@@ -8690,6 +8671,7 @@ function repeat(opener, after, closer, recursion, parser, cons, termination = (n
         input.position += closer.length;
         const pos = input.position;
         m.follow = m.follow > 0 ? m.follow : countFollows(source, pos, closer, lead / opener.length | 0);
+        input.range = input.position - m.position - m.i + opener.length;
         output.push(cons(output.pop(), input, output, lead, m.follow));
         if (input.position > pos) {
           const advance = input.position - pos;
