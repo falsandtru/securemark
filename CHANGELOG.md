@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.300.6
+
+- Refactoring.
+
 ## 0.300.5
 
 - Refactoring.
