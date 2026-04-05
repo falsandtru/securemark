@@ -72,7 +72,8 @@ export const aside: ExtensionParser.AsideParser = block(recursion(Recursion.bloc
           class: 'aside',
         },
         [
-          doc,
+          // DocumentFragmentを追加すると異常に重くなるので避ける
+          ...doc.children,
           html('h2', 'References'),
           notes!.references,
         ])));

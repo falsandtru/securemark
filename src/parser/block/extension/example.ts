@@ -66,6 +66,7 @@ const contMD: Result<DocumentFragment | HTMLElement, Input<Memory>> = [
   (input, output) => {
     const { notes } = input;
     input = input.scope.pop();
+    const doc = output.pop().head!.value;
     return output.append(
       new Node(html('aside',
         { class: 'example', 'data-type': 'markdown' },
@@ -73,7 +74,8 @@ const contMD: Result<DocumentFragment | HTMLElement, Input<Memory>> = [
           html('pre', { translate: 'no' }, input.memory.body.slice(0, input.memory.body.at(-2) === '\r' ? -2 : -1)),
           html('hr'),
           html('section', [
-            output.pop().head!.value,
+            // DocumentFragmentを追加すると異常に重くなるので避ける
+            ...doc.children,
             html('h2', 'References'),
             notes!.references,
           ]),

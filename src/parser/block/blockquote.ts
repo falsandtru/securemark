@@ -54,7 +54,8 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
           const doc = output.pop().head!.value;
           if (!doc.firstChild) return output.context;
           return output.append(new Node(html('section', [
-            doc,
+            // DocumentFragmentを追加すると異常に重くなるので避ける
+            ...doc.children,
             html('h2', 'References'),
             notes!.references,
           ])));
