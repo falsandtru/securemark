@@ -6460,10 +6460,10 @@ class RecursionCounter {
       stack
     } = this;
     for (; this.index > 0 && stack[this.index - 1] >= depth; --this.index);
-    // 内側から数えるので無効化処理できずエラーを投げるしかない。
-    if (this.index === this.limit) return new Error(`Too much recursion`);
     stack[this.index] = depth;
     ++this.index;
+    // 内側から数えるので無効化処理できない。
+    return this.index <= this.limit;
   }
 }
 
@@ -6740,8 +6740,13 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
       class: (0, bracket_1.bracketname)(input, 1, 1)
     }, (0, dom_1.defrag)((0, util_1.unwrap)(nodes))))]);
   }
-  output.error ??= recursion.add(resources?.recursions[2 /* Recursion.inline */] ?? resources?.recursions.at(-1));
   input.position += 1;
+  if (!recursion.add(resources?.recursions[2 /* Recursion.inline */] ?? resources?.recursions.at(-1))) {
+    return new parser_1.List([new parser_1.Node((0, dom_1.html)('span', {
+      class: 'invalid',
+      ...(0, util_1.invalid)('annotation', 'syntax', 'Recursions must be two or fewer')
+    }, (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(nodes)))))]);
+  }
   const el = (0, dom_1.html)('sup', {
     class: 'annotation'
   }, [(0, dom_1.html)('span', (0, dom_1.defrag)((0, util_1.unwrap)((0, visibility_1.trimBlankNodeEnd)(nodes))))]);
