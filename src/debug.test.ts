@@ -6,6 +6,9 @@ export function inspect(parser: Parser<DocumentFragment | HTMLElement | string>,
   const output = new Output<DocumentFragment | HTMLElement | string>();
   for (const _ of run(parser, input, output));
   assert.deepStrictEqual(output.data, [output.data[0]]);
+  assert(output.labels.length === 1);
+  assert(output.annotations.length === 1);
+  assert(output.references.length === 1);
   assert(output.state || output.peek().length === 0);
   assert(!output.error);
   return !output.state ? undefined : [

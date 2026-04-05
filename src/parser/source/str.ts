@@ -6,9 +6,10 @@ export function str(pattern: string | RegExp, after?: string | RegExp): StrParse
 export function str(pattern: string | RegExp, after?: string | RegExp): Parser<string> {
   const match = matcher(pattern, true, after ? tester(after, false) : undefined);
   return (input, output) => {
+    const { position } = input;
     const src = match(input, output);
     if (src === undefined) return;
-    return output.append(new Node(src));
+    return output.append(new Node(src, position));
   };
 }
 
@@ -25,6 +26,6 @@ export function strs(char: string, min: number = 1, max: number = -1): Parser<st
     }
     if (cnt < min) return;
     input.position = pos;
-    return output.append(new Node(source.slice(position, input.position)));
+    return output.append(new Node(source.slice(position, input.position), position));
   };
 }

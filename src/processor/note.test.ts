@@ -1,24 +1,34 @@
 import { note } from './note';
 import { run, parse as parse_ } from '../api';
+import { Opts } from '../api/parse';
+import { List, Node } from '../combinator/parser';
 import { html } from 'typed-dom/dom';
 import { normalize } from '../debug.test';
 
-const parse = (s: string) => parse_(s, { test: true });
+const parse = (s: string, o?: Opts) => parse_(s, { test: true, ...o });
 
 describe('Unit: processor/note', () => {
   describe('annotation', () => {
     it('empty', () => {
-      const target = run(parse(''));
-      [...note(target)];
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('', lists));
+      [...note(target, lists)];
       assert.deepStrictEqual(
         [...target.children].map(el => normalize(el.outerHTML)),
         []);
     });
 
     it('1', () => {
-      const target = run(parse('((a b))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((a b))', lists));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target)].length, 1);
+        assert.deepStrictEqual([...note(target, lists)].length, 1);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -38,9 +48,13 @@ describe('Unit: processor/note', () => {
     });
 
     it('2', () => {
-      const target = run(parse('((1))((12345678901234567890))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((1))((12345678901234567890))', lists));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target)].length, 1);
+        assert.deepStrictEqual([...note(target, lists)].length, 1);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -67,9 +81,13 @@ describe('Unit: processor/note', () => {
     });
 
     it('unify', () => {
-      const target = run(parse('((1))((2))((3))((2))((4))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((1))((2))((3))((2))((4))', lists));
       for (let i = 0; i < 3; ++i) {
-        [...note(target)];
+        [...note(target, lists)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -116,13 +134,17 @@ describe('Unit: processor/note', () => {
     });
 
     it('separation', () => {
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
       const target = run(parse([
         '!>> ((1))\n> ((2))\n~~~',
         '~~~~example/markdown\n((3))\n~~~~',
         '((4))',
-      ].join('\n\n')));
+      ].join('\n\n'), lists));
       for (let i = 0; i < 3; ++i) {
-        [...note(target)];
+        [...note(target, lists)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -135,9 +157,13 @@ describe('Unit: processor/note', () => {
     });
 
     it('split', () => {
-      const target = run(parse('((1))\n\n## a\n\n((2))((1))((3))((2))\n\n## b\n\n((2))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((1))\n\n## a\n\n((2))((1))((3))((2))\n\n## b\n\n((2))', lists));
       for (let i = 0; i < 3; ++i) {
-        [...note(target)];
+        [...note(target, lists)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -201,9 +227,13 @@ describe('Unit: processor/note', () => {
     });
 
     it('id', () => {
-      const target = run(parse('((a b))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((a b))', lists));
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...note(target, undefined, { id: '0' })].length, 1);
+        assert.deepStrictEqual([...note(target, lists, undefined, { id: '0' })].length, 1);
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -223,9 +253,13 @@ describe('Unit: processor/note', () => {
     });
 
     it('nest', () => {
-      const target = run(parse('((a((b))))((a))((b))'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((a((b))))((a))((b))', lists));
       for (let i = 0; i < 3; ++i) {
-        [...note(target)];
+        [...note(target, lists)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -278,10 +312,14 @@ describe('Unit: processor/note', () => {
 
   describe('reference', () => {
     it('1', () => {
-      const target = run(parse('[[a b]]'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('[[a b]]', lists));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...note(target, notes)];
+        [...note(target, lists, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -305,10 +343,14 @@ describe('Unit: processor/note', () => {
     });
 
     it('abbr', () => {
-      const target = run(parse('[[^A 1]][[^A 1|b]][[^A 1]]'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('[[^A 1]][[^A 1|b]][[^A 1]]', lists));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...note(target, notes)];
+        [...note(target, lists, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [
@@ -342,10 +384,14 @@ describe('Unit: processor/note', () => {
     });
 
     it('nest', () => {
-      const target = run(parse('((a[[^B]]))[[^B|c]]'));
+      const lists = {
+        annotations: new List<Node<HTMLElement>>(),
+        references: new List<Node<HTMLElement>>(),
+      };
+      const target = run(parse('((a[[^B]]))[[^B|c]]', lists));
       const notes = { references: html('ol') };
       for (let i = 0; i < 3; ++i) {
-        [...note(target, notes)];
+        [...note(target, lists, notes)];
         assert.deepStrictEqual(
           [...target.children].map(el => normalize(el.outerHTML)),
           [

@@ -1,38 +1,27 @@
+import { List, Node } from '../combinator/parser';
 import { number as calculate, isFixed } from '../parser/inline/extension/label';
-import { markInvalid, unmarkInvalid } from '../parser/util';
+import { markInvalid, unmarkInvalid, collect } from '../parser/util';
 import { MultiQueue } from 'spica/queue';
-import { push } from 'spica/array';
 import { define } from 'typed-dom/dom';
 
 export function* figure(
-  target: ParentNode & Node,
+  target: ParentNode & global.Node,
+  list: List<Node<HTMLAnchorElement>>,
   notes?: { readonly references: HTMLOListElement; },
   opts: {
     readonly id?: string;
     readonly local?: boolean;
   } = {},
 ): Generator<undefined, undefined, undefined> {
-  const selector = ':is(figure[data-label], h1, h2)';
   const refs = new MultiQueue<string, HTMLAnchorElement>(
-    !notes || notes.references.parentNode === target
-      ? Array.from(
-          target.querySelectorAll('a.label:not(.local)[data-label]'),
-          el => [el.getAttribute('data-label')!, el])
-      : push(
-          Array.from(
-            target.querySelectorAll('a.label:not(.local)[data-label]'),
-            el => [el.getAttribute('data-label')!, el] as const),
-          Array.from(
-            notes.references.querySelectorAll('a.label:not(.local)'),
-            el => [el.getAttribute('data-label')!, el] as const)));
+    list.foldl<[string, HTMLAnchorElement][]>((acc, { value: el }) =>
+      (acc.push([el.getAttribute('data-label')!, el] as const), acc), []));
   const labels = new Set<string>();
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
   for (
-    let defs = target instanceof Element
-          ? target.querySelectorAll(`:scope > ${selector}`)
-          : target.querySelectorAll(`:not(* > *)${selector}`),
+    let defs = collect(target,  'figure[data-label], h1, h2'),
         len = defs.length, i = 0; i < len; ++i) {
     if (~i << 32 - 8 === 0) yield;
     const def = defs[i];

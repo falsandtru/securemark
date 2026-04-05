@@ -27,13 +27,13 @@ export const text: TextParser = (input, output) => {
         default:
           spend(input, output, 1);
           input.position += 1;
-          return output.append(new Node(source.slice(position + 1, input.position)));
+          return output.append(new Node(source.slice(position + 1, input.position), position));
       }
     case '\r':
       return Result.succ;
     case '\n':
       input.linebreak ||= source.length - position;
-      return output.append(new Node(html('br'), Flag.blank));
+      return output.append(new Node(html('br'), position, Flag.blank));
     default:
       assert(char !== '\n');
       nonWhitespace.lastIndex = position + 1;
@@ -54,7 +54,7 @@ export const text: TextParser = (input, output) => {
       input.position += i - 1;
       const linestart = position === 0 || source[position - 1] === '\n';
       if (position === input.position || s && !linestart || lineend) return Result.succ;
-      return output.append(new Node(source.slice(position, input.position)));
+      return output.append(new Node(source.slice(position, input.position), position));
   }
 };
 

@@ -1,11 +1,10 @@
+import { collect } from '../parser/util';
 import { push } from 'spica/array';
 import { html } from 'typed-dom/dom';
 
-const selector = ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]:not(.local)';
-
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs: HTMLHeadingElement[] = [];
-  for (let es = source.querySelectorAll(selector),
+  for (let es = collect(source, ':is(h1, h2, h3, h4, h5, h6, aside.aside)[id]'),
            len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     assert(el.parentNode === source);

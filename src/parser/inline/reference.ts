@@ -26,9 +26,9 @@ export const reference: ReferenceParser = lazy(() => constraint(State.reference,
       setBacktrack(input, 2 | Backtrack.link, head, 2);
       return;
     }
-    return output.import(new List([
-      new Node(html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]))
-    ]));
+    const el = html('sup', attributes(ns), [html('span', defrag(unwrap(trimBlankNodeEnd(ns))))]);
+    output.references.at(-1)!.push(new Node(el));
+    return output.import(new List([new Node(el)]));
   },
   (_, input) => {
     const { source, position, range, linebreak } = input;

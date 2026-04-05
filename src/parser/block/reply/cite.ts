@@ -20,7 +20,7 @@ export const cite: ReplyParser.CiteParser = line(fmap(
       focus(/>>https?:\/\/\S+(?=\s*$)/y, ({ source }, output) => output.append(new Node(html('a', { class: 'anchor', href: source.slice(2).trimEnd(), target: '_blank' }, source)))),
       focus(/>>\S+(?=\s*$)/y, ({ source }, output) => output.append(new Node(source))),
     ])),
-  nodes => {
+  (nodes, { position }) => {
     const quotes = nodes.head!.value as string;
     const node = nodes.last!.value;
     return new List([
@@ -34,6 +34,6 @@ export const cite: ReplyParser.CiteParser = line(fmap(
             ? define(node, { 'data-depth': `${quotes.length + 1}` }, node.innerText.slice(1))
             : node.slice(1),
         ]))),
-      new Node(html('br'), Flag.blank),
+      new Node(html('br'), position, Flag.blank),
     ]);
   }));

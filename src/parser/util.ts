@@ -64,3 +64,12 @@ export function stringify(nodes: Iterable<HTMLElement | string>): string {
 export function randomID(): string {
   return `random-${rnd0Z(6)}`;
 }
+
+export function collect(target: ParentNode, selector:string): HTMLElement[] {
+  const acc = [];
+  for (let el = target.firstElementChild; el; el = el?.nextElementSibling) {
+    if (!el.matches(selector)) continue;
+    acc.push(el as HTMLElement);
+  }
+  return acc;
+}

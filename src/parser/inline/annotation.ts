@@ -32,7 +32,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     ([, bs], _, output) => output.import(bs),
     ([, bs], _, output) => bs && output.import(bs.push(new Node(Command.Cancel)))))),
     (nodes, input, output, lead, follow) => {
-      const { linebreak, recursion, resources } = input;
+      const { position, linebreak, range, recursion, resources } = input;
       if (linebreak !== 0 || nodes.length === 0 || lead === 0 || follow % 2 === 0) {
         nodes.unshift(new Node('('));
         nodes.push(new Node(')'));
@@ -42,11 +42,17 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
       }
       output.error ??= recursion.add(resources?.recursions[Recursion.inline] ?? resources?.recursions.at(-1));
       input.position += 1;
-      return new List([
-        new Node(html('sup', { class: 'annotation' }, [
-          html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))
-        ]))
+      const el = html('sup', { class: 'annotation' }, [
+        html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))
       ]);
+      for (let list = output.annotations.at(-1)!, node = list.last, pos = position - range, i = 0; ; node = node!.prev, ++i) {
+        if (node && node.position > pos) continue;
+        i === list.length
+          ? list.unshift(new Node(el, pos))
+          : list.insert(new Node(el, pos), node?.next);
+        break;
+      }
+      return new List([new Node(el)]);
     },
     (nodes, input, output, prefix, postfix) => {
       assert(postfix === 0);

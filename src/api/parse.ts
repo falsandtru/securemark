@@ -1,12 +1,15 @@
 import { ParserOptions } from '../..';
 import { Input, Options } from '../parser/context';
-import { Output, run } from '../combinator/parser';
+import { Output, List, Node, run } from '../combinator/parser';
 import { document } from '../parser/document';
 import { ReadonlyURL } from 'spica/url';
 
-interface Opts extends ParserOptions {
+export interface Opts extends ParserOptions {
   readonly local?: boolean;
   readonly test?: boolean;
+  readonly labels?: List<Node<HTMLAnchorElement>>;
+  readonly annotations?: List<Node<HTMLElement>>;
+  readonly references?: List<Node<HTMLElement>>;
 }
 
 export function* parse(source: string, opts: Opts = {}, options?: Options): Generator<void, DocumentFragment, void> {
@@ -23,6 +26,9 @@ export function* parse(source: string, opts: Opts = {}, options?: Options): Gene
   if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
   const output = new Output<DocumentFragment>();
+  assert(output.labels[0] = opts.labels ?? output.labels[0]);
+  assert(output.annotations[0] = opts.annotations ?? output.annotations[0]);
+  assert(output.references[0] = opts.references ?? output.references[0]);
   for (const _ of run(document, new Input(options, source), output)) yield;
   assert(output.data.length === 1);
   assert(output.peek().length === 1);

@@ -23,7 +23,7 @@ export const quote: ReplyParser.QuoteParser = block(fmap(
       ])),
       true)),
   (ns, { source, position }) => new List([
-    new Node(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br'), Flag.blank),
+    new Node(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br'), position, Flag.blank),
     new Node(html('span', { class: 'quote' }, defrag(unwrap(ns)))),
   ].reverse())),
   false);

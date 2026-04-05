@@ -1,5 +1,5 @@
 import { always } from '../control/state';
-import { Parser, Input } from '../parser';
+import { Parser, Input, Output, List } from '../parser';
 import { Scope } from './scope';
 
 interface Data {
@@ -30,8 +30,8 @@ export class Backtrack {
     input.range = range;
     input.linebreak = linebreak;
   }
-  public handle(state: boolean): void {
-    state
+  public handle(output: Output<unknown>): void {
+    output.state
       ? this.unmemory()
       : this.backtrack();
   }
@@ -50,14 +50,26 @@ export function backtrack<T>(parser: Parser<T>): Parser<T> {
         linebreak,
       });
       output.push();
+      output.labels.push(new List());
+      output.annotations.push(new List());
+      output.references.push(new List());
       return output.context;
     },
     parser,
     ({ backtrack }, output) => {
-      output.state
-        ? output.flat()
-        : output.pop();
-      backtrack.handle(output.state);
+      backtrack.handle(output);
+      if (output.state) {
+        output.import(output.pop());
+        output.labels.at(-2)!.import(output.labels.pop()!);
+        output.annotations.at(-2)!.import(output.annotations.pop()!);
+        output.references.at(-2)!.import(output.references.pop()!);
+      }
+      else {
+        output.pop();
+        output.labels.pop();
+        output.annotations.pop();
+        output.references.pop();
+      }
       return output.context;
     },
   ]);

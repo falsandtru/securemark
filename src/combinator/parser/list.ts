@@ -8,6 +8,9 @@ export class List<N extends List.Node = List.Node, I extends Input = Input, S ex
     }
   }
   public length = 0;
+  public isEmpty(): boolean {
+    return this.head === undefined;
+  }
   public head?: N = undefined;
   public last?: N = undefined;
   public get tail(): N | undefined {
@@ -93,18 +96,6 @@ export class List<N extends List.Node = List.Node, I extends Input = Input, S ex
     list.clear();
     return this;
   }
-  public truncateBefore(node: N): void {
-    assert(node.next || node.prev || this.head === this.last);
-    if (node.prev === undefined) return;
-    this.delete(node.prev);
-    this.head = node;
-  }
-  public truncateAfter(node: N): void {
-    assert(node.next || node.prev || this.head === this.last);
-    if (node.next === undefined) return;
-    this.delete(node.next);
-    this.last = node;
-  }
   public clear(): void {
     this.length = 0;
     this.head = this.last = undefined;
@@ -155,9 +146,10 @@ export namespace List {
     prev?: this;
   }
 }
-export class Node<N> implements List.Node {
+export class Node<T> implements List.Node {
   constructor(
-    public value: N,
+    public value: T,
+    public position: number = 0,
     public flags: number = 0,
   ) {
   }

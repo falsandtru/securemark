@@ -26,12 +26,16 @@ export const label: ExtensionParser.LabelParser = constraint(State.label, fmap(
     backtrack(surround('[', body, ']', false, [1 | Backtrack.common])),
     body,
   ]),
-  ([{ value }]) => new List([
-    new Node(html('a', {
-      class: 'label',
-      'data-label': value.slice(value[1] === '-' ? 0 : 1).toLowerCase(),
-    }, value)),
-  ])));
+  ([{ value }], _, output) => {
+    const label = html('a',
+      {
+        class: 'label',
+        'data-label': value.slice(value[1] === '-' ? 0 : 1).toLowerCase(),
+      },
+      value);
+    output.labels.at(-1)!.push(new Node(label));
+    return new List([new Node(label)]);
+  }));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

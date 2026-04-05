@@ -28,7 +28,7 @@ export const html: HTMLParser = lazy(() => union([
     open(str(/ ?/y), str('>'), true),
     true, [],
     ([as, bs = new List(), cs], input, output) =>
-      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input), as.head!.value === '<wbr' ? Flag.blank : Flag.none)),
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input), as.head!.position, as.head!.value === '<wbr' ? Flag.blank : Flag.none)),
     ([as, bs = new List()], input, output) =>
       output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), input)))),
   match(

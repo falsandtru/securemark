@@ -1,6 +1,6 @@
 import { DocumentParser } from '../../markdown';
 import { Input, Recursion } from './context';
-import { Parser, Result, Node } from '../combinator/parser';
+import { Parser, Result, List, Node } from '../combinator/parser';
 import { always, force, recursion } from '../combinator';
 import { build } from './parser';
 import { parser as segment } from './segment';
@@ -14,8 +14,8 @@ export const document: DocumentParser = (() => {
   interface Memory {
     readonly interpolation: boolean;
     readonly references: HTMLOListElement;
-    doc?: DocumentFragment;
     orphan?: boolean;
+    doc?: DocumentFragment;
   }
   const document = build(segment, block);
   return always<Parser<DocumentFragment | HTMLElement, Input<Memory>>>([
@@ -29,6 +29,9 @@ export const document: DocumentParser = (() => {
         references: input.notes?.references ?? html('ol', { class: 'references' }),
       };
       output.push();
+      output.labels.push(new List());
+      output.annotations.push(new List());
+      output.references.push(new List());
       return output.context;
     },
     recursion(Recursion.document, force(() => document)),
@@ -38,15 +41,23 @@ export const document: DocumentParser = (() => {
       const doc = memory.doc = frag(unwrap(output.pop()));
       output.append(new Node(doc));
       assert(input.id !== '' || !doc.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
-      if (input.test && !input.local) return Result.skip;
+      if (input.test && !input.local) {
+        output.labels.at(-2)!.import(output.labels.pop()!);
+        output.annotations.at(-2)!.import(output.annotations.pop()!);
+        output.references.at(-2)!.import(output.references.pop()!);
+        return Result.skip;
+      }
       memory.orphan = !memory.references.parentNode;
       memory.orphan && doc.appendChild(memory.references);
       return output.context;
     },
-    input =>
-      conv(figure(input.memory.doc!, input.memory, input)),
-    input =>
-      conv(note(input.memory.doc!, input.memory, input)),
+    (input, output) =>
+      conv(figure(input.memory.doc!, output.labels.pop()!, input.memory, input)),
+    (input, output) =>
+      conv(note(input.memory.doc!, {
+        annotations: output.annotations.pop()!,
+        references: output.references.pop()!,
+      }, input.memory, input)),
     (input, output) => {
       const { memory } = input;
       memory.orphan && !memory.interpolation && memory.references.remove();

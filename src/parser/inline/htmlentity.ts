@@ -15,15 +15,16 @@ export const unsafehtmlentity: UnsafeHTMLEntityParser = surround(
     output.append(
       new Node(
         parser(as.head!.value + bs.head!.value + cs.head!.value),
+        as.head!.position,
         isBlankHTMLEntityName(bs.head!.value) ? Flag.blank : Flag.none)),
   ([as, bs], _, output) =>
     output.append(new Node(as.head!.value + (bs?.head?.value ?? ''))));
 
 export const htmlentity: HTMLEntityParser = fmap(
   union([unsafehtmlentity]),
-  ([{ value, flags }]) => new List([
+  ([{ value, position, flags }]) => new List([
     value.length === 1 || value.at(-1) !== ';'
-      ? new Node(value, flags)
+      ? new Node(value, position, flags)
       : new Node(html('span', {
           class: 'invalid',
           ...invalid('htmlentity', 'syntax', 'Invalid HTML entity'),

@@ -142,6 +142,9 @@ export class Output<T> {
   public state: boolean = true;
   public readonly context: Result.Succ | Result.Fail = Result.succ;
   public error?: Error = undefined;
+  public readonly labels: List<Node<HTMLAnchorElement>>[] = [new List()];
+  public readonly annotations: List<Node<HTMLElement>>[] = [new List()];
+  public readonly references: List<Node<HTMLElement>>[] = [new List()];
   public peek(): List<Node<T>> {
     assert(this.data.length > 0);
     return this.data.at(-1)!;
@@ -161,11 +164,6 @@ export class Output<T> {
   public replace(list: List<Node<T>>): Result.Succ | Result.Fail {
     assert(this.data.length > 1);
     this.data[this.data.length - 1] = list;
-    return Result.succ;
-  }
-  public flat(): Result.Succ | Result.Fail {
-    assert(this.data.length > 1);
-    this.import(this.data.pop()!);
     return Result.succ;
   }
   public push(list: List<Node<T>> = new List()): void {

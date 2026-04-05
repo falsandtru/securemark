@@ -51,7 +51,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, backtrack(o
   nodes =>
     nodes.length === 1
       ? new List<Node<List<Node<string>>>>([new Node(new List([new Node('')])), nodes.delete(nodes.head!)])
-      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, '').trimEnd(), nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
+      : new List<Node<List<Node<string>>>>([new Node(new List([new Node(nodes.head!.value.foldl((acc, { value }) => acc + value, '').trimEnd(), nodes.head!.position, nodes.head!.value.head?.flags)])), nodes.delete(nodes.last!)])),
   ([{ value: [{ value: text }] }, { value: params }], input) => {
     assert(text === text.trim());
     if (params.last!.value === Command.Cancel) {

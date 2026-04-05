@@ -1,10 +1,15 @@
+import { List, Node } from '../combinator/parser';
 import { identity, signature, text } from '../parser/inline/extension/indexee';
-import { markInvalid, unmarkInvalid } from '../parser/util';
+import { markInvalid, unmarkInvalid, collect } from '../parser/util';
 import { memoize } from 'spica/memoize';
 import { html, define } from 'typed-dom/dom';
 
 export function* note(
-  target: ParentNode & Node,
+  target: ParentNode & global.Node,
+  lists: {
+    readonly annotations: List<Node<HTMLElement>>;
+    readonly references: List<Node<HTMLElement>>;
+  },
   notes?: {
     readonly annotations?: HTMLOListElement;
     readonly references: HTMLOListElement;
@@ -13,7 +18,7 @@ export function* note(
     readonly id?: string;
     readonly local?: boolean;
   } = {},
-  bottom: Node | null = null,
+  bottom: global.Node | null = null,
 ): Generator<HTMLOListElement | undefined, undefined, undefined> {
   const referenceRefMemory = referenceRefsMemoryCaller(target);
   const annotationRefMemory = annotationRefsMemoryCaller(target);
@@ -23,8 +28,18 @@ export function* note(
     }
     memory.clear();
   }
-  yield* reference(referenceRefMemory, target, notes?.references, opts, bottom);
-  yield* annotation(annotationRefMemory, target, notes?.annotations, opts, bottom);
+  yield* reference(
+    referenceRefMemory,
+    target,
+    lists.references.foldl<HTMLElement[]>((acc, { value: el }) =>
+      (acc.push(el), acc), []),
+    notes?.references, opts, bottom);
+  yield* annotation(
+    annotationRefMemory,
+    target,
+    lists.annotations.foldl<HTMLElement[]>((acc, { value: el }) =>
+      (acc.push(el), acc), []),
+    notes?.annotations, opts, bottom);
 }
 
 interface RefMemory {
@@ -34,11 +49,11 @@ interface RefMemory {
   readonly text: string;
 }
 
-const annotationRefsMemoryCaller = memoize((target: Node) =>
+const annotationRefsMemoryCaller = memoize((target: global.Node) =>
   new Map<HTMLElement, RefMemory>() ?? target,
   new WeakMap());
 
-const referenceRefsMemoryCaller = memoize((target: Node) =>
+const referenceRefsMemoryCaller = memoize((target: global.Node) =>
   new Map<HTMLElement, {
     readonly content: Element;
     readonly identifier: string;
@@ -50,19 +65,16 @@ const referenceRefsMemoryCaller = memoize((target: Node) =>
 const annotation = build(
   'annotation',
   'annotations',
-  '.annotation:not(:is(.annotations, .references) &, .local)',
   n => `*${n}`,
   'h1, h2, h3, h4, h5, h6, aside.aside, hr, .references');
 const reference = build(
   'reference',
   'references',
-  '.reference:not(:is(.annotations, .references) &, .local)',
   (n, abbr) => `[${abbr || n}]`);
 
 function build(
   syntax: string,
   list: string,
-  selector: string,
   marker: (index: number, abbr: string) => string,
   splitter: string = '',
 ) {
@@ -70,13 +82,14 @@ function build(
   splitter &&= `${splitter}, .${list}`;
   return function* (
     memory: Map<HTMLElement, RefMemory>,
-    target: ParentNode & Node,
+    target: ParentNode & global.Node,
+    refs: readonly HTMLElement[],
     note?: HTMLOListElement,
     opts: {
       readonly id?: string;
       readonly local?: boolean;
     } = {},
-    bottom: Node | null = null,
+    bottom: global.Node | null = null,
   ): Generator<HTMLOListElement | undefined, undefined, undefined> {
     const refInfoCaller = memoize((ref: HTMLElement) => {
       const content = ref.firstElementChild!;
@@ -101,7 +114,6 @@ function build(
       };
     }, memory);
     const defs = new Map<string, HTMLLIElement>();
-    const refs = target.querySelectorAll<HTMLElement>(selector);
     const identifierInfoCaller = memoize((identifier: string) => ({
       defIndex: 0,
       defSubindex: 0,
@@ -110,9 +122,7 @@ function build(
       queue: [] as HTMLElement[],
     }));
     const splitters = splitter
-      ? target instanceof Element
-        ? target.querySelectorAll(`:scope > :is(${splitter}, .${list})`)
-        : target.querySelectorAll(`:not(* > *):is(${splitter}, .${list})`)
+      ? collect(target, `${splitter}, .${list}`)
       : [];
     let iSplitters = 0;
     let total = 0;
@@ -124,7 +134,7 @@ function build(
       if (splitter) for (let splitter; splitter = splitters[iSplitters]; ++iSplitters) {
         assert(splitter.parentNode === target || !splitter.parentNode);
         const pos = splitter?.compareDocumentPosition(ref) ?? 0;
-        if (pos & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_DISCONNECTED)) break;
+        if (pos & (global.Node.DOCUMENT_POSITION_PRECEDING | global.Node.DOCUMENT_POSITION_DISCONNECTED)) break;
         if (~iSplitters << 32 - 8 === 0) yield;
         if (splitter.classList.contains(list) && splitter.nextElementSibling !== splitters[iSplitters + 1]) {
           const note = splitter as HTMLOListElement;

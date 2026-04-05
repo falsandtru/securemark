@@ -126,14 +126,17 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     yield { type: 'break', value: 'parser' };
     if (rev !== revision) return yield { type: 'cancel' };
-    for (const el of figure(next(0)?.parentNode ?? target, settings.notes, options)) {
+    for (const el of figure(next(0)?.parentNode ?? target, output.labels.pop()!, settings.notes, options)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure' }
         : yield { type: 'break', value: 'figure' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of note(next(0)?.parentNode ?? target, settings.notes, options, bottom)) {
+    for (const el of note(next(0)?.parentNode ?? target, {
+      annotations: output.annotations.pop()!,
+      references: output.references.pop()!,
+    }, settings.notes, options, bottom)) {
       assert(rev === revision);
       el
         ? yield { type: 'note', value: el }

@@ -15,23 +15,23 @@ export const escsource: EscapableSourceParser = (input, output) => {
     case Command.Escape:
       spend(input, output, 1);
       input.position += 1;
-      return output.append(new Node(source.slice(position + 1, position + 2)));
+      return output.append(new Node(source.slice(position + 1, position + 2), position));
     case '\\':
       switch (source[position + 1]) {
         case undefined:
         case '\r':
         case '\n':
-          return output.append(new Node(char));
+          return output.append(new Node(char, position));
         default:
           spend(input, output, 1);
           input.position += 1;
-          return output.append(new Node(source.slice(position, position + 2)));
+          return output.append(new Node(source.slice(position, position + 2), position));
       }
     case '\r':
       return Result.succ;
     case '\n':
       input.linebreak ||= source.length - position;
-      return output.append(new Node(html('br'), Flag.blank));
+      return output.append(new Node(html('br'), position, Flag.blank));
     default:
       assert(char !== '\n');
       let i = seek(source, position);
@@ -39,7 +39,7 @@ export const escsource: EscapableSourceParser = (input, output) => {
       i -= position;
       spend(input, output, i - 1);
       input.position += i - 1;
-      return output.append(new Node(source.slice(position, input.position)));
+      return output.append(new Node(source.slice(position, input.position), position));
   }
 };
 
