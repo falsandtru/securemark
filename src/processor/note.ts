@@ -16,7 +16,6 @@ export function* note(
   },
   opts: {
     readonly id?: string;
-    readonly local?: boolean;
   } = {},
   bottom: global.Node | null = null,
 ): Generator<HTMLOListElement | undefined, undefined, undefined> {
@@ -87,7 +86,6 @@ function build(
     note?: HTMLOListElement,
     opts: {
       readonly id?: string;
-      readonly local?: boolean;
     } = {},
     bottom: global.Node | null = null,
   ): Generator<HTMLOListElement | undefined, undefined, undefined> {
@@ -186,11 +184,7 @@ function build(
         : info.defIndex;
       const title = info.title ||= text;
       assert(syntax !== 'annotation' || title);
-      define(ref, {
-        id: refId,
-        class: opts.local ? `${ref.className} local` : undefined,
-        title,
-      }, []);
+      define(ref, { id: refId, title, }, []);
       if (title && info.queue.length > 0) {
         for (const ref of info.queue) {
           define(ref, { title });

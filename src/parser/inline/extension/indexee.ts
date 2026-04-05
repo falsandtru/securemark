@@ -5,11 +5,10 @@ import { define } from 'typed-dom/dom';
 
 export function indexee<P extends Parser<HTMLElement, Input>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement, Input>): Parser<HTMLElement, Input> {
-  return fmap(parser, (ns, { id, local }) =>
+  return fmap(parser, (ns, { id }) =>
     ns.length === 1
       ? new List([new Node(define(ns.head!.value, {
           id: identity('index', id, ns.head!.value),
-          class: local ? `${ns.head!.value.className} local`.trimStart() : undefined,
           'data-index': null
         }))])
       : ns);

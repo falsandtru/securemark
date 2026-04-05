@@ -10,7 +10,6 @@ export function* figure(
   notes?: { readonly references: HTMLOListElement; },
   opts: {
     readonly id?: string;
-    readonly local?: boolean;
   } = {},
 ): Generator<undefined, undefined, undefined> {
   const refs = new MultiQueue<string, HTMLAnchorElement>(
@@ -117,10 +116,7 @@ export function* figure(
       }
       if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       define(ref,
-        {
-          class: opts.local ? `${ref.className} local` : undefined,
-          href: opts.id !== '' ? `#${def.id}` : undefined,
-        },
+        { href: opts.id !== '' ? `#${def.id}` : undefined, },
         figindex);
     }
   }

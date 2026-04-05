@@ -126,7 +126,7 @@ describe('Unit: processor/figure', () => {
           [...target.children].map(el => normalize(el.outerHTML)),
           [
             '<blockquote><blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:random:test-a"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:random:test-a"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><h2>References</h2><ol class="references"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $test-a\n&gt; \n\n~~~\n\n$test-a</pre><hr><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:random:test-a"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label local" data-label="test-a" href="#label:random:test-a">Test 1</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
+            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $test-a\n&gt; \n\n~~~\n\n$test-a</pre><hr><section><figure data-type="quote" data-label="test-a" data-group="test" data-number="1" id="label:random:test-a"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure><p><a class="label" data-label="test-a" href="#label:random:test-a">Test 1</a></p><h2>References</h2><ol class="references"></ol></section></aside>',
             '<figure data-type="quote" data-label="test-b" data-group="test" data-number="1" id="label:test-b"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<figure data-type="quote" data-label="test-a" data-group="test" data-number="2" id="label:test-a"><figcaption><span class="figindex">Test 2. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
           ]);
@@ -182,7 +182,7 @@ describe('Unit: processor/figure', () => {
             '<h2 id="index::0">0</h2>',
             '<figure data-type="quote" data-label="test-1" data-group="test" data-number="1" id="label:test-1"><figcaption><span class="figindex">Test 1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index::0">0</h2>',
-            '<blockquote><section><h2 id="index:random:0" class="local">0</h2><h2>References</h2><ol class="references"></ol></section></blockquote>',
+            '<blockquote><section><h2 id="index:random:0">0</h2><h2>References</h2><ol class="references"></ol></section></blockquote>',
             '<figure data-type="quote" data-label="test-b" data-group="test" data-number="2.1" id="label:test-b"><figcaption><span class="figindex">Test 2.1. </span><span class="figtext"></span></figcaption><div><blockquote></blockquote></div></figure>',
             '<h2 id="index::0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" class="invalid"></figure>',
