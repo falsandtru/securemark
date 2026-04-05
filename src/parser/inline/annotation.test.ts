@@ -86,6 +86,9 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(
         inspect(parser, input(`${'(('.repeat(3)}0))((1))))))`)),
         [['<span class="invalid"><sup class="annotation"><span><sup class="annotation"><span>0</span></sup><sup class="annotation"><span>1</span></sup></span></sup></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(0'.repeat(4)}((0${'))'.repeat(3)}${'(('.repeat(2)}0${'))'.repeat(2)}`)),
+        [['<span class="paren">(0<span class="paren">(0<span class="paren">(0<span class="paren">(0<sup class="annotation"><span>0</span></sup>)</span>)</span>)</span>)</span>', '<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>'], '']);
     });
 
   });

@@ -56,7 +56,6 @@ export class Input<M extends object = object> extends Ipt<M> {
   public header: boolean;
   public local: boolean;
   public whitespace: boolean;
-  public recursion = new RecursionCounter(2);
   public readonly host?: URL;
   public readonly url?: URL;
   public id?: string;
@@ -71,24 +70,6 @@ export class Input<M extends object = object> extends Ipt<M> {
   public test: boolean;
 }
 export type Options = Partial<Input>;
-
-class RecursionCounter {
-  constructor(
-    private readonly limit: number,
-  ) {
-  }
-  private readonly stack: number[] = [];
-  private index = 0;
-  public add(depth: number): boolean {
-    const { stack } = this;
-    for (; this.index > 0 && stack[this.index - 1] >= depth; --this.index);
-    // 内側から数えるので無効化処理できない
-    if (this.index === this.limit) return false;
-    stack[this.index] = depth;
-    ++this.index;
-    return true;
-  }
-}
 
 export const enum Segment {
   unknown = 0,

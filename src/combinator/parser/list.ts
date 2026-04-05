@@ -159,6 +159,7 @@ export class Node<T> implements List.Node {
 export namespace Node {
   export const enum Flag {
     none,
-    blank,
+    blank = 1 << 0,
+    nested = 1 << 1,
   }
 }

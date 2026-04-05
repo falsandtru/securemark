@@ -93,6 +93,7 @@ export function repeat<T extends HTMLElement | string>(
           input.position += closer.length;
           const pos = input.position;
           m.follow = m.follow > 0 ? m.follow : countFollows(source, pos, closer, lead / opener.length | 0);
+          input.range = input.position - m.position - m.i + opener.length;
           output.push(cons(output.pop(), input, output, lead, m.follow));
           if (input.position > pos) {
             const advance = input.position - pos;

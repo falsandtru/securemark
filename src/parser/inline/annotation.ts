@@ -7,7 +7,7 @@ import { bracketname } from './bracket';
 import { repeat } from '../repeat';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
 import { unwrap, invalid } from '../util';
-import { html, defrag } from 'typed-dom/dom';
+import { html, define, defrag } from 'typed-dom/dom';
 
 // シグネチャ等生成のために構文木のツリーウォークを再帰的に行い指数計算量にならないよう
 // 動的計画法を適用するか再帰数を制限する必要がある。
@@ -32,7 +32,7 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
     ([, bs], _, output) => output.import(bs),
     ([, bs], _, output) => bs && output.import(bs.push(new Node(Command.Cancel)))))),
     (nodes, input, output, lead, follow) => {
-      const { position, linebreak, range, recursion, resources } = input;
+      const { position, linebreak, range } = input;
       if (linebreak !== 0 || nodes.length === 0 || lead === 0 || follow % 2 === 0) {
         nodes.unshift(new Node('('));
         nodes.push(new Node(')'));
@@ -41,22 +41,24 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         ]);
       }
       input.position += 1;
-      if (!recursion.add(resources?.recursions[Recursion.inline] ?? resources?.recursions.at(-1))) {
-        return new List([new Node(html('span',
-          {
-            class: 'invalid',
-            ...invalid('annotation', 'syntax', 'Recursions must be two or fewer')
-          },
-          defrag(unwrap(trimBlankNodeEnd(nodes)))))]);
-      }
       const el = html('sup', { class: 'annotation' }, [
         html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))
       ]);
       for (let list = output.annotations.at(-1)!, node = list.last, pos = position - range, i = 0; ; node = node!.prev, ++i) {
-        if (node && node.position > pos) continue;
+        if (node && node.position > pos) {
+          if (~node.flags & Node.Flag.nested) continue;
+          return new List([
+            new Node(define(el.firstElementChild as HTMLElement,
+              {
+                class: 'invalid',
+                ...invalid('annotation', 'syntax', 'Recursions must be two or fewer')
+              }))
+          ]);
+        }
+        const flag = i === 0 ? Node.Flag.none : Node.Flag.nested;
         i === list.length
-          ? list.unshift(new Node(el, pos))
-          : list.insert(new Node(el, pos), node?.next);
+          ? list.unshift(new Node(el, pos, flag))
+          : list.insert(new Node(el, pos, flag), node?.next);
         break;
       }
       return new List([new Node(el)]);
