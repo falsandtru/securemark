@@ -1,7 +1,6 @@
 import { HTMLParser } from '../inline';
 import { Input, Recursion } from '../context';
 import { List, Node } from '../../combinator/parser';
-import { Flag } from '../node';
 import { union, some, recursion, precedence, surround, open, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -28,7 +27,7 @@ export const html: HTMLParser = lazy(() => union([
     open(str(/ ?/y), str('>'), true),
     true, [],
     ([as, bs = new List(), cs], input, output) =>
-      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input), as.head!.position, as.head!.value === '<wbr' ? Flag.blank : Flag.none)),
+      output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs).import(cs))], new List(), new List(), input), as.head!.position, as.head!.value === '<wbr' ? Node.Flag.blank : Node.Flag.none)),
     ([as, bs = new List()], input, output) =>
       output.append(new Node(elem(as.head!.value.slice(1), false, [...unwrap(as.import(bs))], new List(), new List(), input)))),
   match(

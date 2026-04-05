@@ -1,6 +1,5 @@
 import { Parser, List, Node } from '../combinator/parser';
 import { Input, Command } from './context';
-import { Flag } from './node';
 import { always, fmap } from '../combinator';
 import { invisibleBlankHTMLEntityNames } from '../api/normalize';
 import { isWhitespace } from './source';
@@ -81,7 +80,7 @@ export function isNonblankFirstLine(nodes: List<Node<HTMLElement | string>>): bo
   if (nodes.length === 0) return true;
   for (const node of nodes) {
     if (isNonblank(node)) return true;
-    if (node.flags & Flag.blank && typeof node.value === 'object' && node.value.tagName === 'BR') break;
+    if (node.flags & Node.Flag.blank && typeof node.value === 'object' && node.value.tagName === 'BR') break;
   }
   return false;
 }
@@ -90,7 +89,7 @@ export function isNonblankNodeStart(nodes: List<Node<HTMLElement | string>>): bo
   return isNonblank(nodes.head!, 0);
 }
 function isNonblank({ value: node, flags }: Node<HTMLElement | string>, strpos?: number): boolean {
-  if (flags & Flag.blank) return false;
+  if (flags & Node.Flag.blank) return false;
   if (typeof node !== 'string') return true;
   const str = node && strpos !== undefined
     ? node[strpos >= 0 ? strpos : node.length + strpos]
@@ -131,11 +130,11 @@ export function trimBlankEnd<N extends HTMLElement>(parser: Parser<N>): Parser<s
   return fmap(parser, trimBlankNodeEnd);
 }
 export function trimBlankNodeEnd<N extends HTMLElement>(nodes: List<Node<string | N>>): List<Node<string | N>> {
-  const skip = nodes.last && ~nodes.last.flags & Flag.blank && typeof nodes.last.value === 'object'
+  const skip = nodes.last && ~nodes.last.flags & Node.Flag.blank && typeof nodes.last.value === 'object'
     ? nodes.last.value.className === 'indexer'
     : false;
   for (let node = skip ? nodes.last?.prev : nodes.last; node;) {
-    if (~node.flags & Flag.blank) {
+    if (~node.flags & Node.Flag.blank) {
       if (typeof node.value === 'string') {
         const str = node.value.trimEnd();
         if (str.length > 0) {

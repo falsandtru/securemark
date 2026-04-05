@@ -1,7 +1,6 @@
 import { MediaParser } from '../inline';
 import { State, Recursion, Backtrack, Command } from '../context';
 import { Result, List, Node } from '../../combinator/parser';
-import { Flag } from '../node';
 import { union, inits, tails, some, recursion, precedence, constraint, backtrack, surround, open, setBacktrack, dup, lazy, fmap, bind } from '../../combinator';
 import { uri, option as linkoption, resolve, decode, parse } from './link';
 import { attributes } from './html';
@@ -33,7 +32,7 @@ export const media: MediaParser = lazy(() => constraint(State.media, backtrack(o
       true,
       [3 | Backtrack.escapable, 2 | Backtrack.ruby],
       ([, ns = new List()], input, output) => {
-        if (input.linebreak !== 0 || ns.head?.flags! & Flag.blank || ns.head?.value?.[0].trimStart() === '') {
+        if (input.linebreak !== 0 || ns.head?.flags! & Node.Flag.blank || ns.head?.value?.[0].trimStart() === '') {
           const head = input.position - input.range;
           return void setBacktrack(input, 2 | Backtrack.escapable | Backtrack.ruby, head);
         }

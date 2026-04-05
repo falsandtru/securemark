@@ -150,9 +150,15 @@ export class Node<T> implements List.Node {
   constructor(
     public value: T,
     public position: number = 0,
-    public flags: number = 0,
+    public flags: Node.Flag = 0,
   ) {
   }
   public next?: this = undefined;
   public prev?: this = undefined;
+}
+export namespace Node {
+  export const enum Flag {
+    none,
+    blank,
+  }
 }

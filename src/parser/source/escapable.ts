@@ -2,7 +2,6 @@ import { EscapableSourceParser } from '../source';
 import { Result, Node } from '../../combinator/parser';
 import { spend } from '../../combinator';
 import { Command } from '../context';
-import { Flag } from '../node';
 import { html } from 'typed-dom/dom';
 
 export const escsource: EscapableSourceParser = (input, output) => {
@@ -31,7 +30,7 @@ export const escsource: EscapableSourceParser = (input, output) => {
       return Result.succ;
     case '\n':
       input.linebreak ||= source.length - position;
-      return output.append(new Node(html('br'), position, Flag.blank));
+      return output.append(new Node(html('br'), position, Node.Flag.blank));
     default:
       assert(char !== '\n');
       let i = seek(source, position);

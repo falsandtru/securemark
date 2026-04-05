@@ -2,7 +2,6 @@ import { TextParser, TxtParser } from '../source';
 import { Result, Node } from '../../combinator/parser';
 import { union, spend } from '../../combinator';
 import { State, Command } from '../context';
-import { Flag } from '../node';
 import { isWhitespace } from './whitespace';
 import { html } from 'typed-dom/dom';
 
@@ -33,7 +32,7 @@ export const text: TextParser = (input, output) => {
       return Result.succ;
     case '\n':
       input.linebreak ||= source.length - position;
-      return output.append(new Node(html('br'), position, Flag.blank));
+      return output.append(new Node(html('br'), position, Node.Flag.blank));
     default:
       assert(char !== '\n');
       nonWhitespace.lastIndex = position + 1;

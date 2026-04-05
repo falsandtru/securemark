@@ -1,6 +1,5 @@
 import { ExtensionParser } from '../../inline';
 import { State, Backtrack } from '../../context';
-import { Flag } from '../../node';
 import { List, Node } from '../../../combinator/parser';
 import { union, inits, some, precedence, state, constraint, backtrack, validate, surround, setBacktrack, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
@@ -53,7 +52,7 @@ export const signature: IndexParser.SignatureParser = lazy(() => validate('|', b
     const { position, range, linebreak } = input;
     const head = position - range;
     const index = identity('index', undefined, ns.foldl((acc, { value }) => acc + value, ''))?.slice(7);
-    if (linebreak !== 0 || ns.head!.flags & Flag.blank || !index) {
+    if (linebreak !== 0 || ns.head!.flags & Node.Flag.blank || !index) {
       return void setBacktrack(input, 2 | Backtrack.escapable, head);
     }
     return output.append(new Node(html('span', { class: 'indexer', 'data-index': index })));

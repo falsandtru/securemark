@@ -1,6 +1,5 @@
 import { ReplyParser } from '../../block';
 import { List, Node } from '../../../combinator/parser';
-import { Flag } from '../../node';
 import { union, some, scope, block, validate, rewrite, fmap } from '../../../combinator';
 import { math } from '../../inline/math';
 import { autolink } from '../../inline/autolink';
@@ -23,7 +22,7 @@ export const quote: ReplyParser.QuoteParser = block(fmap(
       ])),
       true)),
   (ns, { source, position }) => new List([
-    new Node(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br'), position, Flag.blank),
+    new Node(source[position - 1] === '\n' ? ns.pop()!.value as HTMLBRElement : html('br'), position, Node.Flag.blank),
     new Node(html('span', { class: 'quote' }, defrag(unwrap(ns)))),
   ].reverse())),
   false);

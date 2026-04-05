@@ -2,7 +2,6 @@ import { UnescapableSourceParser } from '../source';
 import { Result, Node } from '../../combinator/parser';
 import { spend } from '../../combinator';
 import { State, Command } from '../context';
-import { Flag } from '../node';
 import { nonWhitespace, canSkip, backToUrlHead, backToEmailHead } from './text';
 import { html } from 'typed-dom/dom';
 
@@ -21,7 +20,7 @@ export const unescsource: UnescapableSourceParser = (input, output) => {
       return Result.succ;
     case '\n':
       input.linebreak ||= source.length - position;
-      return output.append(new Node(html('br'), position, Flag.blank));
+      return output.append(new Node(html('br'), position, Node.Flag.blank));
     default:
       assert(char !== '\n');
       nonWhitespace.lastIndex = position + 1;

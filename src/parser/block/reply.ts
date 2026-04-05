@@ -1,6 +1,5 @@
 import { ReplyParser } from '../block';
 import { List, Node } from '../../combinator/parser';
-import { Flag } from '../node';
 import { union, some, block, validate, rewrite, fmap } from '../../combinator';
 import { cite, syntax as csyntax } from './reply/cite';
 import { quote, syntax as qsyntax } from './reply/quote';
@@ -21,6 +20,6 @@ export const reply: ReplyParser = block(validate(csyntax, fmap(
       visualize(fmap(some(inline), (ns, { source, position }) =>
         source[position - 1] === '\n'
           ? ns
-          : ns.push(new Node(html('br'), position, Flag.blank)))))
+          : ns.push(new Node(html('br'), position, Node.Flag.blank)))))
   ])),
   ns => new List([new Node(html('p', defrag(unwrap(trimBlankNodeEnd(ns)))))]))));
