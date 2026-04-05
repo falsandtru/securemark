@@ -6,7 +6,7 @@ import { inline } from '../inline';
 import { bracketname } from './bracket';
 import { repeat } from '../repeat';
 import { beforeNonblank, trimBlankNodeEnd } from '../visibility';
-import { unwrap } from '../util';
+import { unwrap, invalid } from '../util';
 import { html, defrag } from 'typed-dom/dom';
 
 // シグネチャ等生成のために構文木のツリーウォークを再帰的に行い指数計算量にならないよう
@@ -40,8 +40,15 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
           new Node(html('span', { class: bracketname(input, 1, 1) }, defrag(unwrap(nodes))))
         ]);
       }
-      output.error ??= recursion.add(resources?.recursions[Recursion.inline] ?? resources?.recursions.at(-1));
       input.position += 1;
+      if (!recursion.add(resources?.recursions[Recursion.inline] ?? resources?.recursions.at(-1))) {
+        return new List([new Node(html('span',
+          {
+            class: 'invalid',
+            ...invalid('annotation', 'syntax', 'Recursions must be two or fewer')
+          },
+          defrag(unwrap(trimBlankNodeEnd(nodes)))))]);
+      }
       const el = html('sup', { class: 'annotation' }, [
         html('span', defrag(unwrap(trimBlankNodeEnd(nodes))))
       ]);

@@ -62,6 +62,30 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser, input('(((a)))')), [['<sup class="annotation"><span><span class="paren">(a)</span></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('((((a))))')), [['<sup class="annotation"><span><sup class="annotation"><span>a</span></sup></span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser, input('(([[a]]))')), [['<sup class="annotation"><span><sup class="reference"><span>a</span></sup></span></sup>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(2)}0${'))'.repeat(2)}`)),
+        [['<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(3)}0${'))'.repeat(3)}`)),
+        [['<span class="invalid"><sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`(${'(('.repeat(2)}0${'))'.repeat(2)}`)),
+        [['<span class="paren">(<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`(${'(('.repeat(3)}0${'))'.repeat(3)}`)),
+        [['<span class="paren">(<span class="invalid"><sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup></span></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(2)}0${'))'.repeat(2)}`)),
+        [['<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>', '<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(3)}0${'))'.repeat(2)}`)),
+        [['<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>', '<span class="paren">(<span class="paren">(<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup></span></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(2)}0${'))'.repeat(2)}${'(('.repeat(3)}0${'))'.repeat(3)}`)),
+        [['<sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup>', '<span class="invalid"><sup class="annotation"><span><sup class="annotation"><span>0</span></sup></span></sup></span>'], '']);
+      assert.deepStrictEqual(
+        inspect(parser, input(`${'(('.repeat(3)}0))((1))))))`)),
+        [['<span class="invalid"><sup class="annotation"><span><sup class="annotation"><span>0</span></sup><sup class="annotation"><span>1</span></sup></span></sup></span>'], '']);
     });
 
   });
