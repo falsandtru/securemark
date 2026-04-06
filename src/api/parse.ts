@@ -29,7 +29,7 @@ export function* parse(source: string, opts: Opts = {}, options?: Options): Gene
   assert(output.labels[0] = opts.labels ?? output.labels[0]);
   assert(output.annotations[0] = opts.annotations ?? output.annotations[0]);
   assert(output.references[0] = opts.references ?? output.references[0]);
-  for (const _ of run(document, new Input(options, source), output)) yield;
+  yield* run(document, new Input(options, source), output);
   assert(output.data.length === 1);
   assert(output.peek().length === 1);
   return output.peek().head!.value;
