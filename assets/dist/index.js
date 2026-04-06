@@ -2785,7 +2785,7 @@ function* parse(source, opts = {}, options) {
   if (options.id?.match(/[^0-9a-z/-]/i)) throw new Error('Invalid ID: ID must be alphanumeric');
   if (options.host?.origin === 'null') throw new Error(`Invalid host: ${options.host.href}`);
   const output = new parser_1.Output();
-  for (const _ of (0, parser_1.run)(document_1.document, new context_1.Input(options, source), output)) yield;
+  yield* (0, parser_1.run)(document_1.document, new context_1.Input(options, source), output);
   return output.peek().head.value;
 }
 exports.parse = parse;
@@ -6433,7 +6433,10 @@ class Input extends parser_1.Input {
       recursions: [
       // DOMの垂直的追加の繰り返しが加速的に異常に重くなる。
       // ブラウザの問題でありアルゴリズムの計算量は問題ない。
-      10 || 0 /* Recursion.document */, 100 || 0 /* Recursion.block */, 100 || 0 /* Recursion.inline */, 100 || 0 /* Recursion.bracket */]
+      // HTMLでなくDOMでレンダリングすること自体に限界があると思われる。
+      10 || 0 /* Recursion.document */,
+      // スタックでも意外と低速化するため制限しておく。
+      100 || 0 /* Recursion.block */, 100 || 0 /* Recursion.inline */, 100 || 0 /* Recursion.bracket */]
     };
     this.segment = segment ?? 0 /* Segment.unknown */;
     this.header = header ?? true;
@@ -6734,9 +6737,8 @@ exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.constraint)(1
     }
     const flag = i === 0 ? 0 /* Node.Flag.none */ : 2 /* Node.Flag.nested */;
     i === list.length ? list.unshift(new parser_1.Node(el, pos, flag)) : list.insert(new parser_1.Node(el, pos, flag), node?.next);
-    break;
+    return new parser_1.List([new parser_1.Node(el)]);
   }
-  return new parser_1.List([new parser_1.Node(el)]);
 }, (nodes, input, output, prefix, postfix) => {
   for (let i = 0; i < prefix; ++i) {
     nodes.unshift(new parser_1.Node('('));
