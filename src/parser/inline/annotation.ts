@@ -59,9 +59,8 @@ export const annotation: AnnotationParser = lazy(() => constraint(State.annotati
         i === list.length
           ? list.unshift(new Node(el, pos, flag))
           : list.insert(new Node(el, pos, flag), node?.next);
-        break;
+        return new List([new Node(el)]);
       }
-      return new List([new Node(el)]);
     },
     (nodes, input, output, prefix, postfix) => {
       assert(postfix === 0);
