@@ -30,7 +30,9 @@ export class Input<M extends object = object> extends Ipt<M> {
       recursions: [
         // DOMの垂直的追加の繰り返しが加速的に異常に重くなる。
         // ブラウザの問題でありアルゴリズムの計算量は問題ない。
+        // HTMLでなくDOMでレンダリングすること自体に限界があると思われる。
         10 || Recursion.document,
+        // スタックでも意外と低速化するため制限しておく。
         100 || Recursion.block,
         100 || Recursion.inline,
         100 || Recursion.bracket,
